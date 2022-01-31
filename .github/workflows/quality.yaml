@@ -27,7 +27,7 @@ jobs:
     - name: upload coverage to coveralls
       env:
         COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: goveralls -coverprofile=coverage.txt -service=github
+      run: goveralls -coverprofile=coverage.txt -service=github -ignore=*.pb.go,*.pb.gw.go
   golangci:
     name: lint
     runs-on: ubuntu-latest

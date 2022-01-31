@@ -18,6 +18,7 @@ var (
 // structs, and pointers.
 func Fill(x interface{}) interface{} {
 	v := reflect.Indirect(reflect.ValueOf(x))
+	//nolint
 	switch v.Kind() {
 	case reflect.Slice:
 		for i := 0; i < v.Len(); i++ {

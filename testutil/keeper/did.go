@@ -8,12 +8,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/elesto-dao/elesto/x/did/keeper"
-	"github.com/elesto-dao/elesto/x/did/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
+
+	"github.com/elesto-dao/elesto/x/did/keeper"
+	"github.com/elesto-dao/elesto/x/did/types"
 )
 
 func DidKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {

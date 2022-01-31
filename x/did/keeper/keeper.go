@@ -5,8 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/elesto-dao/elesto/x/did/types"
 	"github.com/tendermint/tendermint/libs/log"
+
+	"github.com/elesto-dao/elesto/x/did/types"
 )
 
 // UnmarshalFn is a generic function to unmarshal bytes
