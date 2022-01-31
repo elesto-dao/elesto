@@ -11,23 +11,16 @@ jobs:
     name: Test with Coverage
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: '1.17'
-    - name: Check out code
-      uses: actions/checkout@v2
-    - name: Install dependencies
-      run: |
-        go mod download
-    - name: Run Unit tests
-      run: make test-ci
-    - name: Install goveralls
-      run: go install github.com/mattn/goveralls@latest
-    - name: upload coverage to coveralls
-      env:
-        COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: goveralls -coverprofile=coverage.txt -service=github -ignore=*.pb.go,*.pb.gw.go
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "1.17"
+      - name: Run coverage
+        run: make test-ci
+      - name: Upload coverage to Codecov
+        run: bash <(curl -s https://codecov.io/bash)
   golangci:
     name: lint
     runs-on: ubuntu-latest
