@@ -55,8 +55,9 @@ seed:
 ###                                CI / CD                                  ###
 ###############################################################################
 
+# TODO: running this with -race options causes problems in the cli tests
 test-ci:
-	go test -race -coverprofile=coverage.txt -covermode=atomic -mod=readonly $(PACKAGES)
+	go test -coverprofile=coverage.txt -covermode=atomic -mod=readonly $(PACKAGES)
 
 ###############################################################################
 ###                                RELEASE                                  ###

@@ -1,5 +1,11 @@
-# elesto
-**elesto** is a blockchain built using Cosmos SDK and Tendermint and created with [Starport](https://starport.com).
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/elesto-dao/elesto.svg)](https://pkg.go.dev/github.com/elesto-dao/elesto)
+[![build](https://github.com/elesto-dao/elesto/actions/workflows/quality.yaml/badge.svg?branch=main)](https://github.com/elesto-dao/elesto/actions/workflows/quality.yaml)
+[![codecov](https://codecov.io/gh/elesto-dao/elesto/branch/main/graph/badge.svg?token=NLT5ZWM460)](https://codecov.io/gh/elesto-dao/elesto)
+[![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/elesto-dao/elesto)](https://libraries.io/go/github.com%2Felesto-dao%2Felesto)
+[![DeepSource](https://deepsource.io/gh/elesto-dao/elesto.svg/?label=active+issues&show_trend=true&token=BRR7kVLyskz5-N1etTDRay5J)](https://deepsource.io/gh/elesto-dao/elesto/?ref=repository-badge)
+
+# Elesto
 
 ## Get started
 
