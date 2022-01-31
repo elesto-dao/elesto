@@ -4,9 +4,10 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/elesto-dao/elesto/x/did/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/elesto-dao/elesto/x/did/types"
 )
 
 var _ types.QueryServer = Keeper{}
