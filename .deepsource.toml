@@ -1,5 +1,10 @@
 version = 1
 
+exclude_patterns = [
+  "**/*.pb.go",
+  "**/*.pb.gw.go"
+]
+
 [[analyzers]]
 name = "go"
 enabled = true
