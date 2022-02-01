@@ -704,15 +704,15 @@ func NewVerification(
 	}
 }
 
-// NewAccountVerification is a shortcut to create a verification based on comsos address
-func NewAccountVerification(did DID, chainID, accountAddress string, verificationMethods ...string) *Verification {
+// NewAccountVerification is a shortcut to create a verification based on cosmos address
+func NewAccountVerification(did DID, chainID, accountAddress string, verificationRelationships ...string) *Verification {
 	return NewVerification(
 		NewVerificationMethod(
 			fmt.Sprint(did.String(), "#", accountAddress),
 			did,
 			NewBlockchainAccountID(chainID, accountAddress),
 		),
-		verificationMethods,
+		verificationRelationships,
 		nil,
 	)
 }

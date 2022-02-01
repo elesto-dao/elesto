@@ -1990,54 +1990,6 @@ func TestBlockchainAccountID_GetAddress(t *testing.T) {
 	}
 }
 
-func TestNewPublicKeyMultibaseFromHex(t *testing.T) {
-	type args struct {
-		pubKeyHex string
-		vmType    VerificationMaterialType
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantPkm PublicKeyMultibase
-		wantErr assert.ErrorAssertionFunc
-	}{
-		{
-			"PASS: key match",
-			args{
-				pubKeyHex: "03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7",
-				vmType:    DIDVMethodTypeEcdsaSecp256k1VerificationKey2019,
-			},
-			PublicKeyMultibase{
-				data:   []byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215},
-				vmType: DIDVMethodTypeEcdsaSecp256k1VerificationKey2019,
-			},
-			assert.NoError,
-		},
-		{
-			"FAIL: invalid hex key",
-			args{
-				pubKeyHex: "not hex string",
-				vmType:    DIDVMethodTypeEcdsaSecp256k1VerificationKey2019,
-			},
-			PublicKeyMultibase{
-				data:   nil,
-				vmType: "",
-			},
-			assert.Error, // TODO: check the error message
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gotPkm, err := NewPublicKeyMultibaseFromHex(tt.args.pubKeyHex, tt.args.vmType)
-			if !tt.wantErr(t, err, fmt.Sprintf("NewPublicKeyMultibaseFromHex(%v, %v)", tt.args.pubKeyHex, tt.args.vmType)) {
-				return
-			}
-			assert.Equalf(t, tt.wantPkm, gotPkm, "NewPublicKeyMultibaseFromHex(%v, %v)", tt.args.pubKeyHex, tt.args.vmType)
-
-		})
-	}
-}
-
 func TestDidDocument_HasPublicKey(t *testing.T) {
 
 	tests := []struct {
@@ -2373,7 +2325,7 @@ func TestDidDocument_HasController(t *testing.T) {
 					WithControllers(
 						"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 						"did:cosmos:key:cosmos17t8t3t6a6vpgk69perfyq930593sa8dn4kzsdf",
-						),
+					),
 				)
 				assert.NoError(t, err)
 				return dd
@@ -2402,6 +2354,123 @@ func TestDidDocument_HasController(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			didDoc := tt.didFn()
 			assert.Equalf(t, tt.want, didDoc.HasController(DID(tt.controllerDID)), "HasController(%v)", tt.controllerDID)
+		})
+	}
+}
+
+func TestResolveAccountDID(t *testing.T) {
+	type args struct {
+		did     string
+		chainID string
+	}
+	tests := []struct {
+		name        string
+		args        args
+		wantDidDoc  func() DidDocument
+		wantDidMeta func() DidMetadata
+		wantErr     error
+	}{
+		{
+			"FAIL: not a key did",
+			args{
+				"did:cosmos:net:elesto:1234",
+				"elesto",
+			},
+			func() DidDocument {
+				return DidDocument{}
+			},
+			func() DidMetadata {
+				return DidMetadata{}
+			},
+			ErrInvalidDidMethodFormat,
+		},
+		{
+			"PASS: key did",
+			args{
+				"did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
+				"elesto",
+			},
+			func() DidDocument {
+				dd, err := NewDidDocument(
+					"did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
+					WithVerifications(
+						NewVerification(
+							NewVerificationMethod(
+								DID("did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8").NewVerificationMethodID("cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"),
+								DID("did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"), // the controller is the same as the did subject
+								NewBlockchainAccountID("elesto", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"),
+							),
+							[]string{
+								Authentication,
+								KeyAgreement,
+								AssertionMethod,
+								CapabilityInvocation,
+								CapabilityDelegation,
+							},
+							nil,
+						),
+					),
+				)
+				assert.NoError(t, err)
+				return dd
+			},
+			func() DidMetadata {
+				meta := NewDidMetadata([]byte("cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"), time.Now())
+				return meta
+			},
+			nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotDidDoc, gotDidMeta, err := ResolveAccountDID(tt.args.did, tt.args.chainID)
+			if tt.wantErr == nil {
+				assert.NoError(t, err)
+				assert.Equalf(t, tt.wantDidDoc(), gotDidDoc, "ResolveAccountDID(%v, %v)", tt.args.did, tt.args.chainID)
+				assert.Equalf(t, tt.wantDidMeta().VersionId, gotDidMeta.VersionId, "ResolveAccountDID(%v, %v)", tt.args.did, tt.args.chainID)
+			} else {
+				assert.Error(t, err)
+				assert.Equal(t, tt.wantErr.Error(), err.Error())
+			}
+
+		})
+	}
+}
+
+func TestNewAccountVerification(t *testing.T) {
+	type args struct {
+		did                 DID
+		chainID             string
+		accountAddress      string
+		verificationMethods []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want *Verification
+	}{
+		{
+			"PASS: net did",
+			args{
+				DID("did:cosmos:net:elesto:1234"),
+				"elesto",
+				"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
+				[]string{Authentication},
+			},
+			&Verification{
+				Method: &VerificationMethod{
+					Id:                   "did:cosmos:net:elesto:1234#cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
+					Controller:           "did:cosmos:net:elesto:1234",
+					VerificationMaterial: &VerificationMethod_BlockchainAccountID{BlockchainAccountID: "cosmos:elesto:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"},
+					Type:                 string(DIDVMethodTypeCosmosAccountAddress),
+				},
+				Relationships: []string{Authentication},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, NewAccountVerification(tt.args.did, tt.args.chainID, tt.args.accountAddress, tt.args.verificationMethods...), "NewAccountVerification(%v, %v, %v, %v)", tt.args.did, tt.args.chainID, tt.args.accountAddress, tt.args.verificationMethods)
 		})
 	}
 }
