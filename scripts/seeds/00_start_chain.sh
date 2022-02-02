@@ -19,20 +19,20 @@ then
     elestod init --chain-id=elesto elesto
     echo "y" | elestod keys add validator
     echo "y" | elestod keys add regulator
-    echo "y" | elestod keys add emti # e-money token issuer 
-    echo "y" | elestod keys add arti # asset-referenced token issuer 
+    echo "y" | elestod keys add emti # e-money token issuer
+    echo "y" | elestod keys add arti # asset-referenced token issuer
     echo "y" | elestod keys add bob
     echo "y" | elestod keys add alice
- 
+
     echo "Adding genesis account"
-    elestod add-genesis-account $(elestod keys show validator -a) 1000000000stake --
-    # this is to have the accounts on chain 
+    elestod add-genesis-account $(elestod keys show validator -a) 1000000000stake
+    # this is to have the accounts on chain
     elestod add-genesis-account $(elestod keys show emti -a) 1000stake
     elestod add-genesis-account $(elestod keys show arti -a) 1000stake
     elestod add-genesis-account $(elestod keys show bob -a) 1000stake
     elestod add-genesis-account $(elestod keys show alice -a) 1000stake
     ## add the regulator
-    elestod add-genesis-account $(elestod keys show regulator -a) 1000stake --regulator $(elestod keys show regulator -a) --
+    elestod add-genesis-account $(elestod keys show regulator -a) 1000stake
     elestod gentx validator 700000000stake --chain-id elesto
     elestod collect-gentxs
 fi

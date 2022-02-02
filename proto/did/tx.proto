@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "did/did.proto";
 import "google/api/annotations.proto";
 
-option go_package = "github.com/elesto-dao/elesto/x/did/types";
+option go_package = "github.com/elesto-dao/elesto/x/did";
 
 // Msg defines the identity Msg service.
 service Msg {
@@ -14,7 +14,7 @@ service Msg {
   // UpdateDidDocument defines a method for updating an identity.
   rpc UpdateDidDocument(MsgUpdateDidDocument) returns (MsgUpdateDidDocumentResponse);
 
-  // AddVerificationMethod adds a new verification method 
+  // AddVerificationMethod adds a new verification method
   rpc AddVerification(MsgAddVerification) returns (MsgAddVerificationResponse);
   // RevokeVerification remove the verification method and all associated verification Relations
   rpc RevokeVerification(MsgRevokeVerification) returns (MsgRevokeVerificationResponse);
@@ -51,11 +51,11 @@ message MsgCreateDidDocument {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
 
-  string                id            = 1; // the did 
+  string                id            = 1; // the did
   repeated string       controllers   = 2; // the list of controller DIDs
   repeated Verification verifications = 3; // the list of verification methods and relationships
   repeated Service      services      = 4; // the list of services
-  string                signer        = 5; // address of the account signing the message 
+  string                signer        = 5; // address of the account signing the message
 }
 
 message MsgCreateDidDocumentResponse {}
@@ -119,7 +119,7 @@ message MsgAddService {
 
   string  id           = 1; // the did
   Service service_data = 2; // the service data to add
-  string  signer       = 3; // address of the account signing the message 
+  string  signer       = 3; // address of the account signing the message
 }
 
 message MsgAddServiceResponse {}
@@ -130,7 +130,7 @@ message MsgDeleteService {
 
   string id         = 1; // the did
   string service_id = 2; // the service id
-  string signer     = 3; // address of the account signing the message 
+  string signer     = 3; // address of the account signing the message
 }
 
 message MsgDeleteServiceResponse {}

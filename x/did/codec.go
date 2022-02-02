@@ -1,4 +1,4 @@
-package types
+package did
 
 import ( // this line is used by starport scaffolding # 1
 	"github.com/cosmos/cosmos-sdk/codec"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/elesto-dao/elesto/x/did/types"
+	"github.com/elesto-dao/elesto/x/did"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/suite"
 
@@ -25,13 +25,13 @@ type KeeperTestSuite struct {
 
 	ctx         sdk.Context
 	keeper      Keeper
-	queryClient types.QueryClient
+	queryClient did.QueryClient
 }
 
 // SetupTest creates a test suite to test the did
 func (suite *KeeperTestSuite) SetupTest() {
-	keyDidDocument := sdk.NewKVStoreKey(types.StoreKey)
-	memKeyDidDocument := sdk.NewKVStoreKey(types.MemStoreKey)
+	keyDidDocument := sdk.NewKVStoreKey(did.StoreKey)
+	memKeyDidDocument := sdk.NewKVStoreKey(did.MemStoreKey)
 
 	db := dbm.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
@@ -51,8 +51,8 @@ func (suite *KeeperTestSuite) SetupTest() {
 	)
 
 	queryHelper := baseapp.NewQueryServerTestHelper(ctx, interfaceRegistry)
-	types.RegisterQueryServer(queryHelper, k)
-	queryClient := types.NewQueryClient(queryHelper)
+	did.RegisterQueryServer(queryHelper, k)
+	queryClient := did.NewQueryClient(queryHelper)
 
 	suite.ctx, suite.keeper, suite.queryClient = ctx, *k, queryClient
 }
@@ -64,13 +64,13 @@ func TestKeeperTestSuite(t *testing.T) {
 func (suite *KeeperTestSuite) TestGenericKeeperSetAndGet() {
 	testCases := []struct {
 		msg     string
-		didFn   func() types.DidDocument
+		didFn   func() did.DidDocument
 		expPass bool
 	}{
 		{
 			"data stored successfully",
-			func() types.DidDocument {
-				dd, _ := types.NewDidDocument(
+			func() did.DidDocument {
+				dd, _ := did.NewDidDocument(
 					"did:cash:subject",
 				)
 				return dd
@@ -124,13 +124,13 @@ func (suite *KeeperTestSuite) TestGenericKeeperSetAndGet() {
 func (suite *KeeperTestSuite) TestGenericKeeperDelete() {
 	testCases := []struct {
 		msg     string
-		didFn   func() types.DidDocument
+		didFn   func() did.DidDocument
 		expPass bool
 	}{
 		{
 			"data stored successfully",
-			func() types.DidDocument {
-				dd, _ := types.NewDidDocument(
+			func() did.DidDocument {
+				dd, _ := did.NewDidDocument(
 					"did:cash:subject",
 				)
 				return dd

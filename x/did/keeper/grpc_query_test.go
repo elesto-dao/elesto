@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/elesto-dao/elesto/x/did/types"
+	"github.com/elesto-dao/elesto/x/did"
 )
 
 func (suite *KeeperTestSuite) TestGRPCQueryDidDocuments() {

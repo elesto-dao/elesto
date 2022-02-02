@@ -1,4 +1,4 @@
-package types
+package did
 
 import (
 	"fmt"
@@ -72,7 +72,7 @@ func TestNewPublicKeyHexFromString(t *testing.T) {
 				DIDVMethodTypeX25519KeyAgreementKey2019,
 			},
 			PublicKeyHex{
-				data: []byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215},
+				data:   []byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215},
 				vmType: DIDVMethodTypeX25519KeyAgreementKey2019,
 			},
 			nil,
@@ -84,7 +84,7 @@ func TestNewPublicKeyHexFromString(t *testing.T) {
 				DIDVMethodTypeX25519KeyAgreementKey2019,
 			},
 			PublicKeyHex{
-				data: []byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215},
+				data:   []byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215},
 				vmType: DIDVMethodTypeX25519KeyAgreementKey2019,
 			},
 			fmt.Errorf("encoding/hex: invalid byte: U+0026 '&'"),

@@ -2,11 +2,11 @@
 // source: did/query.proto
 
 /*
-Package types is a reverse proxy.
+Package did is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package types
+package did
 
 import (
 	"context"

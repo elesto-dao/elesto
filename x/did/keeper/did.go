@@ -4,64 +4,63 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/elesto-dao/elesto/x/did/types"
+	"github.com/elesto-dao/elesto/x/did"
 )
 
-func (k Keeper) SetDidDocument(ctx sdk.Context, key []byte, document types.DidDocument) {
-	k.Set(ctx, key, types.DidDocumentKey, document, k.Marshal)
+func (k Keeper) SetDidDocument(ctx sdk.Context, key []byte, document did.DidDocument) {
+	k.Set(ctx, key, did.DidDocumentKey, document, k.Marshal)
 }
 
-func (k Keeper) GetDidDocument(ctx sdk.Context, key []byte) (types.DidDocument, bool) {
-	val, found := k.Get(ctx, key, types.DidDocumentKey, k.UnmarshalDidDocument)
-	return val.(types.DidDocument), found
+func (k Keeper) GetDidDocument(ctx sdk.Context, key []byte) (did.DidDocument, bool) {
+	val, found := k.Get(ctx, key, did.DidDocumentKey, k.UnmarshalDidDocument)
+	return val.(did.DidDocument), found
 }
 
 // UnmarshalDidDocument unmarshall a did document= and check if it is empty
 // ad DID document is empty if contains no context
 func (k Keeper) UnmarshalDidDocument(value []byte) (interface{}, bool) {
-	data := types.DidDocument{}
+	data := did.DidDocument{}
 	k.Unmarshal(value, &data)
-	return data, types.IsValidDIDDocument(&data)
+	return data, did.IsValidDIDDocument(&data)
 }
 
-func (k Keeper) SetDidMetadata(ctx sdk.Context, key []byte, meta types.DidMetadata) {
-	k.Set(ctx, key, types.DidMetadataKey, meta, k.Marshal)
+func (k Keeper) SetDidMetadata(ctx sdk.Context, key []byte, meta did.DidMetadata) {
+	k.Set(ctx, key, did.DidMetadataKey, meta, k.Marshal)
 }
 
-func (k Keeper) GetDidMetadata(ctx sdk.Context, key []byte) (types.DidMetadata, bool) {
-	val, found := k.Get(ctx, key, types.DidMetadataKey, k.UnmarshalDidMetadata)
-	return val.(types.DidMetadata), found
+func (k Keeper) GetDidMetadata(ctx sdk.Context, key []byte) (did.DidMetadata, bool) {
+	val, found := k.Get(ctx, key, did.DidMetadataKey, k.UnmarshalDidMetadata)
+	return val.(did.DidMetadata), found
 }
 
 func (k Keeper) UnmarshalDidMetadata(value []byte) (interface{}, bool) {
-	data := types.DidMetadata{}
+	data := did.DidMetadata{}
 	k.Unmarshal(value, &data)
-	return data, types.IsValidDIDMetadata(&data)
+	return data, did.IsValidDIDMetadata(&data)
 }
 
 // ResolveDid returning the did document and associated metadata
-func (k Keeper) ResolveDid(ctx sdk.Context, did types.DID) (doc types.DidDocument, meta types.DidMetadata, err error) {
-	if strings.HasPrefix(did.String(), types.DidKeyPrefix) {
-		doc, meta, err = types.ResolveAccountDID(did.String(), ctx.ChainID())
+func (k Keeper) ResolveDid(ctx sdk.Context, didDoc did.DID) (doc did.DidDocument, meta did.DidMetadata, err error) {
+	if strings.HasPrefix(didDoc.String(), did.DidKeyPrefix) {
+		doc, meta, err = did.ResolveAccountDID(didDoc.String(), ctx.ChainID())
 		return
 	}
-	doc, found := k.GetDidDocument(ctx, []byte(did.String()))
+	doc, found := k.GetDidDocument(ctx, []byte(didDoc.String()))
 	if !found {
-		err = types.ErrDidDocumentNotFound
+		err = did.ErrDidDocumentNotFound
 		return
 	}
-	meta, _ = k.GetDidMetadata(ctx, []byte(did.String()))
+	meta, _ = k.GetDidMetadata(ctx, []byte(didDoc.String()))
 	return
 }
 
 func (k Keeper) Marshal(value interface{}) (bytes []byte) {
 	switch value := value.(type) {
-	case types.DidDocument:
+	case did.DidDocument:
 		bytes = k.cdc.MustMarshal(&value)
-	case types.DidMetadata:
+	case did.DidMetadata:
 		bytes = k.cdc.MustMarshal(&value)
 	}
 	return
@@ -84,15 +83,15 @@ func (k Keeper) Unmarshal(data []byte, val codec.ProtoMarshaler) bool {
 func (k Keeper) GetAllDidDocumentsWithCondition(
 	ctx sdk.Context,
 	key []byte,
-	didSelector func(did types.DidDocument) bool,
-) (didDocs []types.DidDocument) {
+	didSelector func(did did.DidDocument) bool,
+) (didDocs []did.DidDocument) {
 	iterator := k.GetAll(ctx, key)
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		did, _ := k.UnmarshalDidDocument(iterator.Value())
-		didTyped := did.(types.DidDocument)
+		didDoc, _ := k.UnmarshalDidDocument(iterator.Value())
+		didTyped := didDoc.(did.DidDocument)
 
 		if didSelector(didTyped) {
 			didDocs = append(didDocs, didTyped)
@@ -103,36 +102,10 @@ func (k Keeper) GetAllDidDocumentsWithCondition(
 }
 
 // GetAllDidDocuments returns all the DidDocuments
-func (k Keeper) GetAllDidDocuments(ctx sdk.Context) []types.DidDocument {
+func (k Keeper) GetAllDidDocuments(ctx sdk.Context) []did.DidDocument {
 	return k.GetAllDidDocumentsWithCondition(
 		ctx,
-		types.DidDocumentKey,
-		func(did types.DidDocument) bool { return true },
+		did.DidDocumentKey,
+		func(did did.DidDocument) bool { return true },
 	)
-}
-
-// GetDidDocumentsByPubKey retrieve a did document using a pubkey associated to the DID
-// TODO: this function is used only in the issuer module ante handler !
-func (k Keeper) GetDidDocumentsByPubKey(ctx sdk.Context, pubkey cryptotypes.PubKey) (dids []types.DidDocument) {
-
-	dids = k.GetAllDidDocumentsWithCondition(
-		ctx,
-		types.DidDocumentKey,
-		func(did types.DidDocument) bool {
-			return did.HasPublicKey(pubkey)
-		},
-	)
-	// compute the key did
-
-	// generate the address
-	addr, err := sdk.Bech32ifyAddressBytes(sdk.GetConfig().GetBech32AccountAddrPrefix(), pubkey.Address())
-	if err != nil {
-		return
-	}
-	doc, _, err := types.ResolveAccountDID(types.NewKeyDID(addr).String(), ctx.ChainID())
-	if err != nil {
-		return
-	}
-	dids = append(dids, doc)
-	return
 }

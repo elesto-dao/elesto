@@ -14,9 +14,9 @@ import ( // this line is used by starport scaffolding # 1
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/elesto-dao/elesto/x/did"
 	"github.com/elesto-dao/elesto/x/did/client/cli"
 	"github.com/elesto-dao/elesto/x/did/keeper"
-	"github.com/elesto-dao/elesto/x/did/types"
 )
 
 var (
@@ -39,22 +39,22 @@ func NewAppModuleBasic(cdc codec.Codec) AppModuleBasic {
 
 // Name returns the capability module's name.
 func (AppModuleBasic) Name() string {
-	return types.ModuleName
+	return did.ModuleName
 }
 
 //nolint
 func (AppModuleBasic) RegisterCodec(cdc *codec.LegacyAmino) {
-	types.RegisterCodec(cdc)
+	did.RegisterCodec(cdc)
 }
 
 //nolint
 func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	types.RegisterCodec(cdc)
+	did.RegisterCodec(cdc)
 }
 
 // RegisterInterfaces registers the module's interface types
 func (a AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
-	types.RegisterInterfaces(reg)
+	did.RegisterInterfaces(reg)
 }
 
 // DefaultGenesis returns the capability module's default genesis state.
@@ -74,7 +74,7 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(
 	clientCtx client.Context,
 	mux *runtime.ServeMux,
 ) {
-	_ = types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+	_ = did.RegisterQueryHandlerClient(context.Background(), mux, did.NewQueryClient(clientCtx))
 	// this line is used by starport scaffolding # 2
 }
 
@@ -85,7 +85,7 @@ func (a AppModuleBasic) GetTxCmd() *cobra.Command {
 
 // GetQueryCmd returns the capability module's root query command.
 func (AppModuleBasic) GetQueryCmd() *cobra.Command {
-	return cli.GetQueryCmd(types.StoreKey)
+	return cli.GetQueryCmd(did.StoreKey)
 }
 
 // ----------------------------------------------------------------------------
@@ -117,13 +117,13 @@ func (am AppModule) Route() sdk.Route {
 }
 
 // QuerierRoute returns the capability module's query routing key.
-func (AppModule) QuerierRoute() string { return types.QuerierRoute }
+func (AppModule) QuerierRoute() string { return did.QuerierRoute }
 
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
-	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+	did.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
+	did.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 }
 
 // RegisterInvariants registers the capability module's invariants.
