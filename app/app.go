@@ -90,13 +90,13 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/elesto-dao/elesto/docs"
-	didmodule "github.com/elesto-dao/elesto/x/did"
+	"github.com/elesto-dao/elesto/x/did"
 	didmodulekeeper "github.com/elesto-dao/elesto/x/did/keeper"
-	didmoduletypes "github.com/elesto-dao/elesto/x/did/types"
+	didmodule "github.com/elesto-dao/elesto/x/did/module"
 )
 
 const (
-	AccountAddressPrefix = "cosmos"
+	AccountAddressPrefix = "elesto"
 	Name                 = "elesto"
 )
 
@@ -251,7 +251,7 @@ func New(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		didmoduletypes.StoreKey,
+		did.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -352,8 +352,8 @@ func New(
 
 	app.DidKeeper = *didmodulekeeper.NewKeeper(
 		appCodec,
-		keys[didmoduletypes.StoreKey],
-		keys[didmoduletypes.MemStoreKey],
+		keys[did.StoreKey],
+		keys[did.MemStoreKey],
 	)
 	didModule := didmodule.NewAppModule(appCodec, app.DidKeeper)
 
@@ -430,7 +430,7 @@ func New(
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
-		didmoduletypes.ModuleName,
+		did.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -641,7 +641,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
-	paramsKeeper.Subspace(didmoduletypes.ModuleName)
+	paramsKeeper.Subspace(did.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

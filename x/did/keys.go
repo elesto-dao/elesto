@@ -1,4 +1,4 @@
-package types
+package did
 
 var (
 	// DidDocumentKey prefix for each key to a DidDocument

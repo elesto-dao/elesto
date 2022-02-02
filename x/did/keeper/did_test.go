@@ -3,19 +3,19 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/elesto-dao/elesto/x/did/types"
+	"github.com/elesto-dao/elesto/x/did"
 )
 
 func (suite *KeeperTestSuite) TestDidDocumentKeeperSetAndGet() {
 	testCases := []struct {
 		msg     string
-		didFn   func() types.DidDocument
+		didFn   func() did.DidDocument
 		expPass bool
 	}{
 		{
 			"data stored successfully",
-			func() types.DidDocument {
-				dd, _ := types.NewDidDocument("did:cash:subject")
+			func() did.DidDocument {
+				dd, _ := did.NewDidDocument("did:cash:subject")
 				return dd
 			},
 			true,

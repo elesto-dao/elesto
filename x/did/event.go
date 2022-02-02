@@ -1,4 +1,4 @@
-package types
+package did
 
 // NewDidDocumentCreatedEvent constructs a new did_created sdk.Event
 func NewDidDocumentCreatedEvent(did, owner string) *DidDocumentCreatedEvent {

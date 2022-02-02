@@ -18,8 +18,8 @@ import (
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/elesto-dao/elesto/x/did"
 	"github.com/elesto-dao/elesto/x/did/client/cli"
-	"github.com/elesto-dao/elesto/x/did/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -56,7 +56,7 @@ type IntegrationTestSuite struct {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 	cfg := network.DefaultConfig()
-	types.RegisterInterfaces(cfg.InterfaceRegistry)
+	did.RegisterInterfaces(cfg.InterfaceRegistry)
 	cfg.AppConstructor = NewAppConstructor(cosmoscmd.MakeEncodingConfig(app.ModuleBasics))
 	cfg.NumValidators = 2
 	s.cfg = cfg
@@ -121,13 +121,13 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDidDocuments() {
 		{
 			name() + "_1",
 			[]string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
-			&types.QueryDidDocumentsResponse{},
+			&did.QueryDidDocumentsResponse{},
 			func() {},
 		},
 		{
 			name() + "_2",
 			[]string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
-			&types.QueryDidDocumentsResponse{},
+			&did.QueryDidDocumentsResponse{},
 			func() { addnewdiddoc(s, identifier, val) },
 		},
 	}
@@ -141,7 +141,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDidDocuments() {
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			s.Require().NoError(err)
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-			queryresponse := tc.respType.(*types.QueryDidDocumentsResponse)
+			queryresponse := tc.respType.(*did.QueryDidDocumentsResponse)
 			diddocs := queryresponse.GetDidDocuments()
 			if first {
 				first = false
@@ -168,13 +168,13 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDidDocument() {
 		{
 			name() + "_1",
 			codes.NotFound,
-			&types.QueryDidDocumentResponse{},
+			&did.QueryDidDocumentResponse{},
 			func() {},
 		},
 		{
 			name() + "_2",
 			codes.OK,
-			&types.QueryDidDocumentResponse{},
+			&did.QueryDidDocumentResponse{},
 			func() { addnewdiddoc(s, identifier, val) },
 		},
 	}
@@ -196,7 +196,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDidDocument() {
 			} else {
 				s.Require().NoError(err)
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-				queryresponse := tc.respType.(*types.QueryDidDocumentResponse)
+				queryresponse := tc.respType.(*did.QueryDidDocumentResponse)
 				diddoc := queryresponse.GetDidDocument()
 				s.Require().Equal(identifiertoquery, diddoc.Id)
 			}
@@ -256,7 +256,7 @@ func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
 				}
 				out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
 				s.Require().NoError(err)
-				response1 := &types.QueryDidDocumentResponse{}
+				response1 := &did.QueryDidDocumentResponse{}
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response1))
 				s.Require().Equal(response1.GetDidDocument().Id, identifiertoquery)
 
@@ -265,7 +265,7 @@ func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
 				args_temp = []string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)}
 				out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
 				s.Require().NoError(err)
-				response2 := &types.QueryDidDocumentsResponse{}
+				response2 := &did.QueryDidDocumentsResponse{}
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response2))
 				diddocs := response2.GetDidDocuments()
 				if i == 0 {
@@ -330,7 +330,7 @@ func (s *IntegrationTestSuite) TestNewUpdateDidDocumentCmd() {
 			}
 			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
 			s.Require().NoError(err)
-			response := &types.QueryDidDocumentResponse{}
+			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
 			controller := response.GetDidDocument().Controller
 			s.Require().Equal(len(controller), 1)
@@ -393,7 +393,7 @@ func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
 			}
 			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
 			s.Require().NoError(err)
-			response := &types.QueryDidDocumentResponse{}
+			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
 			authentications := response.GetDidDocument().Authentication
 			verificationmethods := response.GetDidDocument().VerificationMethod
@@ -426,7 +426,7 @@ func (s *IntegrationTestSuite) TestNewSetVerificationRelationshipsCmd() {
 			[]string{
 				identifier,
 				"",
-				fmt.Sprintf("--relationship=%s", types.CapabilityDelegation),
+				fmt.Sprintf("--relationship=%s", did.CapabilityDelegation),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
@@ -452,7 +452,7 @@ func (s *IntegrationTestSuite) TestNewSetVerificationRelationshipsCmd() {
 			}
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
 			s.Require().NoError(err)
-			response := &types.QueryDidDocumentResponse{}
+			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
 			verificationmethods := response.GetDidDocument().VerificationMethod
 			s.Require().Greater(len(verificationmethods), 0)
@@ -474,7 +474,7 @@ func (s *IntegrationTestSuite) TestNewSetVerificationRelationshipsCmd() {
 			cmd = cli.GetCmdQueryIdentifer()
 			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
 			s.Require().NoError(err)
-			response = &types.QueryDidDocumentResponse{}
+			response = &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
 			capabilitydelegation := response.GetDidDocument().CapabilityDelegation
 			s.Require().Equal(1, len(capabilitydelegation))
@@ -525,7 +525,7 @@ func (s *IntegrationTestSuite) TestNewRevokeVerificationCmd() {
 			}
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
 			s.Require().NoError(err)
-			response := &types.QueryDidDocumentResponse{}
+			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
 
 			verificationmethods := response.GetDidDocument().VerificationMethod
@@ -547,7 +547,7 @@ func (s *IntegrationTestSuite) TestNewRevokeVerificationCmd() {
 			cmd = cli.GetCmdQueryIdentifer()
 			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
 			s.Require().NoError(err)
-			response = &types.QueryDidDocumentResponse{}
+			response = &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
 			s.Require().Equal(0, len(response.GetDidDocument().VerificationMethod))
 			s.Require().Equal(0, len(response.GetDidDocument().Authentication))
@@ -610,7 +610,7 @@ func (s *IntegrationTestSuite) TestNewAddServiceCmd() {
 			}
 			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
 			s.Require().NoError(err)
-			response := &types.QueryDidDocumentResponse{}
+			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
 			s.Require().Equal(1, len(response.GetDidDocument().Service))
 			s.Require().Equal(tc.args[1], response.GetDidDocument().Service[0].Id)
@@ -689,7 +689,7 @@ func (s *IntegrationTestSuite) TestNewDeleteServiceCmd() {
 			}
 			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
 			s.Require().NoError(err)
-			response := &types.QueryDidDocumentResponse{}
+			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
 			s.Require().Equal(0, len(response.GetDidDocument().Service))
 		})

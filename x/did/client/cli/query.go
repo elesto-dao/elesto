@@ -8,15 +8,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/elesto-dao/elesto/x/did/types"
+	"github.com/elesto-dao/elesto/x/did"
 )
 
 // GetQueryCmd returns the cli query commands for this module
 func GetQueryCmd(queryRoute string) *cobra.Command {
 	// Group did queries under a subcommand
 	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("Querying commands for the %s module", types.ModuleName),
+		Use:                        did.ModuleName,
+		Short:                      fmt.Sprintf("Querying commands for the %s module", did.ModuleName),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -41,7 +41,7 @@ func GetCmdQueryIdentifers() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryClient(clientCtx)
+			queryClient := did.NewQueryClient(clientCtx)
 			pageReq, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
@@ -49,7 +49,7 @@ func GetCmdQueryIdentifers() *cobra.Command {
 
 			result, err := queryClient.DidDocuments(
 				context.Background(),
-				&types.QueryDidDocumentsRequest{
+				&did.QueryDidDocumentsRequest{
 					// Leaving status empty on purpose to query all validators.
 					Pagination: pageReq,
 				},
@@ -77,11 +77,11 @@ func GetCmdQueryIdentifer() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryClient(clientCtx)
+			queryClient := did.NewQueryClient(clientCtx)
 
 			result, err := queryClient.DidDocument(
 				context.Background(),
-				&types.QueryDidDocumentRequest{
+				&did.QueryDidDocumentRequest{
 					Id: args[0],
 				},
 			)

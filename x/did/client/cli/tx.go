@@ -8,18 +8,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	cryptodid "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	"github.com/elesto-dao/elesto/x/did/types"
+	"github.com/elesto-dao/elesto/x/did"
 )
 
 // GetTxCmd returns the transaction commands for this module
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("%s transactions subcommands", types.ModuleName),
+		Use:                        did.ModuleName,
+		Short:                      fmt.Sprintf("%s transactions subcommands", did.ModuleName),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -42,14 +42,14 @@ func GetTxCmd() *cobra.Command {
 }
 
 // deriveVMType derive the verification method type from a public key
-func deriveVMType(pubKey cryptotypes.PubKey) (vmType types.VerificationMaterialType, err error) {
+func deriveVMType(pubKey cryptodid.PubKey) (vmType did.VerificationMaterialType, err error) {
 	switch pubKey.(type) {
 	case *ed25519.PubKey:
-		vmType = types.DIDVMethodTypeEd25519VerificationKey2018
+		vmType = did.DIDVMethodTypeEd25519VerificationKey2018
 	case *secp256k1.PubKey:
-		vmType = types.DIDVMethodTypeEcdsaSecp256k1VerificationKey2019
+		vmType = did.DIDVMethodTypeEcdsaSecp256k1VerificationKey2019
 	default:
-		err = types.ErrKeyFormatNotSupported
+		err = did.ErrKeyFormatNotSupported
 	}
 	return
 }
@@ -67,7 +67,7 @@ func NewCreateDidDocumentCmd() *cobra.Command {
 				return err
 			}
 			// did
-			did := types.NewChainDID(clientCtx.ChainID, args[0])
+			didID := did.NewChainDID(clientCtx.ChainID, args[0])
 			// verification
 			signer := clientCtx.GetFromAddress()
 			// pubkey
@@ -77,26 +77,26 @@ func NewCreateDidDocumentCmd() *cobra.Command {
 			}
 			pubKey := info.GetPubKey()
 			// verification method id
-			vmID := did.NewVerificationMethodID(signer.String())
+			vmID := didID.NewVerificationMethodID(signer.String())
 			// understand the vmType
 			vmType, err := deriveVMType(pubKey)
 			if err != nil {
 				return err
 			}
-			auth := types.NewVerification(
-				types.NewVerificationMethod(
+			auth := did.NewVerification(
+				did.NewVerificationMethod(
 					vmID,
-					did,
-					types.NewPublicKeyMultibase(pubKey.Bytes(), vmType),
+					didID,
+					did.NewPublicKeyMultibase(pubKey.Bytes(), vmType),
 				),
-				[]string{types.Authentication},
+				[]string{did.Authentication},
 				nil,
 			)
 			// create the message
-			msg := types.NewMsgCreateDidDocument(
-				did.String(),
-				types.Verifications{auth},
-				types.Services{},
+			msg := did.NewMsgCreateDidDocument(
+				didID.String(),
+				did.Verifications{auth},
+				did.Services{},
 				signer.String(),
 			)
 			// validate
@@ -129,7 +129,7 @@ func NewAddVerificationCmd() *cobra.Command {
 			// signer address
 			signer := clientCtx.GetFromAddress()
 			// public key
-			var pk cryptotypes.PubKey
+			var pk cryptodid.PubKey
 			err = clientCtx.Codec.UnmarshalInterfaceJSON([]byte(args[1]), &pk)
 			if err != nil {
 				return err
@@ -140,25 +140,25 @@ func NewAddVerificationCmd() *cobra.Command {
 				return err
 			}
 			// document did
-			did := types.NewChainDID(clientCtx.ChainID, args[0])
+			didID := did.NewChainDID(clientCtx.ChainID, args[0])
 			// verification method id
-			vmID := did.NewVerificationMethodID(sdk.MustBech32ifyAddressBytes(
+			vmID := didID.NewVerificationMethodID(sdk.MustBech32ifyAddressBytes(
 				sdk.GetConfig().GetBech32AccountAddrPrefix(),
 				pk.Address().Bytes(),
 			))
 
-			verification := types.NewVerification(
-				types.NewVerificationMethod(
+			verification := did.NewVerification(
+				did.NewVerificationMethod(
 					vmID,
-					did,
-					types.NewPublicKeyMultibase(pk.Bytes(), vmType),
+					didID,
+					did.NewPublicKeyMultibase(pk.Bytes(), vmType),
 				),
-				[]string{types.Authentication},
+				[]string{did.Authentication},
 				nil,
 			)
 			// add verification
-			msg := types.NewMsgAddVerification(
-				did.String(),
+			msg := did.NewMsgAddVerification(
+				didID.String(),
 				verification,
 				signer.String(),
 			)
@@ -193,16 +193,16 @@ func NewAddServiceCmd() *cobra.Command {
 			// service parameters
 			serviceID, serviceType, endpoint := args[1], args[2], args[3]
 			// document did
-			did := types.NewChainDID(clientCtx.ChainID, args[0])
+			didID := did.NewChainDID(clientCtx.ChainID, args[0])
 
-			service := types.NewService(
+			service := did.NewService(
 				serviceID,
 				serviceType,
 				endpoint,
 			)
 
-			msg := types.NewMsgAddService(
-				did.String(),
+			msg := did.NewMsgAddService(
+				didID.String(),
 				service,
 				signer.String(),
 			)
@@ -231,14 +231,14 @@ func NewRevokeVerificationCmd() *cobra.Command {
 				return err
 			}
 			// document did
-			did := types.NewChainDID(clientCtx.ChainID, args[0])
+			didID := did.NewChainDID(clientCtx.ChainID, args[0])
 			// signer
 			signer := clientCtx.GetFromAddress()
 			// verification method id
-			vmID := did.NewVerificationMethodID(args[1])
+			vmID := didID.NewVerificationMethodID(args[1])
 			// build the message
-			msg := types.NewMsgRevokeVerification(
-				did.String(),
+			msg := did.NewMsgRevokeVerification(
+				didID.String(),
 				vmID,
 				signer.String(),
 			)
@@ -269,14 +269,14 @@ func NewDeleteServiceCmd() *cobra.Command {
 				return err
 			}
 			// document did
-			did := types.NewChainDID(clientCtx.ChainID, args[0])
+			didID := did.NewChainDID(clientCtx.ChainID, args[0])
 			// signer
 			signer := clientCtx.GetFromAddress()
 			// service id
 			sID := args[1]
 
-			msg := types.NewMsgDeleteService(
-				did.String(),
+			msg := did.NewMsgDeleteService(
+				didID.String(),
 				sID,
 				signer.String(),
 			)
@@ -307,16 +307,16 @@ func NewAddControllerCmd() *cobra.Command {
 				return err
 			}
 			// document did
-			did := types.NewChainDID(clientCtx.ChainID, args[0])
+			didID := did.NewChainDID(clientCtx.ChainID, args[0])
 
 			// did key to use as the controller
-			didKey := types.NewKeyDID(args[1])
+			didKey := did.NewKeyDID(args[1])
 
 			// signer
 			signer := clientCtx.GetFromAddress()
 
-			msg := types.NewMsgAddController(
-				did.String(),
+			msg := did.NewMsgAddController(
+				didID.String(),
 				didKey.String(),
 				signer.String(),
 			)
@@ -346,16 +346,16 @@ func NewDeleteControllerCmd() *cobra.Command {
 				return err
 			}
 			// document did
-			did := types.NewChainDID(clientCtx.ChainID, args[0])
+			didID := did.NewChainDID(clientCtx.ChainID, args[0])
 
 			// did key to use as the controller
-			didKey := types.NewKeyDID(args[1])
+			didKey := did.NewKeyDID(args[1])
 
 			// signer
 			signer := clientCtx.GetFromAddress()
 
-			msg := types.NewMsgDeleteController(
-				did.String(),
+			msg := did.NewMsgDeleteController(
+				didID.String(),
 				didKey.String(),
 				signer.String(),
 			)
@@ -392,16 +392,16 @@ func NewSetVerificationRelationshipCmd() *cobra.Command {
 				return err
 			}
 			// document did
-			did := types.NewChainDID(clientCtx.ChainID, args[0])
+			didID := did.NewChainDID(clientCtx.ChainID, args[0])
 
 			// method id
-			vmID := did.NewVerificationMethodID(args[1])
+			vmID := didID.NewVerificationMethodID(args[1])
 
 			// signer
 			signer := clientCtx.GetFromAddress()
 
-			msg := types.NewMsgSetVerificationRelationships(
-				did.String(),
+			msg := did.NewMsgSetVerificationRelationships(
+				didID.String(),
 				vmID,
 				relationships,
 				signer.String(),
@@ -409,7 +409,7 @@ func NewSetVerificationRelationshipCmd() *cobra.Command {
 
 			// make sure that the authentication relationship is preserved
 			if !unsafe {
-				msg.Relationships = append(msg.Relationships, types.Authentication)
+				msg.Relationships = append(msg.Relationships, did.Authentication)
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
@@ -417,7 +417,7 @@ func NewSetVerificationRelationshipCmd() *cobra.Command {
 	}
 	// add flags to set did relationships
 	cmd.Flags().StringSliceVarP(&relationships, "relationship", "r", []string{}, "the relationships to set for the verification method in the DID")
-	cmd.Flags().BoolVar(&unsafe, "unsafe", false, fmt.Sprint("do not ensure that '", types.Authentication, "' relationship is set"))
+	cmd.Flags().BoolVar(&unsafe, "unsafe", false, fmt.Sprint("do not ensure that '", did.Authentication, "' relationship is set"))
 
 	flags.AddTxFlagsToCmd(cmd)
 

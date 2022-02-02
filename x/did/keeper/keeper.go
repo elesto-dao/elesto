@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/elesto-dao/elesto/x/did/types"
+	"github.com/elesto-dao/elesto/x/did"
 )
 
 // UnmarshalFn is a generic function to unmarshal bytes
@@ -31,7 +31,7 @@ func NewKeeper(cdc codec.Codec, storeKey, memKey sdk.StoreKey) *Keeper {
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+	return ctx.Logger().With("module", fmt.Sprintf("x/%s", did.ModuleName))
 }
 
 // Set sets a value in the db with a prefixed key

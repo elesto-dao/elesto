@@ -1,4 +1,4 @@
-package types
+package did
 
 import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -687,8 +687,6 @@ func TestMsgAddController_ValidateBasic(t *testing.T) {
 			},
 			sdkerrors.Wrap(ErrInvalidDIDFormat, "did:cosmos:net:foochain:whatever"),
 		},
-
-
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -746,7 +744,7 @@ func TestMsgDeleteController_ValidateBasic(t *testing.T) {
 				Signer:        "cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 			},
 			sdkerrors.Wrap(ErrInvalidDIDFormat, "not a did"),
-		},// TODO: Add test cases.
+		}, // TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
