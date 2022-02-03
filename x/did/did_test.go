@@ -404,7 +404,7 @@ func TestIsEmpty(t *testing.T) {
 func TestNewDidDocument(t *testing.T) {
 	type params struct {
 		id      string
-		options []DidDocumentOption
+		options []DocumentOption
 	}
 	tests := []struct {
 		params  params
@@ -414,7 +414,7 @@ func TestNewDidDocument(t *testing.T) {
 		{
 			params: params{
 				"did:cash:subject",
-				[]DidDocumentOption{
+				[]DocumentOption{
 					WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
@@ -491,7 +491,7 @@ func TestNewDidDocument(t *testing.T) {
 		{
 			params: params{
 				"did:cash:subject",
-				[]DidDocumentOption{
+				[]DocumentOption{
 					WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
@@ -533,7 +533,7 @@ func TestNewDidDocument(t *testing.T) {
 		{
 			params: params{
 				"did:cash:subject",
-				[]DidDocumentOption{
+				[]DocumentOption{
 					WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
@@ -571,7 +571,7 @@ func TestNewDidDocument(t *testing.T) {
 			wantErr: true, // invalid did
 			params: params{
 				id:      "something not right",
-				options: []DidDocumentOption{},
+				options: []DocumentOption{},
 			},
 			wantDid: DidDocument{},
 		},

@@ -311,32 +311,32 @@ func IsEmpty(input string) bool {
 	return strings.TrimSpace(input) == ""
 }
 
-// DidDocumentOption implements variadic pattern for optional did document fields
-type DidDocumentOption func(*DidDocument) error
+// DocumentOption implements variadic pattern for optional did document fields
+type DocumentOption func(*DidDocument) error
 
 // WithVerifications add optional verifications
-func WithVerifications(verifications ...*Verification) DidDocumentOption {
+func WithVerifications(verifications ...*Verification) DocumentOption {
 	return func(did *DidDocument) error {
 		return did.AddVerifications(verifications...)
 	}
 }
 
 //WithServices add optional services
-func WithServices(services ...*Service) DidDocumentOption {
+func WithServices(services ...*Service) DocumentOption {
 	return func(did *DidDocument) error {
 		return did.AddServices(services...)
 	}
 }
 
 // WithControllers add optional did controller
-func WithControllers(controllers ...string) DidDocumentOption {
+func WithControllers(controllers ...string) DocumentOption {
 	return func(did *DidDocument) (err error) {
 		return did.AddControllers(controllers...)
 	}
 }
 
 // NewDidDocument constructs a new DidDocument
-func NewDidDocument(id string, options ...DidDocumentOption) (did DidDocument, err error) {
+func NewDidDocument(id string, options ...DocumentOption) (did DidDocument, err error) {
 
 	if !IsValidDID(id) {
 		err = sdkerrors.Wrapf(ErrInvalidDIDFormat, "did %s", id)

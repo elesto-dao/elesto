@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/elesto-dao/elesto/x/did"
+	didmod "github.com/elesto-dao/elesto/x/did"
 )
 
 type msgServer struct {
@@ -16,24 +16,24 @@ type msgServer struct {
 
 // NewMsgServerImpl returns an implementation of the identity MsgServer interface
 // for the provided Keeper.
-func NewMsgServerImpl(keeper Keeper) did.MsgServer {
+func NewMsgServerImpl(keeper Keeper) didmod.MsgServer {
 	return &msgServer{Keeper: keeper}
 }
 
-var _ did.MsgServer = msgServer{}
+var _ didmod.MsgServer = msgServer{}
 
 // CreateDidDocument creates a new DID document
 func (k msgServer) CreateDidDocument(
 	goCtx context.Context,
-	msg *did.MsgCreateDidDocument,
-) (*did.MsgCreateDidDocumentResponse, error) {
+	msg *didmod.MsgCreateDidDocument,
+) (*didmod.MsgCreateDidDocumentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	k.Logger(ctx).Info("request to create a did document", "target did", msg.Id)
 	// setup a new did document (performs input validation)
-	didDoc, err := did.NewDidDocument(msg.Id,
-		did.WithServices(msg.Services...),
-		did.WithVerifications(msg.Verifications...),
-		did.WithControllers(msg.Controllers...),
+	didDoc, err := didmod.NewDidDocument(msg.Id,
+		didmod.WithServices(msg.Services...),
+		didmod.WithVerifications(msg.Verifications...),
+		didmod.WithControllers(msg.Controllers...),
 	)
 	if err != nil {
 		k.Logger(ctx).Error(err.Error())
@@ -43,7 +43,7 @@ func (k msgServer) CreateDidDocument(
 	// check that the did is not already taken
 	_, found := k.Keeper.GetDidDocument(ctx, []byte(msg.Id))
 	if found {
-		err := sdkerrors.Wrapf(did.ErrDidDocumentFound, "a document with did %s already exists", msg.Id)
+		err := sdkerrors.Wrapf(didmod.ErrDidDocumentFound, "a document with did %s already exists", msg.Id)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
@@ -52,113 +52,113 @@ func (k msgServer) CreateDidDocument(
 	k.Keeper.SetDidDocument(ctx, []byte(msg.Id), didDoc)
 
 	// now create and persist the metadata
-	didM := did.NewDidMetadata(ctx.TxBytes(), ctx.BlockTime())
+	didM := didmod.NewDidMetadata(ctx.TxBytes(), ctx.BlockTime())
 	k.Keeper.SetDidMetadata(ctx, []byte(msg.Id), didM)
 
 	k.Logger(ctx).Info("created did document", "did", msg.Id, "controller", msg.Signer)
 
 	// emit the event
-	if err := ctx.EventManager().EmitTypedEvents(did.NewDidDocumentCreatedEvent(msg.Id, msg.Signer)); err != nil {
+	if err := ctx.EventManager().EmitTypedEvents(didmod.NewDidDocumentCreatedEvent(msg.Id, msg.Signer)); err != nil {
 		k.Logger(ctx).Error("failed to emit DidDocumentCreatedEvent", "did", msg.Id, "signer", msg.Signer, "err", err)
 	}
 
-	return &did.MsgCreateDidDocumentResponse{}, nil
+	return &didmod.MsgCreateDidDocumentResponse{}, nil
 }
 
 // UpdateDidDocument update an existing DID document
 func (k msgServer) UpdateDidDocument(
 	goCtx context.Context,
-	msg *did.MsgUpdateDidDocument,
-) (*did.MsgUpdateDidDocumentResponse, error) {
+	msg *didmod.MsgUpdateDidDocument,
+) (*didmod.MsgUpdateDidDocumentResponse, error) {
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(did.Authentication),
+		newConstraints(didmod.Authentication),
 		msg.Doc.Id, msg.Signer,
 		//XXX: check this assignment during audit
 		//nolint
-		func(didDoc *did.DidDocument) error {
-			if !did.IsValidDIDDocument(msg.Doc) {
-				return sdkerrors.Wrapf(did.ErrInvalidDIDFormat, "invalid did document")
+		func(didDoc *didmod.DidDocument) error {
+			if !didmod.IsValidDIDDocument(msg.Doc) {
+				return sdkerrors.Wrapf(didmod.ErrInvalidDIDFormat, "invalid did document")
 			}
 			didDoc = msg.Doc
 			return nil
 		}); err != nil {
 		return nil, err
 	}
-	return &did.MsgUpdateDidDocumentResponse{}, nil
+	return &didmod.MsgUpdateDidDocumentResponse{}, nil
 }
 
 // AddVerification adds a verification method and it's relationships to a DID Document
 func (k msgServer) AddVerification(
 	goCtx context.Context,
-	msg *did.MsgAddVerification,
-) (*did.MsgAddVerificationResponse, error) {
+	msg *didmod.MsgAddVerification,
+) (*didmod.MsgAddVerificationResponse, error) {
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(did.Authentication),
+		newConstraints(didmod.Authentication),
 		msg.Id, msg.Signer,
-		func(didDoc *did.DidDocument) error {
+		func(didDoc *didmod.DidDocument) error {
 			return didDoc.AddVerifications(msg.Verification)
 		}); err != nil {
 		return nil, err
 	}
-	return &did.MsgAddVerificationResponse{}, nil
+	return &didmod.MsgAddVerificationResponse{}, nil
 }
 
 // AddService adds a service to an existing DID document
 func (k msgServer) AddService(
 	goCtx context.Context,
-	msg *did.MsgAddService,
-) (*did.MsgAddServiceResponse, error) {
+	msg *didmod.MsgAddService,
+) (*didmod.MsgAddServiceResponse, error) {
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(did.Authentication),
+		newConstraints(didmod.Authentication),
 		msg.Id, msg.Signer,
-		func(didDoc *did.DidDocument) error {
+		func(didDoc *didmod.DidDocument) error {
 			return didDoc.AddServices(msg.ServiceData)
 		}); err != nil {
 		return nil, err
 	}
 
-	return &did.MsgAddServiceResponse{}, nil
+	return &didmod.MsgAddServiceResponse{}, nil
 }
 
 // RevokeVerification removes a public key and controller from an existing DID document
 func (k msgServer) RevokeVerification(
 	goCtx context.Context,
-	msg *did.MsgRevokeVerification,
-) (*did.MsgRevokeVerificationResponse, error) {
+	msg *didmod.MsgRevokeVerification,
+) (*didmod.MsgRevokeVerificationResponse, error) {
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(did.Authentication),
+		newConstraints(didmod.Authentication),
 		msg.Id, msg.Signer,
-		func(didDoc *did.DidDocument) error {
+		func(didDoc *didmod.DidDocument) error {
 			return didDoc.RevokeVerification(msg.MethodId)
 		}); err != nil {
 		return nil, err
 	}
 
-	return &did.MsgRevokeVerificationResponse{}, nil
+	return &didmod.MsgRevokeVerificationResponse{}, nil
 }
 
 // DeleteService removes a service from an existing DID document
 func (k msgServer) DeleteService(
 	goCtx context.Context,
-	msg *did.MsgDeleteService,
-) (*did.MsgDeleteServiceResponse, error) {
+	msg *didmod.MsgDeleteService,
+) (*didmod.MsgDeleteServiceResponse, error) {
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(did.Authentication),
+		newConstraints(didmod.Authentication),
 		msg.Id, msg.Signer,
-		func(didDoc *did.DidDocument) error {
+		func(didDoc *didmod.DidDocument) error {
 			// Only try to remove service if there are services
 			if len(didDoc.Service) == 0 {
-				return sdkerrors.Wrapf(did.ErrInvalidState, "the did document doesn't have services associated")
+				return sdkerrors.Wrapf(didmod.ErrInvalidState, "the did document doesn't have services associated")
 			}
 			// delete service
 			didDoc.DeleteService(msg.ServiceId)
@@ -167,69 +167,69 @@ func (k msgServer) DeleteService(
 		return nil, err
 	}
 
-	return &did.MsgDeleteServiceResponse{}, nil
+	return &didmod.MsgDeleteServiceResponse{}, nil
 }
 
 // SetVerificationRelationships set the verification relationships for an existing DID document
 func (k msgServer) SetVerificationRelationships(
 	goCtx context.Context,
-	msg *did.MsgSetVerificationRelationships,
-) (*did.MsgSetVerificationRelationshipsResponse, error) {
+	msg *didmod.MsgSetVerificationRelationships,
+) (*didmod.MsgSetVerificationRelationshipsResponse, error) {
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(did.Authentication),
+		newConstraints(didmod.Authentication),
 		msg.Id, msg.Signer,
-		func(didDoc *did.DidDocument) error {
+		func(didDoc *didmod.DidDocument) error {
 			return didDoc.SetVerificationRelationships(msg.MethodId, msg.Relationships...)
 		}); err != nil {
 		return nil, err
 	}
 
-	return &did.MsgSetVerificationRelationshipsResponse{}, nil
+	return &didmod.MsgSetVerificationRelationshipsResponse{}, nil
 }
 
 // AddController add a new controller to a DID
 func (k msgServer) AddController(
 	goCtx context.Context,
-	msg *did.MsgAddController,
-) (*did.MsgAddControllerResponse, error) {
+	msg *didmod.MsgAddController,
+) (*didmod.MsgAddControllerResponse, error) {
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(did.Authentication),
+		newConstraints(didmod.Authentication),
 		msg.Id, msg.Signer,
-		func(didDoc *did.DidDocument) error {
+		func(didDoc *didmod.DidDocument) error {
 			return didDoc.AddControllers(msg.ControllerDid)
 		}); err != nil {
 		return nil, err
 	}
 
-	return &did.MsgAddControllerResponse{}, nil
+	return &didmod.MsgAddControllerResponse{}, nil
 }
 
 // DeleteController remove an existing controller from a DID document
 func (k msgServer) DeleteController(
 	goCtx context.Context,
-	msg *did.MsgDeleteController,
-) (*did.MsgDeleteControllerResponse, error) {
+	msg *didmod.MsgDeleteController,
+) (*didmod.MsgDeleteControllerResponse, error) {
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(did.Authentication),
-		msg.Id, msg.Signer, func(didDoc *did.DidDocument) error {
+		newConstraints(didmod.Authentication),
+		msg.Id, msg.Signer, func(didDoc *didmod.DidDocument) error {
 			return didDoc.DeleteControllers(msg.ControllerDid)
 		}); err != nil {
 		return nil, err
 	}
-	return &did.MsgDeleteControllerResponse{}, nil
+	return &didmod.MsgDeleteControllerResponse{}, nil
 }
 
 // helper function to update the did metadata
-func updateDidMetadata(keeper *Keeper, ctx sdk.Context, didID string) (err error) {
-	didMeta, found := keeper.GetDidMetadata(ctx, []byte(didID))
+func updateDidMetadata(keeper *Keeper, ctx sdk.Context, did string) (err error) {
+	didMeta, found := keeper.GetDidMetadata(ctx, []byte(did))
 	if found {
-		did.UpdateDidMetadata(&didMeta, ctx.TxBytes(), ctx.BlockTime())
-		keeper.SetDidMetadata(ctx, []byte(didID), didMeta)
+		didmod.UpdateDidMetadata(&didMeta, ctx.TxBytes(), ctx.BlockTime())
+		keeper.SetDidMetadata(ctx, []byte(did), didMeta)
 	} else {
 		err = fmt.Errorf("(warning) did metadata not found")
 	}
@@ -243,30 +243,30 @@ func newConstraints(relationships ...string) VerificationRelationships {
 	return relationships
 }
 
-func executeOnDidWithRelationships(goCtx context.Context, k *Keeper, constraints VerificationRelationships, didID, signer string, update func(document *did.DidDocument) error) (err error) {
+func executeOnDidWithRelationships(goCtx context.Context, k *Keeper, constraints VerificationRelationships, did, signer string, update func(document *didmod.DidDocument) error) (err error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	k.Logger(ctx).Info("request to update a did document", "target did", didID)
+	k.Logger(ctx).Info("request to update a did document", "target did", did)
 	// TODO: fail if the input did is of type KEY (immutable)
 	// eg: ErrInvalidState, "did document key is immutable"
 
 	// get the did document
-	didDoc, found := k.GetDidDocument(ctx, []byte(didID))
+	didDoc, found := k.GetDidDocument(ctx, []byte(did))
 	if !found {
-		err = sdkerrors.Wrapf(did.ErrDidDocumentNotFound, "did document at %s not found", didID)
+		err = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", did)
 		k.Logger(ctx).Error(err.Error())
 		return
 	}
 
 	// Any verification method in the authentication relationship can update the DID document
-	if !didDoc.HasRelationship(did.NewBlockchainAccountID(ctx.ChainID(), signer), constraints...) {
+	if !didDoc.HasRelationship(didmod.NewBlockchainAccountID(ctx.ChainID(), signer), constraints...) {
 		// check also the controllers
-		signerDID := did.NewKeyDID(signer)
+		signerDID := didmod.NewKeyDID(signer)
 		if !didDoc.HasController(signerDID) {
 			// if also the controller was not set the error
 			err = sdkerrors.Wrapf(
-				did.ErrUnauthorized,
+				didmod.ErrUnauthorized,
 				"signer account %s not authorized to update the target did document at %s",
-				signer, didID,
+				signer, did,
 			)
 			k.Logger(ctx).Error(err.Error())
 			return
@@ -281,8 +281,8 @@ func executeOnDidWithRelationships(goCtx context.Context, k *Keeper, constraints
 	}
 
 	// persist the did document
-	k.SetDidDocument(ctx, []byte(didID), didDoc)
-	k.Logger(ctx).Info("Set verification relationship from did document for", "did", didID, "controller", signer)
+	k.SetDidDocument(ctx, []byte(did), didDoc)
+	k.Logger(ctx).Info("Set verification relationship from did document for", "did", did, "controller", signer)
 
 	// update the Metadata
 	if err = updateDidMetadata(k, ctx, didDoc.Id); err != nil {
@@ -290,8 +290,8 @@ func executeOnDidWithRelationships(goCtx context.Context, k *Keeper, constraints
 		return
 	}
 	// fire the event
-	if err := ctx.EventManager().EmitTypedEvent(did.NewDidDocumentUpdatedEvent(didID, signer)); err != nil {
-		k.Logger(ctx).Error("failed to emit DidDocumentUpdatedEvent", "did", didID, "signer", signer, "err", err)
+	if err := ctx.EventManager().EmitTypedEvent(didmod.NewDidDocumentUpdatedEvent(did, signer)); err != nil {
+		k.Logger(ctx).Error("failed to emit DidDocumentUpdatedEvent", "did", did, "signer", signer, "err", err)
 	}
 	k.Logger(ctx).Info("request to update did document success", "did", didDoc.Id)
 	return

@@ -9,7 +9,7 @@ import (
 
 func (suite *KeeperTestSuite) TestGRPCQueryDidDocuments() {
 	queryClient := suite.queryClient
-	var req *types.QueryDidDocumentsRequest
+	var req *did.QueryDidDocumentsRequest
 	testCases := []struct {
 		msg      string
 		malleate func()
@@ -18,7 +18,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryDidDocuments() {
 		{
 			"Pass: will return an empty array",
 			func() {
-				req = &types.QueryDidDocumentsRequest{}
+				req = &did.QueryDidDocumentsRequest{}
 			},
 			true,
 		},
@@ -40,7 +40,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryDidDocuments() {
 
 func (suite *KeeperTestSuite) TestGRPCQueryDidDocument() {
 	queryClient := suite.queryClient
-	var req *types.QueryDidDocumentRequest
+	var req *did.QueryDidDocumentRequest
 	testCases := []struct {
 		msg      string
 		malleate func()
@@ -49,14 +49,14 @@ func (suite *KeeperTestSuite) TestGRPCQueryDidDocument() {
 		{
 			"Fail: will fail because no id is provided",
 			func() {
-				req = &types.QueryDidDocumentRequest{}
+				req = &did.QueryDidDocumentRequest{}
 			},
 			false,
 		},
 		{
 			"Fail: will fail because no did is found",
 			func() {
-				req = &types.QueryDidDocumentRequest{
+				req = &did.QueryDidDocumentRequest{
 					Id: "did:cosmos:cash:1234",
 				}
 			},
@@ -66,14 +66,14 @@ func (suite *KeeperTestSuite) TestGRPCQueryDidDocument() {
 			"Pass: will pass because a did is found",
 			func() {
 
-				dd, _ := types.NewDidDocument("did:cosmos:cash:1234")
+				dd, _ := did.NewDidDocument("did:cosmos:cash:1234")
 
 				suite.keeper.SetDidDocument(
 					suite.ctx,
 					[]byte(dd.Id),
 					dd,
 				)
-				req = &types.QueryDidDocumentRequest{
+				req = &did.QueryDidDocumentRequest{
 					Id: "did:cosmos:cash:1234",
 				}
 			},
@@ -82,7 +82,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryDidDocument() {
 		{
 			"Pass: will pass because a address did is autoresolved",
 			func() {
-				req = &types.QueryDidDocumentRequest{
+				req = &did.QueryDidDocumentRequest{
 					Id: "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 				}
 			},
@@ -91,7 +91,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryDidDocument() {
 		{
 			"Fail: will fail because the only cosmos based address are supported",
 			func() {
-				req = &types.QueryDidDocumentRequest{
+				req = &did.QueryDidDocumentRequest{
 					Id: "did:cosmos:key:0xB88F61E6FbdA83fbfffAbE364112137480398018",
 				}
 			},
