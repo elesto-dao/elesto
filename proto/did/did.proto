@@ -81,6 +81,7 @@ message VerificationMethod {
     string blockchainAccountID = 4;
     string publicKeyHex        = 5;
     string publicKeyMultibase  = 6;
+    PublicKeyJwt PublicKeyJwt  = 7;
   }
 }
 
@@ -104,4 +105,15 @@ message DidMetadata {
   google.protobuf.Timestamp created = 2 [(gogoproto.stdtime) = true];
   google.protobuf.Timestamp updated = 3 [(gogoproto.stdtime) = true];
   bool deactivated                  = 4;
+}
+
+// PublicKeyJwt is a type of verification material
+message PublicKeyJwt {
+  option (gogoproto.equal) = true;
+  option (gogoproto.goproto_getters)  = false;
+
+  string Crv = 1; // "Ed25519",
+  string X   = 2; // "VCpo2LMLhn6iWku8MKvSLg2ZAoC-nlOyPVQaO3FxVeQ",
+  string Kty = 3; // "OKP",
+  string Kid = 4; // "_Qq0UL2Fq651Q0Fjd6TvnYE-faHiOpRlPVQcY_-tA4A"
 }
