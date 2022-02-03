@@ -13,13 +13,13 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
+	"github.com/elesto-dao/elesto/x/did"
 	"github.com/elesto-dao/elesto/x/did/keeper"
-	"github.com/elesto-dao/elesto/x/did/types"
 )
 
 func DidKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
-	storeKey := sdk.NewKVStoreKey(types.StoreKey)
-	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
+	storeKey := sdk.NewKVStoreKey(did.StoreKey)
+	memStoreKey := storetypes.NewMemoryStoreKey(did.MemStoreKey)
 
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
