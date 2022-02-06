@@ -148,45 +148,45 @@ func NewPublicKeyHexFromString(pubKeyHex string, vmType VerificationMaterialType
 	return
 }
 
-//// PublicKeyJwk formats an account public key as hex string.
-//// https://w3c.github.io/did-spec-registries/#publickeyhex
-//// Note that this property is deprecated in favor of publicKeyMultibase or publicKeyJwk,
-//// but is maintained for compatibility with legacy implementations
-//type PublicKeyJwk struct {
-//	data   []byte
-//	vmType VerificationMaterialType
-//}
-//
-//// EncodeToString returns the string representation of the key in hex format.
-//// https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
-//func (pkh PublicKeyJwk) EncodeToString() string {
-//	return string(hex.EncodeToString(pkh.data))
-//}
-//
-//// Type the verification material type
-//// https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
-//func (pkh PublicKeyJwk) Type() VerificationMaterialType {
-//	return pkh.vmType
-//}
-//
-//// NewPublicKeyJwk build a new public key hex struct
-//func NewPublicKeyJwk(pubKey []byte, vmType VerificationMaterialType) PublicKeyJwk {
-//	return PublicKeyJwk{
-//		data:   pubKey,
-//		vmType: vmType,
-//	}
-//}
-//
-//// NewPublicKeyJwkFromString build a new blockchain account ID struct
-//func NewPublicKeyJwkFromString(pubKeyHex string, vmType VerificationMaterialType) (pkh PublicKeyJwk, err error) {
-//	pkb, err := hex.DecodeString(pubKeyHex)
-//	if err != nil {
-//		return
-//	}
-//	// TODO: shall we check if it is conform to the verification material? probably
-//	pkh = PublicKeyJwk{
-//		data:   pkb,
-//		vmType: vmType,
-//	}
-//	return
-//}
+// PublicKeyJwk formats an account public key as hex string.
+// https://w3c.github.io/did-spec-registries/#publickeyhex
+// Note that this property is deprecated in favor of publicKeyMultibase or publicKeyJwk,
+// but is maintained for compatibility with legacy implementations
+type PublicKeyJwk struct {
+	data   []byte
+	vmType VerificationMaterialType
+}
+
+// EncodeToString returns the string representation of the key in hex format.
+// https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
+func (pkh PublicKeyJwk) EncodeToString() string {
+	return string(hex.EncodeToString(pkh.data))
+}
+
+// Type the verification material type
+// https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
+func (pkh PublicKeyJwk) Type() VerificationMaterialType {
+	return pkh.vmType
+}
+
+// NewPublicKeyJwk build a new public key hex struct
+func NewPublicKeyJwk(pubKey []byte, vmType VerificationMaterialType) PublicKeyJwk {
+	return PublicKeyJwk{
+		data:   pubKey,
+		vmType: vmType,
+	}
+}
+
+// NewPublicKeyJwkFromString build a new blockchain account ID struct
+func NewPublicKeyJwkFromString(pubKeyHex string, vmType VerificationMaterialType) (pkh PublicKeyJwk, err error) {
+	pkb, err := hex.DecodeString(pubKeyHex)
+	if err != nil {
+		return
+	}
+	// TODO: shall we check if it is conform to the verification material? probably
+	pkh = PublicKeyJwk{
+		data:   pkb,
+		vmType: vmType,
+	}
+	return
+}
