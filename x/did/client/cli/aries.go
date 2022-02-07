@@ -173,7 +173,8 @@ func NewLinkAriesAgentCmd() *cobra.Command {
 				did.NewVerificationMethod(
 					vmID,
 					didID,
-					did.NewPublicKeyMultibase(pubKey, did.DIDVMethodTypeX25519KeyAgreementKey2019),
+					did.NewPublicKeyMultibase(pubKey),
+					did.X25519KeyAgreementKey2019,
 				),
 				[]string{did.KeyAgreement},
 				nil,

@@ -531,7 +531,7 @@ func (didDoc DidDocument) GetVerificationMethodBlockchainAddress(methodID string
 		if vm.Id == methodID {
 			switch k := vm.VerificationMaterial.(type) {
 			case *VerificationMethod_BlockchainAccountID:
-				address = BlockchainAccountID(k.BlockchainAccountID).GetAddress()
+				address = k.GetAddress()
 			case *VerificationMethod_PublicKeyMultibase:
 				address, err = toAddress(k.PublicKeyMultibase[1:])
 			case *VerificationMethod_PublicKeyHex:
@@ -561,14 +561,14 @@ func (didDoc DidDocument) GetVerificationRelationships(methodID string) []string
 // HasRelationship verifies if a controller did
 // exist for at least one of the relationships in the did document
 func (didDoc DidDocument) HasRelationship(
-	signer BlockchainAccountID,
+	signer *VerificationMethod_BlockchainAccountID,
 	relationships ...string,
 ) bool {
 	// first check if the controller exists
 	for _, vm := range didDoc.VerificationMethod {
 		switch k := vm.VerificationMaterial.(type) {
 		case *VerificationMethod_BlockchainAccountID:
-			if k.BlockchainAccountID != signer.EncodeToString() {
+			if k.BlockchainAccountID != signer.BlockchainAccountID {
 				continue
 			}
 		case *VerificationMethod_PublicKeyMultibase:
@@ -599,7 +599,7 @@ func (didDoc DidDocument) HasPublicKey(pubkey cryptotypes.PubKey) bool {
 				sdk.GetConfig().GetBech32AccountAddrPrefix(),
 				pubkey.Address().Bytes(),
 			)
-			if BlockchainAccountID(key.BlockchainAccountID).MatchAddress(address) {
+			if key.MatchAddress(address) {
 				return true
 			}
 		case *VerificationMethod_PublicKeyMultibase:
@@ -711,6 +711,7 @@ func NewAccountVerification(did DID, chainID, accountAddress string, verificatio
 			fmt.Sprint(did.String(), "#", accountAddress),
 			did,
 			NewBlockchainAccountID(chainID, accountAddress),
+			CosmosAccountAddress,
 		),
 		verificationRelationships,
 		nil,
@@ -718,19 +719,12 @@ func NewAccountVerification(did DID, chainID, accountAddress string, verificatio
 }
 
 // NewVerificationMethod build a new verification method
-func NewVerificationMethod(id string, controller DID, vmr VerificationMaterial) VerificationMethod {
+func NewVerificationMethod(id string, controller DID, vmr isVerificationMethod_VerificationMaterial, vmt VerificationMethodType) VerificationMethod {
 	vm := VerificationMethod{
-		Id:         id,
-		Controller: controller.String(),
-		Type:       string(vmr.Type()),
-	}
-	switch vmr.(type) {
-	case BlockchainAccountID:
-		vm.VerificationMaterial = &VerificationMethod_BlockchainAccountID{vmr.EncodeToString()}
-	case PublicKeyMultibase:
-		vm.VerificationMaterial = &VerificationMethod_PublicKeyMultibase{vmr.EncodeToString()}
-	case PublicKeyHex:
-		vm.VerificationMaterial = &VerificationMethod_PublicKeyHex{vmr.EncodeToString()}
+		Id:                   id,
+		Controller:           controller.String(),
+		Type:                 string(vmt),
+		VerificationMaterial: vmr,
 	}
 	return vm
 }
@@ -744,7 +738,7 @@ func (did Verification) GetBytes() []byte {
 type Services []*Service
 
 // NewService creates a new service
-func NewService(id string, serviceType string, serviceEndpoint string) *Service {
+func NewService(id, serviceType, serviceEndpoint string) *Service {
 	return &Service{
 		Id:              id,
 		Type:            serviceType,
@@ -787,6 +781,7 @@ func ResolveAccountDID(did, chainID string) (didDoc DidDocument, didMeta DidMeta
 				accountDID.NewVerificationMethodID(account),
 				accountDID, // the controller is the same as the did subject
 				NewBlockchainAccountID(chainID, account),
+				CosmosAccountAddress,
 			),
 			[]string{
 				Authentication,

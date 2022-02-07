@@ -23,12 +23,13 @@ func SimulateMsgCreateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 		ownerAddress := didOwner.Address.String()
 		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
 		vmID := didID.NewVerificationMethodID(ownerAddress)
-		vmType := did.DIDVMethodTypeEcdsaSecp256k1VerificationKey2019
+		vmType := did.EcdsaSecp256k1VerificationKey2019
 		auth := did.NewVerification(
 			did.NewVerificationMethod(
 				vmID,
 				didID,
-				did.NewPublicKeyMultibase(didOwner.PubKey.Bytes(), vmType),
+				did.NewPublicKeyMultibase(didOwner.PubKey.Bytes()),
+				vmType,
 			),
 			[]string{did.Authentication},
 			nil,
