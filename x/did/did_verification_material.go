@@ -26,17 +26,6 @@ func (p VerificationMethodType) String() string {
 	return string(p)
 }
 
-//
-//type VerificationMaterial interface {
-//	EncodeToString() string
-//	Type() VerificationMethodType
-//}
-
-//// EncodeToString returns the string representation of a blockchain account id
-//func (baID VerificationMethod_BlockchainAccountID) EncodeToString() string {
-//	return baID.BlockchainAccountID
-//}
-
 // MatchAddress check if a blockchain id address matches another address
 // the match ignore the chain ID
 func (baID VerificationMethod_BlockchainAccountID) MatchAddress(address string) bool {
@@ -67,27 +56,9 @@ func NewBlockchainAccountIDFromString(baID string) *VerificationMethod_Blockchai
 	}
 }
 
-//// PublicKeyMultibase formats an account address as per the CAIP-10 Account ID specification.
-//// https://w3c.github.io/did-spec-registries/#publickeymultibase
-//// https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
-//type PublicKeyMultibase struct {
-//	data   []byte
-//	vmType VerificationMethodType
-//}
-//
-//// EncodeToString returns the string representation of the key in hex format. F is the hex format prefix
-//// https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
-//func (pkh PublicKeyMultibase) EncodeToString() string {
-//	return string(fmt.Sprint("F", hex.EncodeToString(pkh.data)))
-//}
-//
-//// Type the verification material type
-//// https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
-//func (pkh PublicKeyMultibase) Type() VerificationMethodType {
-//	return pkh.vmType
-//}
-
-// NewPublicKeyMultibase encode a byte slice in a pub key multibase format
+// NewPublicKeyMultibase formats an account address as per the CAIP-10 Account ID specification.
+// https://w3c.github.io/did-spec-registries/#publickeymultibase
+// https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
 func NewPublicKeyMultibase(pubKey []byte) *VerificationMethod_PublicKeyMultibase {
 	return &VerificationMethod_PublicKeyMultibase{
 		PublicKeyMultibase: fmt.Sprint("F", hex.EncodeToString(pubKey)),
@@ -105,28 +76,8 @@ func NewPublicKeyMultibaseFromHex(pubKeyHex string) (pkm *VerificationMethod_Pub
 	return
 }
 
-//// PublicKeyHex formats an account public key as hex string.
-//// https://w3c.github.io/did-spec-registries/#publickeyhex
-//// Note that this property is deprecated in favor of publicKeyMultibase or publicKeyJwk,
-//// but is maintained for compatibility with legacy implementations
-//type PublicKeyHex struct {
-//	data   []byte
-//	vmType VerificationMethodType
-//}
-//
-//// EncodeToString returns the string representation of the key in hex format.
-//// https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
-//func (pkh PublicKeyHex) EncodeToString() string {
-//	return string(hex.EncodeToString(pkh.data))
-//}
-//
-//// Type the verification material type
-//// https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
-//func (pkh PublicKeyHex) Type() VerificationMethodType {
-//	return pkh.vmType
-//}
-
 // NewPublicKeyHex build a new public key hex struct
+// https://w3c.github.io/did-spec-registries/#publickeyhex
 func NewPublicKeyHex(pubKey []byte) *VerificationMethod_PublicKeyHex {
 	return &VerificationMethod_PublicKeyHex{
 		PublicKeyHex: hex.EncodeToString(pubKey),
@@ -134,6 +85,7 @@ func NewPublicKeyHex(pubKey []byte) *VerificationMethod_PublicKeyHex {
 }
 
 // NewPublicKeyHexFromString build a new blockchain account ID struct
+// https://w3c.github.io/did-spec-registries/#publickeyhex
 func NewPublicKeyHexFromString(pubKeyHex string) (pkh *VerificationMethod_PublicKeyHex, err error) {
 	pkb, err := hex.DecodeString(pubKeyHex)
 	if err != nil {
@@ -144,31 +96,18 @@ func NewPublicKeyHexFromString(pubKeyHex string) (pkh *VerificationMethod_Public
 	return
 }
 
-//// PublicKeyJwk formats an account public key as hex string.
-//// https://w3c.github.io/did-spec-registries/#publickeyhex
-//// Note that this property is deprecated in favor of publicKeyMultibase or publicKeyJwk,
-//// but is maintained for compatibility with legacy implementations
-//type PublicKeyJwk struct {
-//	data   []byte
-//	vmType VerificationMethodType
-//}
-
-//// EncodeToString returns the string representation of the key in hex format.
-//// https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
-//func (pkh PublicKeyJwk) EncodeToString() string {
-//	return string(hex.EncodeToString(pkh.data))
-//}
-//
-//// Type the verification material type
-//// https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
-//func (pkh PublicKeyJwk) Type() VerificationMethodType {
-//	return pkh.vmType
-//}
-
-// NewPublicKeyJwk build a new public key hex struct
+// NewPublicKeyJwk formats an account public key as hex string.
 func NewPublicKeyJwk(pubKey []byte) (vm *VerificationMethod_PublicKeyJwk, err error) {
 	var pkj PublicKeyJwk
 	if err = json.Unmarshal(pubKey, &pkj); err != nil {
+		return
+	}
+	if IsEmpty(pkj.Kid) {
+		err = fmt.Errorf("publicKeyJwk.kid cannot be empty")
+		return
+	}
+	if IsEmpty(pkj.X + pkj.Y) {
+		err = fmt.Errorf("publicKeyJwk.X or publicKeyJwk.Y cannot be empty")
 		return
 	}
 	vm = &VerificationMethod_PublicKeyJwk{
