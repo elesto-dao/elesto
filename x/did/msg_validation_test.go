@@ -23,7 +23,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 					[]string{string(Authentication)},
 					&VerificationMethod{
 						"did:auth:whatever#1",
-						DIDVMethodTypeEcdsaSecp256k1VerificationKey2019.String(),
+						EcdsaSecp256k1VerificationKey2019.String(),
 						"did:auth:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
@@ -41,7 +41,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 					[]string{string(Authentication)},
 					&VerificationMethod{
 						"did:auth:whatever#1",
-						DIDVMethodTypeCosmosAccountAddress.String(),
+						CosmosAccountAddress.String(),
 						"did:auth:whatever",
 						&VerificationMethod_BlockchainAccountID{""},
 					},
@@ -77,7 +77,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 					[]string{},
 					&VerificationMethod{
 						"did:auth:whatever#1",
-						DIDVMethodTypeEcdsaSecp256k1VerificationKey2019.String(),
+						EcdsaSecp256k1VerificationKey2019.String(),
 						"did:auth:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
@@ -95,7 +95,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 					[]string{string(Authentication)},
 					&VerificationMethod{
 						"did:auth:whatever#/asd 123",
-						DIDVMethodTypeEcdsaSecp256k1VerificationKey2019.String(),
+						EcdsaSecp256k1VerificationKey2019.String(),
 						"did:auth:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
@@ -113,7 +113,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 					[]string{string(Authentication)},
 					&VerificationMethod{
 						"did:auth:whatever#1",
-						DIDVMethodTypeEcdsaSecp256k1VerificationKey2019.String(),
+						EcdsaSecp256k1VerificationKey2019.String(),
 						"did:auth:whatever",
 						&VerificationMethod_PublicKeyHex{""},
 					},
@@ -149,7 +149,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 					[]string{string(Authentication)},
 					&VerificationMethod{
 						"did:auth:whatever#1",
-						DIDVMethodTypeCosmosAccountAddress.String(),
+						CosmosAccountAddress.String(),
 						"",
 						&VerificationMethod_BlockchainAccountID{"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"},
 					},
@@ -175,7 +175,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 					[]string{string(Authentication)},
 					&VerificationMethod{
 						"did:auth:whatever#1",
-						DIDVMethodTypeEcdsaSecp256k1VerificationKey2019.String(),
+						EcdsaSecp256k1VerificationKey2019.String(),
 						"cont",
 						&VerificationMethod_BlockchainAccountID{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
@@ -193,7 +193,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 					[]string{string(Authentication)},
 					&VerificationMethod{
 						"did:auth:whatever#1",
-						DIDVMethodTypeEcdsaSecp256k1VerificationKey2019.String(),
+						EcdsaSecp256k1VerificationKey2019.String(),
 						"did:auth:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
@@ -217,7 +217,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 					[]string{string(Authentication)},
 					&VerificationMethod{
 						"did:auth:whatever#1",
-						DIDVMethodTypeEcdsaSecp256k1VerificationKey2019.String(),
+						EcdsaSecp256k1VerificationKey2019.String(),
 						"did:auth:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
@@ -241,7 +241,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 					[]string{string(Authentication)},
 					&VerificationMethod{
 						"did:auth:whatever#1",
-						DIDVMethodTypeEcdsaSecp256k1VerificationKey2019.String(),
+						EcdsaSecp256k1VerificationKey2019.String(),
 						"did:auth:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
@@ -265,7 +265,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 					[]string{string(Authentication)},
 					&VerificationMethod{
 						"did:auth:whatever#1",
-						DIDVMethodTypeEcdsaSecp256k1VerificationKey2019.String(),
+						EcdsaSecp256k1VerificationKey2019.String(),
 						"did:auth:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
@@ -373,7 +373,7 @@ func TestMsgAddVerification(t *testing.T) {
 				[]string{string(Authentication)},
 				&VerificationMethod{
 					"did:cash:subject#1",
-					DIDVMethodTypeEcdsaSecp256k1VerificationKey2019.String(),
+					EcdsaSecp256k1VerificationKey2019.String(),
 					"did:cash:subject",
 					&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 				},
@@ -388,7 +388,7 @@ func TestMsgAddVerification(t *testing.T) {
 				[]string{string(Authentication)},
 				&VerificationMethod{
 					"did:cash:subject#1",
-					DIDVMethodTypeEcdsaSecp256k1VerificationKey2019.String(),
+					EcdsaSecp256k1VerificationKey2019.String(),
 					"did:cash:subject",
 					&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 				},
