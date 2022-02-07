@@ -33,3 +33,4 @@ ignore:
   - "x/**/*.pb.go"
   - "scripts/"
   - "contrib"
+  - "x/**/simulation"
