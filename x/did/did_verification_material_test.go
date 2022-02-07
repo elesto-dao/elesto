@@ -1,101 +1,121 @@
 package did
 
-//
-//func TestNewPublicKeyMultibaseFromHex(t *testing.T) {
-//	type args struct {
-//		pubKeyHex string
-//		vmType    VerificationMaterialType
-//	}
-//	tests := []struct {
-//		name    string
-//		args    args
-//		wantPkm PublicKeyMultibase
-//		wantErr assert.ErrorAssertionFunc
-//	}{
-//		{
-//			"PASS: key match",
-//			args{
-//				pubKeyHex: "03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7",
-//				vmType:    DIDVMethodTypeEcdsaSecp256k1VerificationKey2019,
-//			},
-//			PublicKeyMultibase{
-//				data:   []byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215},
-//				vmType: DIDVMethodTypeEcdsaSecp256k1VerificationKey2019,
-//			},
-//			assert.NoError,
-//		},
-//		{
-//			"FAIL: invalid hex key",
-//			args{
-//				pubKeyHex: "not hex string",
-//				vmType:    DIDVMethodTypeEcdsaSecp256k1VerificationKey2019,
-//			},
-//			PublicKeyMultibase{
-//				data:   nil,
-//				vmType: "",
-//			},
-//			assert.Error, // TODO: check the error message
-//		},
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			gotPkm, err := NewPublicKeyMultibaseFromHex(tt.args.pubKeyHex, tt.args.vmType)
-//			if !tt.wantErr(t, err, fmt.Sprintf("NewPublicKeyMultibaseFromHex(%v, %v)", tt.args.pubKeyHex, tt.args.vmType)) {
-//				return
-//			}
-//			assert.Equalf(t, tt.wantPkm, gotPkm, "NewPublicKeyMultibaseFromHex(%v, %v)", tt.args.pubKeyHex, tt.args.vmType)
-//
-//		})
-//	}
-//}
-//
-//func TestNewPublicKeyHexFromString(t *testing.T) {
-//	type args struct {
-//		pubKeyHex string
-//		vmType    VerificationMethodType
-//	}
-//	tests := []struct {
-//		name    string
-//		args    args
-//		wantPkh VerificationMethod_PublicKeyHex
-//		wantErr error
-//	}{
-//		{
-//			"PASS: valid pub key",
-//			args{
-//				"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7",
-//				X25519KeyAgreementKey2019,
-//			},
-//			PublicKeyHex{
-//				data:   []byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215},
-//				vmType: X25519KeyAgreementKey2019,
-//			},
-//			nil,
-//		},
-//		{
-//			"FAIL: not hex",
-//			args{
-//				"1234&",
-//				DIDVMethodTypeX25519KeyAgreementKey2019,
-//			},
-//			PublicKeyHex{
-//				data:   []byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215},
-//				vmType: DIDVMethodTypeX25519KeyAgreementKey2019,
-//			},
-//			fmt.Errorf("encoding/hex: invalid byte: U+0026 '&'"),
-//		},
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			gotPkh, err := NewPublicKeyHexFromString(tt.args.pubKeyHex, tt.args.vmType)
-//			if tt.wantErr == nil {
-//				assert.NoError(t, err)
-//				assert.Equalf(t, tt.wantPkh, gotPkh, "NewPublicKeyHexFromString(%v, %v)", tt.args.pubKeyHex, tt.args.vmType)
-//			} else {
-//				assert.Error(t, err)
-//				assert.Equal(t, tt.wantErr.Error(), err.Error())
-//			}
-//
-//		})
-//	}
-//}
+import (
+	"fmt"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func TestNewPublicKeyMultibaseFromHex(t *testing.T) {
+	tests := []struct {
+		name    string
+		pubKeyHex string
+		wantPkm *VerificationMethod_PublicKeyMultibase
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			"PASS: key match",
+			"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7",
+			NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
+			assert.NoError,
+		},
+		{
+			"FAIL: invalid hex key",
+			"not hex string",
+			nil,
+			assert.Error, // TODO: check the error message
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotPkm, err := NewPublicKeyMultibaseFromHex(tt.pubKeyHex)
+			if !tt.wantErr(t, err, fmt.Sprintf("NewPublicKeyMultibaseFromHex(%v)", tt.pubKeyHex)) {
+				return
+			}
+			assert.Equalf(t, tt.wantPkm, gotPkm, "NewPublicKeyMultibaseFromHex(%v)", tt.pubKeyHex)
+
+		})
+	}
+}
+
+func TestNewPublicKeyHexFromString(t *testing.T) {
+	tests := []struct {
+		name    string
+		pubKeyHex string
+		wantPkh *VerificationMethod_PublicKeyHex
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			"PASS: key match",
+			"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7",
+			NewPublicKeyHex([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
+			assert.NoError,
+		},
+		{
+			"FAIL: invalid hex key",
+			"not hex string",
+			nil,
+			assert.Error, // TODO: check the error message
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotPkh, err := NewPublicKeyHexFromString(tt.pubKeyHex)
+			if !tt.wantErr(t, err, fmt.Sprintf("NewPublicKeyHexFromString(%v)", tt.pubKeyHex)) {
+				return
+			}
+			assert.Equalf(t, tt.wantPkh, gotPkh, "NewPublicKeyHexFromString(%v)", tt.pubKeyHex)
+		})
+	}
+}
+
+func TestNewPublicKeyJwk(t *testing.T) {
+	tests := []struct {
+		name    string
+		pubKey []byte
+		wantVm  *VerificationMethod_PublicKeyJwk
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			"PASS: can parse pub key",
+			[]byte(`{"crv":"secp256k1","kid":"JUvpllMEYUZ2joO59UNui_XYDqxVqiFLLAJ8klWuPBw","kty":"EC","x":"dWCvM4fTdeM0KmloF57zxtBPXTOythHPMm1HCLrdd3A","y":"36uMVGM7hnw-N6GnjFcihWE3SkrhMLzzLCdPMXPEXlA"}`),
+			&VerificationMethod_PublicKeyJwk{
+				PublicKeyJwk: &PublicKeyJwk{
+					Kid: "JUvpllMEYUZ2joO59UNui_XYDqxVqiFLLAJ8klWuPBw",
+					Crv: "secp256k1",
+					X:   "dWCvM4fTdeM0KmloF57zxtBPXTOythHPMm1HCLrdd3A",
+					Y:   "36uMVGM7hnw-N6GnjFcihWE3SkrhMLzzLCdPMXPEXlA",
+					Kty: "EC",
+				},
+			},
+			assert.NoError,
+		},
+		{
+			"FAIL: empty kid",
+			[]byte(`{"crv":"secp256k1","kid":"","kty":"EC","x":"dWCvM4fTdeM0KmloF57zxtBPXTOythHPMm1HCLrdd3A","y":"36uMVGM7hnw-N6GnjFcihWE3SkrhMLzzLCdPMXPEXlA"}`),
+			nil,
+			assert.Error,
+		},
+		{
+			"FAIL: empty x and y",
+			[]byte(`{"crv":"secp256k1","kid":"JUvpllMEYUZ2joO59UNui_XYDqxVqiFLLAJ8klWuPBw","kty":"EC","x":"","y":"   "}`),
+			nil,
+			assert.Error,
+		},
+		{
+			"FAIL: empty x and y",
+			[]byte(`not a json`),
+			nil,
+			assert.Error,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotVm, err := NewPublicKeyJwk(tt.pubKey)
+			if !tt.wantErr(t, err, fmt.Sprintf("NewPublicKeyJwk(%v)", tt.pubKey)) {
+				return
+			}
+			assert.Equalf(t, tt.wantVm, gotVm, "NewPublicKeyJwk(%v)", tt.pubKey)
+		})
+	}
+}
