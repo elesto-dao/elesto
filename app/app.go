@@ -355,7 +355,7 @@ func New(
 		keys[did.StoreKey],
 		keys[did.MemStoreKey],
 	)
-	didModule := didmodule.NewAppModule(appCodec, app.DidKeeper)
+	didModule := didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
@@ -453,7 +453,7 @@ func New(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		// TODO: didModule,
+		didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()

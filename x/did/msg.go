@@ -4,11 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// msg types
-const (
-	TypeMsgCreateDidDocument = "create-did"
-)
-
 var _ sdk.Msg = &MsgCreateDidDocument{}
 
 // NewMsgCreateDidDocument creates a new MsgCreateDidDocument instance
@@ -32,12 +27,14 @@ func (MsgCreateDidDocument) Route() string {
 }
 
 // Type implements sdk.Msg
-func (MsgCreateDidDocument) Type() string {
-	return TypeMsgCreateDidDocument
+func (msg MsgCreateDidDocument) Type() string {
+	return sdk.MsgTypeURL(&msg)
 }
 
+// GetSignBytes implements the LegacyMsg.GetSignBytes method.
 func (msg MsgCreateDidDocument) GetSignBytes() []byte {
-	panic("IBC messages do not support amino")
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg
@@ -78,8 +75,9 @@ func (MsgUpdateDidDocument) Type() string {
 	return TypeMsgUpdateDidDocument
 }
 
+// GetSignBytes implements the LegacyMsg.GetSignBytes method.
 func (msg MsgUpdateDidDocument) GetSignBytes() []byte {
-	panic("IBC messages do not support amino")
+	panic("TODO: needed in simulations for fuzz testing")
 }
 
 // GetSigners implements sdk.Msg
@@ -124,8 +122,9 @@ func (MsgAddVerification) Type() string {
 	return TypeMsgAddVerification
 }
 
+// GetSignBytes implements the LegacyMsg.GetSignBytes method.
 func (msg MsgAddVerification) GetSignBytes() []byte {
-	panic("IBC messages do not support amino")
+	panic("TODO: needed in simulations for fuzz testing")
 }
 
 // GetSigners implements sdk.Msg
@@ -171,8 +170,9 @@ func (MsgRevokeVerification) Type() string {
 	return TypeMsgRevokeVerification
 }
 
+// GetSignBytes implements the LegacyMsg.GetSignBytes method.
 func (msg MsgRevokeVerification) GetSignBytes() []byte {
-	panic("IBC messages do not support amino")
+	panic("TODO: needed in simulations for fuzz testing")
 }
 
 // GetSigners implements sdk.Msg
@@ -216,8 +216,9 @@ func (MsgSetVerificationRelationships) Type() string {
 	return TypeMsgSetVerificationRelationships
 }
 
+// GetSignBytes implements the LegacyMsg.GetSignBytes method.
 func (msg MsgSetVerificationRelationships) GetSignBytes() []byte {
-	panic("IBC messages do not support amino")
+	panic("TODO: needed in simulations for fuzz testing")
 }
 
 // GetSigners implements sdk.Msg
@@ -263,8 +264,9 @@ func (MsgAddService) Type() string {
 	return TypeMsgAddService
 }
 
+// GetSignBytes implements the LegacyMsg.GetSignBytes method.
 func (msg MsgAddService) GetSignBytes() []byte {
-	panic("IBC messages do not support amino")
+	panic("TODO: needed in simulations for fuzz testing")
 }
 
 // GetSigners implements sdk.Msg
@@ -307,8 +309,9 @@ func (MsgDeleteService) Type() string {
 	return TypeMsgDeleteService
 }
 
+// GetSignBytes implements the LegacyMsg.GetSignBytes method.
 func (msg MsgDeleteService) GetSignBytes() []byte {
-	panic("IBC messages do not support amino")
+	panic("TODO: needed in simulations for fuzz testing")
 }
 
 // GetSigners implements sdk.Msg
@@ -351,8 +354,9 @@ func (MsgAddController) Type() string {
 	return TypeMsgAddController
 }
 
+// GetSignBytes implements the LegacyMsg.GetSignBytes method.
 func (msg MsgAddController) GetSignBytes() []byte {
-	panic("IBC messages do not support amino")
+	panic("TODO: needed in simulations for fuzz testing")
 }
 
 // GetSigners implements sdk.Msg
@@ -385,7 +389,7 @@ func NewMsgDeleteController(
 	}
 }
 
-// Route implements sdk.Msg
+//// Route implements sdk.Msg
 func (MsgDeleteController) Route() string {
 	return RouterKey
 }
@@ -395,8 +399,9 @@ func (MsgDeleteController) Type() string {
 	return TypeMsgDeleteController
 }
 
+// GetSignBytes implements the LegacyMsg.GetSignBytes method.
 func (msg MsgDeleteController) GetSignBytes() []byte {
-	panic("IBC messages do not support amino")
+	panic("TODO: needed in simulations for fuzz testing")
 }
 
 // GetSigners implements sdk.Msg
