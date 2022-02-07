@@ -73,11 +73,11 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.network.Cleanup()
 }
 
-func name() string {
+func name(others ...string) string {
 	pc := make([]uintptr, 10) // at least 1 entry needed
 	runtime.Callers(2, pc)
 	f := runtime.FuncForPC(pc[0])
-	return f.Name()
+	return fmt.Sprintln(f.Name(), others)
 }
 
 func addnewdiddoc(s *IntegrationTestSuite, identifier string, val *network.Validator) {
@@ -278,7 +278,7 @@ func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestNewUpdateDidDocumentCmd() {
+func (s *IntegrationTestSuite) TestNewAddControllerCmd() {
 	identifier1 := "123456789abcdefghijkd"
 	identifier2 := "cosmos1kslgpxklq75aj96cz3qwsczr95vdtrd3p0fslp"
 	val := s.network.Validators[0]
@@ -335,6 +335,93 @@ func (s *IntegrationTestSuite) TestNewUpdateDidDocumentCmd() {
 			controller := response.GetDidDocument().Controller
 			s.Require().Equal(len(controller), 1)
 			s.Require().Equal(controller[0], "did:cosmos:key:"+identifier2)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestNewDeleteControllerCmd() {
+	identifier1 := "123456789abcdefghijkd"
+	identifier2 := "cosmos1kslgpxklq75aj96cz3qwsczr95vdtrd3p0fslp"
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+
+	testCases := []struct {
+		name     string
+		args     []string
+		respType proto.Message
+		malleate func()
+	}{
+		{
+			name(),
+			[]string{
+				identifier1,
+				identifier2,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			&sdk.TxResponse{},
+			func() {
+				// create a new did document
+				addnewdiddoc(s, identifier1, val)
+				// add a controller parameters
+				args := []string{
+					identifier1,
+					identifier2,
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+					fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+					fmt.Sprintf(
+						"--%s=%s",
+						flags.FlagFees,
+						sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+					),
+				}
+				// add a controller paramter
+				cmd := cli.NewAddControllerCmd()
+				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
+				s.Require().NoError(err)
+				// wait for blocks
+				for i := 0; i < 2; i++ {
+					netError := s.network.WaitForNextBlock()
+					s.Require().NoError(netError)
+				}
+				response := &sdk.TxResponse{}
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response), out.String())
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			tc.malleate()
+			cmd := cli.NewDeleteControllerCmd()
+			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			s.Require().NoError(err)
+			// wait for blocks
+			for i := 0; i < 2; i++ {
+				netError := s.network.WaitForNextBlock()
+				s.Require().NoError(netError)
+			}
+			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+
+			//check for update
+			cmd = cli.GetCmdQueryIdentifer()
+			args_temp := []string{
+				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier1,
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+			}
+			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
+			s.Require().NoError(err)
+			response := &did.QueryDidDocumentResponse{}
+			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
+			controller := response.GetDidDocument().Controller
+			s.Require().Equal(0, len(controller))
 		})
 	}
 }
@@ -694,6 +781,44 @@ func (s *IntegrationTestSuite) TestNewDeleteServiceCmd() {
 			s.Require().Equal(0, len(response.GetDidDocument().Service))
 		})
 	}
+}
+
+func TestGetTxCmd(t *testing.T) {
+
+	expectedCommands := map[string]struct{}{
+		"create-did":                    struct{}{},
+		"add-controller":                struct{}{},
+		"delete-controller":             struct{}{},
+		"add-service":                   struct{}{},
+		"delete-service":                struct{}{},
+		"add-verification-method":       struct{}{},
+		"set-verification-relationship": struct{}{},
+		"revoke-verification-method":    struct{}{},
+		"link-aries-agent":              struct{}{},
+	}
+
+	t.Run("PASS: Verify command are there ", func(t *testing.T) {
+		for _, x := range cli.GetTxCmd().Commands() {
+			if _, ok := expectedCommands[x.Name()]; !ok {
+				t.Errorf("GetTxCmd(): expected command not found %s", x.Name())
+			}
+		}
+	})
+}
+
+func TestGetQueryCmd(t *testing.T) {
+	expectedCommands := map[string]struct{}{
+		"did":  struct{}{},
+		"dids": struct{}{},
+	}
+
+	t.Run("PASS: Verify command are there ", func(t *testing.T) {
+		for _, x := range cli.GetQueryCmd("").Commands() {
+			if _, ok := expectedCommands[x.Name()]; !ok {
+				t.Errorf("GetTxCmd(): expected command not found %s", x.Name())
+			}
+		}
+	})
 }
 
 func TestIntegrationTestSuite(t *testing.T) {
