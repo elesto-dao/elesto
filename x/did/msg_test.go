@@ -11,11 +11,11 @@ func TestMsgCreateDidDocument_Route(t *testing.T) {
 }
 
 func TestMsgCreateDidDocument_Type(t *testing.T) {
-	assert.Equalf(t, TypeMsgCreateDidDocument, MsgCreateDidDocument{}.Type(), "Type()")
+	assert.Equalf(t, sdk.MsgTypeURL(&MsgCreateDidDocument{}), MsgCreateDidDocument{}.Type(), "Type()")
 }
 
 func TestMsgCreateDidDocument_GetSignBytes(t *testing.T) {
-	assert.Panicsf(t, func() { MsgCreateDidDocument{}.GetSignBytes() }, "GetSignBytes()")
+	assert.Equal(t, sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&MsgCreateDidDocument{})), MsgCreateDidDocument{}.GetSignBytes(), "GetSignBytes()")
 }
 
 func TestMsgCreateDidDocument_GetSigners(t *testing.T) {

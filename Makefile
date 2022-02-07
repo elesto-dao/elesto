@@ -1,5 +1,5 @@
 PACKAGES="./x/..."
-# build paramters 
+# build paramters
 BUILD_FOLDER = build
 APP_VERSION = $(git describe --tags --always)
 
@@ -36,6 +36,9 @@ go.sum: go.mod
 test:
 	@go test -mod=readonly $(PACKAGES) -cover -race
 
+sim:
+	@go test -benchmem -bench BenchmarkSimulation ./app -NumBlocks=200 -BlockSize 50 -Commit=true -Verbose=true -Enabled=true
+
 lint:
 	@echo "--> Running linter"
 	@golangci-lint run
@@ -45,10 +48,10 @@ lint:
 ###                           Chain Initialization                          ###
 ###############################################################################
 
-start-dev: install 
+start-dev: install
 	./scripts/seeds/00_start_chain.sh
 
-seed: 
+seed:
 	./scripts/seeds/01_identifier_seeds.sh
 
 ###############################################################################
@@ -91,4 +94,4 @@ endif
 ifneq ($(shell git rev-parse --abbrev-ref HEAD),main)
 	$(error you are not on the main branch. aborting)
 endif
-	git tag -s -a "$(shell git-chglog $(APP_VERSION))" -m "Changelog: https://github.com/allinbits/cosmos-cash/blob/main/CHANGELOG.md"
+	git tag -s -a "$(APP_VERSION)" -m "Changelog: https://github.com/allinbits/cosmos-cash/blob/main/CHANGELOG.md"
