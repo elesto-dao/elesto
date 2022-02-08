@@ -9,10 +9,14 @@ import (
 	"github.com/elesto-dao/elesto/x/did"
 )
 
+// SetDidDocument store a did document in the keeper, existing DID document with the
+// same key will be overwritten
 func (k Keeper) SetDidDocument(ctx sdk.Context, key []byte, document did.DidDocument) {
 	k.Set(ctx, key, did.DidDocumentKey, document, k.Marshal)
 }
 
+// GetDidDocument retrieve a DID document by its key.
+// The boolean return will be false if the DID document is not found
 func (k Keeper) GetDidDocument(ctx sdk.Context, key []byte) (did.DidDocument, bool) {
 	val, found := k.Get(ctx, key, did.DidDocumentKey, k.UnmarshalDidDocument)
 	return val.(did.DidDocument), found

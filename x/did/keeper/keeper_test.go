@@ -71,7 +71,7 @@ func (suite *KeeperTestSuite) TestGenericKeeperSetAndGet() {
 			"data stored successfully",
 			func() did.DidDocument {
 				dd, _ := did.NewDidDocument(
-					"did:cash:subject",
+					"did:cosmos:net:elesto:subject",
 				)
 				return dd
 			},
@@ -131,7 +131,7 @@ func (suite *KeeperTestSuite) TestGenericKeeperDelete() {
 			"data stored successfully",
 			func() did.DidDocument {
 				dd, _ := did.NewDidDocument(
-					"did:cash:subject",
+					"did:cosmos:net:elesto:subject",
 				)
 				return dd
 			},
