@@ -1,18 +1,16 @@
-package did_test
+package module_test
 
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/log"
+	dbm "github.com/tendermint/tm-db"
 
 	elestoapp "github.com/elesto-dao/elesto/app"
-	"github.com/tendermint/tendermint/libs/log"
-
-	"github.com/cosmos/cosmos-sdk/simapp"
-
-	dbm "github.com/tendermint/tm-db"
 )
 
 func TestCreateModuleInApp(t *testing.T) {

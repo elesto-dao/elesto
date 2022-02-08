@@ -1,4 +1,4 @@
-package did
+package module
 
 import ( // this line is used by starport scaffolding # 1
 	"context"
@@ -168,23 +168,22 @@ func (AppModule) ConsensusVersion() uint64 { return 1 }
 
 // AppModuleSimulation functions
 
-// GenerateGenesisState creates a randomized GenState of the authz module.
+// GenerateGenesisState creates a randomized GenState of the did module.
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	simulation.RandomizedGenState(simState)
 }
 
-// ProposalContents returns all the authz content functions used to
+// ProposalContents returns all the did content functions used to
 // simulate governance proposals.
-func (am AppModule) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalContent {
+func (AppModule) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalContent {
 	return nil
 }
 
-// RandomizedParams creates randomized authz param changes for the simulator.
-func (AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
+// RandomizedParams creates randomized did param changes for the simulator.
+func (AppModule) RandomizedParams(*rand.Rand) []simtypes.ParamChange {
 	return nil
 }
 
-// RegisterStoreDecoder registers a decoder for authz module's types
+// RegisterStoreDecoder registers a decoder for did module's types
 func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
 	sdr[did.StoreKey] = simulation.NewDecodeStore(am.cdc)
 }
