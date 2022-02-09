@@ -1,5 +1,5 @@
 syntax = "proto3";
-package allinbits.cosmoscash.did;
+package elestodao.elesto.did;
 
 option go_package = "github.com/elesto-dao/elesto/x/did";
 
