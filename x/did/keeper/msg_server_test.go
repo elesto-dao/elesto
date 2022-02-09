@@ -24,7 +24,7 @@ func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {
 		{
 			"Pass: can create a an did",
 			func() {
-				req = *didmod.NewMsgCreateDidDocument("did:cosmos:cash:subject", nil, nil, "subject")
+				req = *didmod.NewMsgCreateDidDocument("did:cosmos:net:elesto:subject", nil, nil, "subject")
 				errExp = nil
 			},
 		},
@@ -38,7 +38,7 @@ func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {
 		{
 			"FAIL: did already exists",
 			func() {
-				did := "did:cosmos:cash:subject"
+				did := "did:cosmos:net:elesto:subject"
 				didDoc, _ := didmod.NewDidDocument(did)
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
@@ -76,15 +76,15 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateDidDocument() {
 		{
 			"FAIL: not found",
 			func() {
-				req = *didmod.NewMsgUpdateDidDocument(&didmod.DidDocument{Id: "did:cosmos:cash:subject"}, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
-				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:cash:subject")
+				req = *didmod.NewMsgUpdateDidDocument(&didmod.DidDocument{Id: "did:cosmos:net:elesto:subject"}, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:net:elesto:subject")
 			},
 		},
 		{
 			"FAIL: unauthorized",
 			func() {
 
-				did := "did:cosmos:cash:subject"
+				did := "did:cosmos:net:elesto:subject"
 				didDoc, _ := didmod.NewDidDocument(did)
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 
@@ -97,12 +97,12 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateDidDocument() {
 			"PASS: replace did document",
 			func() {
 
-				did := "did:cosmos:cash:subject"
+				did := "did:cosmos:net:elesto:subject"
 				didDoc, _ := didmod.NewDidDocument(did, didmod.WithVerifications(
 					didmod.NewVerification(
 						didmod.NewVerificationMethod(
-							"did:cosmos:cash:subject#key-1",
-							"did:cosmos:cash:subject",
+							"did:cosmos:net:elesto:subject#key-1",
+							"did:cosmos:net:elesto:subject",
 							didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 							didmod.EcdsaSecp256k1VerificationKey2019,
 						),
@@ -123,11 +123,11 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateDidDocument() {
 		{
 			"FAIL: invalid controllers",
 			func() {
-				didDoc, _ := didmod.NewDidDocument("did:cosmos:cash:subject", didmod.WithVerifications(
+				didDoc, _ := didmod.NewDidDocument("did:cosmos:net:elesto:subject", didmod.WithVerifications(
 					didmod.NewVerification(
 						didmod.NewVerificationMethod(
-							"did:cosmos:cash:subject#key-1",
-							"did:cosmos:cash:subject",
+							"did:cosmos:net:elesto:subject#key-1",
+							"did:cosmos:net:elesto:subject",
 							didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 							didmod.EcdsaSecp256k1VerificationKey2019,
 						),
@@ -179,8 +179,8 @@ func (suite *KeeperTestSuite) TestHandleMsgAddVerification() {
 		{
 			"FAIL: can not add verification, did does not exist",
 			func() {
-				req = *didmod.NewMsgAddVerification("did:cosmos:cash:subject", nil, "subject")
-				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:cash:subject")
+				req = *didmod.NewMsgAddVerification("did:cosmos:net:elesto:subject", nil, "subject")
+				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:net:elesto:subject")
 			},
 		},
 		{
@@ -188,12 +188,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddVerification() {
 			func() {
 				// setup
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -206,8 +206,8 @@ func (suite *KeeperTestSuite) TestHandleMsgAddVerification() {
 				// actual test
 				v := didmod.NewVerification(
 					didmod.NewVerificationMethod(
-						"did:cosmos:cash:subject#key-2",
-						"did:cosmos:cash:subject",
+						"did:cosmos:net:elesto:subject#key-2",
+						"did:cosmos:net:elesto:subject",
 						didmod.NewBlockchainAccountID("foochainid", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"),
 						didmod.CosmosAccountAddress,
 					),
@@ -223,12 +223,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddVerification() {
 			func() {
 				// setup
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -241,8 +241,8 @@ func (suite *KeeperTestSuite) TestHandleMsgAddVerification() {
 				// actual test
 				v := didmod.NewVerification(
 					didmod.NewVerificationMethod(
-						"did:cosmos:cash:subject#key-2",
-						"did:cosmos:cash:subject",
+						"did:cosmos:net:elesto:subject#key-2",
+						"did:cosmos:net:elesto:subject",
 						didmod.NewBlockchainAccountID("foochainid", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"),
 						didmod.CosmosAccountAddress,
 					),
@@ -260,12 +260,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddVerification() {
 				//signer := "subject"
 				signer := "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -279,7 +279,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddVerification() {
 				v := didmod.NewVerification(
 					didmod.NewVerificationMethod(
 						"",
-						"did:cosmos:cash:subject",
+						"did:cosmos:net:elesto:subject",
 						didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 						didmod.EcdsaSecp256k1VerificationKey2019,
 					),
@@ -294,12 +294,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddVerification() {
 			"PASS: can add verification to did document",
 			func() {
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -311,8 +311,8 @@ func (suite *KeeperTestSuite) TestHandleMsgAddVerification() {
 
 				v := didmod.NewVerification(
 					didmod.NewVerificationMethod(
-						"did:cosmos:cash:subject#key-2",
-						"did:cosmos:cash:subject",
+						"did:cosmos:net:elesto:subject#key-2",
+						"did:cosmos:net:elesto:subject",
 						didmod.NewBlockchainAccountID("foochainid", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"),
 						didmod.CosmosAccountAddress,
 					),
@@ -359,12 +359,12 @@ func (suite *KeeperTestSuite) TestHandleMsgSetVerificationRelationships() {
 			"FAIL: can not add verification relationship, did does not exist",
 			func() {
 				req = *didmod.NewMsgSetVerificationRelationships(
-					"did:cosmos:cash:subject",
-					"did:cosmos:cash:subject#key-1",
+					"did:cosmos:net:elesto:subject",
+					"did:cosmos:net:elesto:subject#key-1",
 					[]string{didmod.Authentication},
 					"subject",
 				)
-				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:cash:subject")
+				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:net:elesto:subject")
 			},
 		},
 		{
@@ -372,12 +372,12 @@ func (suite *KeeperTestSuite) TestHandleMsgSetVerificationRelationships() {
 			func() {
 				// setup
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -389,13 +389,13 @@ func (suite *KeeperTestSuite) TestHandleMsgSetVerificationRelationships() {
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 				// actual test
 				req = *didmod.NewMsgSetVerificationRelationships(
-					"did:cosmos:cash:subject",
-					"did:cosmos:cash:subject#key-1",
+					"did:cosmos:net:elesto:subject",
+					"did:cosmos:net:elesto:subject#key-1",
 					[]string{didmod.Authentication},
 					"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 				)
 
-				errExp = sdkerrors.Wrapf(didmod.ErrUnauthorized, "signer account %s not authorized to update the target did document at %s", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8", "did:cosmos:cash:subject")
+				errExp = sdkerrors.Wrapf(didmod.ErrUnauthorized, "signer account %s not authorized to update the target did document at %s", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8", "did:cosmos:net:elesto:subject")
 			},
 		},
 		{
@@ -403,13 +403,13 @@ func (suite *KeeperTestSuite) TestHandleMsgSetVerificationRelationships() {
 			func() {
 				// setup
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								//"did:cosmos:cash:subject#cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								//"did:cosmos:net:elesto:subject#cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -421,8 +421,8 @@ func (suite *KeeperTestSuite) TestHandleMsgSetVerificationRelationships() {
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 				// actual test
 				req = *didmod.NewMsgSetVerificationRelationships(
-					"did:cosmos:cash:subject",
-					"did:cosmos:cash:subject#key-1",
+					"did:cosmos:net:elesto:subject",
+					"did:cosmos:net:elesto:subject#key-1",
 					nil,
 					"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 				)
@@ -434,12 +434,12 @@ func (suite *KeeperTestSuite) TestHandleMsgSetVerificationRelationships() {
 			func() {
 				// setup
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -451,12 +451,12 @@ func (suite *KeeperTestSuite) TestHandleMsgSetVerificationRelationships() {
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 				// actual test
 				req = *didmod.NewMsgSetVerificationRelationships(
-					"did:cosmos:cash:subject",
-					"did:cosmos:cash:subject#key-does-not-exists",
+					"did:cosmos:net:elesto:subject",
+					"did:cosmos:net:elesto:subject#key-does-not-exists",
 					[]string{didmod.Authentication, didmod.CapabilityInvocation},
 					"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 				)
-				errExp = sdkerrors.Wrapf(didmod.ErrVerificationMethodNotFound, "verification method %v not found", "did:cosmos:cash:subject#key-does-not-exists")
+				errExp = sdkerrors.Wrapf(didmod.ErrVerificationMethodNotFound, "verification method %v not found", "did:cosmos:net:elesto:subject#key-does-not-exists")
 			},
 		},
 		{
@@ -464,12 +464,12 @@ func (suite *KeeperTestSuite) TestHandleMsgSetVerificationRelationships() {
 			func() {
 				// setup
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -482,8 +482,8 @@ func (suite *KeeperTestSuite) TestHandleMsgSetVerificationRelationships() {
 				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
 				// actual test
 				req = *didmod.NewMsgSetVerificationRelationships(
-					"did:cosmos:cash:subject",
-					"did:cosmos:cash:subject#key-1",
+					"did:cosmos:net:elesto:subject",
+					"did:cosmos:net:elesto:subject#key-1",
 					[]string{didmod.Authentication, didmod.CapabilityInvocation},
 					"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 				)
@@ -530,12 +530,12 @@ func (suite *KeeperTestSuite) TestHandleMsgRevokeVerification() {
 			"FAIL: can not revoke verification, not found",
 			func() {
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -545,8 +545,8 @@ func (suite *KeeperTestSuite) TestHandleMsgRevokeVerification() {
 					),
 				)
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				req = *didmod.NewMsgRevokeVerification(didDoc.Id, "did:cosmos:cash:subject#not-existent", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
-				errExp = sdkerrors.Wrapf(didmod.ErrVerificationMethodNotFound, "verification method id: %v", "did:cosmos:cash:subject#not-existent")
+				req = *didmod.NewMsgRevokeVerification(didDoc.Id, "did:cosmos:net:elesto:subject#not-existent", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				errExp = sdkerrors.Wrapf(didmod.ErrVerificationMethodNotFound, "verification method id: %v", "did:cosmos:net:elesto:subject#not-existent")
 			},
 		},
 		{
@@ -554,12 +554,12 @@ func (suite *KeeperTestSuite) TestHandleMsgRevokeVerification() {
 			func() {
 				signer := "controller-1"
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -569,7 +569,7 @@ func (suite *KeeperTestSuite) TestHandleMsgRevokeVerification() {
 					),
 				)
 
-				vmID := "did:cosmos:cash:subject#key-1"
+				vmID := "did:cosmos:net:elesto:subject#key-1"
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 				// controller-1 does not exists
@@ -582,12 +582,12 @@ func (suite *KeeperTestSuite) TestHandleMsgRevokeVerification() {
 			"PASS: can revoke verification",
 			func() {
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -600,7 +600,7 @@ func (suite *KeeperTestSuite) TestHandleMsgRevokeVerification() {
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
 				req = *didmod.NewMsgRevokeVerification(didDoc.Id,
-					"did:cosmos:cash:subject#key-1",
+					"did:cosmos:net:elesto:subject#key-1",
 					"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 				)
 				errExp = nil
@@ -639,24 +639,24 @@ func (suite *KeeperTestSuite) TestHandleMsgAddService() {
 			"FAIL: can not add service, did does not exist",
 			func() {
 				service := didmod.NewService(
-					"service-id",
-					"NonUserCredential",
-					"cash/multihash",
+					"did:cosmos:net:elesto:subject#linked-domain",
+					"LinkedDomains",
+					"https://elesto.network",
 				)
-				req = *didmod.NewMsgAddService("did:cosmos:cash:subject", service, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
-				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:cash:subject")
+				req = *didmod.NewMsgAddService("did:cosmos:net:elesto:subject", service, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:net:elesto:subject")
 			},
 		},
 		{
 			"FAIL: can not add service, service not defined",
 			func() {
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								didmod.DID("did:cosmos:cash:subject"),
+								"did:cosmos:net:elesto:subject#key-1",
+								didmod.DID("did:cosmos:net:elesto:subject"),
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -668,7 +668,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddService() {
 				// create the did
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 				// try adding a service
-				req = *didmod.NewMsgAddService("did:cosmos:cash:subject", nil, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				req = *didmod.NewMsgAddService("did:cosmos:net:elesto:subject", nil, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
 				errExp = sdkerrors.Wrap(didmod.ErrInvalidInput, "service is not defined")
 			},
 		},
@@ -677,12 +677,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddService() {
 			func() {
 				signer := "subject"
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								didmod.DID("did:cosmos:cash:subject"),
+								"did:cosmos:net:elesto:subject#key-1",
+								didmod.DID("did:cosmos:net:elesto:subject"),
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -693,9 +693,9 @@ func (suite *KeeperTestSuite) TestHandleMsgAddService() {
 				)
 
 				service := didmod.NewService(
-					"service-id",
-					"UserCredential",
-					"cash/multihash",
+					"did:cosmos:net:elesto:subject#linked-domain",
+					"LinkedDomains",
+					"https://elesto.network",
 				)
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
@@ -708,12 +708,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddService() {
 			"FAIL: cannot add service to did document with an empty type",
 			func() {
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -724,9 +724,9 @@ func (suite *KeeperTestSuite) TestHandleMsgAddService() {
 				)
 
 				service := didmod.NewService(
-					"service-id",
+					"did:cosmos:net:elesto:subject#linked-domain",
 					"",
-					"cash/multihash",
+					"https://elesto.network",
 				)
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
@@ -740,12 +740,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddService() {
 				//signer := "subject"
 				signer := "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -755,22 +755,27 @@ func (suite *KeeperTestSuite) TestHandleMsgAddService() {
 					),
 					didmod.WithServices(
 						didmod.NewService(
-							"service-id",
-							"UserCredential",
-							"cash/multihash",
+							"did:cosmos:net:elesto:subject#linked-domain",
+							"LinkedDomains",
+							"https://elesto.network",
 						),
 					),
 				)
 
 				service := didmod.NewService(
-					"service-id",
-					"UserCredential",
-					"cash/multihash",
+					"did:cosmos:net:elesto:subject#linked-domain",
+					"LinkedDomains",
+					"https://elesto.network",
 				)
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				if _, found := suite.keeper.GetDidDocument(suite.ctx, []byte(didDoc.Id)); !found {
+					suite.FailNow("test setup failed, did not stored ")
+				}
+
 				req = *didmod.NewMsgAddService(didDoc.Id, service, signer)
-				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "duplicated verification method id %s", "service-id")
+				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "duplicated service id did:cosmos:net:elesto:subject#linked-domain")
 			},
 		},
 		{
@@ -778,12 +783,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddService() {
 			func() {
 				signer := "subject"
 				didDoc, err := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewBlockchainAccountID("foochainid", signer),
 								didmod.CosmosAccountAddress,
 							),
@@ -798,14 +803,13 @@ func (suite *KeeperTestSuite) TestHandleMsgAddService() {
 				}
 
 				service := didmod.NewService(
-					"service-id",
-					"UserCredential",
-					"cash/multihash",
+					"did:cosmos:net:elesto:subject#linked-domain",
+					"LinkedDomains",
+					"https://elesto.network",
 				)
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
-
 				req = *didmod.NewMsgAddService(didDoc.Id, service, signer)
 				errExp = nil
 			},
@@ -847,16 +851,15 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteService() {
 			},
 		},
 		{
-
 			"PASS: can delete service from did document",
 			func() {
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -866,16 +869,16 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteService() {
 					),
 					didmod.WithServices(
 						didmod.NewService(
-							"service-id",
-							"UserCredential",
-							"cash/multihash",
+							"did:cosmos:net:elesto:subject#linked-domain",
+							"LinkedDomains",
+							"https://elesto.network",
 						),
 					),
 				)
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
-				req = *didmod.NewMsgDeleteService(didDoc.Id, "service-id", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				req = *didmod.NewMsgDeleteService(didDoc.Id, "did:cosmos:net:elesto:subject#linked-domain", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
 				errExp = nil
 			},
 		},
@@ -884,12 +887,12 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteService() {
 			func() {
 
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -902,6 +905,7 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteService() {
 				serviceID := ""
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
 				req = *didmod.NewMsgDeleteService(didDoc.Id, serviceID, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
 				errExp = sdkerrors.Wrapf(didmod.ErrInvalidState, "the did document doesn't have services associated")
 			},
@@ -910,12 +914,12 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteService() {
 			"FAIL: unauthorized (wrong relationship)",
 			func() {
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								"did:cosmos:cash:subject",
+								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:net:elesto:subject",
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -925,7 +929,7 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteService() {
 					),
 				)
 
-				serviceID := "service-id"
+				serviceID := "did:cosmos:net:elesto:subject#linked-domain"
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 				req = *didmod.NewMsgDeleteService(didDoc.Id, serviceID, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
@@ -965,22 +969,22 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 			"FAIL: cannot add controller, did doesn't exist",
 			func() {
 				req = *didmod.NewMsgAddController(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 					"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
-				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:cash:subject")
+				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:net:elesto:subject")
 			},
 		},
 		{
 			"FAIL: controller is not a valid did",
 			func() {
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								didmod.DID("did:cosmos:cash:subject"),
+								"did:cosmos:net:elesto:subject#key-1",
+								didmod.DID("did:cosmos:net:elesto:subject"),
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -992,7 +996,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 				// create the did
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 				// try adding a service
-				req = *didmod.NewMsgAddController("did:cosmos:cash:subject", "", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				req = *didmod.NewMsgAddController("did:cosmos:net:elesto:subject", "", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
 				errExp = sdkerrors.Wrap(didmod.ErrInvalidDIDFormat, "did document controller validation error ''")
 			},
 		},
@@ -1001,12 +1005,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 			func() {
 
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								didmod.DID("did:cosmos:cash:subject"),
+								"did:cosmos:net:elesto:subject#key-1",
+								didmod.DID("did:cosmos:net:elesto:subject"),
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1019,7 +1023,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 
 				req = *didmod.NewMsgAddController(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 					"cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2", // does not match the pub key (it's the new controller)
 				)
@@ -1032,12 +1036,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 			func() {
 
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								didmod.DID("did:cosmos:cash:subject"),
+								"did:cosmos:net:elesto:subject#key-1",
+								didmod.DID("did:cosmos:net:elesto:subject"),
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1050,7 +1054,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 
 				req = *didmod.NewMsgAddController(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					"did:cosmos:net:foochain:whatever",
 					"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8", // does not match the pub key (it's the new controller)
 				)
@@ -1062,12 +1066,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 			"PASS: can add controller (via authentication relationship)",
 			func() {
 				didDoc, err := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								didmod.DID("did:cosmos:cash:subject"),
+								"did:cosmos:net:elesto:subject#key-1",
+								didmod.DID("did:cosmos:net:elesto:subject"),
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1085,7 +1089,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
 
 				req = *didmod.NewMsgAddController(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 					"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
 				errExp = nil
@@ -1095,12 +1099,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 			"PASS: can add controller (via controller)",
 			func() {
 				didDoc, err := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								didmod.DID("did:cosmos:cash:subject"),
+								"did:cosmos:net:elesto:subject#key-1",
+								didmod.DID("did:cosmos:net:elesto:subject"),
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1119,7 +1123,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
 
 				req = *didmod.NewMsgAddController(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					"did:cosmos:key:cosmos17t8t3t6a6vpgk69perfyq930593sa8dn4kzsdf",
 					"cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2") // this is the controller
 
@@ -1130,12 +1134,12 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 			"PASS: controller already added (duplicated)",
 			func() {
 				didDoc, err := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								didmod.DID("did:cosmos:cash:subject"),
+								"did:cosmos:net:elesto:subject#key-1",
+								didmod.DID("did:cosmos:net:elesto:subject"),
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1153,7 +1157,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
 
 				req = *didmod.NewMsgAddController(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 					"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
 				errExp = nil
@@ -1195,10 +1199,10 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteController() {
 			"FAIL: cannot delete controller, did doesn't exist",
 			func() {
 				req = *didmod.NewMsgDeleteController(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 					"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
-				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:cash:subject")
+				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:net:elesto:subject")
 			},
 		},
 		{
@@ -1206,12 +1210,12 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteController() {
 			func() {
 
 				didDoc, _ := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								didmod.DID("did:cosmos:cash:subject"),
+								"did:cosmos:net:elesto:subject#key-1",
+								didmod.DID("did:cosmos:net:elesto:subject"),
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1224,7 +1228,7 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteController() {
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 
 				req = *didmod.NewMsgDeleteController(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 					"cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2", // does not match the pub key (it's the new controller)
 				)
@@ -1236,12 +1240,12 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteController() {
 			"PASS: can delete controller (via authentication relationship)",
 			func() {
 				didDoc, err := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								didmod.DID("did:cosmos:cash:subject"),
+								"did:cosmos:net:elesto:subject#key-1",
+								didmod.DID("did:cosmos:net:elesto:subject"),
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1259,7 +1263,7 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteController() {
 				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
 
 				req = *didmod.NewMsgDeleteController(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 					"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
 				errExp = nil
@@ -1268,12 +1272,12 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteController() {
 			"PASS: can delete controller (via controller)",
 			func() {
 				didDoc, err := didmod.NewDidDocument(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					didmod.WithVerifications(
 						didmod.NewVerification(
 							didmod.NewVerificationMethod(
-								"did:cosmos:cash:subject#key-1",
-								didmod.DID("did:cosmos:cash:subject"),
+								"did:cosmos:net:elesto:subject#key-1",
+								didmod.DID("did:cosmos:net:elesto:subject"),
 								didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								didmod.EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1295,7 +1299,7 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteController() {
 				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
 
 				req = *didmod.NewMsgDeleteController(
-					"did:cosmos:cash:subject",
+					"did:cosmos:net:elesto:subject",
 					"did:cosmos:key:cosmos17t8t3t6a6vpgk69perfyq930593sa8dn4kzsdf",
 					"cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2", // this is the controller
 				)

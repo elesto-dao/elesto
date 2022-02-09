@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"net/url"
 	"regexp"
 	"sort"
 	"strings"
@@ -102,15 +103,13 @@ sub-delims         = "!" / "$" / "&" / "'" / "(" / ")"
 
 const (
 	contextDIDBase            = "https://www.w3.org/ns/did/v1"
-	didValidationRegexpStr    = `^did\:[a-z0-9]+\:(([A-Z.a-z0-9]|\-|_|%[0-9A-Fa-f][0-9A-Fa-f])*\:)*([A-Z.a-z0-9]|\-|_|%[0-9A-Fa-f][0-9A-Fa-f])+$`
-	didURLValidationRegexpStr = `^did\:[a-z0-9]+\:(([A-Z.a-z0-9]|\-|_|%[0-9A-Fa-f][0-9A-Fa-f])*\:)*([A-Z.a-z0-9]|\-|_|%[0-9A-Fa-f][0-9A-Fa-f])+(/(([-A-Z._a-z0-9]|~)|%[0-9A-Fa-f][0-9A-Fa-f]|(\!|\$|&|'|\(|\)|\*|\+|,|;|\=)|\:|@)*)*(\?(((([-A-Z._a-z0-9]|~)|%[0-9A-Fa-f][0-9A-Fa-f]|(\!|\$|&|'|\(|\)|\*|\+|,|;|\=)|\:|@)|/|\?)*))?(#(((([-A-Z._a-z0-9]|~)|%[0-9A-Fa-f][0-9A-Fa-f]|(\!|\$|&|'|\(|\)|\*|\+|,|;|\=)|\:|@)|/|\?)*))?$`
-	rfc3986RegexpStr          = `^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$`
+	didValidationRegexpStr    = `^did\:cosmos\:(([A-Z.a-z0-9]|\-|_|%[0-9A-Fa-f][0-9A-Fa-f])*\:)*([A-Z.a-z0-9]|\-|_|%[0-9A-Fa-f][0-9A-Fa-f])+$`
+	didURLValidationRegexpStr = `^did\:cosmos\:(([A-Z.a-z0-9]|\-|_|%[0-9A-Fa-f][0-9A-Fa-f])*\:)*([A-Z.a-z0-9]|\-|_|%[0-9A-Fa-f][0-9A-Fa-f])+(/(([-A-Z._a-z0-9]|~)|%[0-9A-Fa-f][0-9A-Fa-f]|(\!|\$|&|'|\(|\)|\*|\+|,|;|\=)|\:|@)*)*(\?(((([-A-Z._a-z0-9]|~)|%[0-9A-Fa-f][0-9A-Fa-f]|(\!|\$|&|'|\(|\)|\*|\+|,|;|\=)|\:|@)|/|\?)*))?(#(((([-A-Z._a-z0-9]|~)|%[0-9A-Fa-f][0-9A-Fa-f]|(\!|\$|&|'|\(|\)|\*|\+|,|;|\=)|\:|@)|/|\?)*))?$`
 )
 
 var (
 	didValidationRegexp    = regexp.MustCompile(didValidationRegexpStr)
 	didURLValidationRegexp = regexp.MustCompile(didURLValidationRegexpStr)
-	rfc3986Regexp          = regexp.MustCompile(rfc3986RegexpStr)
 )
 
 // DID as typed string
@@ -151,8 +150,14 @@ func IsValidDIDURL(input string) bool {
 
 // IsValidRFC3986Uri checks if the input string is a valid RFC3986 URI
 // (cfr https://datatracker.ietf.org/doc/html/rfc3986#page-50)
+// it uses the algorithm from https://github.com/xeipuuv/gojsonschema/blob/v1.2.0/format_checkers.go#L275
+// that is used in hyperledger aries go https://github.com/hyperledger/aries-framework-go/tree/v0.1.7
 func IsValidRFC3986Uri(input string) bool {
-	return rfc3986Regexp.MatchString(input)
+	u, err := url.Parse(input)
+	if err != nil || u.Scheme == "" {
+		return false
+	}
+	return !strings.Contains(input, `\`)
 }
 
 // IsValidDIDDocument tells if a DID document is valid,
@@ -255,7 +260,7 @@ func ValidateVerification(v *Verification, allowedControllers ...string) (err er
 		return
 	}
 
-	// check for empty publickey
+	// check for empty public key
 	if v.Method.VerificationMaterial.Size() == 0 {
 		err = sdkerrors.Wrapf(ErrInvalidInput, "verification material not set for verification method %s", v.Method.Id)
 		return
@@ -649,7 +654,7 @@ func (didDoc *DidDocument) AddServices(services ...*Service) (err error) {
 
 		// verify that there are no duplicates in method ids
 		if _, found := index[s.Id]; found {
-			err = sdkerrors.Wrapf(ErrInvalidInput, "duplicated verification method id %s", s.Id)
+			err = sdkerrors.Wrapf(ErrInvalidInput, "duplicated service id %s", s.Id)
 			return
 		}
 		index[s.Id] = struct{}{}

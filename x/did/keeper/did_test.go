@@ -15,7 +15,7 @@ func (suite *KeeperTestSuite) TestDidDocumentKeeperSetAndGet() {
 		{
 			"data stored successfully",
 			func() did.DidDocument {
-				dd, _ := did.NewDidDocument("did:cash:subject")
+				dd, _ := did.NewDidDocument("did:cosmos:net:elesto:subject")
 				return dd
 			},
 			true,
