@@ -81,6 +81,7 @@ message VerificationMethod {
     string blockchainAccountID = 4;
     string publicKeyHex        = 5;
     string publicKeyMultibase  = 6;
+    PublicKeyJwk PublicKeyJwk  = 7;
   }
 }
 
@@ -104,4 +105,20 @@ message DidMetadata {
   google.protobuf.Timestamp created = 2 [(gogoproto.stdtime) = true];
   google.protobuf.Timestamp updated = 3 [(gogoproto.stdtime) = true];
   bool deactivated                  = 4;
+}
+
+// PublicKeyJwk is a type of verification material, the implementation
+// support is limited to elliptic curve public keys
+// see https://www.w3.org/TR/did-core/#dfn-publickeyjwk
+// see https://datatracker.ietf.org/doc/html/rfc7517
+message PublicKeyJwk {
+  option (gogoproto.equal) = true;
+  option (gogoproto.goproto_getters)  = false;
+
+  string Kid = 1; // (Key ID) used to match a specific key, and for did key fragment
+  string Crv = 2; // identifies the cryptographic curve used with the key
+  string X   = 3; // contains the x coordinate for the elliptic curve point
+  string Y   = 4; // contains the y coordinate for the elliptic curve point
+  string Kty = 5; // identifies the key type (e.g. EC for elliptic curve)
+
 }

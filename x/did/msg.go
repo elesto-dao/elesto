@@ -76,7 +76,7 @@ func (MsgUpdateDidDocument) Type() string {
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (msg MsgUpdateDidDocument) GetSignBytes() []byte {
+func (MsgUpdateDidDocument) GetSignBytes() []byte {
 	panic("TODO: needed in simulations for fuzz testing")
 }
 
@@ -123,7 +123,7 @@ func (MsgAddVerification) Type() string {
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (msg MsgAddVerification) GetSignBytes() []byte {
+func (MsgAddVerification) GetSignBytes() []byte {
 	panic("TODO: needed in simulations for fuzz testing")
 }
 
@@ -171,7 +171,7 @@ func (MsgRevokeVerification) Type() string {
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (msg MsgRevokeVerification) GetSignBytes() []byte {
+func (MsgRevokeVerification) GetSignBytes() []byte {
 	panic("TODO: needed in simulations for fuzz testing")
 }
 
@@ -217,7 +217,7 @@ func (MsgSetVerificationRelationships) Type() string {
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (msg MsgSetVerificationRelationships) GetSignBytes() []byte {
+func (MsgSetVerificationRelationships) GetSignBytes() []byte {
 	panic("TODO: needed in simulations for fuzz testing")
 }
 
@@ -265,7 +265,7 @@ func (MsgAddService) Type() string {
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (msg MsgAddService) GetSignBytes() []byte {
+func (MsgAddService) GetSignBytes() []byte {
 	panic("TODO: needed in simulations for fuzz testing")
 }
 
@@ -310,7 +310,7 @@ func (MsgDeleteService) Type() string {
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (msg MsgDeleteService) GetSignBytes() []byte {
+func (MsgDeleteService) GetSignBytes() []byte {
 	panic("TODO: needed in simulations for fuzz testing")
 }
 
@@ -355,7 +355,7 @@ func (MsgAddController) Type() string {
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (msg MsgAddController) GetSignBytes() []byte {
+func (MsgAddController) GetSignBytes() []byte {
 	panic("TODO: needed in simulations for fuzz testing")
 }
 
@@ -400,7 +400,7 @@ func (MsgDeleteController) Type() string {
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (msg MsgDeleteController) GetSignBytes() []byte {
+func (MsgDeleteController) GetSignBytes() []byte {
 	panic("TODO: needed in simulations for fuzz testing")
 }
 

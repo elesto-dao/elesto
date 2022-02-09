@@ -28,26 +28,26 @@ func GetTxCmd() *cobra.Command {
 	// this line is used by starport scaffolding # 1
 	cmd.AddCommand(
 		NewCreateDidDocumentCmd(),
-		NewAddVerificationCmd(),
 		NewAddServiceCmd(),
-		NewRevokeVerificationCmd(),
 		NewDeleteServiceCmd(),
-		NewSetVerificationRelationshipCmd(),
-		NewLinkAriesAgentCmd(),
 		NewAddControllerCmd(),
 		NewDeleteControllerCmd(),
+		NewAddVerificationCmd(),
+		NewSetVerificationRelationshipCmd(),
+		NewRevokeVerificationCmd(),
+		NewLinkAriesAgentCmd(),
 	)
 
 	return cmd
 }
 
 // deriveVMType derive the verification method type from a public key
-func deriveVMType(pubKey cryptodid.PubKey) (vmType did.VerificationMaterialType, err error) {
+func deriveVMType(pubKey cryptodid.PubKey) (vmType did.VerificationMethodType, err error) {
 	switch pubKey.(type) {
 	case *ed25519.PubKey:
-		vmType = did.DIDVMethodTypeEd25519VerificationKey2018
+		vmType = did.Ed25519VerificationKey2018
 	case *secp256k1.PubKey:
-		vmType = did.DIDVMethodTypeEcdsaSecp256k1VerificationKey2019
+		vmType = did.EcdsaSecp256k1VerificationKey2019
 	default:
 		err = did.ErrKeyFormatNotSupported
 	}
@@ -87,7 +87,8 @@ func NewCreateDidDocumentCmd() *cobra.Command {
 				did.NewVerificationMethod(
 					vmID,
 					didID,
-					did.NewPublicKeyMultibase(pubKey.Bytes(), vmType),
+					did.NewPublicKeyMultibase(pubKey.Bytes()),
+					vmType,
 				),
 				[]string{did.Authentication},
 				nil,
@@ -151,7 +152,8 @@ func NewAddVerificationCmd() *cobra.Command {
 				did.NewVerificationMethod(
 					vmID,
 					didID,
-					did.NewPublicKeyMultibase(pk.Bytes(), vmType),
+					did.NewPublicKeyMultibase(pk.Bytes()),
+					vmType,
 				),
 				[]string{did.Authentication},
 				nil,
