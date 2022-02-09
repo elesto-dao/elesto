@@ -39,6 +39,12 @@ test:
 sim:
 	@go test -benchmem -bench BenchmarkSimulation ./app -NumBlocks=200 -BlockSize 50 -Commit=true -Verbose=true -Enabled=true
 
+protogen:
+	startport generate proto-go
+
+openapi:
+	starport generate openapi
+
 lint:
 	@echo "--> Running linter"
 	@golangci-lint run

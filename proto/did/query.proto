@@ -1,5 +1,5 @@
 syntax = "proto3";
-package allinbits.cosmoscash.did;
+package elestodao.elesto.did;
 
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
@@ -15,11 +15,11 @@ option go_package = "github.com/elesto-dao/elesto/x/did";
 service Query {
   // DidDocuments queries all did documents that match the given status.
   rpc DidDocuments(QueryDidDocumentsRequest) returns (QueryDidDocumentsResponse) {
-    option (google.api.http).get = "/allinbits/did/dids";
+    option (google.api.http).get = "/elesto/did/dids";
   }
   // DidDocument queries a did documents with an id.
   rpc DidDocument(QueryDidDocumentRequest) returns (QueryDidDocumentResponse) {
-    option (google.api.http).get = "/allinbits/did/dids/{id}";
+    option (google.api.http).get = "/elesto/did/dids/{id}";
   }
 }
 
