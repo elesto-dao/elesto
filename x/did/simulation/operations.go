@@ -16,26 +16,29 @@ import (
 )
 
 var (
-	TypeMsgCreateDidDocument  = sdk.MsgTypeURL(&did.MsgCreateDidDocument{})
-	TypeMsgAddVerification    = sdk.MsgTypeURL(&did.MsgAddVerification{})
-	TypeMsgRevokeVerification = sdk.MsgTypeURL(&did.MsgRevokeVerification{})
-	TypeMsgAddService         = sdk.MsgTypeURL(&did.MsgAddService{})
-	TypeMsgDeleteService      = sdk.MsgTypeURL(&did.MsgDeleteService{})
+	TypeMsgCreateDidDocument            = sdk.MsgTypeURL(&did.MsgCreateDidDocument{})
+	TypeMsgAddVerification              = sdk.MsgTypeURL(&did.MsgAddVerification{})
+	TypeMsgRevokeVerification           = sdk.MsgTypeURL(&did.MsgRevokeVerification{})
+	TypeMsgSetVerificationRelationships = sdk.MsgTypeURL(&did.MsgSetVerificationRelationships{})
+	TypeMsgAddService                   = sdk.MsgTypeURL(&did.MsgAddService{})
+	TypeMsgDeleteService                = sdk.MsgTypeURL(&did.MsgDeleteService{})
 )
 
 const (
-	opWeightMsgCreateDidDocument  = "op_weight_msg_create_did_document"
-	opWeightMsgAddVerification    = "op_weight_msg_create_add_verification"
-	opWeightMsgRevokeVerification = "op_weight_msg_create_revoke_verification"
-	opWeightMsgAddService         = "op_weight_msg_create_add_service"
-	opWeightMsgDeleteService      = "op_weight_msg_create_delete_service"
+	opWeightMsgCreateDidDocument            = "op_weight_msg_create_did_document"
+	opWeightMsgAddVerification              = "op_weight_msg_create_add_verification"
+	opWeightMsgRevokeVerification           = "op_weight_msg_create_revoke_verification"
+	opWeightMsgSetVerificationRelationships = "op_weight_msg_create_set_verification_relationships"
+	opWeightMsgAddService                   = "op_weight_msg_create_add_service"
+	opWeightMsgDeleteService                = "op_weight_msg_create_delete_service"
 
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgCreateDidDocument  int = 100
-	defaultWeightMsgAddVerification    int = 100
-	defaultWeightMsgRevokeVerification int = 100
-	defaultWeightMsgAddService         int = 100
-	defaultWeightMsgDeleteService      int = 100
+	defaultWeightMsgCreateDidDocument            int = 100
+	defaultWeightMsgAddVerification              int = 100
+	defaultWeightMsgRevokeVerification           int = 100
+	defaultWeightMsgSetVerificationRelationships int = 200
+	defaultWeightMsgAddService                   int = 100
+	defaultWeightMsgDeleteService                int = 100
 
 	// this line is used by starport scaffolding # simapp/module/const
 )
@@ -62,6 +65,13 @@ func WeightedOperations(simState module.SimulationState, didKeeper keeper.Keeper
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgRevokeVerification, &weightMsgRevokeVerification, nil,
 		func(_ *rand.Rand) {
 			weightMsgRevokeVerification = defaultWeightMsgRevokeVerification
+		},
+	)
+
+	var weightMsgSetVerificationRelationships int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSetVerificationRelationships, &weightMsgSetVerificationRelationships, nil,
+		func(_ *rand.Rand) {
+			weightMsgSetVerificationRelationships = defaultWeightMsgSetVerificationRelationships
 		},
 	)
 
@@ -92,6 +102,11 @@ func WeightedOperations(simState module.SimulationState, didKeeper keeper.Keeper
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgRevokeVerification,
 		SimulateMsgRevokeVerification(didKeeper, bk, ak),
+	))
+
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgSetVerificationRelationships,
+		SimulateMsgSetVerificationRelationships(didKeeper, bk, ak),
 	))
 
 	operations = append(operations, simulation.NewWeightedOperation(
@@ -267,9 +282,55 @@ func SimulateMsgRevokeVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Ac
 			CoinsSpentInMsg: sdk.NewCoins(),
 		}
 
-		opMsg, fOp, err := simulation.GenAndDeliverTxWithRandFees(txCtx)
+		return simulation.GenAndDeliverTxWithRandFees(txCtx)
+	}
+}
 
-		return opMsg, fOp, err
+// SimulateMsgSetVerificationRelationships simulates a MsgSetVerificationRelationships message
+func SimulateMsgSetVerificationRelationships(k keeper.Keeper, bk did.BankKeeper, ak did.AccountKeeper) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		didOwner, _ := simtypes.RandomAcc(r, accs)
+		ownerAddress := didOwner.Address.String()
+		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
+
+		// return an error that will not stop simulation as the did was not found or the verification method does not exists
+		if !found {
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgSetVerificationRelationships, "did not found, could not remove verification method"), nil, nil
+		}
+
+		auth := didDoc.VerificationMethod
+
+		// return an error that will not stop simulation if the length of the VM array is 1
+		if len(auth) == 1 {
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgSetVerificationRelationships, "could not remove verification method as it would break the did document"), nil, nil
+		}
+
+		msg := did.NewMsgSetVerificationRelationships(
+			didID.String(),
+			auth[1].Id,
+			[]string{did.KeyAgreement, did.CapabilityDelegation},
+			ownerAddress,
+		)
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         TypeMsgSetVerificationRelationships,
+			Context:         ctx,
+			SimAccount:      didOwner,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      did.ModuleName,
+			CoinsSpentInMsg: sdk.NewCoins(),
+		}
+
+		return simulation.GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
