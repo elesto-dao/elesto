@@ -15,17 +15,20 @@ import (
 )
 
 var (
-	TypeMsgCreateDidDocument = sdk.MsgTypeURL(&did.MsgCreateDidDocument{})
-	TypeMsgAddVerification   = sdk.MsgTypeURL(&did.MsgAddVerification{})
+	TypeMsgCreateDidDocument  = sdk.MsgTypeURL(&did.MsgCreateDidDocument{})
+	TypeMsgAddVerification    = sdk.MsgTypeURL(&did.MsgAddVerification{})
+	TypeMsgRevokeVerification = sdk.MsgTypeURL(&did.MsgRevokeVerification{})
 )
 
 const (
-	opWeightMsgCreateDidDocument = "op_weight_msg_create_did_document"
-	opWeightMsgAddVerification   = "op_weight_msg_create_add_verification"
+	opWeightMsgCreateDidDocument  = "op_weight_msg_create_did_document"
+	opWeightMsgAddVerification    = "op_weight_msg_create_add_verification"
+	opWeightMsgRevokeVerification = "op_weight_msg_create_revoke_verification"
 
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgCreateDidDocument int = 100
-	defaultWeightMsgAddVerification   int = 100
+	defaultWeightMsgCreateDidDocument  int = 100
+	defaultWeightMsgAddVerification    int = 100
+	defaultWeightMsgRevokeVerification int = 100
 
 	// this line is used by starport scaffolding # simapp/module/const
 )
@@ -42,9 +45,16 @@ func WeightedOperations(simState module.SimulationState, didKeeper keeper.Keeper
 	)
 
 	var weightMsgAddVerification int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddVerification, &weightMsgCreateDidDocument, nil,
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddVerification, &weightMsgAddVerification, nil,
 		func(_ *rand.Rand) {
 			weightMsgAddVerification = defaultWeightMsgAddVerification
+		},
+	)
+
+	var weightMsgRevokeVerification int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgRevokeVerification, &weightMsgRevokeVerification, nil,
+		func(_ *rand.Rand) {
+			weightMsgRevokeVerification = defaultWeightMsgRevokeVerification
 		},
 	)
 
@@ -56,6 +66,11 @@ func WeightedOperations(simState module.SimulationState, didKeeper keeper.Keeper
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgAddVerification,
 		SimulateMsgAddVerification(didKeeper, bk, ak),
+	))
+
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgRevokeVerification,
+		SimulateMsgRevokeVerification(didKeeper, bk, ak),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
@@ -118,7 +133,7 @@ func SimulateMsgCreateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 	}
 }
 
-// SimulateMsgAddVerification simulates a MsgCreateDidDocument message
+// SimulateMsgAddVerification simulates a MsgAddVerification message
 func SimulateMsgAddVerification(k keeper.Keeper, bk did.BankKeeper, ak did.AccountKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
@@ -175,6 +190,54 @@ func SimulateMsgAddVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Accou
 			return simtypes.NoOpMsg(did.ModuleName, TypeMsgAddVerification, "did not found, could not add verification method"), nil, nil
 		}
 		return opMsg, fOp, err
+	}
+}
 
+// SimulateMsgRevokeVerification simulates a MsgRevokeVerification message
+func SimulateMsgRevokeVerification(k keeper.Keeper, bk did.BankKeeper, ak did.AccountKeeper) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		didOwner, _ := simtypes.RandomAcc(r, accs)
+		ownerAddress := didOwner.Address.String()
+		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
+
+		// return an error that will not stop simulation as the did was not found or the verification method does not exists
+		if !found {
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgRevokeVerification, "did not found, could not remove verification method"), nil, nil
+		}
+
+		auth := didDoc.VerificationMethod
+
+		// return an error that will not stop simulation if the length of the VM array is 1
+		if len(auth) == 1 {
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgRevokeVerification, "could not remove verification method as it would break the did document"), nil, nil
+		}
+
+		msg := did.NewMsgRevokeVerification(
+			didID.String(),
+			auth[1].Id,
+			ownerAddress,
+		)
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         TypeMsgRevokeVerification,
+			Context:         ctx,
+			SimAccount:      didOwner,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      did.ModuleName,
+			CoinsSpentInMsg: sdk.NewCoins(),
+		}
+
+		opMsg, fOp, err := simulation.GenAndDeliverTxWithRandFees(txCtx)
+
+		return opMsg, fOp, err
 	}
 }
