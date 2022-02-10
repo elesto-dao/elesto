@@ -184,10 +184,8 @@ func (msg MsgRevokeVerification) GetSigners() []sdk.AccAddress {
 // --------------------------
 // SET VERIFICATION RELATIONSHIPS
 // --------------------------
-// msg types
-const (
-	TypeMsgSetVerificationRelationships = "set-verification-relationships"
-)
+
+var _ sdk.Msg = &MsgSetVerificationRelationships{}
 
 func NewMsgSetVerificationRelationships(
 	id string,
@@ -209,13 +207,14 @@ func (MsgSetVerificationRelationships) Route() string {
 }
 
 // Type implements sdk.Msg
-func (MsgSetVerificationRelationships) Type() string {
-	return TypeMsgSetVerificationRelationships
+func (msg MsgSetVerificationRelationships) Type() string {
+	return sdk.MsgTypeURL(&msg)
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (MsgSetVerificationRelationships) GetSignBytes() []byte {
-	panic("TODO: needed in simulations for fuzz testing")
+func (msg MsgSetVerificationRelationships) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg
