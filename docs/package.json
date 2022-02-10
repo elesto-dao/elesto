@@ -1,0 +1,21 @@
+{
+  "name": "elesto-docs",
+  "version": "1.0.0",
+  "description": "Elesto Documentation",
+  "main": "index.js",
+  "scripts": {
+    "serve": "vuepress dev",
+    "build": "vuepress build"
+  },
+  "keywords": [
+    "elesto",
+    "docs",
+    "documentation",
+    "cosmos-cash"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "vuepress-theme-cosmos": "^1.0.183"
+  }
+}

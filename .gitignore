@@ -54,3 +54,9 @@ build
 # generated docs
 /site
 /docs/assets/diagrams/out/
+
+#Vuepress
+docs/node_modules
+docs/.idea
+docs/.vscode
+docs/.vuepress/dist
