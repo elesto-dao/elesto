@@ -92,10 +92,6 @@ func (msg MsgUpdateDidDocument) GetSigners() []sdk.AccAddress {
 // --------------------------
 // ADD VERIFICATION
 // --------------------------
-// msg types
-const (
-	TypeMsgAddVerification = "add-verification"
-)
 
 var _ sdk.Msg = &MsgAddVerification{}
 
@@ -118,13 +114,14 @@ func (MsgAddVerification) Route() string {
 }
 
 // Type implements sdk.Msg
-func (MsgAddVerification) Type() string {
-	return TypeMsgAddVerification
+func (msg MsgAddVerification) Type() string {
+	return sdk.MsgTypeURL(&msg)
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (MsgAddVerification) GetSignBytes() []byte {
-	panic("TODO: needed in simulations for fuzz testing")
+func (msg MsgAddVerification) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg

@@ -55,11 +55,11 @@ func TestMsgAddVerification_Route(t *testing.T) {
 }
 
 func TestMsgAddVerification_Type(t *testing.T) {
-	assert.Equalf(t, TypeMsgAddVerification, MsgAddVerification{}.Type(), "Type()")
+	assert.Equalf(t, sdk.MsgTypeURL(&MsgAddVerification{}), MsgAddVerification{}.Type(), "Type()")
 }
 
 func TestMsgAddVerification_GetSignBytes(t *testing.T) {
-	assert.Panicsf(t, func() { MsgAddVerification{}.GetSignBytes() }, "GetSignBytes()")
+	assert.Equal(t, sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&MsgAddVerification{})), MsgAddVerification{}.GetSignBytes(), "GetSignBytes()")
 }
 
 func TestMsgAddVerification_GetSigners(t *testing.T) {
