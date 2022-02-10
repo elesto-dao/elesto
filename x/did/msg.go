@@ -4,6 +4,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// --------------------------
+// CREATE IDENTIFIER
+// --------------------------
+
 var _ sdk.Msg = &MsgCreateDidDocument{}
 
 // NewMsgCreateDidDocument creates a new MsgCreateDidDocument instance
@@ -137,11 +141,6 @@ func (msg MsgAddVerification) GetSigners() []sdk.AccAddress {
 // REVOKE VERIFICATION
 // --------------------------
 
-// msg types
-const (
-	TypeMsgRevokeVerification = "revoke-verification"
-)
-
 var _ sdk.Msg = &MsgRevokeVerification{}
 
 // NewMsgRevokeVerification creates a new MsgRevokeVerification instance
@@ -163,13 +162,14 @@ func (MsgRevokeVerification) Route() string {
 }
 
 // Type implements sdk.Msg
-func (MsgRevokeVerification) Type() string {
-	return TypeMsgRevokeVerification
+func (msg MsgRevokeVerification) Type() string {
+	return sdk.MsgTypeURL(&msg)
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (MsgRevokeVerification) GetSignBytes() []byte {
-	panic("TODO: needed in simulations for fuzz testing")
+func (msg MsgRevokeVerification) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg
