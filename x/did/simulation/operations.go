@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"fmt"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -18,17 +19,23 @@ var (
 	TypeMsgCreateDidDocument  = sdk.MsgTypeURL(&did.MsgCreateDidDocument{})
 	TypeMsgAddVerification    = sdk.MsgTypeURL(&did.MsgAddVerification{})
 	TypeMsgRevokeVerification = sdk.MsgTypeURL(&did.MsgRevokeVerification{})
+	TypeMsgAddService         = sdk.MsgTypeURL(&did.MsgAddService{})
+	TypeMsgDeleteService      = sdk.MsgTypeURL(&did.MsgDeleteService{})
 )
 
 const (
 	opWeightMsgCreateDidDocument  = "op_weight_msg_create_did_document"
 	opWeightMsgAddVerification    = "op_weight_msg_create_add_verification"
 	opWeightMsgRevokeVerification = "op_weight_msg_create_revoke_verification"
+	opWeightMsgAddService         = "op_weight_msg_create_add_service"
+	opWeightMsgDeleteService      = "op_weight_msg_create_delete_service"
 
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCreateDidDocument  int = 100
 	defaultWeightMsgAddVerification    int = 100
 	defaultWeightMsgRevokeVerification int = 100
+	defaultWeightMsgAddService         int = 100
+	defaultWeightMsgDeleteService      int = 100
 
 	// this line is used by starport scaffolding # simapp/module/const
 )
@@ -58,6 +65,20 @@ func WeightedOperations(simState module.SimulationState, didKeeper keeper.Keeper
 		},
 	)
 
+	var weightMsgAddService int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddService, &weightMsgAddService, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddService = defaultWeightMsgAddService
+		},
+	)
+
+	var weightMsgDeleteService int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteService, &weightMsgDeleteService, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteService = defaultWeightMsgDeleteService
+		},
+	)
+
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCreateDidDocument,
 		SimulateMsgCreateDidDocument(didKeeper, bk, ak),
@@ -71,6 +92,16 @@ func WeightedOperations(simState module.SimulationState, didKeeper keeper.Keeper
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgRevokeVerification,
 		SimulateMsgRevokeVerification(didKeeper, bk, ak),
+	))
+
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgAddService,
+		SimulateMsgAddService(didKeeper, bk, ak),
+	))
+
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteService,
+		SimulateMsgDeleteService(didKeeper, bk, ak),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
@@ -239,5 +270,101 @@ func SimulateMsgRevokeVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Ac
 		opMsg, fOp, err := simulation.GenAndDeliverTxWithRandFees(txCtx)
 
 		return opMsg, fOp, err
+	}
+}
+
+// SimulateMsgAddService simulates a MsgAddService message
+func SimulateMsgAddService(k keeper.Keeper, bk did.BankKeeper, ak did.AccountKeeper) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		didOwner, _ := simtypes.RandomAcc(r, accs)
+		ownerAddress := didOwner.Address.String()
+		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
+
+		serviceID := "emti-agent" + fmt.Sprint(len(didDoc.Service))
+		serviceType := "DIDComm"
+		serviceURL := "https://agents.elesto.app.beta.starport.cloud/emti"
+
+		newService := did.NewService(serviceID, serviceType, serviceURL)
+		msg := did.NewMsgAddService(
+			didID.String(),
+			newService,
+			ownerAddress,
+		)
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         TypeMsgAddService,
+			Context:         ctx,
+			SimAccount:      didOwner,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      did.ModuleName,
+			CoinsSpentInMsg: sdk.NewCoins(),
+		}
+
+		opMsg, fOp, err := simulation.GenAndDeliverTxWithRandFees(txCtx)
+
+		// return an error that will not stop simulation as the did was not found
+		if !found {
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgAddService, "did not found, could not add service"), nil, nil
+		}
+
+		return opMsg, fOp, err
+	}
+}
+
+// SimulateMsgDeleteService simulates a MsgDeleteService message
+func SimulateMsgDeleteService(k keeper.Keeper, bk did.BankKeeper, ak did.AccountKeeper) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		didOwner, _ := simtypes.RandomAcc(r, accs)
+		ownerAddress := didOwner.Address.String()
+		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
+
+		// return an error that will not stop simulation as the did was not found
+		if !found {
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgDeleteService, "did not found, could not remove service"), nil, nil
+		}
+
+		service := didDoc.Service
+
+		// return an error that will not stop simulation if the length of the Service array is 0
+		if len(service) == 0 {
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgDeleteService, "could not remove verification method as it would break the did document"), nil, nil
+		}
+
+		serviceID := "emti-agent" + fmt.Sprint(len(didDoc.Service))
+
+		msg := did.NewMsgDeleteService(
+			didID.String(),
+			serviceID,
+			ownerAddress,
+		)
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         TypeMsgDeleteService,
+			Context:         ctx,
+			SimAccount:      didOwner,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      did.ModuleName,
+			CoinsSpentInMsg: sdk.NewCoins(),
+		}
+
+		return simulation.GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
