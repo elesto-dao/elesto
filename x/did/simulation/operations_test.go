@@ -83,6 +83,8 @@ func (suite *SimTestSuite) TestWeightedOperations() {
 		{100, did.ModuleName, simulation.TypeMsgCreateDidDocument},
 		{100, did.ModuleName, simulation.TypeMsgAddVerification},
 		{100, did.ModuleName, simulation.TypeMsgRevokeVerification},
+		{100, did.ModuleName, simulation.TypeMsgAddService},
+		{100, did.ModuleName, simulation.TypeMsgDeleteService},
 	}
 
 	for i, w := range weightedOps {
@@ -208,6 +210,80 @@ func (suite *SimTestSuite) TestSimulateRevokeVerification() {
 	suite.Require().NoError(err)
 
 	var msg did.MsgRevokeVerification
+	suite.app.AppCodec().UnmarshalJSON(operationMsg.Msg, &msg)
+
+	// TODO: check for success, needs a did in the store
+	// check the message was unsuccessful
+	suite.Require().False(operationMsg.OK)
+	suite.Require().Equal("", msg.Signer)
+
+	suite.Require().Len(futureOperations, 0)
+}
+
+func (suite *SimTestSuite) TestSimulateAddService() {
+	s := rand.NewSource(1)
+	r := rand.New(s)
+	accounts := suite.getTestingAccounts(r, 2)
+	blockTime := time.Now().UTC()
+	ctx := suite.ctx.WithBlockTime(blockTime)
+
+	suite.app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{Height: suite.app.LastBlockHeight() + 1, AppHash: suite.app.LastCommitID().Hash}})
+
+	// begin a new block
+	suite.app.BeginBlock(
+		abci.RequestBeginBlock{
+			Header: tmproto.Header{
+				Height:  suite.app.LastBlockHeight() + 1,
+				AppHash: suite.app.LastCommitID().Hash,
+			},
+		})
+
+	// TODO: create a DID for this account and add it to the store
+	// signer := accounts[0]
+
+	// execute operation
+	op := simulation.SimulateMsgAddService(suite.app.DidKeeper, suite.app.BankKeeper, suite.app.AccountKeeper)
+	operationMsg, futureOperations, err := op(r, suite.app.BaseApp, ctx, accounts, "")
+	suite.Require().NoError(err)
+
+	var msg did.MsgAddService
+	suite.app.AppCodec().UnmarshalJSON(operationMsg.Msg, &msg)
+
+	// TODO: check for success, needs a did in the store
+	// check the message was unsuccessful
+	suite.Require().False(operationMsg.OK)
+	suite.Require().Equal("", msg.Signer)
+
+	suite.Require().Len(futureOperations, 0)
+}
+
+func (suite *SimTestSuite) TestSimulateDeleteService() {
+	s := rand.NewSource(1)
+	r := rand.New(s)
+	accounts := suite.getTestingAccounts(r, 2)
+	blockTime := time.Now().UTC()
+	ctx := suite.ctx.WithBlockTime(blockTime)
+
+	suite.app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{Height: suite.app.LastBlockHeight() + 1, AppHash: suite.app.LastCommitID().Hash}})
+
+	// begin a new block
+	suite.app.BeginBlock(
+		abci.RequestBeginBlock{
+			Header: tmproto.Header{
+				Height:  suite.app.LastBlockHeight() + 1,
+				AppHash: suite.app.LastCommitID().Hash,
+			},
+		})
+
+	// TODO: create a DID for this account and add it to the store
+	// signer := accounts[0]
+
+	// execute operation
+	op := simulation.SimulateMsgDeleteService(suite.app.DidKeeper, suite.app.BankKeeper, suite.app.AccountKeeper)
+	operationMsg, futureOperations, err := op(r, suite.app.BaseApp, ctx, accounts, "")
+	suite.Require().NoError(err)
+
+	var msg did.MsgDeleteService
 	suite.app.AppCodec().UnmarshalJSON(operationMsg.Msg, &msg)
 
 	// TODO: check for success, needs a did in the store
