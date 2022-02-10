@@ -119,11 +119,11 @@ func TestMsgSetVerificationRelationships_Route(t *testing.T) {
 }
 
 func TestMsgSetVerificationRelationships_Type(t *testing.T) {
-	assert.Equalf(t, TypeMsgSetVerificationRelationships, MsgSetVerificationRelationships{}.Type(), "Type()")
+	assert.Equalf(t, sdk.MsgTypeURL(&MsgSetVerificationRelationships{}), MsgSetVerificationRelationships{}.Type(), "Type()")
 }
 
 func TestMsgSetVerificationRelationships_GetSignBytes(t *testing.T) {
-	assert.Panicsf(t, func() { MsgSetVerificationRelationships{}.GetSignBytes() }, "GetSignBytes()")
+	assert.Equal(t, sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&MsgSetVerificationRelationships{})), MsgSetVerificationRelationships{}.GetSignBytes(), "GetSignBytes()")
 }
 
 func TestMsgSetVerificationRelationships_GetSigners(t *testing.T) {
