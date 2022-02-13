@@ -2,7 +2,6 @@ package did
 
 import (
 	"fmt"
-
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/cosmos/cosmos-sdk/crypto/types"
@@ -324,10 +323,101 @@ func TestIsValidDIDMetadata(t *testing.T) {
 
 func TestValidateVerification(t *testing.T) {
 	tests := []struct {
+		name    string
 		v       *Verification
-		wantErr bool
+		wantErr error
 	}{
 		{
+			name:    "FAIL: verification is nil",
+			v:       nil,
+			wantErr: sdkerrors.Wrap(ErrInvalidInput, "verification is not defined"),
+		},
+		{
+			name: "FAIL: invalid verification method id",
+			v: NewVerification(
+				NewVerificationMethod(
+					"not:a:did",
+					"did:cosmos:net:elesto:subject",
+					NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
+					EcdsaSecp256k1VerificationKey2019,
+				),
+				[]string{string(Authentication)},
+				nil,
+			),
+			wantErr: sdkerrors.Wrapf(ErrInvalidDIDURLFormat, "verification method id: %v", "not:a:did"),
+		},
+		{
+			name: "FAIL: invalid method controller",
+			v: NewVerification(
+				NewVerificationMethod(
+					"did:cosmos:net:elesto:subject#key-1",
+					"not:a:did",
+					NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
+					EcdsaSecp256k1VerificationKey2019,
+				),
+				[]string{string(Authentication)},
+				nil,
+			),
+			wantErr: sdkerrors.Wrapf(ErrInvalidDIDFormat, "verification method controller %v", "not:a:did"),
+		},
+		{
+			name: "FAIL: empty method type",
+			v: NewVerification(
+				NewVerificationMethod(
+					"did:cosmos:net:elesto:subject#key-1",
+					"did:cosmos:net:elesto:subject",
+					NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
+					"",
+				),
+				[]string{Authentication},
+				nil,
+			),
+			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification method type not set for verification method %s", "did:cosmos:net:elesto:subject#key-1"),
+		},
+		{
+			name: "FAIL: invalid blockchain id",
+			v: NewVerification(
+				NewVerificationMethod(
+					"did:cosmos:net:elesto:subject#key-1",
+					"did:cosmos:net:elesto:subject",
+					&VerificationMethod_BlockchainAccountID{BlockchainAccountID: ""},
+					CosmosAccountAddress,
+				),
+				[]string{Authentication},
+				nil,
+			),
+			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification material blockchainAccountId is empty for verification method id did:cosmos:net:elesto:subject#key-1"),
+		},
+		{
+			name: "FAIL: invalid multibase key",
+			v: NewVerification(
+				NewVerificationMethod(
+					"did:cosmos:net:elesto:subject#key-1",
+					"did:cosmos:net:elesto:subject",
+					&VerificationMethod_PublicKeyMultibase{PublicKeyMultibase: ""},
+					EcdsaSecp256k1VerificationKey2019,
+				),
+				[]string{Authentication},
+				nil,
+			),
+			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification material publicKeyMultibase is empty for verification method id did:cosmos:net:elesto:subject#key-1"),
+		},
+		{
+			name: "FAIL: invalid hex key",
+			v: NewVerification(
+				NewVerificationMethod(
+					"did:cosmos:net:elesto:subject#key-1",
+					"did:cosmos:net:elesto:subject",
+					&VerificationMethod_PublicKeyHex{PublicKeyHex: ""},
+					EcdsaSecp256k1VerificationKey2019,
+				),
+				[]string{string(Authentication)},
+				nil,
+			),
+			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification material publicKeyHex is empty for verification method id did:cosmos:net:elesto:subject#key-1"),
+		},
+		{
+			name: "FAIL: no relationships defined",
 			v: NewVerification(
 				NewVerificationMethod(
 					"did:cosmos:net:elesto:subject#key-1",
@@ -338,13 +428,24 @@ func TestValidateVerification(t *testing.T) {
 				nil,
 				nil,
 			),
-			wantErr: true, // relationships are nil
+			wantErr: sdkerrors.Wrap(ErrEmptyRelationships, "at least a verification relationship is required"), // relationships are nil
 		},
 		{
-			v:       nil,
-			wantErr: true,
+			name: "FAIL: undefined verification material",
+			v: NewVerification(
+				NewVerificationMethod(
+					"did:cosmos:net:elesto:subject#key-1",
+					DID("did:cosmos:net:elesto:subject"),
+					nil,
+					EcdsaSecp256k1VerificationKey2019,
+				),
+				[]string{string(AssertionMethod)},
+				nil,
+			),
+			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification material '<nil>' unknown for verification method id did:cosmos:net:elesto:subject#key-1"),
 		},
 		{
+			name: "PASS: can add verification",
 			v: NewVerification(
 				NewVerificationMethod(
 					"did:cosmos:net:elesto:subject#key-1",
@@ -355,13 +456,17 @@ func TestValidateVerification(t *testing.T) {
 				[]string{string(AssertionMethod)},
 				nil,
 			),
-			wantErr: false,
+			wantErr: nil,
 		},
 	}
-	for i, tt := range tests {
-		t.Run(fmt.Sprint("TestValidateVerification#", i), func(t *testing.T) {
-			if err := ValidateVerification(tt.v); (err != nil) != tt.wantErr {
-				t.Errorf("TestValidateVerification() error = %v, wantErr %v", err, tt.wantErr)
+	for _, tt := range tests {
+		t.Run(fmt.Sprint(tt.name), func(t *testing.T) {
+			err := ValidateVerification(tt.v)
+			if tt.wantErr == nil {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+				assert.Equal(t, tt.wantErr.Error(), err.Error())
 			}
 		})
 	}
@@ -370,22 +475,39 @@ func TestValidateVerification(t *testing.T) {
 func TestValidateService(t *testing.T) {
 
 	tests := []struct {
+		name    string
 		s       *Service
-		wantErr bool
+		wantErr error
 	}{
 		{
-			s:       NewService("agent:abc", "DIDCommMessaging", "https://agent.abc/abc"),
-			wantErr: false,
+			name:    "PASS: valid service",
+			s:       NewService("did:cosmos:net:elesto:subject#did-comm", "DIDCommMessaging", "https://agent.abc/abc"),
+			wantErr: nil,
 		},
 		{
+			name:    "FAIL: service is nilS",
 			s:       nil,
-			wantErr: true,
+			wantErr: sdkerrors.Wrap(ErrInvalidInput, "service is not defined"),
+		},
+		{
+			name:    "FAIL: invalid service id",
+			s:       NewService("service", "DIDCommMessaging", "https://agent.abc/abc"),
+			wantErr: sdkerrors.Wrapf(ErrInvalidRFC3986UriFormat, "service id %s is not a valid RFC3986 uri", "service"),
+		},
+		{
+			name:    "FAIL: invalid service endpoint",
+			s:       NewService("did:cosmos:net:elesto:subject#did-comm", "DIDCommMessaging", "not-an-uri"),
+			wantErr: sdkerrors.Wrapf(ErrInvalidRFC3986UriFormat, "service endpoint %s is not a valid RFC3986 uri", "not-an-uri"),
 		},
 	}
 	for i, tt := range tests {
 		t.Run(fmt.Sprint("TestValidateService#", i), func(t *testing.T) {
-			if err := ValidateService(tt.s); (err != nil) != tt.wantErr {
-				t.Errorf("ValidateService() error = %v, wantErr %v", err, tt.wantErr)
+			err := ValidateService(tt.s)
+			if tt.wantErr == nil {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+				assert.Equal(t, tt.wantErr.Error(), err.Error())
 			}
 		})
 	}

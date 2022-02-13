@@ -7,6 +7,13 @@ import (
 	"strings"
 )
 
+var (
+	_ Validable = (*VerificationMethod_PublicKeyHex)(nil)
+	_ Validable = (*VerificationMethod_PublicKeyJwk)(nil)
+	_ Validable = (*VerificationMethod_PublicKeyMultibase)(nil)
+	_ Validable = (*VerificationMethod_BlockchainAccountID)(nil)
+)
+
 // VerificationMethodType encode the verification material type
 type VerificationMethodType string
 
@@ -102,16 +109,11 @@ func NewPublicKeyJwk(pubKey []byte) (vm *VerificationMethod_PublicKeyJwk, err er
 	if err = json.Unmarshal(pubKey, &pkj); err != nil {
 		return
 	}
-	if IsEmpty(pkj.Kid) {
-		err = fmt.Errorf("publicKeyJwk.kid cannot be empty")
-		return
-	}
-	if IsEmpty(pkj.X + pkj.Y) {
-		err = fmt.Errorf("publicKeyJwk.X or publicKeyJwk.Y cannot be empty")
-		return
-	}
 	vm = &VerificationMethod_PublicKeyJwk{
 		PublicKeyJwk: &pkj,
+	}
+	if err = vm.Validate(); err != nil {
+		return nil, err
 	}
 	return
 }
@@ -119,4 +121,40 @@ func NewPublicKeyJwk(pubKey []byte) (vm *VerificationMethod_PublicKeyJwk, err er
 // NewPublicKeyJwkFromJSON build a new blockchain account ID struct
 func NewPublicKeyJwkFromJSON(pubKeyJSON string) (vm *VerificationMethod_PublicKeyJwk, err error) {
 	return NewPublicKeyJwk([]byte(pubKeyJSON))
+}
+
+type Validable interface {
+	isVerificationMethod_VerificationMaterial
+	Validate() error
+}
+
+func (vm VerificationMethod_PublicKeyJwk) Validate() (err error) {
+	if IsEmpty(vm.PublicKeyJwk.Kid) {
+		err = fmt.Errorf("publicKeyJwk.kid cannot be empty")
+		return
+	}
+	if IsEmpty(vm.PublicKeyJwk.X + vm.PublicKeyJwk.Y) {
+		err = fmt.Errorf("publicKeyJwk.X or publicKeyJwk.Y cannot be empty")
+		return
+	}
+	return nil
+}
+
+func (vm VerificationMethod_PublicKeyHex) Validate() error {
+	if IsEmpty(vm.PublicKeyHex) {
+		return fmt.Errorf("publicKeyHex is empty")
+	}
+	return nil
+}
+func (vm VerificationMethod_PublicKeyMultibase) Validate() error {
+	if IsEmpty(vm.PublicKeyMultibase) {
+		return fmt.Errorf("publicKeyMultibase is empty")
+	}
+	return nil
+}
+func (baID VerificationMethod_BlockchainAccountID) Validate() error {
+	if IsEmpty(baID.BlockchainAccountID) {
+		return fmt.Errorf("blockchainAccountId is empty")
+	}
+	return nil
 }

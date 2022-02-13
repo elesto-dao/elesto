@@ -215,6 +215,7 @@ func IsValidDIDMetadata(didMeta *DidMetadata) bool {
 // of allowed controllers.
 // in case of error returns an cosmos-sdk wrapped error
 // XXX: this pattern creates a ambiguous semantic (but maybe is not too severe (use WithCredentials and array of credentials))
+// TODO: what about the allowedControllers
 func ValidateVerification(v *Verification, allowedControllers ...string) (err error) {
 	if v == nil {
 		err = sdkerrors.Wrap(ErrInvalidInput, "verification is not defined")
@@ -238,38 +239,20 @@ func ValidateVerification(v *Verification, allowedControllers ...string) (err er
 		return
 	}
 
-	// check the verification material
-	switch x := v.Method.VerificationMaterial.(type) {
-	case *VerificationMethod_BlockchainAccountID:
-		if IsEmpty(x.BlockchainAccountID) {
-			err = sdkerrors.Wrapf(ErrInvalidInput, "verification material blockchain account id invalid for verification method %s", v.Method.Id)
-			return
-		}
-	case *VerificationMethod_PublicKeyMultibase:
-		if IsEmpty(x.PublicKeyMultibase) {
-			err = sdkerrors.Wrapf(ErrInvalidInput, "verification material multibase pubkey invalid for verification method %s", v.Method.Id)
-			return
-		}
-	case *VerificationMethod_PublicKeyHex:
-		if IsEmpty(x.PublicKeyHex) {
-			err = sdkerrors.Wrapf(ErrInvalidInput, "verification material pubkey invalid for verification method %s", v.Method.Id)
-			return
-		}
-	default:
-		err = sdkerrors.Wrapf(ErrInvalidInput, "verification material not set for verification method %s", v.Method.Id)
-		return
-	}
-
-	// check for empty public key
-	if v.Method.VerificationMaterial.Size() == 0 {
-		err = sdkerrors.Wrapf(ErrInvalidInput, "verification material not set for verification method %s", v.Method.Id)
-		return
-	}
-
 	// check that there is at least a relationship
 	if len(v.Relationships) == 0 {
 		err = sdkerrors.Wrap(ErrEmptyRelationships, "at least a verification relationship is required")
 		return
+	}
+
+	// check the verification material
+	vm, ok := v.Method.VerificationMaterial.(Validable)
+	if !ok {
+		err = sdkerrors.Wrap(ErrInvalidInput, fmt.Sprintf("verification material '%v' unknown for verification method id %s", v.Method.VerificationMaterial, v.Method.Id))
+		return
+	}
+	if vErr := vm.Validate(); vErr != nil {
+		err = sdkerrors.Wrap(ErrInvalidInput, fmt.Sprintf("verification material %s for verification method id %s", vErr.Error(), v.Method.Id))
 	}
 	return
 }
