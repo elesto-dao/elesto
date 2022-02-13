@@ -7,37 +7,6 @@ import (
 	"github.com/elesto-dao/elesto/x/did"
 )
 
-func (suite *KeeperTestSuite) TestGRPCQueryDidDocuments() {
-	queryClient := suite.queryClient
-	var req *did.QueryDidDocumentsRequest
-	testCases := []struct {
-		msg      string
-		malleate func()
-		expPass  bool
-	}{
-		{
-			"Pass: will return an empty array",
-			func() {
-				req = &did.QueryDidDocumentsRequest{}
-			},
-			true,
-		},
-	}
-	for _, tc := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
-			tc.malleate()
-			didsResp, err := queryClient.DidDocuments(context.Background(), req)
-			if tc.expPass {
-				suite.NoError(err)
-				suite.NotNil(didsResp)
-
-			} else {
-				suite.Require().Error(err)
-			}
-		})
-	}
-}
-
 func (suite *KeeperTestSuite) TestGRPCQueryDidDocument() {
 	queryClient := suite.queryClient
 	var req *did.QueryDidDocumentRequest
