@@ -211,12 +211,7 @@ func IsValidDIDMetadata(didMeta *DidMetadata) bool {
 }
 
 // ValidateVerification perform basic validation on a verification struct
-// optionally validating the validation method controller against a list
-// of allowed controllers.
-// in case of error returns an cosmos-sdk wrapped error
-// XXX: this pattern creates a ambiguous semantic (but maybe is not too severe (use WithCredentials and array of credentials))
-// TODO: what about the allowedControllers
-func ValidateVerification(v *Verification, allowedControllers ...string) (err error) {
+func ValidateVerification(v *Verification) (err error) {
 	if v == nil {
 		err = sdkerrors.Wrap(ErrInvalidInput, "verification is not defined")
 		return
@@ -356,7 +351,6 @@ func (didDoc *DidDocument) AddControllers(controllers ...string) error {
 			return sdkerrors.Wrapf(ErrInvalidDIDFormat, "did document controller validation error '%s'", c)
 		}
 		if !IsValidDIDKeyFormat(c) {
-			// TODO: link to the documentation for the error
 			return sdkerrors.Wrapf(ErrInvalidInput, "did document controller '%s' must be of type key", c)
 		}
 	}
