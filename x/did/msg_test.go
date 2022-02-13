@@ -6,6 +6,10 @@ import (
 	"testing"
 )
 
+// --------------------------
+// CREATE IDENTIFIER
+// --------------------------
+
 func TestMsgCreateDidDocument_Route(t *testing.T) {
 	assert.Equalf(t, ModuleName, MsgCreateDidDocument{}.Route(), "Route()")
 }
@@ -27,6 +31,10 @@ func TestMsgCreateDidDocument_GetSigners(t *testing.T) {
 	)
 	assert.Panics(t, func() { MsgCreateDidDocument{Signer: "invalid"}.GetSigners() })
 }
+
+// --------------------------
+// UPDATE IDENTIFIER
+// --------------------------
 
 func TestMsgUpdateDidDocument_Route(t *testing.T) {
 	assert.Equalf(t, ModuleName, MsgUpdateDidDocument{}.Route(), "Route()")
@@ -50,16 +58,20 @@ func TestMsgUpdateDidDocument_GetSigners(t *testing.T) {
 	assert.Panics(t, func() { MsgUpdateDidDocument{Signer: "invalid"}.GetSigners() })
 }
 
+// --------------------------
+// ADD VERIFICATION
+// --------------------------
+
 func TestMsgAddVerification_Route(t *testing.T) {
 	assert.Equalf(t, ModuleName, MsgAddVerification{}.Route(), "Route()")
 }
 
 func TestMsgAddVerification_Type(t *testing.T) {
-	assert.Equalf(t, TypeMsgAddVerification, MsgAddVerification{}.Type(), "Type()")
+	assert.Equalf(t, sdk.MsgTypeURL(&MsgAddVerification{}), MsgAddVerification{}.Type(), "Type()")
 }
 
 func TestMsgAddVerification_GetSignBytes(t *testing.T) {
-	assert.Panicsf(t, func() { MsgAddVerification{}.GetSignBytes() }, "GetSignBytes()")
+	assert.Equal(t, sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&MsgAddVerification{})), MsgAddVerification{}.GetSignBytes(), "GetSignBytes()")
 }
 
 func TestMsgAddVerification_GetSigners(t *testing.T) {
@@ -72,16 +84,20 @@ func TestMsgAddVerification_GetSigners(t *testing.T) {
 	assert.Panics(t, func() { MsgAddVerification{Signer: "invalid"}.GetSigners() })
 }
 
+// --------------------------
+// REVOKE VERIFICATION
+// --------------------------
+
 func TestMsgRevokeVerification_Route(t *testing.T) {
 	assert.Equalf(t, ModuleName, MsgRevokeVerification{}.Route(), "Route()")
 }
 
 func TestMsgRevokeVerification_Type(t *testing.T) {
-	assert.Equalf(t, TypeMsgRevokeVerification, MsgRevokeVerification{}.Type(), "Type()")
+	assert.Equalf(t, sdk.MsgTypeURL(&MsgRevokeVerification{}), MsgRevokeVerification{}.Type(), "Type()")
 }
 
 func TestMsgRevokeVerification_GetSignBytes(t *testing.T) {
-	assert.Panicsf(t, func() { MsgRevokeVerification{}.GetSignBytes() }, "GetSignBytes()")
+	assert.Equal(t, sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&MsgRevokeVerification{})), MsgRevokeVerification{}.GetSignBytes(), "GetSignBytes()")
 }
 
 func TestMsgRevokeVerification_GetSigners(t *testing.T) {
@@ -94,16 +110,20 @@ func TestMsgRevokeVerification_GetSigners(t *testing.T) {
 	assert.Panics(t, func() { MsgRevokeVerification{Signer: "invalid"}.GetSigners() })
 }
 
+// --------------------------
+// SET VERIFICATION RELATIONSHIPS
+// --------------------------
+
 func TestMsgSetVerificationRelationships_Route(t *testing.T) {
 	assert.Equalf(t, ModuleName, MsgSetVerificationRelationships{}.Route(), "Route()")
 }
 
 func TestMsgSetVerificationRelationships_Type(t *testing.T) {
-	assert.Equalf(t, TypeMsgSetVerificationRelationships, MsgSetVerificationRelationships{}.Type(), "Type()")
+	assert.Equalf(t, sdk.MsgTypeURL(&MsgSetVerificationRelationships{}), MsgSetVerificationRelationships{}.Type(), "Type()")
 }
 
 func TestMsgSetVerificationRelationships_GetSignBytes(t *testing.T) {
-	assert.Panicsf(t, func() { MsgSetVerificationRelationships{}.GetSignBytes() }, "GetSignBytes()")
+	assert.Equal(t, sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&MsgSetVerificationRelationships{})), MsgSetVerificationRelationships{}.GetSignBytes(), "GetSignBytes()")
 }
 
 func TestMsgSetVerificationRelationships_GetSigners(t *testing.T) {
@@ -116,16 +136,20 @@ func TestMsgSetVerificationRelationships_GetSigners(t *testing.T) {
 	assert.Panics(t, func() { MsgSetVerificationRelationships{Signer: "invalid"}.GetSigners() })
 }
 
+// --------------------------
+// DELETE SERVICE
+// --------------------------
+
 func TestMsgDeleteService_Route(t *testing.T) {
 	assert.Equalf(t, ModuleName, MsgDeleteService{}.Route(), "Route()")
 }
 
 func TestMsgDeleteService_Type(t *testing.T) {
-	assert.Equalf(t, TypeMsgDeleteService, MsgDeleteService{}.Type(), "Type()")
+	assert.Equalf(t, sdk.MsgTypeURL(&MsgDeleteService{}), MsgDeleteService{}.Type(), "Type()")
 }
 
 func TestMsgDeleteService_GetSignBytes(t *testing.T) {
-	assert.Panicsf(t, func() { MsgDeleteService{}.GetSignBytes() }, "GetSignBytes()")
+	assert.Equal(t, sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&MsgDeleteService{})), MsgDeleteService{}.GetSignBytes(), "GetSignBytes()")
 }
 
 func TestMsgDeleteService_GetSigners(t *testing.T) {
@@ -138,16 +162,20 @@ func TestMsgDeleteService_GetSigners(t *testing.T) {
 	assert.Panics(t, func() { MsgDeleteService{Signer: "invalid"}.GetSigners() })
 }
 
+// --------------------------
+// ADD SERVICE
+// --------------------------
+
 func TestMsgAddService_Route(t *testing.T) {
 	assert.Equalf(t, ModuleName, MsgAddService{}.Route(), "Route()")
 }
 
 func TestMsgAddService_Type(t *testing.T) {
-	assert.Equalf(t, TypeMsgAddService, MsgAddService{}.Type(), "Type()")
+	assert.Equalf(t, sdk.MsgTypeURL(&MsgAddService{}), MsgAddService{}.Type(), "Type()")
 }
 
 func TestMsgAddService_GetSignBytes(t *testing.T) {
-	assert.Panicsf(t, func() { MsgAddService{}.GetSignBytes() }, "GetSignBytes()")
+	assert.Equal(t, sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&MsgAddService{})), MsgAddService{}.GetSignBytes(), "GetSignBytes()")
 }
 
 func TestMsgAddService_GetSigners(t *testing.T) {
@@ -159,6 +187,10 @@ func TestMsgAddService_GetSigners(t *testing.T) {
 	)
 	assert.Panics(t, func() { MsgAddService{Signer: "invalid"}.GetSigners() })
 }
+
+// --------------------------
+// ADD CONTROLLER
+// --------------------------
 
 func TestMsgAddController_Route(t *testing.T) {
 	assert.Equalf(t, ModuleName, MsgAddController{}.Route(), "Route()")
@@ -181,6 +213,10 @@ func TestMsgAddController_GetSigners(t *testing.T) {
 	)
 	assert.Panics(t, func() { MsgAddController{Signer: "invalid"}.GetSigners() })
 }
+
+// --------------------------
+// DELETE CONTROLLER
+// --------------------------
 
 func TestMsgDeleteController_Route(t *testing.T) {
 	assert.Equalf(t, ModuleName, MsgDeleteController{}.Route(), "Route()")

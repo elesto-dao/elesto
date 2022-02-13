@@ -4,6 +4,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// --------------------------
+// CREATE IDENTIFIER
+// --------------------------
+
 var _ sdk.Msg = &MsgCreateDidDocument{}
 
 // NewMsgCreateDidDocument creates a new MsgCreateDidDocument instance
@@ -92,10 +96,6 @@ func (msg MsgUpdateDidDocument) GetSigners() []sdk.AccAddress {
 // --------------------------
 // ADD VERIFICATION
 // --------------------------
-// msg types
-const (
-	TypeMsgAddVerification = "add-verification"
-)
 
 var _ sdk.Msg = &MsgAddVerification{}
 
@@ -118,13 +118,14 @@ func (MsgAddVerification) Route() string {
 }
 
 // Type implements sdk.Msg
-func (MsgAddVerification) Type() string {
-	return TypeMsgAddVerification
+func (msg MsgAddVerification) Type() string {
+	return sdk.MsgTypeURL(&msg)
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (MsgAddVerification) GetSignBytes() []byte {
-	panic("TODO: needed in simulations for fuzz testing")
+func (msg MsgAddVerification) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg
@@ -139,11 +140,6 @@ func (msg MsgAddVerification) GetSigners() []sdk.AccAddress {
 // --------------------------
 // REVOKE VERIFICATION
 // --------------------------
-
-// msg types
-const (
-	TypeMsgRevokeVerification = "revoke-verification"
-)
 
 var _ sdk.Msg = &MsgRevokeVerification{}
 
@@ -166,13 +162,14 @@ func (MsgRevokeVerification) Route() string {
 }
 
 // Type implements sdk.Msg
-func (MsgRevokeVerification) Type() string {
-	return TypeMsgRevokeVerification
+func (msg MsgRevokeVerification) Type() string {
+	return sdk.MsgTypeURL(&msg)
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (MsgRevokeVerification) GetSignBytes() []byte {
-	panic("TODO: needed in simulations for fuzz testing")
+func (msg MsgRevokeVerification) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg
@@ -187,10 +184,8 @@ func (msg MsgRevokeVerification) GetSigners() []sdk.AccAddress {
 // --------------------------
 // SET VERIFICATION RELATIONSHIPS
 // --------------------------
-// msg types
-const (
-	TypeMsgSetVerificationRelationships = "set-verification-relationships"
-)
+
+var _ sdk.Msg = &MsgSetVerificationRelationships{}
 
 func NewMsgSetVerificationRelationships(
 	id string,
@@ -212,13 +207,14 @@ func (MsgSetVerificationRelationships) Route() string {
 }
 
 // Type implements sdk.Msg
-func (MsgSetVerificationRelationships) Type() string {
-	return TypeMsgSetVerificationRelationships
+func (msg MsgSetVerificationRelationships) Type() string {
+	return sdk.MsgTypeURL(&msg)
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (MsgSetVerificationRelationships) GetSignBytes() []byte {
-	panic("TODO: needed in simulations for fuzz testing")
+func (msg MsgSetVerificationRelationships) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg
@@ -233,11 +229,6 @@ func (msg MsgSetVerificationRelationships) GetSigners() []sdk.AccAddress {
 // --------------------------
 // ADD SERVICE
 // --------------------------
-
-// msg types
-const (
-	TypeMsgAddService = "add-service"
-)
 
 var _ sdk.Msg = &MsgAddService{}
 
@@ -260,13 +251,14 @@ func (MsgAddService) Route() string {
 }
 
 // Type implements sdk.Msg
-func (MsgAddService) Type() string {
-	return TypeMsgAddService
+func (msg MsgAddService) Type() string {
+	return sdk.MsgTypeURL(&msg)
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (MsgAddService) GetSignBytes() []byte {
-	panic("TODO: needed in simulations for fuzz testing")
+func (msg MsgAddService) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg
@@ -281,11 +273,6 @@ func (msg MsgAddService) GetSigners() []sdk.AccAddress {
 // --------------------------
 // DELETE SERVICE
 // --------------------------
-
-// msg types
-const (
-	TypeMsgDeleteService = "delete-service"
-)
 
 func NewMsgDeleteService(
 	id string,
@@ -305,13 +292,14 @@ func (MsgDeleteService) Route() string {
 }
 
 // Type implements sdk.Msg
-func (MsgDeleteService) Type() string {
-	return TypeMsgDeleteService
+func (msg MsgDeleteService) Type() string {
+	return sdk.MsgTypeURL(&msg)
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (MsgDeleteService) GetSignBytes() []byte {
-	panic("TODO: needed in simulations for fuzz testing")
+func (msg MsgDeleteService) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg
