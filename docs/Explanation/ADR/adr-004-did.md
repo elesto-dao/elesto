@@ -16,13 +16,13 @@ This document specifies the DID method for a Cosmos SDK-based implementation of 
 
 ## Context
 
-The aim of the Cosmos Cash project is to provide a state-of-the-art platform for the hosting of collateralized stable coins that is compliant with:
+The aim of the Elesto project is to provide a state-of-the-art platform for the hosting of collateralized stable coins that is compliant with:
 
  - EU regulations such as General Data Protection Regulation (GDPR) and Markets in Crypto-Assets (MiCA)
  - International recommendations such as the Financial Action Task Force (FATF) "Travel Rule"
  - Local anti-money laundering (AML) regulations
 
-The Cosmos Cash platform is based on the following principles:
+The Elesto platform is based on the following principles:
 
 - Open financial infrastructure is a public good
 - Money laundering prevention also benefits society
@@ -32,19 +32,19 @@ The self-sovereign identity (SSI) approach to tackling the identity and privacy 
 
 The SSI approach relies on two building blocks: decentralized identifiers (DID) and verifiable credentials (VC). This architecture decision record (ADR) describes the DID implementation in a Cosmos SDK-based blockchain.
 
-The goal of this ADR is to define a foundation for the necessary components to realize the Cosmos Cash objectives while ensuring the implementation of the DID is fully compliant with the W3C specifications. **Successive iterations will address API ergonomics and standard compatibility issues.** 
+The goal of this ADR is to define a foundation for the necessary components to realize the Elesto objectives while ensuring the implementation of the DID is fully compliant with the W3C specifications. **Successive iterations will address API ergonomics and standard compatibility issues.** 
 
 ## Decision
 
 
-The Cosmos Cash implementation for DIDs will follow the [DID W3C core recommendations](https://github.com/w3c/did-core) with the goal of maximizing compatibility with 3rd party tools and projects.
+The Elesto implementation for DIDs will follow the [DID W3C core recommendations](https://github.com/w3c/did-core) with the goal of maximizing compatibility with 3rd party tools and projects.
 
 
 ### DID Method Name
 
-The namestring that shall identify the Cosmos Cash DID method is: `cosmos`.
+The namestring that shall identify the Elesto DID method is: `cosmos`.
 
-A DID that uses the Cosmos Cash method MUST begin with the following prefix: `did:cosmos`. Per the [W3C DID specification](https://www.w3.org/TR/did-core), this prefix string MUST be in lowercase. The remainder of the DID, after the prefix, is as follows:
+A DID that uses the Elesto method MUST begin with the following prefix: `did:cosmos`. Per the [W3C DID specification](https://www.w3.org/TR/did-core), this prefix string MUST be in lowercase. The remainder of the DID, after the prefix, is as follows:
 
 #### Method Specific Identifier
 
