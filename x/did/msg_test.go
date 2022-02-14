@@ -197,11 +197,11 @@ func TestMsgAddController_Route(t *testing.T) {
 }
 
 func TestMsgAddController_Type(t *testing.T) {
-	assert.Equalf(t, TypeMsgAddController, MsgAddController{}.Type(), "Type()")
+	assert.Equalf(t, sdk.MsgTypeURL(&MsgAddController{}), MsgAddController{}.Type(), "Type()")
 }
 
 func TestMsgAddController_GetSignBytes(t *testing.T) {
-	assert.Panicsf(t, func() { MsgAddController{}.GetSignBytes() }, "GetSignBytes()")
+	assert.Equal(t, sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&MsgAddController{})), MsgAddController{}.GetSignBytes(), "GetSignBytes()")
 }
 
 func TestMsgAddController_GetSigners(t *testing.T) {
@@ -223,11 +223,11 @@ func TestMsgDeleteController_Route(t *testing.T) {
 }
 
 func TestMsgDeleteController_Type(t *testing.T) {
-	assert.Equalf(t, TypeMsgDeleteController, MsgDeleteController{}.Type(), "Type()")
+	assert.Equalf(t, sdk.MsgTypeURL(&MsgDeleteController{}), MsgDeleteController{}.Type(), "Type()")
 }
 
 func TestMsgDeleteController_GetSignBytes(t *testing.T) {
-	assert.Panicsf(t, func() { MsgDeleteController{}.GetSignBytes() }, "GetSignBytes()")
+	assert.Equal(t, sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&MsgDeleteController{})), MsgDeleteController{}.GetSignBytes(), "GetSignBytes()")
 }
 
 func TestMsgDeleteController_GetSigners(t *testing.T) {

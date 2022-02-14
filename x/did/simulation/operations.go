@@ -22,6 +22,8 @@ var (
 	TypeMsgSetVerificationRelationships = sdk.MsgTypeURL(&did.MsgSetVerificationRelationships{})
 	TypeMsgAddService                   = sdk.MsgTypeURL(&did.MsgAddService{})
 	TypeMsgDeleteService                = sdk.MsgTypeURL(&did.MsgDeleteService{})
+	TypeMsgAddController                = sdk.MsgTypeURL(&did.MsgAddController{})
+	TypeMsgDeleteController             = sdk.MsgTypeURL(&did.MsgDeleteController{})
 )
 
 const (
@@ -31,6 +33,8 @@ const (
 	opWeightMsgSetVerificationRelationships = "op_weight_msg_create_set_verification_relationships"
 	opWeightMsgAddService                   = "op_weight_msg_create_add_service"
 	opWeightMsgDeleteService                = "op_weight_msg_create_delete_service"
+	opWeightMsgAddController                = "op_weight_msg_create_add_controller"
+	opWeightMsgDeleteController             = "op_weight_msg_create_delete_controller"
 
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCreateDidDocument            int = 100
@@ -39,6 +43,8 @@ const (
 	defaultWeightMsgSetVerificationRelationships int = 200
 	defaultWeightMsgAddService                   int = 100
 	defaultWeightMsgDeleteService                int = 100
+	defaultWeightMsgAddController                int = 100
+	defaultWeightMsgDeleteController             int = 100
 
 	// this line is used by starport scaffolding # simapp/module/const
 )
@@ -89,6 +95,20 @@ func WeightedOperations(simState module.SimulationState, didKeeper keeper.Keeper
 		},
 	)
 
+	var weightMsgAddController int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddController, &weightMsgAddController, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddController = defaultWeightMsgAddController
+		},
+	)
+
+	var weightMsgDeleteController int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteController, &weightMsgDeleteController, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteController = defaultWeightMsgDeleteController
+		},
+	)
+
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCreateDidDocument,
 		SimulateMsgCreateDidDocument(didKeeper, bk, ak),
@@ -119,6 +139,16 @@ func WeightedOperations(simState module.SimulationState, didKeeper keeper.Keeper
 		SimulateMsgDeleteService(didKeeper, bk, ak),
 	))
 
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgAddController,
+		SimulateMsgAddController(didKeeper, bk, ak),
+	))
+
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteController,
+		SimulateMsgDeleteController(didKeeper, bk, ak),
+	))
+
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
@@ -134,7 +164,7 @@ func SimulateMsgCreateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
 		vmID := didID.NewVerificationMethodID(ownerAddress)
 		vmType := did.EcdsaSecp256k1VerificationKey2019
-		auth := did.NewVerification(
+		vm := did.NewVerification(
 			did.NewVerificationMethod(
 				vmID,
 				didID,
@@ -146,10 +176,10 @@ func SimulateMsgCreateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 		)
 
 		_, found := k.GetDidDocument(ctx, []byte(didID))
-		_, _ = did.NewDidDocument(didID.String(), did.WithVerifications(auth))
+		_, _ = did.NewDidDocument(didID.String(), did.WithVerifications(vm))
 		msg := did.NewMsgCreateDidDocument(
 			didID.String(),
-			did.Verifications{auth},
+			did.Verifications{vm},
 			did.Services{},
 			ownerAddress,
 		)
@@ -196,7 +226,7 @@ func SimulateMsgAddVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Accou
 		vmkeyID := didvmkeyID.NewVerificationMethodID(keyAddress)
 		vmkeyType := did.EcdsaSecp256k1VerificationKey2019
 
-		auth := did.NewVerification(
+		vm := did.NewVerification(
 			did.NewVerificationMethod(
 				vmkeyID,
 				didID,
@@ -209,7 +239,7 @@ func SimulateMsgAddVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Accou
 
 		msg := did.NewMsgAddVerification(
 			didID.String(),
-			auth,
+			vm,
 			ownerAddress,
 		)
 
@@ -230,11 +260,18 @@ func SimulateMsgAddVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Accou
 
 		opMsg, fOp, err := simulation.GenAndDeliverTxWithRandFees(txCtx)
 
-		_, found := k.GetDidDocument(ctx, []byte(didID))
+		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
 		if !found {
 			// return an error that will not stop simulation as the did was not found or the verification method already exists
 			return simtypes.NoOpMsg(did.ModuleName, TypeMsgAddVerification, "did not found, could not add verification method"), nil, nil
 		}
+
+		for _, vm := range didDoc.VerificationMethod {
+			if vmkeyID == vm.Id {
+				return simtypes.NoOpMsg(did.ModuleName, TypeMsgAddVerification, "vm already exists, could not add verification method"), nil, nil
+			}
+		}
+
 		return opMsg, fOp, err
 	}
 }
@@ -248,22 +285,21 @@ func SimulateMsgRevokeVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Ac
 		ownerAddress := didOwner.Address.String()
 		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
 		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
+		vm := didDoc.VerificationMethod
 
 		// return an error that will not stop simulation as the did was not found or the verification method does not exists
 		if !found {
 			return simtypes.NoOpMsg(did.ModuleName, TypeMsgRevokeVerification, "did not found, could not remove verification method"), nil, nil
 		}
 
-		auth := didDoc.VerificationMethod
-
 		// return an error that will not stop simulation if the length of the VM array is 1
-		if len(auth) == 1 {
+		if len(vm) == 1 {
 			return simtypes.NoOpMsg(did.ModuleName, TypeMsgRevokeVerification, "could not remove verification method as it would break the did document"), nil, nil
 		}
 
 		msg := did.NewMsgRevokeVerification(
 			didID.String(),
-			auth[1].Id,
+			vm[1].Id,
 			ownerAddress,
 		)
 
@@ -281,8 +317,9 @@ func SimulateMsgRevokeVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Ac
 			ModuleName:      did.ModuleName,
 			CoinsSpentInMsg: sdk.NewCoins(),
 		}
+		opMsg, fOp, err := simulation.GenAndDeliverTxWithRandFees(txCtx)
 
-		return simulation.GenAndDeliverTxWithRandFees(txCtx)
+		return opMsg, fOp, err
 	}
 }
 
@@ -295,22 +332,21 @@ func SimulateMsgSetVerificationRelationships(k keeper.Keeper, bk did.BankKeeper,
 		ownerAddress := didOwner.Address.String()
 		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
 		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
+		vm := didDoc.VerificationMethod
 
 		// return an error that will not stop simulation as the did was not found or the verification method does not exists
 		if !found {
 			return simtypes.NoOpMsg(did.ModuleName, TypeMsgSetVerificationRelationships, "did not found, could not remove verification method"), nil, nil
 		}
 
-		auth := didDoc.VerificationMethod
-
 		// return an error that will not stop simulation if the length of the VM array is 1
-		if len(auth) == 1 {
+		if len(vm) == 1 {
 			return simtypes.NoOpMsg(did.ModuleName, TypeMsgSetVerificationRelationships, "could not remove verification method as it would break the did document"), nil, nil
 		}
 
 		msg := did.NewMsgSetVerificationRelationships(
 			didID.String(),
-			auth[1].Id,
+			vm[1].Id,
 			[]string{did.KeyAgreement, did.CapabilityDelegation},
 			ownerAddress,
 		)
@@ -344,7 +380,7 @@ func SimulateMsgAddService(k keeper.Keeper, bk did.BankKeeper, ak did.AccountKee
 		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
 		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
 
-		serviceID := "emti-agent" + fmt.Sprint(len(didDoc.Service))
+		serviceID := "service:emtiagent" + fmt.Sprint(len(didDoc.Service))
 		serviceType := "DIDComm"
 		serviceURL := "https://agents.elesto.app.beta.starport.cloud/emti"
 
@@ -390,20 +426,9 @@ func SimulateMsgDeleteService(k keeper.Keeper, bk did.BankKeeper, ak did.Account
 		ownerAddress := didOwner.Address.String()
 		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
 		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
-
-		// return an error that will not stop simulation as the did was not found
-		if !found {
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgDeleteService, "did not found, could not remove service"), nil, nil
-		}
-
 		service := didDoc.Service
 
-		// return an error that will not stop simulation if the length of the Service array is 0
-		if len(service) == 0 {
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgDeleteService, "could not remove verification method as it would break the did document"), nil, nil
-		}
-
-		serviceID := "emti-agent" + fmt.Sprint(len(didDoc.Service))
+		serviceID := "service:emtiagent" + fmt.Sprint(len(didDoc.Service))
 
 		msg := did.NewMsgDeleteService(
 			didID.String(),
@@ -425,7 +450,118 @@ func SimulateMsgDeleteService(k keeper.Keeper, bk did.BankKeeper, ak did.Account
 			ModuleName:      did.ModuleName,
 			CoinsSpentInMsg: sdk.NewCoins(),
 		}
+		opMsg, fOp, err := simulation.GenAndDeliverTxWithRandFees(txCtx)
 
-		return simulation.GenAndDeliverTxWithRandFees(txCtx)
+		// return an error that will not stop simulation as the did was not found
+		if !found {
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgDeleteService, "did not found, could not remove service"), nil, nil
+		}
+
+		// return an error that will not stop simulation if the length of the Service array is 0
+		if len(service) == 0 {
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgDeleteService, "could not remove verification method as it would break the did document"), nil, nil
+		}
+
+		return opMsg, fOp, err
+	}
+}
+
+// SimulateMsgAddController simulates a MsgAddController message
+func SimulateMsgAddController(k keeper.Keeper, bk did.BankKeeper, ak did.AccountKeeper) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		didOwner, _ := simtypes.RandomAcc(r, accs)
+		ownerAddress := didOwner.Address.String()
+		didController, _ := simtypes.RandomAcc(r, accs)
+		controllerAddress := didController.Address.String()
+
+		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		controllerDidID := did.NewKeyDID(controllerAddress)
+		_, found := k.GetDidDocument(ctx, []byte(didID))
+
+		msg := did.NewMsgAddController(
+			didID.String(),
+			controllerDidID.String(),
+			ownerAddress,
+		)
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         TypeMsgAddController,
+			Context:         ctx,
+			SimAccount:      didOwner,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      did.ModuleName,
+			CoinsSpentInMsg: sdk.NewCoins(),
+		}
+
+		opMsg, fOp, err := simulation.GenAndDeliverTxWithRandFees(txCtx)
+
+		// return an error that will not stop simulation as the did was not found
+		if !found {
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgAddController, "did not found, could not add controller"), nil, nil
+		}
+
+		return opMsg, fOp, err
+	}
+}
+
+// SimulateMsgDeleteController simulates a MsgDeleteController message
+func SimulateMsgDeleteController(k keeper.Keeper, bk did.BankKeeper, ak did.AccountKeeper) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		didOwner, _ := simtypes.RandomAcc(r, accs)
+		ownerAddress := didOwner.Address.String()
+		didController, _ := simtypes.RandomAcc(r, accs)
+		controllerAddress := didController.Address.String()
+
+		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		controllerDidID := did.NewKeyDID(controllerAddress)
+
+		msg := did.NewMsgDeleteController(
+			didID.String(),
+			controllerDidID.String(),
+			ownerAddress,
+		)
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         TypeMsgDeleteController,
+			Context:         ctx,
+			SimAccount:      didOwner,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      did.ModuleName,
+			CoinsSpentInMsg: sdk.NewCoins(),
+		}
+
+		opMsg, fOp, err := simulation.GenAndDeliverTxWithRandFees(txCtx)
+
+		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
+
+		// return an error that will not stop simulation as the did was not found
+		if !found {
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgDeleteController, "did not found, could not remove service"), nil, nil
+		}
+
+		controller := didDoc.Controller
+
+		// return an error that will not stop simulation if the length of the Controller array is 0
+		if len(controller) == 0 {
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgDeleteController, "could not remove verification method as it would break the did document"), nil, nil
+		}
+
+		return opMsg, fOp, err
 	}
 }
