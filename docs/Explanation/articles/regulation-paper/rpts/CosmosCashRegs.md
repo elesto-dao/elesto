@@ -5,7 +5,7 @@ author: [David Grierson, Patrick McHale, Alessio Treglia]
 date: "December 2020"
 mainfont: Inter
 fontsize: 10pt
-subject: "Elesto"
+subject: "Cosmos Cash"
 keywords: [Regulation, Protocol, MiCA, AML]
 lang: "en"
 book: true
