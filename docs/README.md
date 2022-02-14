@@ -1,4 +1,4 @@
-# Cosmos Cash
+# Elesto
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/allinbits/cosmos-cash.svg)](https://pkg.go.dev/github.com/allinbits/cosmos-cash)
 [![build](https://github.com/allinbits/cosmos-cash/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/allinbits/cosmos-cash/actions/workflows/ci.yaml)
@@ -9,21 +9,21 @@
 
 ### Summary
 
-Cosmos Cash is a protocol designed to be regulatory compliant that offers the same guarantees as traditional banking
+Elesto is a protocol designed to be regulatory compliant that offers the same guarantees as traditional banking
 systems. Features that enable these guarantees are Know Your Customer (KYC), anti-money laundering (AML) tracking,
-Financial Action Task Force (FATF) travel rule, and identity management. Cosmos Cash uses a novel approach to identity
+Financial Action Task Force (FATF) travel rule, and identity management. Elesto uses a novel approach to identity
 management by leveraging W3C specifications for decentralized identifiers and verifiable credentials.
 
 ### Research paper
 
-For more information on the research behind the Cosmos Cash protocol, see the Cosmos Cash research paper:
+For more information on the research behind the Elesto protocol, see the Elesto research paper:
 
 [Cosmos Cash: Investigation into EU regulations affecting E-Money tokens](https://drive.google.com/file/d/1zmEyA8kA0uAIRGDKxYElOKvjtz4f_Ep5/view)
 
 ### Architecture
 
-The Cosmos Cash approach leverages open standards to reach its goals and to offer an open model that is compatible with
-third-party projects that use the open standards. In particular, the Cosmos Cash project uses:
+The Elesto approach leverages open standards to reach its goals and to offer an open model that is compatible with
+third-party projects that use the open standards. In particular, the Elesto project uses:
 
 - Self-sovereign identity ([SSI](./Reference/GLOSSARY.md#self-sovereign-identity-ssi))
 - Decentralized identifier ([DID](./Reference/GLOSSARY.md#decentralized-identifier-did))

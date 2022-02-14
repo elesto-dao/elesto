@@ -1,8 +1,8 @@
 # Testnet
 
-A Cosmos Cash testnet is available for testing purposes.
+A Elesto testnet is available for testing purposes.
 
-Use these Cosmos Cash testnet coordinates and satellite project URLs:
+Use these Elesto testnet coordinates and satellite project URLs:
 
 ## Testnet Coordinates
 
@@ -24,7 +24,7 @@ The faucet endpoint is used to get tokens to pay for transaction gas.
 
 ## DID Resolver
 
-URLs for ([DID](../Reference/GLOSSARY.md#decentralized-identifier-did)) resolution in the Cosmos Cash network.
+URLs for ([DID](../Reference/GLOSSARY.md#decentralized-identifier-did)) resolution in the Elesto network.
 
 |                       |                                                                         |
 | --------------------- | ----------------------------------------------------------------------- |
@@ -33,7 +33,7 @@ URLs for ([DID](../Reference/GLOSSARY.md#decentralized-identifier-did)) resoluti
 
 ## SSI Agent Router
 
-URLs to connect to an SSI Agent that uses also Cosmos Cash as a verifiable data registry (VDR).
+URLs to connect to an SSI Agent that uses also Elesto as a verifiable data registry (VDR).
 
 |                         |                                                                  |
 | ----------------------- | ---------------------------------------------------------------- |

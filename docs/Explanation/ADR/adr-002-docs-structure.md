@@ -61,14 +61,14 @@ Given GitHub will form the content management system, we propose the following s
 
 The documentation structure shall use as much as possible a content structure similar to the [Divio user cases](https://documentation.divio.com/introduction/).
 
-|                 | Tutorials | How-to guides | Reference   | Explanation   |
-|-----------------|-----------|---------------|-------------|-------------- |
-| **Oriented to** | Learning  | A goal        | Information | Understanding | 
-| **Must**        | Allow a newcomer to get started | Show how to solve a specific problem | Describe the machinery | Explain |
-| **Takes the form of**    | A lesson | A series of steps | A dry description | A discursive explanation |
-| **Analogy**     | Teaching a child to cook | Recipe in a cookery book | An encyclopedia article | A paper on culinary social history |
+|                       | Tutorials                       | How-to guides                        | Reference               | Explanation                        |
+| --------------------- | ------------------------------- | ------------------------------------ | ----------------------- | ---------------------------------- |
+| **Oriented to**       | Learning                        | A goal                               | Information             | Understanding                      |
+| **Must**              | Allow a newcomer to get started | Show how to solve a specific problem | Describe the machinery  | Explain                            |
+| **Takes the form of** | A lesson                        | A series of steps                    | A dry description       | A discursive explanation           |
+| **Analogy**           | Teaching a child to cook        | Recipe in a cookery book             | An encyclopedia article | A paper on culinary social history |
 
-The specific implementation for Cosmos Cash SHOULD BE as per the following tree structure.
+The specific implementation for Elesto SHOULD BE as per the following tree structure.
 
 ```
 /
@@ -160,7 +160,7 @@ Reference documentation includes a number of different forms:
 
 ##### docs/Reference/use-cases
 
-The `use-cases` folder describes Cosmos Cash use cases. Ideally, use cases are written in behavior-driven development (BDD) format. Use case content should be dry in nature and avoid explanations that should be covered in the explanation documentation.
+The `use-cases` folder describes Elesto use cases. Ideally, use cases are written in behavior-driven development (BDD) format. Use case content should be dry in nature and avoid explanations that should be covered in the explanation documentation.
 
 ##### docs/Reference/architecture
 

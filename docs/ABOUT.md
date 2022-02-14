@@ -4,7 +4,7 @@ title: About Documentation
 
 # Documentation
 
-How to use the Cosmos Cash Documentation.
+How to use the Elesto Documentation.
 
 - [Documentation](#documentation)
   - [Overview](#overview)
@@ -13,7 +13,7 @@ How to use the Cosmos Cash Documentation.
 
 ## Overview
 
-In Cosmos Cash we use the  *Grand Unified Theory of Documentation* (David Laing) as described
+In Elesto we use the  *Grand Unified Theory of Documentation* (David Laing) as described
 by [Divio](https://documentation.divio.com/) as a basis for our documentation strategy.
 
 This approach outlines four specific use cases for documentation:

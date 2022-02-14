@@ -1,11 +1,11 @@
 ---
-title: "Cosmos Cash"
+title: "Elesto"
 subtitle: "Investigation into EU regulations affecting E-Money tokens"
 author: [David Grierson, Patrick McHale, Alessio Treglia]
 date: "December 2020"
 mainfont: Inter
 fontsize: 10pt
-subject: "Cosmos Cash"
+subject: "Elesto"
 keywords: [Regulation, Protocol, MiCA, AML]
 lang: "en"
 book: true

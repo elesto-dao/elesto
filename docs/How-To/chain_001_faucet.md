@@ -1,7 +1,7 @@
 
 # Get Testnet Tokens (Faucet)
 
-The Cosmos Cash native token denom is `cash`.  
+The Elesto native token denom is `cash`.  
 
 A keypair is created with the following command:
 

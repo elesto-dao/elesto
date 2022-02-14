@@ -2,7 +2,7 @@
 
 ## Installation
 
-Cosmos Cash diagrams are based on PlantUML. 
+Elesto diagrams are based on PlantUML. 
 
 PlantUML can be installed on your local system through your platforms' package manager:
 

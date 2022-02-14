@@ -4,7 +4,7 @@ title: About Articles
 
 # Articles README
 
-This folder includes all articles, papers, and so on that have been created for Cosmos Cash. 
+This folder includes all articles, papers, and so on that have been created for Elesto. 
 
 Each folder represents all of the materials and assets for a single article, including bibliographies, images, and so on. The papers themselves are written in Markdown. The Markdown files can then be published in various formats using [Pandoc](https://pandoc.org/MANUAL.html). 
 
@@ -35,7 +35,7 @@ author: [Joe Smith]
 date: "Publish date"
 mainfont: Inter # Default Tendermint font
 fontsize: 10pt
-subject: "Cosmos Cash"
+subject: "Elesto"
 keywords: []
 lang: "en"
 book: true

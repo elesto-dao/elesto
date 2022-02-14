@@ -1,6 +1,6 @@
 # Reference Documentation
 
-How to use the Cosmos Cash Reference Documentation.
+How to use the Elesto Reference Documentation.
 
 - [Reference Documentation](#reference-documentation)
   - [Introduction](#introduction)
@@ -10,7 +10,7 @@ How to use the Cosmos Cash Reference Documentation.
 
 ## Introduction
 
-This section contains **Reference documentation** for Cosmos Cash. [Reference Documentation](https://documentation.divio.com/reference/) is intended to be **information-oriented**. Content must allow the reader to easily navigate the content and use the content in conjunction with the code.
+This section contains **Reference documentation** for Elesto. [Reference Documentation](https://documentation.divio.com/reference/) is intended to be **information-oriented**. Content must allow the reader to easily navigate the content and use the content in conjunction with the code.
 
 This documentation describes the machinery, for example, classes, functions, interfaces, parameters, and so on.
 
