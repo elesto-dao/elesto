@@ -2,12 +2,14 @@
 
 ## Changelog
 
+- 2022-02-14: Moved to last call 
 - 2021-09-23: Added security and privacy considerations
 - 2021-08-02: Initial draft
 
 ## Status
 
-PROPOSED
+LAST CALL 2022-02-28
+
 ## Abstract
 
 [Decentralized identifiers](https://www.w3.org/TR/did-core) (DIDs) are a type of identifier that enables verifiable, decentralized digital identity. A DID refers to any subject (for example, a person, organization, thing, data model, abstract entity, and so on) as determined by the controller of the DID.
