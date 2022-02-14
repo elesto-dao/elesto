@@ -17,8 +17,8 @@ func (k Keeper) DidDocument(
 	c context.Context,
 	req *did.QueryDidDocumentRequest,
 ) (*did.QueryDidDocumentResponse, error) {
-	if req.Id == "" {
-		return nil, status.Error(codes.InvalidArgument, "verifiable credential id cannot be empty")
+	if did.IsEmpty(req.Id) {
+		return nil, status.Error(codes.InvalidArgument, "did document id cannot be empty")
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
