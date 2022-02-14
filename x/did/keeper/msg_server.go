@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -29,6 +30,13 @@ func (k msgServer) CreateDidDocument(
 ) (*didmod.MsgCreateDidDocumentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	k.Logger(ctx).Info("request to create a did document", "target did", msg.Id)
+	// check that the did is not a key did
+	if strings.HasPrefix(msg.Id, didmod.DidKeyPrefix) {
+		err := sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format cannot be created %s", msg.Id)
+		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+
 	// setup a new did document (performs input validation)
 	didDoc, err := didmod.NewDidDocument(msg.Id,
 		didmod.WithServices(msg.Services...),
@@ -73,7 +81,7 @@ func (k msgServer) UpdateDidDocument(
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(didmod.Authentication),
+		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Doc.Id, msg.Signer,
 		//XXX: check this assignment during audit
 		//nolint
@@ -97,7 +105,7 @@ func (k msgServer) AddVerification(
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(didmod.Authentication),
+		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer,
 		func(didDoc *didmod.DidDocument) error {
 			return didDoc.AddVerifications(msg.Verification)
@@ -115,7 +123,7 @@ func (k msgServer) AddService(
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(didmod.Authentication),
+		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer,
 		func(didDoc *didmod.DidDocument) error {
 			return didDoc.AddServices(msg.ServiceData)
@@ -134,7 +142,7 @@ func (k msgServer) RevokeVerification(
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(didmod.Authentication),
+		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer,
 		func(didDoc *didmod.DidDocument) error {
 			return didDoc.RevokeVerification(msg.MethodId)
@@ -153,7 +161,7 @@ func (k msgServer) DeleteService(
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(didmod.Authentication),
+		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer,
 		func(didDoc *didmod.DidDocument) error {
 			// Only try to remove service if there are services
@@ -178,7 +186,7 @@ func (k msgServer) SetVerificationRelationships(
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(didmod.Authentication),
+		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer,
 		func(didDoc *didmod.DidDocument) error {
 			return didDoc.SetVerificationRelationships(msg.MethodId, msg.Relationships...)
@@ -196,7 +204,7 @@ func (k msgServer) AddController(
 ) (*didmod.MsgAddControllerResponse, error) {
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(didmod.Authentication),
+		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer,
 		func(didDoc *didmod.DidDocument) error {
 			return didDoc.AddControllers(msg.ControllerDid)
@@ -215,7 +223,7 @@ func (k msgServer) DeleteController(
 
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
-		newConstraints(didmod.Authentication),
+		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer, func(didDoc *didmod.DidDocument) error {
 			return didDoc.DeleteControllers(msg.ControllerDid)
 		}); err != nil {
@@ -236,19 +244,15 @@ func updateDidMetadata(keeper *Keeper, ctx sdk.Context, did string) (err error) 
 	return
 }
 
-// VerificationRelationships for did document manipulation
-type VerificationRelationships []string
-
-func newConstraints(relationships ...string) VerificationRelationships {
-	return relationships
-}
-
-func executeOnDidWithRelationships(goCtx context.Context, k *Keeper, constraints VerificationRelationships, did, signer string, update func(document *didmod.DidDocument) error) (err error) {
+func executeOnDidWithRelationships(goCtx context.Context, k *Keeper, constraints didmod.VerificationRelationships, did, signer string, update func(document *didmod.DidDocument) error) (err error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	k.Logger(ctx).Info("request to update a did document", "target did", did)
-	// TODO: fail if the input did is of type KEY (immutable)
-	// eg: ErrInvalidState, "did document key is immutable"
-
+	// check that the did is not a key did
+	if strings.HasPrefix(did, didmod.DidKeyPrefix) {
+		err = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format are read only %s", did)
+		k.Logger(ctx).Error(err.Error())
+		return
+	}
 	// get the did document
 	didDoc, found := k.GetDidDocument(ctx, []byte(did))
 	if !found {
