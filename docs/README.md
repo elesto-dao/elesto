@@ -1,11 +1,12 @@
 # Elesto
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/allinbits/cosmos-cash.svg)](https://pkg.go.dev/github.com/allinbits/cosmos-cash)
-[![build](https://github.com/allinbits/cosmos-cash/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/allinbits/cosmos-cash/actions/workflows/ci.yaml)
-[![codecov](https://codecov.io/gh/allinbits/cosmos-cash/branch/main/graph/badge.svg?token=NLT5ZWM460)](https://codecov.io/gh/allinbits/cosmos-cash)
-[![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/allinbits/cosmos-cash)](https://libraries.io/go/github.com%2Fallinbits%2Fcosmos-cash)
+[![Go Reference](https://pkg.go.dev/badge/github.com/elesto-dao/elesto.svg)](https://pkg.go.dev/github.com/elesto-dao/elesto)
+[![build](https://github.com/elesto-dao/elesto/actions/workflows/quality.yaml/badge.svg?branch=main)](https://github.com/elesto-dao/elesto/actions/workflows/quality.yaml)
+[![codecov](https://codecov.io/gh/elesto-dao/elesto/branch/main/graph/badge.svg?token=NLT5ZWM460)](https://codecov.io/gh/elesto-dao/elesto)
+[![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/elesto-dao/elesto)](https://libraries.io/go/github.com%2Felesto-dao%2Felesto)
+[![DeepSource](https://deepsource.io/gh/elesto-dao/elesto.svg/?label=active+issues&show_trend=true&token=BRR7kVLyskz5-N1etTDRay5J)](https://deepsource.io/gh/elesto-dao/elesto/?ref=repository-badge)
 
-![](https://miro.medium.com/max/1000/1*8Wx44uvyJxpZUVS0WojMNw.png)
+
 
 ### Summary
 
@@ -16,7 +17,7 @@ management by leveraging W3C specifications for decentralized identifiers and ve
 
 ### Research paper
 
-For more information on the research behind the Elesto protocol, see the Elesto research paper:
+For more information on the research behind the Elesto protocol, see the Cosmos Cash research paper:
 
 [Cosmos Cash: Investigation into EU regulations affecting E-Money tokens](https://drive.google.com/file/d/1zmEyA8kA0uAIRGDKxYElOKvjtz4f_Ep5/view)
 

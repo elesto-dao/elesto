@@ -52,7 +52,7 @@ This folder contains all articles relating to Elesto, includes papers, blog post
 
 ## Discussions
 
-The explanation content includes articles, topics, and so on, and also includes discussion on relevant channels, including [Pull Requests](https://github.com/allinbits/cosmos-cash/pulls) and [Issues](https://github.com/allinbits/cosmos-cash/issues). Important Pull Requests are listed in this document.
+The explanation content includes articles, topics, and so on, and also includes discussion on relevant channels, including [Pull Requests](https://github.com/elesto-dao/elesto/pulls) and [Issues](https://github.com/elesto-dao/elesto/issues). Important Pull Requests are listed in this document.
 
 Future: Elesto currently doesn't have a Discord or Telegram Channel. When we do, the links will be added here as well
 ## Contributing
@@ -61,7 +61,7 @@ Future: Elesto currently doesn't have a Discord or Telegram Channel. When we do,
 * All documentation is written following [Google Documentation Best Practice](https://google.github.io/styleguide/docguide/best_practices.html)
 * Autogenerate documentation from the code whenever possible.
 * Raise a PR for all documentation changes
-* Follow our [Code of Conduct](https://github.com/allinbits/cosmos-cash/blob/main/CONTRIBUTING.md)
+* Follow our [Code of Conduct](https://github.com/elesto-dao/elesto/blob/main/CONTRIBUTING.md)
 
 ## Reference
 

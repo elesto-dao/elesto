@@ -52,7 +52,7 @@ Additional Documentation non-functional use cases include:
 
 To address the use cases outlined in the context, this ADR proposes the following decisions:
 
-- Use GitHub as primary content management [https://github.com/allinbits/cosmos-cash](https://github.com/allinbits/cosmos-cash)
+- Use GitHub as primary content management [https://github.com/elesto-dao/elesto](https://github.com/elesto-dao/elesto)
 - Use Markdown and LaTeX to deliver research publications
 
 Given GitHub will form the content management system, we propose the following structure:
