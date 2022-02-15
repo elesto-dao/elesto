@@ -6,7 +6,7 @@ package did
 import (
 	context "context"
 	fmt "fmt"
-	query "github.com/cosmos/cosmos-sdk/types/query"
+	_ "github.com/cosmos/cosmos-sdk/types/query"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -31,116 +31,6 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // QueryDidDocumentsRequest is request type for Query/DidDocuments RPC method.
-type QueryDidDocumentsRequest struct {
-	// status enables to query for validators matching a given status.
-	Status string `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
-	// pagination defines an optional pagination for the request.
-	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (m *QueryDidDocumentsRequest) Reset()         { *m = QueryDidDocumentsRequest{} }
-func (m *QueryDidDocumentsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryDidDocumentsRequest) ProtoMessage()    {}
-func (*QueryDidDocumentsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31228b4ee4821623, []int{0}
-}
-func (m *QueryDidDocumentsRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryDidDocumentsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryDidDocumentsRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryDidDocumentsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryDidDocumentsRequest.Merge(m, src)
-}
-func (m *QueryDidDocumentsRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryDidDocumentsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryDidDocumentsRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryDidDocumentsRequest proto.InternalMessageInfo
-
-func (m *QueryDidDocumentsRequest) GetStatus() string {
-	if m != nil {
-		return m.Status
-	}
-	return ""
-}
-
-func (m *QueryDidDocumentsRequest) GetPagination() *query.PageRequest {
-	if m != nil {
-		return m.Pagination
-	}
-	return nil
-}
-
-// QueryDidDocumentsResponse is response type for the Query/DidDocuments RPC method
-type QueryDidDocumentsResponse struct {
-	// validators contains all the queried validators.
-	DidDocuments []DidDocument `protobuf:"bytes,1,rep,name=didDocuments,proto3" json:"didDocuments"`
-	// pagination defines the pagination in the response.
-	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (m *QueryDidDocumentsResponse) Reset()         { *m = QueryDidDocumentsResponse{} }
-func (m *QueryDidDocumentsResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryDidDocumentsResponse) ProtoMessage()    {}
-func (*QueryDidDocumentsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31228b4ee4821623, []int{1}
-}
-func (m *QueryDidDocumentsResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryDidDocumentsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryDidDocumentsResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryDidDocumentsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryDidDocumentsResponse.Merge(m, src)
-}
-func (m *QueryDidDocumentsResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryDidDocumentsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryDidDocumentsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryDidDocumentsResponse proto.InternalMessageInfo
-
-func (m *QueryDidDocumentsResponse) GetDidDocuments() []DidDocument {
-	if m != nil {
-		return m.DidDocuments
-	}
-	return nil
-}
-
-func (m *QueryDidDocumentsResponse) GetPagination() *query.PageResponse {
-	if m != nil {
-		return m.Pagination
-	}
-	return nil
-}
-
-// QueryDidDocumentsRequest is request type for Query/DidDocuments RPC method.
 type QueryDidDocumentRequest struct {
 	// status enables to query for validators matching a given status.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -150,7 +40,7 @@ func (m *QueryDidDocumentRequest) Reset()         { *m = QueryDidDocumentRequest
 func (m *QueryDidDocumentRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryDidDocumentRequest) ProtoMessage()    {}
 func (*QueryDidDocumentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31228b4ee4821623, []int{2}
+	return fileDescriptor_31228b4ee4821623, []int{0}
 }
 func (m *QueryDidDocumentRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -197,7 +87,7 @@ func (m *QueryDidDocumentResponse) Reset()         { *m = QueryDidDocumentRespon
 func (m *QueryDidDocumentResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryDidDocumentResponse) ProtoMessage()    {}
 func (*QueryDidDocumentResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31228b4ee4821623, []int{3}
+	return fileDescriptor_31228b4ee4821623, []int{1}
 }
 func (m *QueryDidDocumentResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -241,8 +131,6 @@ func (m *QueryDidDocumentResponse) GetDidMetadata() DidMetadata {
 }
 
 func init() {
-	proto.RegisterType((*QueryDidDocumentsRequest)(nil), "elestodao.elesto.did.QueryDidDocumentsRequest")
-	proto.RegisterType((*QueryDidDocumentsResponse)(nil), "elestodao.elesto.did.QueryDidDocumentsResponse")
 	proto.RegisterType((*QueryDidDocumentRequest)(nil), "elestodao.elesto.did.QueryDidDocumentRequest")
 	proto.RegisterType((*QueryDidDocumentResponse)(nil), "elestodao.elesto.did.QueryDidDocumentResponse")
 }
@@ -250,36 +138,29 @@ func init() {
 func init() { proto.RegisterFile("did/query.proto", fileDescriptor_31228b4ee4821623) }
 
 var fileDescriptor_31228b4ee4821623 = []byte{
-	// 458 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x93, 0x4f, 0x8b, 0xd4, 0x30,
-	0x18, 0xc6, 0x9b, 0xaa, 0x0b, 0xa6, 0xeb, 0x1f, 0xc2, 0xea, 0xd6, 0x41, 0xeb, 0xd8, 0x83, 0x8e,
-	0xc2, 0x26, 0xec, 0x78, 0xf5, 0xb4, 0x2c, 0x8a, 0x88, 0xa0, 0x3d, 0x7a, 0x4b, 0x27, 0xa1, 0x06,
-	0x76, 0xfa, 0x76, 0x37, 0xa9, 0xf8, 0x07, 0x2f, 0xde, 0xc4, 0x8b, 0xe0, 0x27, 0xf0, 0x1b, 0xe8,
-	0xb7, 0xd8, 0xe3, 0x82, 0x17, 0x4f, 0x22, 0x33, 0x7e, 0x10, 0x69, 0x93, 0x6a, 0x76, 0xec, 0xe0,
-	0xec, 0x2d, 0x79, 0x79, 0x9e, 0xe7, 0xfd, 0xbd, 0x6f, 0x53, 0x7c, 0x41, 0x28, 0xc1, 0xf6, 0x6b,
-	0x79, 0xf0, 0x8a, 0x56, 0x07, 0x60, 0x80, 0x6c, 0xc8, 0x3d, 0xa9, 0x0d, 0x08, 0x0e, 0xd4, 0x9e,
-	0xa8, 0x50, 0x62, 0x70, 0xb5, 0x00, 0x28, 0xf6, 0x24, 0xe3, 0x95, 0x62, 0xbc, 0x2c, 0xc1, 0x70,
-	0xa3, 0xa0, 0xd4, 0xd6, 0x33, 0xb8, 0x33, 0x01, 0x3d, 0x05, 0xcd, 0x72, 0xae, 0xa5, 0x0d, 0x63,
-	0x2f, 0xb6, 0x73, 0x69, 0xf8, 0x36, 0xab, 0x78, 0xa1, 0xca, 0x56, 0xec, 0xb4, 0xe7, 0x9a, 0x86,
-	0x42, 0x09, 0x77, 0xdd, 0x28, 0xa0, 0x80, 0xf6, 0xc8, 0x9a, 0x93, 0xad, 0xa6, 0xaf, 0x71, 0xfc,
-	0xb4, 0x89, 0xd9, 0x55, 0x62, 0x17, 0x26, 0xf5, 0x54, 0x96, 0x46, 0x67, 0x72, 0xbf, 0x96, 0xda,
-	0x90, 0xcb, 0x78, 0x4d, 0x1b, 0x6e, 0x6a, 0x1d, 0xa3, 0x21, 0x1a, 0x9d, 0xcd, 0xdc, 0x8d, 0xdc,
-	0xc7, 0xf8, 0x6f, 0xb3, 0x38, 0x1c, 0xa2, 0x51, 0x34, 0xbe, 0x49, 0x2d, 0x19, 0x6d, 0xc8, 0xa8,
-	0x1d, 0xd3, 0x91, 0xd1, 0x27, 0xbc, 0x90, 0x2e, 0x33, 0xf3, 0x9c, 0xe9, 0x57, 0x84, 0xaf, 0xf4,
-	0x34, 0xd7, 0x15, 0x94, 0x5a, 0x92, 0x47, 0x78, 0x5d, 0x78, 0xf5, 0x18, 0x0d, 0x4f, 0x8d, 0xa2,
-	0xf1, 0x0d, 0xda, 0xb7, 0x35, 0xea, 0x25, 0xec, 0x9c, 0x3e, 0xfc, 0x71, 0x3d, 0xc8, 0x8e, 0x99,
-	0xc9, 0x83, 0x1e, 0xe4, 0x5b, 0xff, 0x45, 0xb6, 0x24, 0xc7, 0x98, 0x6f, 0xe3, 0xcd, 0x45, 0xe4,
-	0x6e, 0x5d, 0xe7, 0x71, 0xa8, 0x84, 0x5b, 0x55, 0xa8, 0x44, 0xfa, 0x05, 0xfd, 0xbb, 0xdb, 0x3f,
-	0xd3, 0x3d, 0xc4, 0x91, 0x07, 0xd8, 0xba, 0x4e, 0x30, 0x9c, 0xef, 0x75, 0x51, 0x8f, 0xa5, 0xe1,
-	0x82, 0x1b, 0xee, 0x86, 0x5b, 0x1e, 0xd5, 0x09, 0xbd, 0xa8, 0xae, 0x34, 0xfe, 0x1c, 0xe2, 0x33,
-	0x2d, 0x32, 0x79, 0x8f, 0xf0, 0xba, 0xff, 0x59, 0x08, 0xed, 0x0f, 0x5c, 0xf6, 0x78, 0x06, 0x6c,
-	0x65, 0xbd, 0xdd, 0x48, 0x1a, 0xbf, 0xfb, 0xf6, 0xeb, 0x53, 0x48, 0xc8, 0x45, 0x66, 0xe5, 0xcc,
-	0x3d, 0x5f, 0x4d, 0x3e, 0x20, 0x1c, 0x79, 0x16, 0xb2, 0xb5, 0x5a, 0x74, 0x47, 0x42, 0x57, 0x95,
-	0x3b, 0x90, 0x6b, 0x2d, 0xc8, 0x26, 0xb9, 0xb4, 0x08, 0xc2, 0xde, 0x28, 0xf1, 0x76, 0xe7, 0xde,
-	0xe1, 0x2c, 0x41, 0x47, 0xb3, 0x04, 0xfd, 0x9c, 0x25, 0xe8, 0xe3, 0x3c, 0x09, 0x8e, 0xe6, 0x49,
-	0xf0, 0x7d, 0x9e, 0x04, 0xcf, 0xd2, 0x42, 0x99, 0xe7, 0x75, 0x4e, 0x27, 0x30, 0x75, 0xd6, 0x2d,
-	0xc1, 0xa1, 0x4b, 0x79, 0xd9, 0x64, 0xe4, 0x6b, 0xed, 0x6f, 0x77, 0xf7, 0x77, 0x00, 0x00, 0x00,
-	0xff, 0xff, 0x29, 0xb8, 0x0e, 0x76, 0x0e, 0x04, 0x00, 0x00,
+	// 342 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x91, 0xb1, 0x4b, 0xfb, 0x40,
+	0x14, 0xc7, 0x73, 0xe1, 0xf7, 0x13, 0xbc, 0xa2, 0x42, 0xa8, 0xb4, 0x14, 0x8d, 0x9a, 0x49, 0x85,
+	0xde, 0xd1, 0xba, 0x3a, 0x95, 0x2e, 0x0e, 0x0e, 0x76, 0x74, 0xbb, 0xf4, 0x1d, 0xf1, 0xa0, 0xcd,
+	0x4b, 0x7b, 0x17, 0x51, 0xc4, 0xc5, 0xd5, 0x45, 0x10, 0xff, 0x0f, 0xff, 0x8c, 0x8e, 0x05, 0x17,
+	0x27, 0x91, 0xd6, 0x3f, 0x44, 0x92, 0x4b, 0x31, 0x60, 0x45, 0xb7, 0x97, 0xc7, 0xe7, 0xfb, 0x79,
+	0xb9, 0xf7, 0xe8, 0x06, 0x28, 0xe0, 0xa3, 0x54, 0x8e, 0xaf, 0x59, 0x32, 0x46, 0x83, 0x5e, 0x55,
+	0x0e, 0xa4, 0x36, 0x08, 0x02, 0x99, 0xad, 0x18, 0x28, 0x68, 0x6c, 0x45, 0x88, 0xd1, 0x40, 0x72,
+	0x91, 0x28, 0x2e, 0xe2, 0x18, 0x8d, 0x30, 0x0a, 0x63, 0x6d, 0x33, 0x8d, 0xc3, 0x3e, 0xea, 0x21,
+	0x6a, 0x1e, 0x0a, 0x2d, 0xad, 0x8c, 0x5f, 0xb6, 0x42, 0x69, 0x44, 0x8b, 0x27, 0x22, 0x52, 0x71,
+	0x0e, 0x17, 0xec, 0x5a, 0x36, 0x10, 0x14, 0x14, 0x9f, 0xd5, 0x08, 0x23, 0xcc, 0x4b, 0x9e, 0x55,
+	0xb6, 0x1b, 0x1c, 0xd0, 0xda, 0x59, 0xa6, 0xe9, 0x2a, 0xe8, 0x62, 0x3f, 0x1d, 0xca, 0xd8, 0xf4,
+	0xe4, 0x28, 0x95, 0xda, 0x78, 0xeb, 0xd4, 0x55, 0x50, 0x27, 0xbb, 0x64, 0x7f, 0xb5, 0xe7, 0x2a,
+	0x08, 0x9e, 0x09, 0xad, 0x7f, 0x67, 0x75, 0x82, 0xb1, 0x96, 0xde, 0x09, 0xad, 0xc0, 0x57, 0x3b,
+	0x4f, 0x55, 0xda, 0x7b, 0x6c, 0xd9, 0x13, 0x59, 0x29, 0xdf, 0xf9, 0x37, 0x79, 0xdb, 0x71, 0x7a,
+	0xe5, 0x6c, 0xa1, 0x3a, 0x95, 0x46, 0x80, 0x30, 0xa2, 0xee, 0xfe, 0xa2, 0x5a, 0x80, 0x25, 0xd5,
+	0xa2, 0xd5, 0x7e, 0x22, 0xf4, 0x7f, 0xfe, 0xcb, 0xde, 0x3d, 0xa1, 0x95, 0xd2, 0x5c, 0xaf, 0xb9,
+	0xdc, 0xf7, 0xc3, 0x2e, 0x1a, 0xec, 0xaf, 0xb8, 0x5d, 0x47, 0xb0, 0x7d, 0xf7, 0xf2, 0xf1, 0xe8,
+	0xd6, 0xbc, 0x4d, 0x6e, 0x69, 0x5e, 0xdc, 0x42, 0xf3, 0x1b, 0x05, 0xb7, 0x9d, 0xe3, 0xc9, 0xcc,
+	0x27, 0xd3, 0x99, 0x4f, 0xde, 0x67, 0x3e, 0x79, 0x98, 0xfb, 0xce, 0x74, 0xee, 0x3b, 0xaf, 0x73,
+	0xdf, 0x39, 0x0f, 0x22, 0x65, 0x2e, 0xd2, 0x90, 0xf5, 0x71, 0x58, 0x44, 0x9b, 0x20, 0x70, 0x61,
+	0xb9, 0xca, 0x1c, 0xe1, 0x4a, 0x7e, 0xba, 0xa3, 0xcf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x01, 0xe7,
+	0xee, 0x22, 0x52, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -294,8 +175,6 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// DidDocuments queries all did documents that match the given status.
-	DidDocuments(ctx context.Context, in *QueryDidDocumentsRequest, opts ...grpc.CallOption) (*QueryDidDocumentsResponse, error)
 	// DidDocument queries a did documents with an id.
 	DidDocument(ctx context.Context, in *QueryDidDocumentRequest, opts ...grpc.CallOption) (*QueryDidDocumentResponse, error)
 }
@@ -306,15 +185,6 @@ type queryClient struct {
 
 func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
-}
-
-func (c *queryClient) DidDocuments(ctx context.Context, in *QueryDidDocumentsRequest, opts ...grpc.CallOption) (*QueryDidDocumentsResponse, error) {
-	out := new(QueryDidDocumentsResponse)
-	err := c.cc.Invoke(ctx, "/elestodao.elesto.did.Query/DidDocuments", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *queryClient) DidDocument(ctx context.Context, in *QueryDidDocumentRequest, opts ...grpc.CallOption) (*QueryDidDocumentResponse, error) {
@@ -328,8 +198,6 @@ func (c *queryClient) DidDocument(ctx context.Context, in *QueryDidDocumentReque
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// DidDocuments queries all did documents that match the given status.
-	DidDocuments(context.Context, *QueryDidDocumentsRequest) (*QueryDidDocumentsResponse, error)
 	// DidDocument queries a did documents with an id.
 	DidDocument(context.Context, *QueryDidDocumentRequest) (*QueryDidDocumentResponse, error)
 }
@@ -338,33 +206,12 @@ type QueryServer interface {
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) DidDocuments(ctx context.Context, req *QueryDidDocumentsRequest) (*QueryDidDocumentsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DidDocuments not implemented")
-}
 func (*UnimplementedQueryServer) DidDocument(ctx context.Context, req *QueryDidDocumentRequest) (*QueryDidDocumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DidDocument not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
-}
-
-func _Query_DidDocuments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryDidDocumentsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).DidDocuments(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/elestodao.elesto.did.Query/DidDocuments",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).DidDocuments(ctx, req.(*QueryDidDocumentsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Query_DidDocument_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -390,107 +237,12 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "DidDocuments",
-			Handler:    _Query_DidDocuments_Handler,
-		},
-		{
 			MethodName: "DidDocument",
 			Handler:    _Query_DidDocument_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "did/query.proto",
-}
-
-func (m *QueryDidDocumentsRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryDidDocumentsRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryDidDocumentsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Pagination != nil {
-		{
-			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintQuery(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Status) > 0 {
-		i -= len(m.Status)
-		copy(dAtA[i:], m.Status)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Status)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryDidDocumentsResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryDidDocumentsResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryDidDocumentsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Pagination != nil {
-		{
-			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintQuery(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.DidDocuments) > 0 {
-		for iNdEx := len(m.DidDocuments) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.DidDocuments[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
-	}
-	return len(dAtA) - i, nil
 }
 
 func (m *QueryDidDocumentRequest) Marshal() (dAtA []byte, err error) {
@@ -577,42 +329,6 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *QueryDidDocumentsRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Status)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	if m.Pagination != nil {
-		l = m.Pagination.Size()
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryDidDocumentsResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.DidDocuments) > 0 {
-		for _, e := range m.DidDocuments {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
-	if m.Pagination != nil {
-		l = m.Pagination.Size()
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
 func (m *QueryDidDocumentRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -644,244 +360,6 @@ func sovQuery(x uint64) (n int) {
 }
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (m *QueryDidDocumentsRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryDidDocumentsRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryDidDocumentsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Status = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Pagination == nil {
-				m.Pagination = &query.PageRequest{}
-			}
-			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryDidDocumentsResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryDidDocumentsResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryDidDocumentsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DidDocuments", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DidDocuments = append(m.DidDocuments, DidDocument{})
-			if err := m.DidDocuments[len(m.DidDocuments)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Pagination == nil {
-				m.Pagination = &query.PageResponse{}
-			}
-			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *QueryDidDocumentRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)

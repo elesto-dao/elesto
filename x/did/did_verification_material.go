@@ -7,6 +7,16 @@ import (
 	"strings"
 )
 
+// This assigment are here to make sure that the VerificationMaterial implement
+// the validable interface. If a VerificationMaterial does not implement the interface
+// then it will not be recognized and accepted at runtime
+var (
+	_ Validable = (*VerificationMethod_PublicKeyHex)(nil)
+	_ Validable = (*VerificationMethod_PublicKeyJwk)(nil)
+	_ Validable = (*VerificationMethod_PublicKeyMultibase)(nil)
+	_ Validable = (*VerificationMethod_BlockchainAccountID)(nil)
+)
+
 // VerificationMethodType encode the verification material type
 type VerificationMethodType string
 
@@ -84,7 +94,7 @@ func NewPublicKeyHex(pubKey []byte) *VerificationMethod_PublicKeyHex {
 	}
 }
 
-// NewPublicKeyHexFromString build a new blockchain account ID struct
+// NewPublicKeyHexFromString build a new public key hex struct from a string
 // https://w3c.github.io/did-spec-registries/#publickeyhex
 func NewPublicKeyHexFromString(pubKeyHex string) (pkh *VerificationMethod_PublicKeyHex, err error) {
 	pkb, err := hex.DecodeString(pubKeyHex)
@@ -96,27 +106,66 @@ func NewPublicKeyHexFromString(pubKeyHex string) (pkh *VerificationMethod_Public
 	return
 }
 
-// NewPublicKeyJwk formats an account public key as hex string.
+// NewPublicKeyJwk build a PublicKeyJwk struct from a json string encoded as a byte sequence.
 func NewPublicKeyJwk(pubKey []byte) (vm *VerificationMethod_PublicKeyJwk, err error) {
 	var pkj PublicKeyJwk
 	if err = json.Unmarshal(pubKey, &pkj); err != nil {
 		return
 	}
-	if IsEmpty(pkj.Kid) {
-		err = fmt.Errorf("publicKeyJwk.kid cannot be empty")
-		return
-	}
-	if IsEmpty(pkj.X + pkj.Y) {
-		err = fmt.Errorf("publicKeyJwk.X or publicKeyJwk.Y cannot be empty")
-		return
-	}
 	vm = &VerificationMethod_PublicKeyJwk{
 		PublicKeyJwk: &pkj,
+	}
+	if err = vm.Validate(); err != nil {
+		return nil, err
 	}
 	return
 }
 
-// NewPublicKeyJwkFromJSON build a new blockchain account ID struct
+// NewPublicKeyJwkFromJSON build a PublicKeyJwk struct from a json string
 func NewPublicKeyJwkFromJSON(pubKeyJSON string) (vm *VerificationMethod_PublicKeyJwk, err error) {
 	return NewPublicKeyJwk([]byte(pubKeyJSON))
+}
+
+// Validable interface requires implementation of a validate function for a
+// verification VerificationMaterial
+type Validable interface {
+	isVerificationMethod_VerificationMaterial
+	Validate() error
+}
+
+// Validate verify that the PublicKeyJwk is not empty and contains mandatory fields
+func (vm VerificationMethod_PublicKeyJwk) Validate() (err error) {
+	if IsEmpty(vm.PublicKeyJwk.Kid) {
+		err = fmt.Errorf("publicKeyJwk.kid cannot be empty")
+		return
+	}
+	if IsEmpty(vm.PublicKeyJwk.X + vm.PublicKeyJwk.Y) {
+		err = fmt.Errorf("publicKeyJwk.X or publicKeyJwk.Y cannot be empty")
+		return
+	}
+	return nil
+}
+
+// Validate verify that the PublicKeyHex is not empty
+func (vm VerificationMethod_PublicKeyHex) Validate() error {
+	if IsEmpty(vm.PublicKeyHex) {
+		return fmt.Errorf("publicKeyHex is empty")
+	}
+	return nil
+}
+
+// Validate verify that the PublicKeyMultibase is not empty
+func (vm VerificationMethod_PublicKeyMultibase) Validate() error {
+	if IsEmpty(vm.PublicKeyMultibase) {
+		return fmt.Errorf("publicKeyMultibase is empty")
+	}
+	return nil
+}
+
+// Validate verify that the BlockchainAccountID is not empty
+func (baID VerificationMethod_BlockchainAccountID) Validate() error {
+	if IsEmpty(baID.BlockchainAccountID) {
+		return fmt.Errorf("blockchainAccountId is empty")
+	}
+	return nil
 }

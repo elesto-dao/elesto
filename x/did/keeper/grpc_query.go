@@ -12,26 +12,13 @@ import (
 
 var _ did.QueryServer = Keeper{}
 
-// DidDocuments implements the DidDocuments gRPC method
-func (k Keeper) DidDocuments(
-	c context.Context,
-	req *did.QueryDidDocumentsRequest,
-) (*did.QueryDidDocumentsResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-	dids := k.GetAllDidDocuments(ctx)
-
-	return &did.QueryDidDocumentsResponse{
-		DidDocuments: dids,
-	}, nil
-}
-
 // DidDocument implements the DidDocument gRPC method
 func (k Keeper) DidDocument(
 	c context.Context,
 	req *did.QueryDidDocumentRequest,
 ) (*did.QueryDidDocumentResponse, error) {
-	if req.Id == "" {
-		return nil, status.Error(codes.InvalidArgument, "verifiable credential id cannot be empty")
+	if did.IsEmpty(req.Id) {
+		return nil, status.Error(codes.InvalidArgument, "did document id cannot be empty")
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)

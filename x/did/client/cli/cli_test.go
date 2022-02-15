@@ -107,53 +107,6 @@ func addnewdiddoc(s *IntegrationTestSuite, identifier string, val *network.Valid
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response), out.String())
 }
 
-func (s *IntegrationTestSuite) TestGetCmdQueryDidDocuments() {
-	identifier := "123456789abcdefghijka"
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
-
-	testCases := []struct {
-		name     string
-		args     []string
-		respType proto.Message
-		malleate func()
-	}{
-		{
-			name() + "_1",
-			[]string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
-			&did.QueryDidDocumentsResponse{},
-			func() {},
-		},
-		{
-			name() + "_2",
-			[]string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
-			&did.QueryDidDocumentsResponse{},
-			func() { addnewdiddoc(s, identifier, val) },
-		},
-	}
-
-	var first bool = true
-	var size = 0
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			tc.malleate()
-			cmd := cli.GetCmdQueryIdentifers()
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			s.Require().NoError(err)
-			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-			queryresponse := tc.respType.(*did.QueryDidDocumentsResponse)
-			diddocs := queryresponse.GetDidDocuments()
-			if first {
-				first = false
-				size = len(diddocs)
-			} else {
-				s.Require().Greater(len(diddocs), 0)
-				s.Require().Equal(size+1, len(diddocs))
-			}
-		})
-	}
-}
-
 func (s *IntegrationTestSuite) TestGetCmdQueryDidDocument() {
 	identifier := "123456789abcdefghijkb"
 	val := s.network.Validators[0]
@@ -234,7 +187,6 @@ func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
 	for _, tc := range testCases {
 
 		s.Run(tc.name, func() {
-			var size = 0
 			for i := 0; i < 3; i++ {
 				cmd := cli.NewCreateDidDocumentCmd()
 				tc.args[0] = identifier + fmt.Sprint(i)
@@ -260,19 +212,6 @@ func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response1))
 				s.Require().Equal(response1.GetDidDocument().Id, identifiertoquery)
 
-				//pull out the set of created documentsq
-				cmd = cli.GetCmdQueryIdentifers()
-				args_temp = []string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)}
-				out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
-				s.Require().NoError(err)
-				response2 := &did.QueryDidDocumentsResponse{}
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response2))
-				diddocs := response2.GetDidDocuments()
-				if i == 0 {
-					size = len(diddocs)
-				} else {
-					s.Require().Equal(size+i, len(diddocs))
-				}
 			}
 		})
 	}

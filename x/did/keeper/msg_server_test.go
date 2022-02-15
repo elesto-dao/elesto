@@ -46,6 +46,28 @@ func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {
 				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentFound, "a document with did %s already exists", did)
 			},
 		},
+		{
+			"FAIL: did is of type key (1)",
+			func() {
+				did := "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+				didDoc, _ := didmod.NewDidDocument(did)
+
+				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
+				req = *didmod.NewMsgCreateDidDocument(did, nil, nil, "subject")
+				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format cannot be created %s", did)
+			},
+		},
+		{
+			"FAIL: did is of type key (2)",
+			func() {
+				did := "did:cosmos:key:juno1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+				didDoc, _ := didmod.NewDidDocument(did)
+
+				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
+				req = *didmod.NewMsgCreateDidDocument(did, nil, nil, "subject")
+				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format cannot be created %s", did)
+			},
+		},
 	}
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
@@ -145,6 +167,34 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateDidDocument() {
 
 				req = *didmod.NewMsgUpdateDidDocument(&didmod.DidDocument{Id: didDoc.Id, Controller: controllers}, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
 				errExp = sdkerrors.Wrapf(didmod.ErrInvalidDIDFormat, "invalid did document")
+			},
+		},
+		{
+			"FAIL: did is of type key (1)",
+			func() {
+				did := "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+				didDoc, _ := didmod.NewDidDocument(did)
+				controllers := []string{
+					"did:cosmos:cash:controller-1",
+					"did:cosmos:cash:controller-2",
+				}
+
+				req = *didmod.NewMsgUpdateDidDocument(&didmod.DidDocument{Id: didDoc.Id, Controller: controllers}, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format are read only %s", did)
+			},
+		},
+		{
+			"FAIL: did is of type key (2)",
+			func() {
+				did := "did:cosmos:key:juno1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+				didDoc, _ := didmod.NewDidDocument(did)
+				controllers := []string{
+					"did:cosmos:cash:controller-1",
+					"did:cosmos:cash:controller-2",
+				}
+
+				req = *didmod.NewMsgUpdateDidDocument(&didmod.DidDocument{Id: didDoc.Id, Controller: controllers}, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format are read only %s", did)
 			},
 		},
 	}

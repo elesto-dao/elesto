@@ -24,45 +24,8 @@ func GetQueryCmd(_ string) *cobra.Command {
 
 	// this line is used by starport scaffolding # 1
 	cmd.AddCommand(
-		GetCmdQueryIdentifers(),
 		GetCmdQueryIdentifer(),
 	)
-
-	return cmd
-}
-
-func GetCmdQueryIdentifers() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "dids",
-		Short: "Query for all dids",
-		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			queryClient := did.NewQueryClient(clientCtx)
-			pageReq, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
-
-			result, err := queryClient.DidDocuments(
-				context.Background(),
-				&did.QueryDidDocumentsRequest{
-					// Leaving status empty on purpose to query all validators.
-					Pagination: pageReq,
-				},
-			)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(result)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }

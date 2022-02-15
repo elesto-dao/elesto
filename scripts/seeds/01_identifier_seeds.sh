@@ -20,9 +20,6 @@ elestod tx did add-verification-method emti $(elestod keys show emti -p) \
 
 elestod query did did did:cosmos:net:elesto:emti --output json | jq
 
-echo "Querying dids"
-elestod query did dids --output json | jq
-
 echo "Add a service to the EMTi DID doc (by the EMTi account)"
 elestod tx did add-service emti emti-agent DIDComm "https://agents.elesto.app.beta.starport.cloud/emti" \
 --from emti \
@@ -42,7 +39,7 @@ elestod tx did revoke-verification-method emti $(elestod keys show validator -a)
 --from emti \
 --chain-id elesto -y --broadcast-mode block
 
-echo "Querying dids"
+echo "Querying did"
 elestod query did did did:cosmos:net:elesto:emti --output json | jq
 
 echo "Deleting service from EMTi did document (by EMTi user)"
@@ -56,7 +53,7 @@ elestod tx did add-controller emti $(elestod keys show alice -a) \
 --from emti \
 --chain-id elesto -y --broadcast-mode block
 
-echo "Querying dids"
+echo "Querying did"
 elestod query did did did:cosmos:net:elesto:emti --output json | jq
 
 echo "Remove a controller from the EMTi did document (by alice user)"
@@ -64,5 +61,5 @@ elestod tx did delete-controller emti $(elestod keys show alice -a) \
 --from alice \
 --chain-id elesto -y --broadcast-mode block
 
-echo "Querying dids"
+echo "Querying did"
 elestod query did did did:cosmos:net:elesto:emti --output json | jq

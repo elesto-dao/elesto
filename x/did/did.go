@@ -38,7 +38,7 @@ const (
 )
 
 // VerificationRelationships are the supported list of verification relationships
-var VerificationRelationships = map[string]VerificationRelationship{
+var supportedRelationships = map[string]VerificationRelationship{
 	Authentication:       authentication,
 	AssertionMethod:      assertionMethod,
 	KeyAgreement:         keyAgreement,
@@ -66,12 +66,12 @@ func (didDoc *DidDocument) getRelationships(rel VerificationRelationship) *[]str
 }
 
 // parseRelationshipLabels parse relationships labels to a slice of VerificationRelationship
-// making sure that the relationsips are not repeated
+// making sure that the relationships are not repeated
 func parseRelationshipLabels(relNames ...string) (vrs []VerificationRelationship, err error) {
 	names := distinct(relNames)
 	vrs = make([]VerificationRelationship, len(names))
 	for i, vrn := range distinct(relNames) {
-		vr, validName := VerificationRelationships[vrn]
+		vr, validName := supportedRelationships[vrn]
 		if !validName {
 			err = sdkerrors.Wrapf(ErrInvalidInput, "unsupported verification relationship %s", vrn)
 			return
@@ -114,6 +114,12 @@ var (
 
 // DID as typed string
 type DID string
+
+// VerificationRelationships for did document manipulation
+type VerificationRelationships []string
+
+// Contexts for json-ld contects
+type Contexts []string
 
 // NewChainDID format a DID from a method specific did
 // cfr.https://www.w3.org/TR/did-core/#did
@@ -211,11 +217,7 @@ func IsValidDIDMetadata(didMeta *DidMetadata) bool {
 }
 
 // ValidateVerification perform basic validation on a verification struct
-// optionally validating the validation method controller against a list
-// of allowed controllers.
-// in case of error returns an cosmos-sdk wrapped error
-// XXX: this pattern creates a ambiguous semantic (but maybe is not too severe (use WithCredentials and array of credentials))
-func ValidateVerification(v *Verification, allowedControllers ...string) (err error) {
+func ValidateVerification(v *Verification) (err error) {
 	if v == nil {
 		err = sdkerrors.Wrap(ErrInvalidInput, "verification is not defined")
 		return
@@ -238,38 +240,20 @@ func ValidateVerification(v *Verification, allowedControllers ...string) (err er
 		return
 	}
 
-	// check the verification material
-	switch x := v.Method.VerificationMaterial.(type) {
-	case *VerificationMethod_BlockchainAccountID:
-		if IsEmpty(x.BlockchainAccountID) {
-			err = sdkerrors.Wrapf(ErrInvalidInput, "verification material blockchain account id invalid for verification method %s", v.Method.Id)
-			return
-		}
-	case *VerificationMethod_PublicKeyMultibase:
-		if IsEmpty(x.PublicKeyMultibase) {
-			err = sdkerrors.Wrapf(ErrInvalidInput, "verification material multibase pubkey invalid for verification method %s", v.Method.Id)
-			return
-		}
-	case *VerificationMethod_PublicKeyHex:
-		if IsEmpty(x.PublicKeyHex) {
-			err = sdkerrors.Wrapf(ErrInvalidInput, "verification material pubkey invalid for verification method %s", v.Method.Id)
-			return
-		}
-	default:
-		err = sdkerrors.Wrapf(ErrInvalidInput, "verification material not set for verification method %s", v.Method.Id)
-		return
-	}
-
-	// check for empty public key
-	if v.Method.VerificationMaterial.Size() == 0 {
-		err = sdkerrors.Wrapf(ErrInvalidInput, "verification material not set for verification method %s", v.Method.Id)
-		return
-	}
-
 	// check that there is at least a relationship
 	if len(v.Relationships) == 0 {
 		err = sdkerrors.Wrap(ErrEmptyRelationships, "at least a verification relationship is required")
 		return
+	}
+
+	// check the verification material
+	vm, ok := v.Method.VerificationMaterial.(Validable)
+	if !ok {
+		err = sdkerrors.Wrap(ErrInvalidInput, fmt.Sprintf("verification material '%v' unknown for verification method id %s", v.Method.VerificationMaterial, v.Method.Id))
+		return
+	}
+	if vErr := vm.Validate(); vErr != nil {
+		err = sdkerrors.Wrap(ErrInvalidInput, fmt.Sprintf("verification material %s for verification method id %s", vErr.Error(), v.Method.Id))
 	}
 	return
 }
@@ -373,7 +357,6 @@ func (didDoc *DidDocument) AddControllers(controllers ...string) error {
 			return sdkerrors.Wrapf(ErrInvalidDIDFormat, "did document controller validation error '%s'", c)
 		}
 		if !IsValidDIDKeyFormat(c) {
-			// TODO: link to the documentation for the error
 			return sdkerrors.Wrapf(ErrInvalidInput, "did document controller '%s' must be of type key", c)
 		}
 	}
@@ -504,7 +487,7 @@ func (didDoc *DidDocument) SetVerificationRelationships(methodID string, relatio
 func (didDoc *DidDocument) setRelationships(methodID string, relationships ...VerificationRelationship) {
 
 	// first remove existing relationships
-	for _, vr := range VerificationRelationships {
+	for _, vr := range supportedRelationships {
 		vrs := didDoc.getRelationships(vr)
 		for i, vmID := range *vrs {
 			if vmID == methodID {
@@ -553,7 +536,7 @@ func (didDoc DidDocument) GetVerificationMethodBlockchainAddress(methodID string
 // verification method id.
 func (didDoc DidDocument) GetVerificationRelationships(methodID string) []string {
 	relationships := []string{}
-	for vrn, vr := range VerificationRelationships {
+	for vrn, vr := range supportedRelationships {
 		for _, vmID := range *didDoc.getRelationships(vr) {
 			if vmID == methodID {
 				relationships = append(relationships, vrn)
@@ -699,8 +682,8 @@ type Verifications []*Verification
 // attached to a did document
 func NewVerification(
 	method VerificationMethod,
-	relationships []string,
-	contexts []string,
+	relationships VerificationRelationships,
+	contexts Contexts,
 ) *Verification {
 	return &Verification{
 		Context:       contexts,
