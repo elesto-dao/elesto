@@ -136,6 +136,7 @@ func (msg MsgDeleteService) ValidateBasic() error {
 	if !IsValidRFC3986Uri(msg.ServiceId) {
 		return sdkerrors.Wrap(ErrInvalidRFC3986UriFormat, "service id validation error")
 	}
+
 	return nil
 }
 

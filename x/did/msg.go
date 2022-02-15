@@ -315,11 +315,6 @@ func (msg MsgDeleteService) GetSigners() []sdk.AccAddress {
 // ADD CONTROLLER
 // --------------------------
 
-// msg types
-const (
-	TypeMsgAddController = "add-controller"
-)
-
 func NewMsgAddController(
 	id string,
 	controllerDID string,
@@ -338,13 +333,14 @@ func (MsgAddController) Route() string {
 }
 
 // Type implements sdk.Msg
-func (MsgAddController) Type() string {
-	return TypeMsgAddController
+func (msg MsgAddController) Type() string {
+	return sdk.MsgTypeURL(&msg)
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (MsgAddController) GetSignBytes() []byte {
-	panic("TODO: needed in simulations for fuzz testing")
+func (msg MsgAddController) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg
@@ -360,11 +356,6 @@ func (msg MsgAddController) GetSigners() []sdk.AccAddress {
 // DELETE CONTROLLER
 // --------------------------
 
-// msg types
-const (
-	TypeMsgDeleteController = "delete-controller"
-)
-
 func NewMsgDeleteController(
 	id string,
 	controllerDID string,
@@ -377,19 +368,20 @@ func NewMsgDeleteController(
 	}
 }
 
-//// Route implements sdk.Msg
+// Route implements sdk.Msg
 func (MsgDeleteController) Route() string {
 	return RouterKey
 }
 
 // Type implements sdk.Msg
-func (MsgDeleteController) Type() string {
-	return TypeMsgDeleteController
+func (msg MsgDeleteController) Type() string {
+	return sdk.MsgTypeURL(&msg)
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (MsgDeleteController) GetSignBytes() []byte {
-	panic("TODO: needed in simulations for fuzz testing")
+func (msg MsgDeleteController) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg

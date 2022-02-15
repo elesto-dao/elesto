@@ -21,7 +21,7 @@ elestod tx did add-verification-method emti $(elestod keys show emti -p) \
 elestod query did did did:cosmos:net:elesto:emti --output json | jq
 
 echo "Add a service to the EMTi DID doc (by the EMTi account)"
-elestod tx did add-service emti emti-agent DIDComm "https://agents.elesto.app.beta.starport.cloud/emti" \
+elestod tx did add-service emti service:emti-agent DIDComm "https://agents.elesto.app.beta.starport.cloud/emti" \
 --from emti \
 --chain-id elesto -y --broadcast-mode block
 
@@ -43,10 +43,9 @@ echo "Querying did"
 elestod query did did did:cosmos:net:elesto:emti --output json | jq
 
 echo "Deleting service from EMTi did document (by EMTi user)"
-elestod tx did delete-service emti emti-agent \
+elestod tx did delete-service emti service:emti-agent \
 --from emti \
 --chain-id elesto -y --broadcast-mode block
-
 
 echo "Add a controller to the EMTi did document (by EMTi user)"
 elestod tx did add-controller emti $(elestod keys show alice -a) \
