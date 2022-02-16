@@ -1,5 +1,5 @@
 syntax = "proto3";
-package elestodao.elesto.did;
+package elestodao.elesto.did.v1;
 
 option go_package = "github.com/elesto-dao/elesto/x/did";
 
@@ -90,7 +90,7 @@ message Service {
   option (gogoproto.equal) = true;
   option (gogoproto.goproto_getters)  = false;
 
-  string id          	   = 1;
+  string id          	 = 1;
   string type         	 = 2;
   string serviceEndpoint = 3;
 }
@@ -101,7 +101,7 @@ message DidMetadata {
   option (gogoproto.equal) = true;
   option (gogoproto.goproto_getters)  = false;
 
-  string versionId                  = 1;
+  string versionId                  = 1; // version id is the tansaction hash of the did creation
   google.protobuf.Timestamp created = 2 [(gogoproto.stdtime) = true];
   google.protobuf.Timestamp updated = 3 [(gogoproto.stdtime) = true];
   bool deactivated                  = 4;

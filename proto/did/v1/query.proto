@@ -1,9 +1,9 @@
 syntax = "proto3";
-package elestodao.elesto.did;
+package elestodao.elesto.did.v1;
 
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "did/did.proto";
+import "did/v1/did.proto";
 import "gogoproto/gogo.proto";
 // this line is used by starport scaffolding # 1
 
@@ -21,14 +21,15 @@ service Query {
 
 // QueryDidDocumentsRequest is request type for Query/DidDocuments RPC method.
 message QueryDidDocumentRequest {
-  // status enables to query for validators matching a given status.
-  string id = 1;
+  string id = 1; // did id used for getting a did document by did id
 }
 
 // QueryDidDocumentsResponse is response type for the Query/DidDocuments RPC method
 message QueryDidDocumentResponse {
-  // validators contains all the queried validators.
+  // Returns a did document
   DidDocument didDocument = 1  [(gogoproto.nullable) = false];
+
+  // Returns a did documents metadata
   DidMetadata didMetadata = 2  [(gogoproto.nullable) = false];
 }
 // this line is used by starport scaffolding # 3

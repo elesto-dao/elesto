@@ -1,8 +1,8 @@
 syntax = "proto3";
-package elestodao.elesto.did;
+package elestodao.elesto.did.v1;
 
 import "gogoproto/gogo.proto";
-import "did/did.proto";
+import "did/v1/did.proto";
 import "google/api/annotations.proto";
 
 option go_package = "github.com/elesto-dao/elesto/x/did";
