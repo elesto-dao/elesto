@@ -301,66 +301,6 @@ func TestMsgCreateDidDocument(t *testing.T) {
 	}
 }
 
-func TestMsgUpdateDidDocument(t *testing.T) {
-	tests := []struct {
-		id          string
-		controllers []string
-		signer      string
-		expectPass  bool
-	}{
-		{
-			"did:cosmos:net:elesto:subject",
-			[]string{"did:cosmos:controller-1"},
-			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
-			true,
-		},
-		{
-			"did:cosmos:net:elesto:subject",
-			[]string{},
-			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
-			true,
-		},
-		{
-			// FIXME: duplicated controller
-			"did:cosmos:net:elesto:subject",
-			[]string{"did:cosmos:controller-1", "did:cosmos:controller-1"},
-			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
-			true,
-		},
-		{
-			"invalid did",
-			[]string{"did:cosmos:controller-1"},
-			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
-			false, // invalid did
-		},
-		{
-			"did:cosmos:net:elesto:subject",
-			[]string{"invalid:controller"},
-			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
-			false, // invalid controller
-		},
-		{
-			"did:cosmos:net:elesto:subject",
-			[]string{"did:cosmos:controller-1", "did:cosmos:controller-2", ""},
-			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
-			false, // invalid controller
-		},
-	}
-
-	for i, tc := range tests {
-		msg := NewMsgUpdateDidDocument(
-			&DidDocument{Id: tc.id, Controller: tc.controllers},
-			tc.signer,
-		)
-
-		if tc.expectPass {
-			require.Nil(t, msg.ValidateBasic(), "test: TestMsgUpdateDidDocument#%v", i)
-		} else {
-			require.NotNil(t, msg.ValidateBasic(), "test: TestMsgUpdateDidDocument#%v", i)
-		}
-	}
-}
-
 func TestMsgAddVerification(t *testing.T) {
 	tests := []struct {
 		id         string

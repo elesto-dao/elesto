@@ -33,32 +33,6 @@ func TestMsgCreateDidDocument_GetSigners(t *testing.T) {
 }
 
 // --------------------------
-// UPDATE IDENTIFIER
-// --------------------------
-
-func TestMsgUpdateDidDocument_Route(t *testing.T) {
-	assert.Equalf(t, ModuleName, MsgUpdateDidDocument{}.Route(), "Route()")
-}
-
-func TestMsgUpdateDidDocument_Type(t *testing.T) {
-	assert.Equalf(t, TypeMsgUpdateDidDocument, MsgUpdateDidDocument{}.Type(), "Type()")
-}
-
-func TestMsgUpdateDidDocument_GetSignBytes(t *testing.T) {
-	assert.Panicsf(t, func() { MsgUpdateDidDocument{}.GetSignBytes() }, "GetSignBytes()")
-}
-
-func TestMsgUpdateDidDocument_GetSigners(t *testing.T) {
-	a, err := sdk.AccAddressFromBech32("cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
-	assert.NoError(t, err)
-	assert.Equal(t,
-		MsgUpdateDidDocument{Signer: "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"}.GetSigners(),
-		[]sdk.AccAddress{a},
-	)
-	assert.Panics(t, func() { MsgUpdateDidDocument{Signer: "invalid"}.GetSigners() })
-}
-
-// --------------------------
 // ADD VERIFICATION
 // --------------------------
 
