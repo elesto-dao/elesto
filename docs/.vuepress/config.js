@@ -1,6 +1,11 @@
 module.exports = {
     theme: "cosmos",
     title: "Elesto",
+    markdown: {
+        config: md => {
+            md.use(require('markdown-it-plantuml'))
+        }
+    },
     head: [
       [
         "script",
