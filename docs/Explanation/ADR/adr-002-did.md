@@ -1,8 +1,9 @@
-# ADR 004: DID
+# ADR 002: DID
 
 ## Changelog
 
-- 2022-02-14: Moved to last call 
+- 2022-02-14: Moved to last call
+- 2022-02-14: Renamed to ADR002
 - 2021-09-23: Added security and privacy considerations
 - 2021-08-02: Initial draft
 
@@ -12,7 +13,7 @@ LAST CALL 2022-02-28
 
 ## Abstract
 
-[Decentralized identifiers](https://www.w3.org/TR/did-core) (DIDs) are a type of identifier that enables verifiable, decentralized digital identity. A DID refers to any subject (for example, a person, organization, thing, data model, abstract entity, and so on) as determined by the controller of the DID.
+[Decentralized identifiers](https://www.w3.org/TR/did-core/) (DIDs) are a type of identifier that enables verifiable, decentralized digital identity. A DID refer to any subject (for example, a person, organization, thing, data model, abstract entity, and so on) as determined by the controller of the DID.
 
 This document specifies the DID method for a Cosmos SDK-based implementation of the W3C recommendation, its properties, operations, and an explanation of the process to resolve DIDs to the resources that they represent. 
 
@@ -39,14 +40,14 @@ The goal of this ADR is to define a foundation for the necessary components to r
 ## Decision
 
 
-The Elesto implementation for DIDs will follow the [DID W3C core recommendations](https://github.com/w3c/did-core) with the goal of maximizing compatibility with 3rd party tools and projects.
+The Elesto implementation for DIDs will follow the [DID W3C core recommendations](https://www.w3.org/TR/2021/PR-did-core-20210803/) with the goal of maximizing compatibility with 3rd party tools and projects.
 
 
 ### DID Method Name
 
 The namestring that shall identify the Elesto DID method is: `cosmos`.
 
-A DID that uses the Elesto method MUST begin with the following prefix: `did:cosmos`. Per the [W3C DID specification](https://www.w3.org/TR/did-core), this prefix string MUST be in lowercase. The remainder of the DID, after the prefix, is as follows:
+A DID that uses the Elesto method MUST begin with the following prefix: `did:cosmos`. Per the [W3C DID specification](https://www.w3.org/TR/2021/PR-did-core-20210803/), this prefix string MUST be in lowercase. The remainder of the DID, after the prefix, is as follows:
 
 #### Method Specific Identifier
 
@@ -82,7 +83,7 @@ DIDs of `net` type are persistent and mutable. DIDs of `net` type are stored in 
 
 ##### DID Operations
 
-DID and associated DID documents are managed by a Cosmos SDK module that uses the gRPC communication protocol. See [Method operations](https://www.w3.org/TR/did-core/#method-operations) for details on how the create, read, update and delete (CRUD) operations are handed in a Cosmos DID. 
+DID and associated DID documents are managed by a Cosmos SDK module that uses the gRPC communication protocol. See [Method operations](https://www.w3.org/TR/2021/PR-did-core-20210803//#method-operations) for details on how the create, read, update and delete (CRUD) operations are handed in a Cosmos DID. 
 
 ###### Create
 
@@ -170,7 +171,7 @@ This example shows a DID document that was resolved using the gRPC interface:
 
 
 
-The DID can also be resolved by a REST endpoint. The REST endpoint MUST be compatible with the [W3C DID core recommendations](https://www.w3.org/TR/did-core) and pass the [DID Core Specification Test Suite](https://w3c.github.io/did-test-suite/):
+The DID can also be resolved by a REST endpoint. The REST endpoint MUST be compatible with the [W3C DID core recommendations](https://www.w3.org/TR/2021/PR-did-core-20210803/) and pass the [DID Core Specification Test Suite](https://w3c.github.io/did-test-suite/):
 
 ```
 {NODE_URL}:{NODE_REST_PORT}/identifier/{did}
@@ -307,7 +308,7 @@ The operation MUST update the DID document metadata and set the `deactivated` va
 
 #### DID Core Verification Material
 
-The [Verification Material](https://www.w3.org/TR/did-core/#verification-material) type MUST support:
+The [Verification Material](https://www.w3.org/TR/2021/PR-did-core-20210803//#verification-material) type MUST support:
 
 - Type `EcdsaSecp256k1VerificationKey2019` with `pubKeyMultibase` to encode a Cosmos account public key in hexadecimal format
 - Type `CosmosAccountAddress` with `blockchainAccountID` to represent a Cosmos account 
@@ -317,18 +318,18 @@ Support for other verification materials can be added.
 
 #### Verification Relationships
 
-The DID document MUST support the following [verification relationships](https://www.w3.org/TR/did-core/#verification-relationships):
+The DID document MUST support the following [verification relationships](https://www.w3.org/TR/2021/PR-did-core-20210803//#verification-relationships):
 
-- [`authentication`](https://www.w3.org/TR/did-core/#authentication) - authorizes amends to the DID document
-- [`assertionMethod`](https://www.w3.org/TR/did-core/#assertion)
-- [`keyAgreement`](https://www.w3.org/TR/did-core/#key-agreement)
-- [`capabilityInvocation`](https://www.w3.org/TR/did-core/#capability-invocation)
-- [`capabilityDelegation`](https://www.w3.org/TR/did-core/#capability-delegation)
+- [`authentication`](https://www.w3.org/TR/2021/PR-did-core-20210803//#authentication) - authorizes amends to the DID document
+- [`assertionMethod`](https://www.w3.org/TR/2021/PR-did-core-20210803//#assertion)
+- [`keyAgreement`](https://www.w3.org/TR/2021/PR-did-core-20210803//#key-agreement)
+- [`capabilityInvocation`](https://www.w3.org/TR/2021/PR-did-core-20210803//#capability-invocation)
+- [`capabilityDelegation`](https://www.w3.org/TR/2021/PR-did-core-20210803//#capability-delegation)
 
 
 #### DID Document Metadata
 
-The implementation for [DID document metadata](https://www.w3.org/TR/did-core/#did-document-metadata) MUST report the following properties for a DID document:
+The implementation for [DID document metadata](https://www.w3.org/TR/2021/PR-did-core-20210803//#did-document-metadata) MUST report the following properties for a DID document:
 
 - `created`: a [datetime](https://www.w3.org/TR/xmlschema11-2/#dateTime) string of the creation date that is the UTC date associated with the block height when the DID document was submitted the first time
 - `updated`: a [datetime](https://www.w3.org/TR/xmlschema11-2/#dateTime) string of the last update date that is the UTC date associated with the block height when the DID document was submitted the last time
@@ -337,15 +338,15 @@ The implementation for [DID document metadata](https://www.w3.org/TR/did-core/#d
 
 #### DID Resolution Metadata
 
-The [DID Resolution Metadata](https://www.w3.org/TR/did-core/#did-resolution-metadata) is outside the scope of the gRPC interface and is not covered in this ADR.
+The [DID Resolution Metadata](https://www.w3.org/TR/2021/PR-did-core-20210803//#did-resolution-metadata) is outside the scope of the gRPC interface and is not covered in this ADR.
 
 #### DID URL Syntax
 
-The [DID URL Syntax](https://www.w3.org/TR/did-core/#did-url-syntax) is outside the scope of the gRPC interface and is not covered in this ADR.
+The [DID URL Syntax](https://www.w3.org/TR/2021/PR-did-core-20210803//#did-url-syntax) is outside the scope of the gRPC interface and is not covered in this ADR.
 
 #### DID Query Parameters
 
-The [DID Query parameters](https://www.w3.org/TR/did-core/#did-parameters) URL is outside the scope of the gRPC interface and is not covered in this ADR.
+The [DID Query parameters](https://www.w3.org/TR/2021/PR-did-core-20210803//#did-parameters) URL is outside the scope of the gRPC interface and is not covered in this ADR.
 
 <!-- 
 
@@ -401,9 +402,8 @@ N/A
 
 ## References
 
-- [DID Core](https://www.w3.org/TR/did-core)
-- [DID Specification Registries](https://w3c.github.io/did-spec-registries)
-
+- [DID Core v1.0](https://www.w3.org/TR/2021/PR-did-core-20210803/)
+- [DID Specification Registries (11 February 2022)](https://w3c.github.io/did-spec-registries)
 
 
 
