@@ -11,8 +11,6 @@ option go_package = "github.com/elesto-dao/elesto/x/did";
 service Msg {
   // CreateDidDocument defines a method for creating a new identity.
   rpc CreateDidDocument(MsgCreateDidDocument) returns (MsgCreateDidDocumentResponse);
-  // UpdateDidDocument defines a method for updating an identity.
-  rpc UpdateDidDocument(MsgUpdateDidDocument) returns (MsgUpdateDidDocumentResponse);
 
   // AddVerificationMethod adds a new verification method
   rpc AddVerification(MsgAddVerification) returns (MsgAddVerificationResponse);
@@ -59,17 +57,6 @@ message MsgCreateDidDocument {
 }
 
 message MsgCreateDidDocumentResponse {}
-
-// MsgUpdateDidDocument replace an existing did document with a new version
-message MsgUpdateDidDocument {
-  option (gogoproto.equal)            = false;
-  option (gogoproto.goproto_getters)  = false;
-
-  DidDocument     doc        = 1; // the did document to replace
-  string          signer     = 5; // address of the account signing the message
-}
-
-message MsgUpdateDidDocumentResponse {}
 
 // -------------------------------
 // Verification methods / relations
