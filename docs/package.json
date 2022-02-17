@@ -16,6 +16,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "markdown-it-plantuml": "^1.4.1",
     "vuepress-theme-cosmos": "^1.0.183"
   }
 }
