@@ -10,10 +10,12 @@
 
 ### Summary
 
-Elesto is a protocol designed to be regulatory compliant that offers the same guarantees as traditional banking
-systems. Features that enable these guarantees are Know Your Customer (KYC), anti-money laundering (AML) tracking,
-Financial Action Task Force (FATF) travel rule, and identity management. Elesto uses a novel approach to identity
-management by leveraging W3C specifications for decentralized identifiers and verifiable credentials.
+Elesto is a protocol designed to provide the building blocks for a secure and resilient identity framework based on self-sovereign identity. 
+
+Elesto was born from the research project [Cosmos Cash](https://github.com/allinbits/cosmos-cash): a regulatory compliant protocol that offers the same guarantees as traditional banking systems. Features that enable these guarantees are Know Your Customer (KYC), anti-money laundering (AML) tracking,
+Financial Action Task Force (FATF) travel rule, and identity management. 
+
+Elesto uses a novel approach to identity management by leveraging W3C specifications for decentralized identifiers and verifiable credentials.
 
 ### Research paper
 
@@ -24,7 +26,7 @@ For more information on the research behind the Elesto protocol, see the Cosmos 
 ### Architecture
 
 The Elesto approach leverages open standards to reach its goals and to offer an open model that is compatible with
-third-party projects that use the open standards. In particular, the Elesto project uses:
+third-party projects that use the open standards. In particular, the Elesto project roadmamp includes:
 
 - Self-sovereign identity ([SSI](./Reference/GLOSSARY.md#self-sovereign-identity-ssi))
 - Decentralized identifier ([DID](./Reference/GLOSSARY.md#decentralized-identifier-did))
