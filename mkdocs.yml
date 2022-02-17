@@ -1,0 +1,20 @@
+site_name: Elesto Documentation Portal
+site_url:
+repo_url: https://github.com/elesto-dao/elesto
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - search.suggest
+    - search.highlight
+    - search.share
+plugins:
+  - search
+  - build_plantuml:
+      diagram_root: "docs/assets/diagrams" # should reside under docs_dir
+      output_folder: "out"
+      input_folder: "src"
+      output_format: "svg"
+      input_extensions: "puml" # comma separated list of extensions to parse, by default every file is parsed
+
+
