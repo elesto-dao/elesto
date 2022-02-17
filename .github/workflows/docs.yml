@@ -1,0 +1,20 @@
+# Build and deploy docs in gh-pages
+name: Build and Deploy Docs
+on:
+  push:
+    branches:
+      - main
+      - dev
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+# Vuepress Action guide: https://vuepress.vuejs.org/guide/deploy.html#github-pages
+    - name: Deploy Docs
+      uses: jenkey2011/vuepress-deploy@master
+      env:
+        ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BUILD_SCRIPT: yarn && yarn build
+        BUILD_DIR: docs/.vuepress/dist/
