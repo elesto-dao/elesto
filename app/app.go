@@ -97,6 +97,10 @@ import (
 	"github.com/elesto-dao/elesto/x/did"
 	didmodulekeeper "github.com/elesto-dao/elesto/x/did/keeper"
 	didmodule "github.com/elesto-dao/elesto/x/did/module"
+
+	"github.com/elesto-dao/elesto/x/credentials"
+	credentialsModuleKeeper "github.com/elesto-dao/elesto/x/credentials/keeper"
+	credentialsmodule "github.com/elesto-dao/elesto/x/credentials/module"
 )
 
 /// Global vars that define account prefix and name of chain
@@ -153,6 +157,8 @@ var (
 
 		didmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
+		didmodule.AppModuleBasic{},
+		credentialsmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -222,7 +228,8 @@ type App struct {
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
-	DidKeeper didmodulekeeper.Keeper
+	DidKeeper         didmodulekeeper.Keeper
+	CredentialsKeeper credentialsModuleKeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -263,7 +270,7 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey,
 		upgradetypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		did.StoreKey,
+		did.StoreKey, credentials.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -373,6 +380,13 @@ func New(
 	)
 	didModule := didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper)
 
+	app.CredentialsKeeper = *credentialsModuleKeeper.NewKeeper(
+		appCodec,
+		keys[credentials.StoreKey],
+		keys[credentials.MemStoreKey],
+	)
+	credentialsModule := credentialsmodule.NewAppModule(appCodec, app.CredentialsKeeper, app.AccountKeeper, app.BankKeeper, app.DidKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -413,6 +427,7 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		didModule,
+		credentialsModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -498,6 +513,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper),
+		credentialsmodule.NewAppModule(appCodec, app.CredentialsKeeper, app.AccountKeeper, app.BankKeeper, app.DidKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -686,6 +702,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(did.ModuleName)
+	paramsKeeper.Subspace(credentials.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
