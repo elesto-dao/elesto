@@ -1,7 +1,7 @@
 # Presentations
 
 
-Links to Cosmos Cash related slides, interviews, presentations.
+Below are the related links to the Cosmos Cash slides, interviews, presentations.
 
 
 ## Slides

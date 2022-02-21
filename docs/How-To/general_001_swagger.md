@@ -6,7 +6,7 @@ This how-to section is dedicated to the Swagger documentation that is bundled wi
 
 ## Generate the Swagger UI  
 
-The Swagger UI is generated from the `protobuf` files in the `proto` folder in the root of the project
+The Swagger UI is generated from the `protobuf` files in the `proto` folder in the root of the project.
 
 To generate or refresh the swagger UI, run the following command from the project's root folder:
 
@@ -46,6 +46,6 @@ enable = true       #  <- this must be set to true
 swagger = true      #  <- this must be set to true
 ```
 
-Finally restart the node.
+Finally, restart the node.
 
 The swagger UI should be available at the address `http://localhost:1317/swagger/`

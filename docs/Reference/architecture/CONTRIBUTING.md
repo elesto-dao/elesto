@@ -18,7 +18,7 @@ Windows, through [Chocolatey](https://chocolatey.org/)
 > choco install plantuml
 ```
 
-Linux-based systems, through your distributions package manager
+Linux-based systems, through your distribution's package manager
 
 ## Contributing diagrams
 
@@ -49,11 +49,11 @@ There are [many ways to run PlantUML](https://plantuml.com/running) to generate 
 The [makefile](./makefile) builds all `src/*.puml` files. To create SVG images, run `make (svg|png)` as needed. Run 
 `make clean` to get a clean folder ready for a new build.
 
-Using PlantUML and makefile is the preferred and cleanest way to create all the architecture documentation.
+Using PlantUML and makefile is the preferred and cleanest way to create architecture documentation.
 
 ### Proxy service
 
-This method uses PlantUML's [proxy service](https://plantuml.com/server) to put generate images and embed into a Markdown page. 
+This method uses PlantUML's [proxy service](https://plantuml.com/server) to generate images and embed them into a Markdown page. 
 
 To use the proxy service integration, use:
 

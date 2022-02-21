@@ -33,7 +33,7 @@ URLs for ([DID](../Reference/GLOSSARY.md#decentralized-identifier-did)) resoluti
 
 ## SSI Agent Router
 
-URLs to connect to an SSI Agent that uses also Elesto as a verifiable data registry (VDR).
+URLs connect to an SSI Agent that also uses Elesto as a verifiable data registry (VDR).
 
 |                         |                                                             |
 | ----------------------- | ----------------------------------------------------------- |

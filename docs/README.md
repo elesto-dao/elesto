@@ -25,7 +25,7 @@ For more information on the research behind the Elesto protocol, see the Cosmos 
 
 ### Architecture
 
-The Elesto approach leverages open standards to reach its goals and to offer an open model that is compatible with
+The Elesto approach leverages open standards to reach its goals and offers an open model compatible with
 third-party projects that use the open standards. In particular, the Elesto project roadmap includes:
 
 - Self-sovereign identity ([SSI](./Reference/GLOSSARY.md#self-sovereign-identity-ssi))
@@ -38,4 +38,4 @@ For a detailed architecture description and design choices, visit the [ADR](./Ex
 
 --- 
 
-Do you have questions or want to get in touch? Send us an email at *cosmos-cash@tendermint.com*.
+Do you have questions or want to get in touch? Please send us an email at *cosmos-cash@tendermint.com*.

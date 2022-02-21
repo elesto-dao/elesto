@@ -23,17 +23,17 @@
 ---
 ## Summary
 
-USDC and USDT are both Ethereum, ERC-20 smart contract-based stablecoins pegged one-to-one to the US Dollar (USD). However, each USD-backed stablecoin has different implementations. This article will
+USDC and USDT are Ethereum, ERC-20 smart contract-based stablecoins pegged one-to-one to the US Dollar (USD). However, each USD-backed stablecoin has different implementations. This article will
 
 - Perform a high-level functional gap analysis of each smart contract
-- Compare to the current Cosmos Cash proof-of-concept implementation
+- Compared to the current Cosmos Cash proof-of-concept implementation
 - Conclude best practices that will inform the Issuer ADR for Cosmos Cash.
 
-> Why USDT and  USDC? These are currently the leading stablecoin tokens with total market capitalisation of over 90Bn USD (source: coinmarketcap.com)
+> Why USDT and  USDC? These are currently the leading stablecoin tokens with a total market capitalisation of over 90Bn USD (source: coinmarketcap.com)
 
 ## Methodology
 
-Each function is labelled based on the following criteria:
+Each function is labeled based on the following criteria:
 
 - **BESPOKE:** custom functionality
 - **[ERC20](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol):** part of the ERC20 standard
@@ -167,7 +167,7 @@ Unlike USDT, USDC has more granular permissions. There are **FIVE** roles, each 
 
 `blacklist(_account)` - **BESPOKE:** this function freezes a user's assets by adding the address to a denylist.
 
-`unBlacklist(_account)` - **BESPOKE:** removes a user from a denylist serves as freezing an accounts.
+`unBlacklist(_account)` - **BESPOKE:** removes a user from a denylist serves as freezing an account.
 
 `rescueERC20(tokenContract, to, amount)` - **BESPOKE:** function to rescue funds.
 
@@ -225,7 +225,7 @@ This analysis is based on the [Cosmos Cash proof of concept issuer implementatio
 ---
 ## Gap Analysis
 
-The gap between the issuer module and the USDC and USDT smart contracts is not significant. For the Issuer module to be compatible with EVM based smart contracts, the following features must be implemented.
+The gap between the issuer module and the USDC and USDT smart contracts is not significant. The following features must be implemented for the Issuer module to be compatible with EVM-based smart contracts.
 
 1.  **BESPOKE:** `Blockedlist` 
     - The blocklist functionality is adding and removing a user from a blocked list
