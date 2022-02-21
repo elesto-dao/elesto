@@ -10,13 +10,13 @@
 PROPOSED
 ## Abstract
 
-[Decentralized identifiers](https://www.w3.org/TR/did-core) (DIDs) are a type of identifier that enables verifiable, decentralized digital identity. A DID refers to any subject (for example, a person, organization, thing, data model, abstract entity, and so on) as determined by the controller of the DID.
+[Decentralized identifiers](https://www.w3.org/TR/did-core) (DIDs) are a type of identifier that enables verifiable, decentralized digital identity. A DID refer to any subject (for example, a person, organization, thing, data model, abstract entity, and so on) as determined by the controller of the DID.
 
-This document specifies the DID method for a Cosmos SDK-based implementation of the W3C recommendation, its properties, operations, and an explanation of the process to resolve DIDs to the resources that they represent. 
+This document specifies the DID method for a Cosmos SDK-based implementation of the W3C recommendation, its properties, operations, and an explanation of the process to resolve DIDs to the resources they represent. 
 
 ## Context
 
-The aim of the Elesto project is to provide a state-of-the-art platform for the hosting of collateralized stable coins that is compliant with:
+The Elesto project aims to provide a state-of-the-art platform for the hosting of collateralized stable coins that is compliant with:
 
  - EU regulations such as General Data Protection Regulation (GDPR) and Markets in Crypto-Assets (MiCA)
  - International recommendations such as the Financial Action Task Force (FATF) "Travel Rule"
@@ -28,16 +28,16 @@ The Elesto platform is based on the following principles:
 - Money laundering prevention also benefits society
 - Users benefit from a strict privacy-respecting approach (GDPR)
 
-The self-sovereign identity (SSI) approach to tackling the identity and privacy challenge has been gaining momentum in recent years. Coupled with distributed ledger technology (DLT) technology, the SSI approach has been capturing the attention of both the private and public sectors. 
+The self-sovereign identity (SSI) approach to tackling the identity and privacy challenge has gained momentum in recent years. Coupled with distributed ledger technology (DLT) technology, the SSI approach has captured the attention of both the private and public sectors. 
 
 The SSI approach relies on two building blocks: decentralized identifiers (DID) and verifiable credentials (VC). This architecture decision record (ADR) describes the DID implementation in a Cosmos SDK-based blockchain.
 
-The goal of this ADR is to define a foundation for the necessary components to realize the Elesto objectives while ensuring the implementation of the DID is fully compliant with the W3C specifications. **Successive iterations will address API ergonomics and standard compatibility issues.** 
+This ADR aims to define a foundation for the necessary components to realize the Elesto objectives while ensuring the implementation of the DID is fully compliant with the W3C specifications. **Successive iterations will address API ergonomics and standard compatibility issues.** 
 
 ## Decision
 
 
-The Elesto implementation for DIDs will follow the [DID W3C core recommendations](https://github.com/w3c/did-core) with the goal of maximizing compatibility with 3rd party tools and projects.
+The Elesto implementation for DIDs will follow the [DID W3C core recommendations](https://github.com/w3c/did-core) to maximizing compatibility with 3rd party tools and projects.
 
 
 ### DID Method Name
@@ -48,8 +48,7 @@ A DID that uses the Elesto method MUST begin with the following prefix: `did:cos
 
 #### Method Specific Identifier
 
-
-The namespace specific identifier is defined by the following ABNF:
+The following ABNF defines the namespace specific identifier:
 
 ```ABNF
 cosmos-did                = "did:cosmos:" identifier-type
@@ -84,7 +83,7 @@ DID and associated DID documents are managed by a Cosmos SDK module that uses th
 
 ###### Create
 
-To create and publish a DID document use the message 
+To create and publish a DID document, use the message 
 
 ```golang
 MsgCreateDidDocument(id string, signerPubKey string)
@@ -105,7 +104,7 @@ The verification method id SHOULD be generated as:
 
 The verification method id MUST be listed in the `authentication` relationships. 
 
-If the input DID is not a valid DID for the Cosmos method, or if the DID already exists on-chain, the message returns an error. 
+If the input DID is not valid DID for the Cosmos method, or if the DID already exists on-chain, the message returns an error. 
 
 Contextually with the creation of a DID document, a [DID document metadata](#did-document-metadata) MUST be created with the following values:
 
@@ -120,12 +119,12 @@ To address privacy concerns:
 - Isolate the verification methods to the DID subject (for example, during key rotation)
 
 
-> **Note:** A more fine-grained DID creation method can be implemented with the goal of saving in gas by executing a single transaction in a complex DID scenario.
+> **Note:**  A more fine-grained DID creation method can be implemented to save gas by executing a single transaction in a complex DID scenario.
 
 
 ###### Resolve and Verify
 
-The integrity of the DID documents stored on the ledger is guaranteed by the underlying blockchain protocol. 
+The underlying blockchain protocol guarantees the integrity of the DID documents stored on the ledger. 
 
 A DID can be resolved using the gRPC message:
 
@@ -221,9 +220,9 @@ There are two ways of updating a DID document:
 - Manage DID controllers
 - Manipulate verification methods and relationships 
 
-In both cases, the target DID must exist on-chain and the `signerAccount` must exist as a verification method in a verification relationship of type `authentication` or it's `key` DID be listed as a DID controller. Additionally the DID document MUST NOT be in a deactivated status.
+In both cases, the target DID must exist on-chain, and the `signerAccount` must exist as a verification method in a verification relationship of type `authentication` or it's `key` DID be listed as a DID controller. Additionally, the DID document MUST NOT be in a deactivated status.
 
-Each update operation MUST update the `versionId` and the `updated` field of the associated [DID document metadata](#did-document-metadata) with the transaction hash and the block time respectively.
+Each update operation MUST update the `versionId,` and the `updated` field of the associated [DID document metadata](#did-document-metadata) with the transaction hash and block time.
 
 **Manage DID Controllers** 
 
@@ -357,17 +356,17 @@ The format for the queries is:
 
 ## Privacy Considerations
 
-When any data (for example, W3C Verifiable Credentials) is associated with Cosmos DIDs, sharing that data would also impose sharing the on-chain data graph (for example, transaction history) of the blockchain account that controls the DID.
+When any data (for example, W3C Verifiable Credentials) is associated with Cosmos DIDs, sharing that data would also impose the on-chain data graph (for example, transaction history) of the blockchain account that controls the DID.
 
-Using personally identifiable information as DID Method-specific identifiers (for example, account name alice) discloses personal information every time the DID is shared with a counterparty. This specification DOES NOT endorse the use of identifiers that correlates to human beings or other sensible subjects.
+Using personally identifiable information as DID Method-specific identifiers (for example, account name Alice) discloses personal information every time the DID is shared with a counterparty. This specification DOES NOT endorse the use of identifiers that correlate to human beings or other sensible subjects.
 
 ## Security Considerations
 
-Ephemeral DIDs (`did:cosmos:key` type) are generated based on a blockchain address. If access to the authoritative keys for an account are lost, the control of the DID and verifiable data issued by the DID is lost as well. 
+Ephemeral DIDs (`did:cosmos:key` type) are generated based on blockchain addresses. If access to the authoritative keys for an account is lost, the DID's control and verifiable data issued by the DID is lost. 
 
 ## Consequences
 
-The Cosmos ecosystem WILL HAVE a DID module that is compatible with the W3C standard and offers a high chance of compatibility with third-party components such as cloud and edge agents, resolvers, and so on.
+The Cosmos ecosystem WILL HAVE a DID module compatible with the W3C standard and offers a high chance of compatibility with third-party components such as cloud and edge agents, resolvers, etc.
 
 ### Backwards Compatibility
 
@@ -375,12 +374,12 @@ This is a new module so backward compatibility is not a concern.
 
 ### Positive
 
-- The implementation of the ADR provides the foundation for interoperability with the DID standard and the SSI identity approach.
+- The ADR implementation provides the foundation for interoperability with the DID standard and the SSI identity approach.
 - Closely following the W3C standard gives the best chances of successful interoperability with third-party components.
 
 ### Negative
 
-- The implementation rigidly follows the W3C specification which leaves little room for extensibility. This approach might become an issue for wider adoption.
+- The implementation rigidly follows the W3C specification, which leaves little room for extensibility. This approach might become an issue for wider adoption.
 
 ### Neutral
 
@@ -388,7 +387,7 @@ N/A
 
 ## Further Discussions
 
-While an ADR is in the DRAFT or PROPOSED stage, this section contains a summary of issues to be solved in future iterations. The issues summarized here can reference comments from a pull request discussion.
+While an ADR is in the DRAFT or PROPOSED stage, this section summarizes issues to be solved in future iterations. The issues summarized here can reference comments from a pull request discussion.
 Later, this section can optionally list ideas or improvements the author or reviewers found during the analysis of this ADR.
 
 - The `did:key` method specifies a key format that is different from the one used in this ADR. This ADR needs to be amended or follow a different approach.

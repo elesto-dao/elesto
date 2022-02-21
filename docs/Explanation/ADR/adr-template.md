@@ -17,7 +17,7 @@ title: ADR Template
 
 ## Abstract
 
-> "If you can't explain it simply, you don't understand it well enough." Provide a simplified and layman-accessible explanation of the ADR.
+> "If you can not explain it simply, you do not understand it well enough." Provide a simplified and layman-accessible explanation of the ADR.
 > A short (~200 word) description of the issue being addressed.
 
 ## Context
@@ -27,16 +27,16 @@ title: ADR Template
 
 ## Decision
 
-> This section describes our response to these forces. It is stated in full sentences, with active voice. "We will ..."
+> This section describes our response to these forces. It is stated in complete sentences, with an active voice. "We will ..."
 > {decision body}
 
 ## Consequences
 
-> This section describes the resulting context after applying the decision. List all consequences here, taking care not to list only the "positive" consequences. A particular decision may have positive, negative, and neutral consequences, but all of the consesquences affect the team and project in the future.
+> This section describes the resulting context after applying the decision. List all consequences here, taking care not to list only the "positive" consequences. A particular decision may have positive, negative, and neutral consequences, but all of the consequences affect the team and project in the future.
 
 ### Backwards Compatibility
 
-> All ADRs that introduce backwards incompatibilities must include a section describing these incompatibilities and their severity. The ADR must explain how the author proposes to deal with these incompatibilities. ADR submissions without a sufficient backwards compatibility treatise may be rejected outright.
+> All ADRs that introduce backward incompatibilities must include a section describing these incompatibilities and their severity. The ADR must explain how the author proposes to deal with these incompatibilities. ADR submissions without a sufficient backward compatibility treatise may be rejected outright.
 
 ### Positive
 
@@ -52,12 +52,12 @@ title: ADR Template
 
 ## Further Discussions
 
-While an ADR is in the DRAFT or PROPOSED stage, this section contains a summary of issues to be solved in future iterations. The issues summarized here can reference comments from a pull request discussion.
+While an ADR is in the DRAFT or PROPOSED stage, this section summarizes issues to be solved in future iterations. The issues summarized here can reference comments from a pull request discussion.
 Later, this section can optionally list ideas or improvements the author or reviewers found during the analysis of this ADR.
 
 ## Test Cases [optional]
 
-Test cases for an implementation are mandatory for ADRs that are affecting consensus changes. Other ADRs can choose to include links to test cases if applicable.
+Test cases for implementation are mandatory for ADRs that are affecting consensus changes. Other ADRs can choose to include links to test cases if applicable.
 
 ## References
 

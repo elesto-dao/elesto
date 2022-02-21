@@ -4,7 +4,7 @@ title: About Explanation Documentation
 
 # Explanation Documentation
 
-How to use the Elesto Explanation Documentation.
+How to use the Elesto Explanation Documentation:
 
 - [Explanation Documentation](#explanation-documentation)
   - [Introduction](#introduction)
@@ -20,13 +20,13 @@ How to use the Elesto Explanation Documentation.
 
 ## Introduction
 
-This section contains **Explanation documentation** for Elesto. This content is intended to help readers with their **understanding of Elesto and related topics**. It is intended to be discursive, thoughtful, interesting, and occasionally educational. The content includes analysis and review of alternative approaches. 
+This section contains **Explanation documentation** for Elesto. This content is intended to help readers **understand Elesto and related topics**. It is intended to be discursive, thoughtful, interesting, and occasionally educational. The content includes analysis and review of alternative approaches. 
 
-For further background information please see [the ADR relating to the documentation structure](./ADR/adr-002-docs-structure.md). 
+Please see [the ADR relating to the documentation structure](./ADR/adr-002-docs-structure.md) for further background information.
 
 ## Layout
 
-The scope and structure of the Explanation documentation follows this layout.
+The scope and structure of the Explanation documentation follow this layout.
 
 ### Topics
 
@@ -41,20 +41,20 @@ The [Presentations](presentations.md) file describes and links to presentations 
 
 ### Architecture Decisions Records (ADRs)
 
- ADRs are the mechanism for contributors to raise design proposals. In turn, the ADRs explain for subsequent contributors the rationale behind Elesto design and implementation. For example, [ADR 002: Documentation Structure](./ADR/adr-002-docs-structure.md) explains why the Elesto documentation structure was chosen. 
+ ADRs are the mechanism for contributors to raise design proposals. In turn, the ADRs explain the rationale behind Elesto design and implementation for subsequent contributors. For example, [ADR 002: Documentation Structure](./ADR/adr-002-docs-structure.md) explains why the Elesto documentation structure was chosen. 
 
-See the Architecture Decision Records (ADR) [README](./ADR/README.md) file for more details about how to raise and propose an ADR.
+See the Architecture Decision Records (ADR) [README](./ADR/README.md) file for more details about raising and proposing an ADR.
 
 ### Articles
 
-This folder contains all articles relating to Elesto, includes papers, blog posts, and so on. For details, see [Articles README](articles/README.md).
+This folder contains all articles relating to Elesto, includes papers, blog posts, etc. For details, see [Articles README](articles/README.md).
 
 
 ## Discussions
 
 The explanation content includes articles, topics, and so on, and also includes discussion on relevant channels, including [Pull Requests](https://github.com/elesto-dao/elesto/pulls) and [Issues](https://github.com/elesto-dao/elesto/issues). Important Pull Requests are listed in this document.
 
-Future: Elesto currently doesn't have a Discord or Telegram Channel. When we do, the links will be added here as well
+Future: Elesto currently does not have a Discord or Telegram Channel. When we do, the links will be added here as well.
 ## Contributing
 
 * The Explanation content should be dry, clear, and terse in style.

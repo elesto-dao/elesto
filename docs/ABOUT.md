@@ -4,7 +4,7 @@ title: About Documentation
 
 # Documentation
 
-How to use the Elesto Documentation.
+How to use the Elesto Documentation:
 
 - [Documentation](#documentation)
   - [Overview](#overview)
@@ -13,7 +13,7 @@ How to use the Elesto Documentation.
 
 ## Overview
 
-In Elesto we use the  *Grand Unified Theory of Documentation* (David Laing) as described
+In Elesto we use the  *Grand Unified Theory of Documentation* (David Laing) described
 by [Divio](https://documentation.divio.com/) as a basis for our documentation strategy.
 
 This approach outlines four specific use cases for documentation:
@@ -23,8 +23,7 @@ This approach outlines four specific use cases for documentation:
 * [Explanation](./Explanation/README.md)
 * [Reference](./Reference/README.md)
 
-For further background please
-see [the ADR relating to the documentation structure](./Explanation/ADR/adr-002-docs-structure.md).
+For further background, please see [the ADR relating to the documentation structure](./Explanation/ADR/adr-002-docs-structure.md).
 
 ## Contributing
 

@@ -8,7 +8,7 @@ ACCEPTED
 
 This ADR proposes a documentation strategy based on the *Grand Unified Theory of Documentation* (David Laing) as described by [Divio](https://documentation.divio.com/).
 
-The documentation strategy outlines four specific use cases for documentation. Based on these use cases and other non-functional requirements, a structure is proposed that will address these concerns using GitHub as the Content Management System. 
+The documentation strategy outlines four specific use cases for documentation. Based on these use cases and other non-functional requirements, a structure is proposed to address these concerns using GitHub as the Content Management System. 
 
 The documentation strategy also proposes:
 
@@ -20,11 +20,11 @@ The outcome shall be focused, consistent, high quality documentation.
 
 ## Context
 
-Good documentation is important to the success of software projects.
+Good documentation is necessary to the success of software projects.
 
-*Writing excellent code doesn't end when your code compiles or even if your test coverage reaches 100%. It's easy to write something a computer understands, it's much harder to write something both a human and a computer understand. Your mission as a Code Health-conscious engineer is to write for humans first, computers second. Documentation is an important part of this skill.* [Google Documentation Best Practice](https://google.github.io/styleguide/docguide/best_practices.html)
+*Excellent writing code does not end when your code compiles or even if your test coverage reaches 100%. It is easy to write something a computer understands, it's much harder to write something both a human and a computer understand. As a Code Health-conscious engineer, the mission is to write for humans first computers second. Documentation is an important part of this skill.* [Google Documentation Best Practice](https://google.github.io/styleguide/docguide/best_practices.html)
 
-The documentation use cases, as outlined by Divio are:
+The documentation use cases, as outlined by Divio, are:
 
 - Allow a new user to get started
 - Show a user how to solve a specific problem
@@ -35,10 +35,10 @@ The documentation use cases, as outlined by Divio are:
 
 The goals of well-structured and well-written documentation include:
 
-- Findability: depending on the use case, the technical content can be discovered and accessed
+- Findability: As per the use case, the technical content can be discovered and accessed
 - Style: The documentation is written in an appropriate style for the use case
 - Consistency: Each type of documentation is written in a consistent style
-- Scoped: Documentation is scoped to a specific use case; for example, a tutorial can provide links but does not include technical content that describes why the software works, a tutorial just teaches how to use it
+- Scoped: Documentation is scoped to a specific use case; for example, a tutorial can provide links but does not include technical content that describes why the software works, a tutorial teaches how to use it
 
 Additional Documentation non-functional use cases include:
 
@@ -55,7 +55,7 @@ To address the use cases outlined in the context, this ADR proposes the followin
 - Use GitHub as primary content management [https://github.com/elesto-dao/elesto](https://github.com/elesto-dao/elesto)
 - Use Markdown and LaTeX to deliver research publications
 
-Given GitHub will form the content management system, we propose the following structure:
+Given that GitHub will form the content management system, we propose the following structure:
 
 ### Structure
 
@@ -119,7 +119,7 @@ The specific implementation for Elesto SHOULD BE as per the following tree struc
 
 The following files are required at the repo root level:
 
-- **README.md** - General repo overview to introduce the product and orientate the user. All README files must follow the best practices as outlined in the [GitHub README](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-readmes) guidelines.
+- **README.md** - General repo overview to introduce the product and orientate the user. All README files must follow the best practices outlined in the [GitHub README](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-readmes) guidelines.
 - **TECHNICAL-SETUP.md** - Specific steps on getting started with the repo, can be a link to a tutorial or include the specific action-oriented steps
     - Links to specific tooling setup requirements for development tools, linters, and so on
     - Dependencies such as [pre-commit](https://pre-commit.com/) package manager
@@ -134,33 +134,33 @@ The following files are required at the repo root level:
 
 #### Modules
 
-In line with Cosmos SDK convention (TODO: needs reference) each module contains its own relevant documentation:
+In line with Cosmos SDK convention (TODO: needs reference), each module contains its relevant documentation:
 
 - **Module specifications** - A document that outlines state transitions `x/module-name/docs/`
 - **Module-level README.md** e.g. x/module-name/README.md
 
-README files are classed as reference documentation. Content in module-level README files is descriptive, but explanatory. Explanations should be part of issues, Pull Requests, and docs/explanation/architecture.
+README files are classed as reference documentation. Content in module-level README files is descriptive but explanatory. Explanations should be part of issues, Pull Requests, and docs/explanation/architecture.
 
 #### docs/
 
 The `docs` folder shall include the following files and folders:
 
 - **README.md** - SHALL USE this for introduction and orientating the user, based on the content of this ADR and other materials.
-- **CODEOWNERS** - This [CODEOWNERS file](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-code-owners) details the reviewers for documentation folder. The listed code owners SHALL INCLUDE the code maintainers in the root CODEOWNERS file plus a member of the Tendermint Technical Writing Team.
+- **CODEOWNERS** - This [CODEOWNERS file](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-code-owners) details the reviewers for documentation folder. The listed code owners SHALL INCLUDE the code maintainers in the root CODEOWNERS file plus a Tendermint Technical Writing Team member.
 
 #### docs/Reference
 
-Reference documentation includes a number of different forms:
+Reference documentation includes several different forms:
 
 - **README.md** - This document outlines the purpose of the reference documentation as per the use-case documentation strategy and methodology. In addition, the README also links to documentation that is created from the code itself, specifically:
-    - Code Documentation in form of Go Docs
+    - Code Documentation in the form of Go Docs
     - Swagger API documentation
 - **GLOSSARY.md** - Review and maintenance must be regularly and consistently applied. These form the terms of reference for users and ensure that discussion and design are based on consistent terms of reference. This file will be similar to [Cosmos Network Glossary](https://v1.cosmos.network/glossary) and can reference this.
 - **MODULES.md** - A markdown document that has references to module-relevant documentation
 
 ##### docs/Reference/use-cases
 
-The `use-cases` folder describes Elesto use cases. Ideally, use cases are written in behavior-driven development (BDD) format. Use case content should be dry in nature and avoid explanations that should be covered in the explanation documentation.
+The `use-cases` folder describes Elesto use cases. Ideally, use cases are written in behavior-driven development (BDD) format. Use case content should be dry and avoid explanations covered in the explanation documentation.
 
 ##### docs/Reference/architecture
 
@@ -168,7 +168,7 @@ The `architecture` folder contains architecture diagrams such as component, acti
 
 #### docs/Explanation
 
-The `Explanation` folder contains content that provides context for readers and is discursive in nature. See the [Divio Explanation page](https://documentation.divio.com/explanation/#) for more detail.
+The `Explanation` folder contains content that provides context for readers and is discursive. See the [Divio Explanation page](https://documentation.divio.com/explanation/#) for more detail.
 
 - **docs/explanation/README.md** - This file orients the reader and explains the content. 
 
@@ -187,8 +187,8 @@ The `articles` folder contains a sub-folder for each published article. Publishe
 
 To convert articles to PDF using Pandoc:
 
-- There SHOULD BE a makefile with targets for calling Pandoc. Note: the process for building PDF files is not part of the commit or release processes, but ad-hoc
-- There SHOULD BE a LaTeX template file that can create PDF files that have a consistent look and feel. This COULD BE the [Eisvogel template](https://github.com/Wandmalfarbe/pandoc-latex-template) with suitable modifications.
+- There SHOULD BE a makefile with targets for calling Pandoc. Note: the process for building PDF files is not part of the commit or release processes but ad-hoc
+- There SHOULD BE a LaTeX template file that can create PDF files with a consistent look and feel. WITH SUITABLE MODIFICATIONS, this COULD BE the [Eisvogel template](https://github.com/Wandmalfarbe/pandoc-latex-template).
 - The makefile and template should be independent of the article
 - There SHOULD BE a README.md that describes how to use the makefile and template and build articles
 
@@ -196,10 +196,10 @@ To convert articles to PDF using Pandoc:
 
 #### docs/Tutorials
 
-As indicated in the overview, tutorials SHALL BE documents that target beginners and guide a user step-by-step through a process with the aim of achieving some goal. Please see the [Divio tutorial page](https://documentation.divio.com/tutorials/) for details.
+As indicated in the overview, tutorials SHALL BE documents that target beginners and guide a user step-by-step through a process to achieve some goal. Please see the [Divio tutorial page](https://documentation.divio.com/tutorials/) for details.
 
 - There SHALL BE a folder for each tutorial. See the [Cosmos SDK tutorials](https://github.com/cosmos/sdk-tutorials) as an example.
-- The folder SHALL CONTAIN all of the content that is relevant for that tutorial. 
+- The folder SHALL CONTAIN all of the relevant content for that tutorial. 
 - The content SHOULD BE consistent in format with [Cosmos SDK tutorials](https://tutorials.cosmos.network/). 
 
 #### docs/How-To
@@ -208,7 +208,7 @@ In contrast to tutorials, [how-to guides](https://documentation.divio.com/how-to
 
 ### Templates
 
-The documentation SHOULD USE Markdown templates to develop structured technical content, like module messages follow templates in the Cosmos SDK. 
+The documentation SHOULD USE Markdown templates to develop structured technical content like module messages follow templates in the Cosmos SDK. 
 
 - [The good docs project](https://github.com/thegooddocsproject)
 - [Readme editor](https://readme.so/editor)
@@ -232,14 +232,14 @@ Commits comments will also follow a similar format as laid out following the sta
 
 ## Consequences
 
-This section describes the resulting context, after applying the decision. 
+This section describes the resulting context after applying the decision. 
 
 ### Backwards Compatibility
 
 After this ADR is implemented, existing documentation will be migrated from existing sources that include:
 
 - Notion
-- Other Git repos
+- Other Git Repos
 - Published papers
 - Blog posts 
 
@@ -255,11 +255,11 @@ As a result of this documentation strategy:
 ### Negative
 
 - There may be more effort required
-- Moving modules into new repos may cause inconsistenties in the repo
+- Moving modules into new repos may cause inconsistencies in the repo
 
 ## Further Discussions
 
-While an ADR is in the DRAFT or PROPOSED stage, this section should contain a summary of issues to be solved in future iterations (usually referencing comments from a pull-request discussion).
+While an ADR is in the DRAFT or PROPOSED stage, this section should summarize issues to be solved in future iterations (usually referencing comments from a pull-request discussion).
 
 Later, this section can optionally list ideas or improvements the author or reviewers found during the analysis of this ADR.
 
