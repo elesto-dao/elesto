@@ -50,6 +50,10 @@ lint:
 	@golangci-lint run
 	@go mod verify
 
+docs:
+	@echo "launch local documentation portal"
+	mkdocs serve
+
 ###############################################################################
 ###                           Chain Initialization                          ###
 ###############################################################################
@@ -100,4 +104,4 @@ endif
 ifneq ($(shell git rev-parse --abbrev-ref HEAD),main)
 	$(error you are not on the main branch. aborting)
 endif
-	git tag -s -a "$(APP_VERSION)" -m "Changelog: https://github.com/allinbits/cosmos-cash/blob/main/CHANGELOG.md"
+	git tag -s -a "$(APP_VERSION)" -m "Changelog: https://github.com/elesto-dao/elesto/blob/main/CHANGELOG.md"
