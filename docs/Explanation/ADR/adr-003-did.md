@@ -31,7 +31,7 @@ The Elesto platform is based on the following principles:
 - Money laundering prevention also benefits society
 - Users benefit from a strict privacy-respecting approach (GDPR)
 
-The self-sovereign identity (SSI) approach to tackling the identity and privacy challenge has been gaining momentum in recent years. Coupled with distributed ledger technology (DLT) technology, the SSI approach has been capturing the attention of both the private and public sectors. 
+The self-sovereign identity (SSI) approach to tackling the identity and privacy challenge has gained momentum in recent years. Coupled with distributed ledger technology (DLT) technology, the SSI approach has captured the attention of both the private and public sectors.
 
 The SSI approach relies on two building blocks: decentralized identifiers (DID) and verifiable credentials (VC). This architecture decision record (ADR) describes the DID implementation in a Cosmos SDK-based blockchain.
 
