@@ -181,11 +181,12 @@ The following sections provide specific details for each method invocation.
 
 #### UpdateDidDocument 
 
-The  `UpdateDidDocument` method will is used to **overwrite** the  [DidDocument](02_state.md#diddocument) controllers. It accepts a [MsgUpdateDidDocument](./04_messages.md#MsgUpdateDidDocument) as a parameter.
+The  `UpdateDidDocument` method will is used to **overwrite** the  [DidDocument](02_state.md#diddocument). It accepts a [MsgUpdateDidDocument](./04_messages.md#MsgUpdateDidDocument) as a parameter.
 
 The operation will fail if:
 
-- any of the did provided controllers is not a valid did
+- any integrity and sanity checks on the DID document fail
+- the DID document is not found
 
 <!-- 
 
@@ -199,8 +200,31 @@ elestod tx did update-did-document \
 /* gRPC message */
 UpdateDidDocument(
     MsgUpdateDidDocument(
-        "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e",
-        ["did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"],
+        {
+          "context": [
+            "https://www.w3.org/ns/did/v1"
+          ],
+          "id": "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e",
+          "controller": [
+             "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+          ],
+          "verificationMethod": [
+            {
+              "controller": "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e",
+              "id": "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0",
+              "publicKeyHex": "0248a5178d7a90ec187b3c3d533a4385db905f6fcdaac5026859ca5ef7b0b1c3b5",
+              "type": "EcdsaSecp256k1VerificationKey2019"
+            }
+          ],
+          "service": [],
+          "authentication": [
+            "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0"
+          ],
+          "assertionMethod": [],
+          "keyAgreement": [],
+          "capabilityInvocation": [],
+          "capabilityDelegation": []
+        },
         "cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0"
     )
 )
@@ -214,7 +238,7 @@ UpdateDidDocument(
     ],
     "id": "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e",
     "controller": [
-      "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+        "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
     ],
     "verificationMethod": [
       {
@@ -641,6 +665,149 @@ DeleteService(
 - server: https://github.com/elesto-dao/elesto/blob/v1.0.0/x/did/keeper/msg_server.go#L150
 - client: https://github.com/elesto-dao/elesto/blob/v1.0.0/x/did/client/cli/tx.go#L154
 
+
+### AddController
+
+The `AddController` method is used to add a [controller](https://w3c.github.io/did-core/#did-controller) to a [DidDocument](02_state.md#diddocument). It accepts a [MsgAddContoller](./04_messages.md#MsgAddController) as a parameter.
+
+The operation will fail if:
+
+- the controller DID is not of type `key`
+<!--
+
+elestod tx did add-controller \
+ 900d82bc-2bfe-45a7-ab22-a8d11773568e \
+ 
+TODO
+
+ --from vasp --node https://elesto.app.beta.starport.cloud:443 --chain-id cosmoscash-testnet
+
+-->
+
+```javascript
+/* gRPC message */
+AddController(
+    MsgAddController(
+        "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e",
+        "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
+        "cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0" // signer
+    )
+)
+
+/* Resolved DID Document */
+{
+  "didDocument": {
+    "context": [
+      "https://www.w3.org/ns/did/v1"
+    ],
+    "id": "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e",
+    "controller": [
+      "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+    ],
+    "verificationMethod": [
+      {
+        "controller": "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e",
+        "id": "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0",
+        "publicKeyHex": "0248a5178d7a90ec187b3c3d533a4385db905f6fcdaac5026859ca5ef7b0b1c3b5",
+        "type": "EcdsaSecp256k1VerificationKey2019"
+      }
+    ],
+    "service": [],
+    "authentication": [
+        "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0"
+    ],
+    "assertionMethod": [],
+    "keyAgreement": [],
+    "capabilityInvocation": [
+      "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0"
+    ],
+    "capabilityDelegation": []
+  },
+  "didMetadata": {
+    "versionId": "5b3fc976d1393bf4a144cdd4d99612b813777a60ca6368dcd396cc687f58c872",
+    "created": "2021-08-23T08:24:26.972761898Z",
+    "updated": "2021-08-24T17:51:40.902858856Z",
+    "deactivated": false
+  }
+}
+
+```
+
+##### Implementation source
+
+- server: --
+- client: --
+
+### DeleteController
+
+The `DeleteController` method is used to delete a [controller](https://w3c.github.io/did-core/#did-controller) from a [DidDocument](02_state.md#diddocument). It accepts a [MsgDeleteContoller](./04_messages.md#MsgDeleteController) as a parameter.
+
+The operation will fail if:
+
+- the DID document is not found
+<!--
+
+elestod tx did add-controller \
+ 900d82bc-2bfe-45a7-ab22-a8d11773568e \
+ 
+TODO
+
+ --from vasp --node https://elesto.app.beta.starport.cloud:443 --chain-id cosmoscash-testnet
+
+-->
+
+```javascript
+/* gRPC message */
+DeleteController(
+    MsgDeleteController(
+        "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e",
+        "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
+        "cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0" // signer
+    )
+)
+
+/* Resolved DID Document */
+{
+  "didDocument": {
+    "context": [
+      "https://www.w3.org/ns/did/v1"
+    ],
+    "id": "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e",
+    "controller": [
+    ],
+    "verificationMethod": [
+      {
+        "controller": "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e",
+        "id": "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0",
+        "publicKeyHex": "0248a5178d7a90ec187b3c3d533a4385db905f6fcdaac5026859ca5ef7b0b1c3b5",
+        "type": "EcdsaSecp256k1VerificationKey2019"
+      }
+    ],
+    "service": [],
+    "authentication": [
+        "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0"
+    ],
+    "assertionMethod": [],
+    "keyAgreement": [],
+    "capabilityInvocation": [
+      "did:cosmos:cosmoscash-testnet:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0"
+    ],
+    "capabilityDelegation": []
+  },
+  "didMetadata": {
+    "versionId": "5b3fc976d1393bf4a144cdd4d99612b813777a60ca6368dcd396cc687f58c872",
+    "created": "2021-08-23T08:24:26.972761898Z",
+    "updated": "2021-08-24T17:51:40.902858856Z",
+    "deactivated": false
+  }
+}
+
+```
+
+##### Implementation source
+
+- server: --
+- client: --
 
 ### Deactivate
 
