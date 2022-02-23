@@ -3,6 +3,7 @@ package credentials
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
 	"github.com/elesto-dao/elesto/x/did"
 )
 

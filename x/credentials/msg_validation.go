@@ -1,7 +1,5 @@
 package credentials
 
-
-
 func (MsgPublishCredentialDefinitionRequest) ValidateBasic() error {
 	return nil
 }

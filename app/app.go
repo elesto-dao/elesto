@@ -94,13 +94,12 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/elesto-dao/elesto/docs"
-	"github.com/elesto-dao/elesto/x/did"
-	didmodulekeeper "github.com/elesto-dao/elesto/x/did/keeper"
-	didmodule "github.com/elesto-dao/elesto/x/did/module"
-
 	"github.com/elesto-dao/elesto/x/credentials"
 	credentialsModuleKeeper "github.com/elesto-dao/elesto/x/credentials/keeper"
 	credentialsmodule "github.com/elesto-dao/elesto/x/credentials/module"
+	"github.com/elesto-dao/elesto/x/did"
+	didmodulekeeper "github.com/elesto-dao/elesto/x/did/keeper"
+	didmodule "github.com/elesto-dao/elesto/x/did/module"
 )
 
 /// Global vars that define account prefix and name of chain

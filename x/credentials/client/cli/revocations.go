@@ -3,20 +3,33 @@ package cli
 import (
 	"crypto/rand"
 	"encoding/hex"
+
 	"github.com/coinbase/kryptology/pkg/accumulator"
 	"github.com/coinbase/kryptology/pkg/core/curves"
+
 	"github.com/elesto-dao/elesto/x/credentials"
 )
 
 // InitRevocationList initialize a new revocation list by generating a new seed from crypto/rand
 // the seed is returned and must be stored securely by the caller
-func InitRevocationList() (rl *credentials.RevocationList, hexSeed string, err error) {
+func InitRevocationList() (rl *credentials.RevocationList, secretKeyHex string, err error) {
 	seed, err := generateSeed(32)
 	if err != nil {
 		return
 	}
-	hexSeed = hex.EncodeToString(seed)
-	rl, err = BuildRevocationList(hex.EncodeToString(seed))
+	curve := curves.BLS12381(&curves.PointBls12381G1{})
+	key, err := new(accumulator.SecretKey).New(curve, seed)
+	if err != nil {
+		return
+	}
+	// marshal secret key
+	skBin, err := key.MarshalBinary()
+	if err != nil {
+		return
+	}
+	secretKeyHex = hex.EncodeToString(skBin)
+	rl, err = BuildRevocationList(secretKeyHex)
+
 	return
 }
 
@@ -30,18 +43,17 @@ func generateSeed(length int) (entropy []byte, err error) {
 }
 
 // BuildRevocationList build/updates a revocationList object
-func BuildRevocationList(hexSeed string, elements ...string) (rl *credentials.RevocationList, err error) {
-	seed, err := hex.DecodeString(hexSeed)
+func BuildRevocationList(secretKeyHex string, elements ...string) (rl *credentials.RevocationList, err error) {
+	sk, err := hex.DecodeString(secretKeyHex)
 	if err != nil {
 		return
 	}
 	// generate the new revocation
 	curve := curves.BLS12381(&curves.PointBls12381G1{})
-	key, err := new(accumulator.SecretKey).New(curve, seed[:])
-	if err != nil {
+	key := new(accumulator.SecretKey)
+	if err = key.UnmarshalBinary(sk); err != nil {
 		return
 	}
-
 	// TODO: unmarshal accumulator
 	acc, err := new(accumulator.Accumulator).New(curve)
 	if err != nil {
@@ -71,8 +83,8 @@ func BuildRevocationList(hexSeed string, elements ...string) (rl *credentials.Re
 	}
 	// build the new revocation list
 	rl = &credentials.RevocationList{
-		PublicKey:   hex.EncodeToString(accBin),
-		Accumulator: hex.EncodeToString(pubBin),
+		PublicKey:   hex.EncodeToString(pubBin),
+		Accumulator: hex.EncodeToString(accBin),
 	}
 	return
 }

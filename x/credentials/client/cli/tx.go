@@ -2,19 +2,21 @@ package cli
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	"github.com/spf13/cobra"
+
 	"github.com/elesto-dao/elesto/x/credentials"
 	"github.com/elesto-dao/elesto/x/did"
-	"github.com/spf13/cobra"
 )
 
 // GetTxCmd returns the transaction commands for this module
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                        did.ModuleName,
-		Short:                      fmt.Sprintf("%s transactions subcommands", did.ModuleName),
+		Use:                        credentials.ModuleName,
+		Short:                      fmt.Sprintf("%s transactions subcommands", credentials.ModuleName),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -29,7 +31,6 @@ func GetTxCmd() *cobra.Command {
 	return cmd
 }
 
-
 // NewRegisterIssuerCmd defines the command to create a new IBC light client.
 func NewRegisterIssuerCmd() *cobra.Command {
 
@@ -38,7 +39,7 @@ func NewRegisterIssuerCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "register-issuer [id]",
 		Short:   "register a credential issuer for a did",
-		Example: "elestod credentials register-issuer example-issuer",
+		Example: "elestod tx credentials register-issuer example-issuer",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -51,14 +52,15 @@ func NewRegisterIssuerCmd() *cobra.Command {
 			signer := clientCtx.GetFromAddress()
 
 			// initialize revocation list
-			rl, seed, err := InitRevocationList()
+			rl, secret, err := InitRevocationList()
 			if err != nil {
 				return err
 			}
+
 			// initialize the issuer
-			issuer := &credentials.CredentialIssuer{
-				Did:         didID.String(),
-				Revocations: rl,
+			issuer, err := credentials.NewCredentialIssuer(didID, credentials.WithRevocationList(*rl))
+			if err != nil {
+				return err
 			}
 			// create the message
 			msg := credentials.NewMsgRegisterCredentialIssuerRequest(
@@ -72,7 +74,7 @@ func NewRegisterIssuerCmd() *cobra.Command {
 			}
 			fmt.Println("Store this information in a safe place:")
 			fmt.Println("credential issuer DID:  ", didID.String())
-			fmt.Println("revocation list secret: ", seed)
+			fmt.Println("revocation list secret: ", secret)
 			return nil
 		},
 	}
@@ -86,6 +88,9 @@ func NewRegisterIssuerCmd() *cobra.Command {
 
 // NewUpdateRevocationList defines the command to create a new IBC light client.
 func NewUpdateRevocationList() *cobra.Command {
+
+	var doDelete bool
+
 	cmd := &cobra.Command{
 		Use:     "update-revocation-list [id] [revocation-list-secret] [entry]",
 		Short:   "adds a new entry to the issuer revocation list",
@@ -102,6 +107,9 @@ func NewUpdateRevocationList() *cobra.Command {
 			didID := did.NewChainDID(clientCtx.ChainID, id)
 			// verification
 			signer := clientCtx.GetFromAddress()
+			if doDelete {
+				return fmt.Errorf("delete not implemented")
+			}
 
 			// TODO: fetch current revocation list
 
@@ -117,8 +125,7 @@ func NewUpdateRevocationList() *cobra.Command {
 	}
 
 	// add flags to set did relationships
-	//cmd.Flags().StringSliceVarP(&relationships, "relationship", "r", []string{}, "the relationships to set for the verification method in the DID")
-	//cmd.Flags().BoolVar(&unsafe, "unsafe", false, fmt.Sprint("do not ensure that '", did.Authentication, "' relationship is set"))
+	cmd.Flags().BoolVar(&doDelete, "delete", false, fmt.Sprint("delete the credential instead of adding it "))
 
 	flags.AddTxFlagsToCmd(cmd)
 

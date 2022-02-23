@@ -14,9 +14,8 @@ func NewCredentialDefinitionPublishedEvent(credentialDefinitionDID, publisherDID
 	}
 }
 
-
 // NewPublicCredentialIssuedEvent constructs a new did_created sdk.Event
-func NewPublicCredentialIssuedEvent(credentialDefinitionDID, credentialID, issuerDID, holderDID  string) *PublicCredentialIssuedEvent {
+func NewPublicCredentialIssuedEvent(credentialDefinitionDID, credentialID, issuerDID, holderDID string) *PublicCredentialIssuedEvent {
 	return &PublicCredentialIssuedEvent{
 		CredentialDefinitionId: credentialDefinitionDID,
 		CredentialId:           credentialID,

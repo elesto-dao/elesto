@@ -2,9 +2,9 @@ package credentials
 
 var (
 	// CredentialIssuerKey prefix for each key to a CredentialIssuer
-	CredentialIssuerKey = []byte{0x61}
+	CredentialIssuerKey = []byte{0x71}
 	// PublicCredentialKey prefix for each key of a PublicCredential
-	PublicCredentialKey = []byte{0x62}
+	PublicCredentialKey = []byte{0x72}
 )
 
 const (

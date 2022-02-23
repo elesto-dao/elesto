@@ -3,13 +3,13 @@ package keeper
 import (
 	"context"
 	"fmt"
-	"github.com/elesto-dao/elesto/x/did"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/elesto-dao/elesto/x/credentials"
+	"github.com/elesto-dao/elesto/x/did"
 )
 
 type msgServer struct {

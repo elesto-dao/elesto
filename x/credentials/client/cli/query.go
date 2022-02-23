@@ -3,12 +3,12 @@ package cli
 import (
 	"context"
 	"fmt"
-	"github.com/elesto-dao/elesto/x/credentials"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
+	"github.com/elesto-dao/elesto/x/credentials"
 	"github.com/elesto-dao/elesto/x/did"
 )
 
@@ -16,8 +16,8 @@ import (
 func GetQueryCmd(_ string) *cobra.Command {
 	// Group did queries under a subcommand
 	cmd := &cobra.Command{
-		Use:                        did.ModuleName,
-		Short:                      fmt.Sprintf("Querying commands for the %s module", did.ModuleName),
+		Use:                        credentials.ModuleName,
+		Short:                      fmt.Sprintf("Querying commands for the %s module", credentials.ModuleName),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -35,9 +35,10 @@ func GetQueryCmd(_ string) *cobra.Command {
 
 func NewQueryCredentialIssuerCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "issuer [id]",
-		Short: "get a credential issuer",
-		Args:  cobra.ExactArgs(1),
+		Use:     "issuer [did]",
+		Short:   "get a credential issuer",
+		Example: "elestod query credentials issuer did:cosmos:net:elesto:example-issuer",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -45,12 +46,10 @@ func NewQueryCredentialIssuerCmd() *cobra.Command {
 			}
 			queryClient := credentials.NewQueryClient(clientCtx)
 
-			did := did.NewChainDID(clientCtx.ChainID, args[0])
-
 			result, err := queryClient.CredentialIssuer(
 				context.Background(),
 				&credentials.QueryCredentialIssuerRequest{
-					Id: did.String(),
+					Id: args[0],
 				},
 			)
 			if err != nil {
@@ -100,13 +99,12 @@ func NewQueryRevocationListCmd() *cobra.Command {
 	return cmd
 }
 
-
 func NewQueryPublicCredentialsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "public-credentials",
-		Short: "list public credentials",
+		Use:     "public-credentials",
+		Short:   "list public credentials",
 		Example: "elestod credentials query public-credentials",
-		Args:  cobra.ExactArgs(1),
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {

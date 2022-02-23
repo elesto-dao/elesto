@@ -1,12 +1,10 @@
 package keeper
 
 import (
-	"github.com/elesto-dao/elesto/x/credentials"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/elesto-dao/elesto/x/did"
+	"github.com/elesto-dao/elesto/x/credentials"
 )
 
 func (k Keeper) SetCredentialIssuer(ctx sdk.Context, issuer credentials.CredentialIssuer) {
@@ -30,10 +28,12 @@ func (k Keeper) UnmarshalCredentialIssuer(value []byte) (interface{}, bool) {
 
 func (k Keeper) Marshal(value interface{}) (bytes []byte) {
 	switch value := value.(type) {
-	case did.DidDocument:
+	case credentials.CredentialIssuer:
 		bytes = k.cdc.MustMarshal(&value)
-	case did.DidMetadata:
+	case credentials.PublicVerifiableCredential:
 		bytes = k.cdc.MustMarshal(&value)
+	default:
+		panic("serialization not supported")
 	}
 	return
 }
