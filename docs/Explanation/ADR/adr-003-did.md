@@ -168,7 +168,7 @@ This example shows a DID document that was resolved using the gRPC interface:
 ```
 
 
-> Note: the DID document resolution followingh the [W3C DID core recommendations](https://www.w3.org/TR/2021/PR-did-core-20210803/) and pass the [DID Core Specification Test Suite](https://w3c.github.io/did-test-suite/) SHOULD be managed outside the node implementation, in a dedicated project. 
+> Note: the DID document resolution following the [W3C DID core recommendations](https://www.w3.org/TR/2021/PR-did-core-20210803/) and pass the [DID Core Specification Test Suite](https://w3c.github.io/did-test-suite/) SHOULD be managed outside the node implementation, in a dedicated project. 
 
 
 ###### Update
