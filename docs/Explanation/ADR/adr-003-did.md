@@ -360,7 +360,7 @@ The fields of the `MsgSetVerificationRelationships` message are:
  - `Doc` the updated DID document
  - `SignerAccount` is the account address that is signing the transaction
 
-The DID of the new DID document must match the existing document. All the validation rules applies also while replacing the document.
+The DID of the new DID document must match the existing document. All the validation rules also apply while replacing the document.
 
 ###### Deactivate
 
