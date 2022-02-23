@@ -15,7 +15,7 @@ LAST CALL 2022-02-28
 
 [Decentralized identifiers](https://www.w3.org/TR/did-core/) (DIDs) are a type of identifier that enables verifiable, decentralized digital identity. A DID refer to any subject (for example, a person, organization, thing, data model, abstract entity, and so on) as determined by the controller of the DID.
 
-This document specifies the DID method for a Cosmos SDK-based implementation of the W3C recommendation, its properties, operations, and an explanation of the process to resolve DIDs to the resources that they represent. 
+This document specifies the DID method for a Cosmos SDK-based implementation of the W3C recommendation, its properties, operations, and an explanation of the process to resolve DIDs to the resources they represent.
 
 ## Context
 
