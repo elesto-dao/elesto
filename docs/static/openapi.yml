@@ -11842,6 +11842,213 @@ paths:
           type: boolean
       tags:
         - Query
+  '/elesto/did/dids/{id}':
+    get:
+      summary: DidDocument queries a did documents with an id.
+      operationId: ElestodaoElestoDidV1DidDocument
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              didDocument:
+                title: Returns a did document
+                type: object
+                properties:
+                  context:
+                    type: array
+                    items:
+                      type: string
+                    description: '@context is spec for did document.'
+                  id:
+                    type: string
+                    description: id represents the id for the did document.
+                  controller:
+                    type: array
+                    items:
+                      type: string
+                    title: >-
+                      A DID controller is an entity that is authorized to make
+                      changes to a DID document.
+
+                      cfr. https://www.w3.org/TR/did-core/#did-controller
+                  verificationMethod:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        type:
+                          type: string
+                        controller:
+                          type: string
+                        blockchainAccountID:
+                          type: string
+                        publicKeyHex:
+                          type: string
+                        publicKeyMultibase:
+                          type: string
+                        PublicKeyJwk:
+                          type: object
+                          properties:
+                            Kid:
+                              type: string
+                            Crv:
+                              type: string
+                            X:
+                              type: string
+                            'Y':
+                              type: string
+                            Kty:
+                              type: string
+                          title: >-
+                            PublicKeyJwk is a type of verification material, the
+                            implementation
+
+                            support is limited to elliptic curve public keys
+
+                            see https://www.w3.org/TR/did-core/#dfn-publickeyjwk
+
+                            see https://datatracker.ietf.org/doc/html/rfc7517
+                      title: |-
+                        A DID document can express verification methods,
+                        such as cryptographic public keys, which can be used
+                        to authenticate or authorize interactions
+                        with the DID subject or associated parties.
+                        https://www.w3.org/TR/did-core/#verification-methods
+                    title: >-
+                      A DID document can express verification methods,
+
+                      such as cryptographic public keys, which can be used
+
+                      to authenticate or authorize interactions with the DID
+                      subject or associated parties.
+
+                      https://www.w3.org/TR/did-core/#verification-methods
+                  service:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        type:
+                          type: string
+                        serviceEndpoint:
+                          type: string
+                      title: >-
+                        Service defines how to find data associated with a
+                        identifer
+                    title: >-
+                      Services are used in DID documents to express ways of
+                      communicating
+
+                      with the DID subject or associated entities.
+
+                      https://www.w3.org/TR/did-core/#services
+                  authentication:
+                    type: array
+                    items:
+                      type: string
+                    title: >-
+                      Authentication represents public key associated with the
+                      did document.
+
+                      cfr. https://www.w3.org/TR/did-core/#authentication
+                  assertionMethod:
+                    type: array
+                    items:
+                      type: string
+                    title: >-
+                      Used to specify how the DID subject is expected to express
+                      claims,
+
+                      such as for the purposes of issuing a Verifiable
+                      Credential.
+
+                      cfr. https://www.w3.org/TR/did-core/#assertion
+                  keyAgreement:
+                    type: array
+                    items:
+                      type: string
+                    title: >-
+                      used to specify how an entity can generate encryption
+                      material
+
+                      in order to transmit confidential information intended for
+                      the DID subject.
+
+                      https://www.w3.org/TR/did-core/#key-agreement
+                  capabilityInvocation:
+                    type: array
+                    items:
+                      type: string
+                    title: >-
+                      Used to specify a verification method that might be used
+                      by the DID subject
+
+                      to invoke a cryptographic capability, such as the
+                      authorization
+
+                      to update the DID Document.
+
+                      https://www.w3.org/TR/did-core/#capability-invocation
+                  capabilityDelegation:
+                    type: array
+                    items:
+                      type: string
+                    title: >-
+                      Used to specify a mechanism that might be used by the DID
+                      subject
+
+                      to delegate a cryptographic capability to another party.
+
+                      https://www.w3.org/TR/did-core/#capability-delegation
+                description: DidDocument represents a dencentralised identifer.
+              didMetadata:
+                title: Returns a did documents metadata
+                type: object
+                properties:
+                  versionId:
+                    type: string
+                  created:
+                    type: string
+                    format: date-time
+                  updated:
+                    type: string
+                    format: date-time
+                  deactivated:
+                    type: boolean
+            title: >-
+              QueryDidDocumentsResponse is response type for the
+              Query/DidDocuments RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /ibc/apps/transfer/v1/denom_traces:
     get:
       summary: DenomTraces queries all denomination traces.
@@ -19759,6 +19966,469 @@ definitions:
     description: >-
       MsgCreateVestingAccountResponse defines the Msg/CreateVestingAccount
       response type.
+  elestodao.elesto.did.v1.DidDocument:
+    type: object
+    properties:
+      context:
+        type: array
+        items:
+          type: string
+        description: '@context is spec for did document.'
+      id:
+        type: string
+        description: id represents the id for the did document.
+      controller:
+        type: array
+        items:
+          type: string
+        title: >-
+          A DID controller is an entity that is authorized to make changes to a
+          DID document.
+
+          cfr. https://www.w3.org/TR/did-core/#did-controller
+      verificationMethod:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+            controller:
+              type: string
+            blockchainAccountID:
+              type: string
+            publicKeyHex:
+              type: string
+            publicKeyMultibase:
+              type: string
+            PublicKeyJwk:
+              type: object
+              properties:
+                Kid:
+                  type: string
+                Crv:
+                  type: string
+                X:
+                  type: string
+                'Y':
+                  type: string
+                Kty:
+                  type: string
+              title: >-
+                PublicKeyJwk is a type of verification material, the
+                implementation
+
+                support is limited to elliptic curve public keys
+
+                see https://www.w3.org/TR/did-core/#dfn-publickeyjwk
+
+                see https://datatracker.ietf.org/doc/html/rfc7517
+          title: |-
+            A DID document can express verification methods,
+            such as cryptographic public keys, which can be used
+            to authenticate or authorize interactions
+            with the DID subject or associated parties.
+            https://www.w3.org/TR/did-core/#verification-methods
+        title: >-
+          A DID document can express verification methods,
+
+          such as cryptographic public keys, which can be used
+
+          to authenticate or authorize interactions with the DID subject or
+          associated parties.
+
+          https://www.w3.org/TR/did-core/#verification-methods
+      service:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+            serviceEndpoint:
+              type: string
+          title: Service defines how to find data associated with a identifer
+        title: |-
+          Services are used in DID documents to express ways of communicating
+          with the DID subject or associated entities.
+          https://www.w3.org/TR/did-core/#services
+      authentication:
+        type: array
+        items:
+          type: string
+        title: |-
+          Authentication represents public key associated with the did document.
+          cfr. https://www.w3.org/TR/did-core/#authentication
+      assertionMethod:
+        type: array
+        items:
+          type: string
+        title: |-
+          Used to specify how the DID subject is expected to express claims,
+          such as for the purposes of issuing a Verifiable Credential.
+          cfr. https://www.w3.org/TR/did-core/#assertion
+      keyAgreement:
+        type: array
+        items:
+          type: string
+        title: >-
+          used to specify how an entity can generate encryption material
+
+          in order to transmit confidential information intended for the DID
+          subject.
+
+          https://www.w3.org/TR/did-core/#key-agreement
+      capabilityInvocation:
+        type: array
+        items:
+          type: string
+        title: >-
+          Used to specify a verification method that might be used by the DID
+          subject
+
+          to invoke a cryptographic capability, such as the authorization
+
+          to update the DID Document.
+
+          https://www.w3.org/TR/did-core/#capability-invocation
+      capabilityDelegation:
+        type: array
+        items:
+          type: string
+        title: |-
+          Used to specify a mechanism that might be used by the DID subject
+          to delegate a cryptographic capability to another party.
+          https://www.w3.org/TR/did-core/#capability-delegation
+    description: DidDocument represents a dencentralised identifer.
+  elestodao.elesto.did.v1.DidMetadata:
+    type: object
+    properties:
+      versionId:
+        type: string
+      created:
+        type: string
+        format: date-time
+      updated:
+        type: string
+        format: date-time
+      deactivated:
+        type: boolean
+    title: |-
+      DidMetadata defines metadata associated to a did document such as
+      the status of the DID document
+  elestodao.elesto.did.v1.MsgAddControllerResponse:
+    type: object
+  elestodao.elesto.did.v1.MsgAddServiceResponse:
+    type: object
+  elestodao.elesto.did.v1.MsgAddVerificationResponse:
+    type: object
+  elestodao.elesto.did.v1.MsgCreateDidDocumentResponse:
+    type: object
+  elestodao.elesto.did.v1.MsgDeleteControllerResponse:
+    type: object
+  elestodao.elesto.did.v1.MsgDeleteServiceResponse:
+    type: object
+  elestodao.elesto.did.v1.MsgRevokeVerificationResponse:
+    type: object
+  elestodao.elesto.did.v1.MsgSetVerificationRelationshipsResponse:
+    type: object
+  elestodao.elesto.did.v1.MsgUpdateDidDocumentResponse:
+    type: object
+  elestodao.elesto.did.v1.PublicKeyJwk:
+    type: object
+    properties:
+      Kid:
+        type: string
+      Crv:
+        type: string
+      X:
+        type: string
+      'Y':
+        type: string
+      Kty:
+        type: string
+    title: |-
+      PublicKeyJwk is a type of verification material, the implementation
+      support is limited to elliptic curve public keys
+      see https://www.w3.org/TR/did-core/#dfn-publickeyjwk
+      see https://datatracker.ietf.org/doc/html/rfc7517
+  elestodao.elesto.did.v1.QueryDidDocumentResponse:
+    type: object
+    properties:
+      didDocument:
+        title: Returns a did document
+        type: object
+        properties:
+          context:
+            type: array
+            items:
+              type: string
+            description: '@context is spec for did document.'
+          id:
+            type: string
+            description: id represents the id for the did document.
+          controller:
+            type: array
+            items:
+              type: string
+            title: >-
+              A DID controller is an entity that is authorized to make changes
+              to a DID document.
+
+              cfr. https://www.w3.org/TR/did-core/#did-controller
+          verificationMethod:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+                controller:
+                  type: string
+                blockchainAccountID:
+                  type: string
+                publicKeyHex:
+                  type: string
+                publicKeyMultibase:
+                  type: string
+                PublicKeyJwk:
+                  type: object
+                  properties:
+                    Kid:
+                      type: string
+                    Crv:
+                      type: string
+                    X:
+                      type: string
+                    'Y':
+                      type: string
+                    Kty:
+                      type: string
+                  title: >-
+                    PublicKeyJwk is a type of verification material, the
+                    implementation
+
+                    support is limited to elliptic curve public keys
+
+                    see https://www.w3.org/TR/did-core/#dfn-publickeyjwk
+
+                    see https://datatracker.ietf.org/doc/html/rfc7517
+              title: |-
+                A DID document can express verification methods,
+                such as cryptographic public keys, which can be used
+                to authenticate or authorize interactions
+                with the DID subject or associated parties.
+                https://www.w3.org/TR/did-core/#verification-methods
+            title: >-
+              A DID document can express verification methods,
+
+              such as cryptographic public keys, which can be used
+
+              to authenticate or authorize interactions with the DID subject or
+              associated parties.
+
+              https://www.w3.org/TR/did-core/#verification-methods
+          service:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+                serviceEndpoint:
+                  type: string
+              title: Service defines how to find data associated with a identifer
+            title: >-
+              Services are used in DID documents to express ways of
+              communicating
+
+              with the DID subject or associated entities.
+
+              https://www.w3.org/TR/did-core/#services
+          authentication:
+            type: array
+            items:
+              type: string
+            title: >-
+              Authentication represents public key associated with the did
+              document.
+
+              cfr. https://www.w3.org/TR/did-core/#authentication
+          assertionMethod:
+            type: array
+            items:
+              type: string
+            title: |-
+              Used to specify how the DID subject is expected to express claims,
+              such as for the purposes of issuing a Verifiable Credential.
+              cfr. https://www.w3.org/TR/did-core/#assertion
+          keyAgreement:
+            type: array
+            items:
+              type: string
+            title: >-
+              used to specify how an entity can generate encryption material
+
+              in order to transmit confidential information intended for the DID
+              subject.
+
+              https://www.w3.org/TR/did-core/#key-agreement
+          capabilityInvocation:
+            type: array
+            items:
+              type: string
+            title: >-
+              Used to specify a verification method that might be used by the
+              DID subject
+
+              to invoke a cryptographic capability, such as the authorization
+
+              to update the DID Document.
+
+              https://www.w3.org/TR/did-core/#capability-invocation
+          capabilityDelegation:
+            type: array
+            items:
+              type: string
+            title: |-
+              Used to specify a mechanism that might be used by the DID subject
+              to delegate a cryptographic capability to another party.
+              https://www.w3.org/TR/did-core/#capability-delegation
+        description: DidDocument represents a dencentralised identifer.
+      didMetadata:
+        title: Returns a did documents metadata
+        type: object
+        properties:
+          versionId:
+            type: string
+          created:
+            type: string
+            format: date-time
+          updated:
+            type: string
+            format: date-time
+          deactivated:
+            type: boolean
+    title: >-
+      QueryDidDocumentsResponse is response type for the Query/DidDocuments RPC
+      method
+  elestodao.elesto.did.v1.Service:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      serviceEndpoint:
+        type: string
+    title: Service defines how to find data associated with a identifer
+  elestodao.elesto.did.v1.Verification:
+    type: object
+    properties:
+      relationships:
+        type: array
+        items:
+          type: string
+        title: |-
+          verificationRelationships defines which relationships
+          are allowed to use the verification method
+      method:
+        type: object
+        properties:
+          id:
+            type: string
+          type:
+            type: string
+          controller:
+            type: string
+          blockchainAccountID:
+            type: string
+          publicKeyHex:
+            type: string
+          publicKeyMultibase:
+            type: string
+          PublicKeyJwk:
+            type: object
+            properties:
+              Kid:
+                type: string
+              Crv:
+                type: string
+              X:
+                type: string
+              'Y':
+                type: string
+              Kty:
+                type: string
+            title: >-
+              PublicKeyJwk is a type of verification material, the
+              implementation
+
+              support is limited to elliptic curve public keys
+
+              see https://www.w3.org/TR/did-core/#dfn-publickeyjwk
+
+              see https://datatracker.ietf.org/doc/html/rfc7517
+        title: |-
+          A DID document can express verification methods,
+          such as cryptographic public keys, which can be used
+          to authenticate or authorize interactions
+          with the DID subject or associated parties.
+          https://www.w3.org/TR/did-core/#verification-methods
+      context:
+        type: array
+        items:
+          type: string
+    title: |-
+      Verification is a message that allows to assign a verification method
+      to one or more verification relationships
+  elestodao.elesto.did.v1.VerificationMethod:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      controller:
+        type: string
+      blockchainAccountID:
+        type: string
+      publicKeyHex:
+        type: string
+      publicKeyMultibase:
+        type: string
+      PublicKeyJwk:
+        type: object
+        properties:
+          Kid:
+            type: string
+          Crv:
+            type: string
+          X:
+            type: string
+          'Y':
+            type: string
+          Kty:
+            type: string
+        title: |-
+          PublicKeyJwk is a type of verification material, the implementation
+          support is limited to elliptic curve public keys
+          see https://www.w3.org/TR/did-core/#dfn-publickeyjwk
+          see https://datatracker.ietf.org/doc/html/rfc7517
+    title: |-
+      A DID document can express verification methods,
+      such as cryptographic public keys, which can be used
+      to authenticate or authorize interactions
+      with the DID subject or associated parties.
+      https://www.w3.org/TR/did-core/#verification-methods
   ibc.applications.transfer.v1.DenomTrace:
     type: object
     properties:

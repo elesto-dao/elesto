@@ -52,6 +52,7 @@ A verification method has the following fields:
   - `blockchainAccountID` - a string representing a cosmos based account address
   - `publicKeyHex` - a string representing a public key encoded as a hex string
   - `publicKeyMultibase` - a string representing a public key encoded according to the Multibase Data Format [Hexadecimal upper-case encoding](https://datatracker.ietf.org/doc/html/draft-multiformats-multibase#appendix-B.1)
+  - `publicKeyJwk` - an object representing a [json web public key](https://www.w3.org/TR/did-spec-registries/#publickeyjwk)
   
 #### Source 
 +++ https://github.com/elesto-dao/elesto/blob/v1.0.0/proto/did/did.proto#L73
@@ -74,10 +75,10 @@ A service has the following fields:
 
 A DidMetadata stores information relative to a DID document. The implementation supports the following fields: 
 
-- versionId - the version of the last update operation for the did document
-- updated - the timestamp of the last update operation for the did document 
-- created - the timestamp of the create operation.
-- deactivated - a boolean indicating if the did has been deactivated
+- `versionId` - the version of the last update operation for the did document
+- `updated` - the timestamp of the last update operation for the did document 
+- `created` - the timestamp of the create operation.
+- `deactivated` - a boolean indicating if the did has been deactivated
 #### Source 
 +++ https://github.com/elesto-dao/elesto/blob/v1.0.0/proto/did/did.proto#L98
 

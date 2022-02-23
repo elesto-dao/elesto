@@ -51,6 +51,49 @@ func (msg MsgCreateDidDocument) GetSigners() []sdk.AccAddress {
 }
 
 // --------------------------
+// UPDATE IDENTIFIER
+// --------------------------
+
+// msg types
+const (
+	TypeMsgUpdateDidDocument = "update-did"
+)
+
+func NewMsgUpdateDidDocument(
+	didDoc *DidDocument,
+	signerAccount string,
+) *MsgUpdateDidDocument {
+	return &MsgUpdateDidDocument{
+		Doc:    didDoc,
+		Signer: signerAccount,
+	}
+}
+
+// Route implements sdk.Msg
+func (MsgUpdateDidDocument) Route() string {
+	return RouterKey
+}
+
+// Type implements sdk.Msg
+func (MsgUpdateDidDocument) Type() string {
+	return TypeMsgUpdateDidDocument
+}
+
+// GetSignBytes implements the LegacyMsg.GetSignBytes method.
+func (MsgUpdateDidDocument) GetSignBytes() []byte {
+	panic("TODO: needed in simulations for fuzz testing")
+}
+
+// GetSigners implements sdk.Msg
+func (msg MsgUpdateDidDocument) GetSigners() []sdk.AccAddress {
+	accAddr, err := sdk.AccAddressFromBech32(msg.Signer)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{accAddr}
+}
+
+// --------------------------
 // ADD VERIFICATION
 // --------------------------
 

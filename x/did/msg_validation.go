@@ -38,6 +38,25 @@ func (msg MsgCreateDidDocument) ValidateBasic() error {
 }
 
 // --------------------------
+// UPDATE IDENTIFIER
+// --------------------------
+
+// ValidateBasic performs a basic check of the MsgUpdateDidDocument fields.
+func (msg MsgUpdateDidDocument) ValidateBasic() error {
+	if !IsValidDID(msg.Doc.Id) {
+		return sdkerrors.Wrap(ErrInvalidDIDFormat, msg.Doc.Id)
+	}
+
+	for _, c := range msg.Doc.Controller {
+		// if controller is set must be compliant
+		if !IsValidDID(c) {
+			return sdkerrors.Wrap(ErrInvalidDIDFormat, "controller validation error")
+		}
+	}
+	return nil
+}
+
+// --------------------------
 // ADD VERIFICATION METHOD
 // --------------------------
 
