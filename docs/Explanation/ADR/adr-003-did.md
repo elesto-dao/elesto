@@ -121,7 +121,7 @@ To address privacy concerns:
 - Isolate the verification methods to the DID subject (for example, during key rotation)
 
 
-> **Note:** A more fine-grained DID creation method can be implemented with the goal of saving in gas by executing a single transaction in a complex DID scenario.
+> **Note:** A more fine-grained DID creation method can be implemented to save gas by executing a single transaction in a complex DID scenario.
 
 
 ###### Resolve and Verify
