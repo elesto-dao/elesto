@@ -266,7 +266,7 @@ The parameters are as follows:
 **Verification methods and relationships**
 
 
-A verification method and it's relationships are manipulated via the `Verification` object with the following properties:
+A verification method and its relationships are manipulated via the `Verification` object with the following properties:
 
 - `method` a verification method as decscribed in the [W3C specification](https://www.w3.org/TR/2021/NOTE-did-spec-registries-20211102/#verificationmethod) 
 - `relationships` a non-empty list of relationships associated to the verification method
