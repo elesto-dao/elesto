@@ -40,7 +40,7 @@ This ADR aims to define a foundation for the necessary components to realize the
 ## Decision
 
 
-The Elesto implementation for DIDs will follow the [DID W3C core recommendations](https://www.w3.org/TR/2021/PR-did-core-20210803/) with the goal of maximizing compatibility with 3rd party tools and projects.
+The Elesto implementation for DIDs will follow the [DID W3C core recommendations](https://www.w3.org/TR/2021/PR-did-core-20210803/) to maximize compatibility with 3rd party tools and projects.
 
 
 ### DID Method Name
