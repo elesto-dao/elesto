@@ -19,7 +19,7 @@ This document specifies the DID method for a Cosmos SDK-based implementation of 
 
 ## Context
 
-The aim of the Elesto project is to provide a state-of-the-art platform for the hosting of collateralized stable coins that is compliant with:
+The Elesto project aims to provide a state-of-the-art platform for the hosting of collateralized stable coins that is compliant with:
 
  - EU regulations such as General Data Protection Regulation (GDPR) and Markets in Crypto-Assets (MiCA)
  - International recommendations such as the Financial Action Task Force (FATF) "Travel Rule"
