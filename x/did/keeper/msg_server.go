@@ -73,6 +73,30 @@ func (k msgServer) CreateDidDocument(
 	return &didmod.MsgCreateDidDocumentResponse{}, nil
 }
 
+// UpdateDidDocument update an existing DID document
+func (k msgServer) UpdateDidDocument(
+	goCtx context.Context,
+	msg *didmod.MsgUpdateDidDocument,
+) (*didmod.MsgUpdateDidDocumentResponse, error) {
+
+	if err := executeOnDidWithRelationships(
+		goCtx, &k.Keeper,
+		didmod.VerificationRelationships{didmod.Authentication},
+		msg.Doc.Id, msg.Signer,
+		//XXX: check this assignment during audit
+		//nolint
+		func(didDoc *didmod.DidDocument) error {
+			if !didmod.IsValidDIDDocument(msg.Doc) {
+				return sdkerrors.Wrapf(didmod.ErrInvalidDIDFormat, "invalid did document")
+			}
+			didDoc = msg.Doc
+			return nil
+		}); err != nil {
+		return nil, err
+	}
+	return &didmod.MsgUpdateDidDocumentResponse{}, nil
+}
+
 // AddVerification adds a verification method and it's relationships to a DID Document
 func (k msgServer) AddVerification(
 	goCtx context.Context,

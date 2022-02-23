@@ -83,6 +83,137 @@ func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {
 	}
 }
 
+func (suite *KeeperTestSuite) TestHandleMsgUpdateDidDocument() {
+	var (
+		req    didmod.MsgUpdateDidDocument
+		errExp error
+	)
+
+	server := NewMsgServerImpl(suite.keeper)
+
+	testCases := []struct {
+		name     string
+		malleate func()
+	}{
+		{
+			"FAIL: not found",
+			func() {
+				req = *didmod.NewMsgUpdateDidDocument(&didmod.DidDocument{Id: "did:cosmos:net:elesto:subject"}, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				errExp = sdkerrors.Wrapf(didmod.ErrDidDocumentNotFound, "did document at %s not found", "did:cosmos:net:elesto:subject")
+			},
+		},
+		{
+			"FAIL: unauthorized",
+			func() {
+
+				did := "did:cosmos:net:elesto:subject"
+				didDoc, _ := didmod.NewDidDocument(did)
+				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
+
+				req = *didmod.NewMsgUpdateDidDocument(&didmod.DidDocument{Id: didDoc.Id, Controller: []string{"did:cosmos:cash:controller"}}, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				errExp = sdkerrors.Wrapf(didmod.ErrUnauthorized, "signer account %s not authorized to update the target did document at %s", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8", did)
+
+			},
+		},
+		{
+			"PASS: replace did document",
+			func() {
+
+				did := "did:cosmos:net:elesto:subject"
+				didDoc, _ := didmod.NewDidDocument(did, didmod.WithVerifications(
+					didmod.NewVerification(
+						didmod.NewVerificationMethod(
+							"did:cosmos:net:elesto:subject#key-1",
+							"did:cosmos:net:elesto:subject",
+							didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
+							didmod.EcdsaSecp256k1VerificationKey2019,
+						),
+						[]string{didmod.Authentication},
+						nil,
+					),
+				))
+				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+
+				newDidDoc, err := didmod.NewDidDocument(did)
+				suite.Require().Nil(err)
+
+				req = *didmod.NewMsgUpdateDidDocument(&newDidDoc, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				errExp = nil
+			},
+		},
+		{
+			"FAIL: invalid controllers",
+			func() {
+				didDoc, _ := didmod.NewDidDocument("did:cosmos:net:elesto:subject", didmod.WithVerifications(
+					didmod.NewVerification(
+						didmod.NewVerificationMethod(
+							"did:cosmos:net:elesto:subject#key-1",
+							"did:cosmos:net:elesto:subject",
+							didmod.NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
+							didmod.EcdsaSecp256k1VerificationKey2019,
+						),
+						[]string{didmod.Authentication},
+						nil,
+					),
+				))
+				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
+
+				controllers := []string{
+					"did:cosmos:cash:controller-1",
+					"did:cosmos:cash:controller-2",
+					"invalid",
+				}
+
+				req = *didmod.NewMsgUpdateDidDocument(&didmod.DidDocument{Id: didDoc.Id, Controller: controllers}, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				errExp = sdkerrors.Wrapf(didmod.ErrInvalidDIDFormat, "invalid did document")
+			},
+		},
+		{
+			"FAIL: did is of type key (1)",
+			func() {
+				did := "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+				didDoc, _ := didmod.NewDidDocument(did)
+				controllers := []string{
+					"did:cosmos:cash:controller-1",
+					"did:cosmos:cash:controller-2",
+				}
+
+				req = *didmod.NewMsgUpdateDidDocument(&didmod.DidDocument{Id: didDoc.Id, Controller: controllers}, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format are read only %s", did)
+			},
+		},
+		{
+			"FAIL: did is of type key (2)",
+			func() {
+				did := "did:cosmos:key:juno1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+				didDoc, _ := didmod.NewDidDocument(did)
+				controllers := []string{
+					"did:cosmos:cash:controller-1",
+					"did:cosmos:cash:controller-2",
+				}
+
+				req = *didmod.NewMsgUpdateDidDocument(&didmod.DidDocument{Id: didDoc.Id, Controller: controllers}, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
+				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format are read only %s", did)
+			},
+		},
+	}
+	for _, tc := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			tc.malleate()
+
+			_, err := server.UpdateDidDocument(sdk.WrapSDKContext(suite.ctx), &req)
+
+			if errExp == nil {
+				suite.Require().NoError(err)
+			} else {
+				suite.Require().Error(err)
+				suite.Require().Equal(errExp.Error(), err.Error())
+			}
+		})
+	}
+}
+
 func (suite *KeeperTestSuite) TestHandleMsgAddVerification() {
 	var (
 		req    didmod.MsgAddVerification
