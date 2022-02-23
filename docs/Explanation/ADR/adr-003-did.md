@@ -432,7 +432,7 @@ Ephemeral DIDs (`did:cosmos:key` type) are generated based on blockchain address
 
 ## Consequences
 
-The Cosmos ecosystem WILL HAVE a DID module that is compatible with the W3C standard and offers a high chance of compatibility with third-party components such as cloud and edge agents, resolvers, and so on.
+The Cosmos ecosystem WILL HAVE a DID module compatible with the W3C standard and offers a high chance of compatibility with third-party components such as cloud and edge agents, resolvers, etc.
 
 ### Backwards Compatibility
 
