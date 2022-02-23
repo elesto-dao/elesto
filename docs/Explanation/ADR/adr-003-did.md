@@ -440,7 +440,7 @@ This is a new module so backward compatibility is not a concern.
 
 ### Positive
 
-- The implementation of the ADR provides the foundation for interoperability with the DID standard and the SSI identity approach.
+- The ADR implementation provides the foundation for interoperability with the DID standard and the SSI identity approach.
 - Closely following the W3C standard gives the best chances of successful interoperability with third-party components.
 
 ### Negative
