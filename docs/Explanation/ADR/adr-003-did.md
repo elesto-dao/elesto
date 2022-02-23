@@ -424,7 +424,7 @@ The format for the queries is:
 
 When any data (for example, W3C Verifiable Credentials) is associated with Cosmos DIDs, sharing that data would also impose sharing the on-chain data graph (for example, transaction history) of the blockchain account that controls the DID.
 
-Using personally identifiable information as DID Method-specific identifiers (for example, account name alice) discloses personal information every time the DID is shared with a counterparty. This specification DOES NOT endorse the use of identifiers that correlates to human beings or other sensible subjects.
+Using personally identifiable information as DID Method-specific identifiers (for example, account name Alice) discloses personal information every time the DID is shared with a counterparty. This specification DOES NOT endorse the use of identifiers that correlate to human beings or other sensible subjects.
 
 ## Security Considerations
 
