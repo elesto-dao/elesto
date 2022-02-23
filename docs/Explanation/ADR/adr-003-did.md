@@ -173,7 +173,7 @@ This example shows a DID document that was resolved using the gRPC interface:
 
 ###### Update
 
-A DID document can be updated only if it is persisted on-chain on-chain and must it is of subtype `net` and it's not in `deactivated` metadata property is set to `false`. The possible updates are the follwing:
+A DID document can be updated only if it is persisted on-chain on-chain and must it is of subtype `net` and it's not in `deactivated` metadata property is set to `false`. The possible updates are the following:
 
 - Add and remove controllers
 - Add and remove services
