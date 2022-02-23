@@ -126,7 +126,7 @@ To address privacy concerns:
 
 ###### Resolve and Verify
 
-The integrity of the DID documents stored on the ledger is guaranteed by the underlying blockchain protocol. 
+The underlying blockchain protocol guarantees the integrity of the DID documents stored on the ledger.
 
 A DID can be resolved using the gRPC message:
 
