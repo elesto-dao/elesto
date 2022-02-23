@@ -35,7 +35,7 @@ The self-sovereign identity (SSI) approach to tackling the identity and privacy 
 
 The SSI approach relies on two building blocks: decentralized identifiers (DID) and verifiable credentials (VC). This architecture decision record (ADR) describes the DID implementation in a Cosmos SDK-based blockchain.
 
-The goal of this ADR is to define a foundation for the necessary components to realize the Elesto objectives while ensuring the implementation of the DID is fully compliant with the W3C specifications. **Successive iterations will address API ergonomics and standard compatibility issues.** 
+This ADR aims to define a foundation for the necessary components to realize the Elesto objectives while ensuring the implementation of the DID is fully compliant with the W3C specifications. **Successive iterations will address API ergonomics and standard compatibility issues.**
 
 ## Decision
 
