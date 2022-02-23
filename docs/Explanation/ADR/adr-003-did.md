@@ -181,7 +181,7 @@ A DID document can be updated only if it is persisted on-chain on-chain and must
 - Set verification method relationships
 - Replace the DID document content
 
-The constraints to update a DID document are **one of** the following:
+The constraints on updating a DID document are **one of** the following:
 
 - The `signerAccount` must exist as a verification method in a verification relationship of type `authentication` 
 - The `signerAccount` `key` DID is listed as a DID controller. 
