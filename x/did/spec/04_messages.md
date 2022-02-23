@@ -121,7 +121,7 @@ The `MsgDeleteController` is used to remove a [controller](https://w3c.github.io
 
 ### QueryDidDocumentRequest
 
-The `QueryDidDocumentRequest` is used to resolve a DID document. That is, to retrieve  a DID document from its id. It has the following fields:
+The `QueryDidDocumentRequest` is used to resolve a DID document. That is, to retrieve a DID document from its id. It has the following fields:
 
 - `id` - the did string identifying the DID document
 
