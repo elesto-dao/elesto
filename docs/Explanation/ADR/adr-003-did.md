@@ -453,7 +453,7 @@ N/A
 
 ## Further Discussions
 
-While an ADR is in the DRAFT or PROPOSED stage, this section contains a summary of issues to be solved in future iterations. The issues summarized here can reference comments from a pull request discussion.
+While an ADR is in the DRAFT or PROPOSED stage, this section summarizes issues to be solved in future iterations. The issues summarized here can reference comments from a pull request discussion.
 Later, this section can optionally list ideas or improvements the author or reviewers found during the analysis of this ADR.
 
 - The `did:key` method specifies a key format that is different from the one used in this ADR. This ADR needs to be amended or follow a different approach.
