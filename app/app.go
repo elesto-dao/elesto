@@ -222,6 +222,9 @@ type App struct {
 
 	// sm is the simulation manager
 	sm *module.SimulationManager
+
+	// module configurator
+	configurator module.Configurator
 }
 
 // New returns a reference to an initialized blockchain app
