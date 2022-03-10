@@ -150,7 +150,7 @@ func NewLinkAriesAgentCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "link-aries-agent [id] [aries-agent-api-url] [service-endpoint]",
 		Short:   "create a service and add a keyExchange method and relationship from an aries agent",
-		Example: `elestod tx link-aries-agent alice http://localhost:7090 http://localhost:7091`,
+		Example: `elestod tx link-aries-agent agent:alice http://localhost:7090 http://localhost:7091`,
 		Args:    cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -158,6 +158,7 @@ func NewLinkAriesAgentCmd() *cobra.Command {
 				return err
 			}
 			signer := clientCtx.GetFromAddress()
+			agentID := args[0]
 			ariesAPIURL := args[1]
 			serviceEndpoint := args[2]
 			// send a http request to the aries endpoint to generate a new key
@@ -188,7 +189,7 @@ func NewLinkAriesAgentCmd() *cobra.Command {
 
 			// add service that links the aries agent that holds the private key
 			service := did.NewService(
-				args[0]+"-agent",
+				agentID,
 				"DIDCommMessaging",
 				serviceEndpoint,
 			)
