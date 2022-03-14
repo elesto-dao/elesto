@@ -85,12 +85,11 @@ func (k msgServer) UpdateDidDocument(
 		msg.Doc.Id, msg.Signer,
 		//XXX: check this assignment during audit
 		//nolint
-		func(didDoc *didmod.DidDocument) error {
+		func(didDoc *didmod.DidDocument) (*didmod.DidDocument, error) {
 			if !didmod.IsValidDIDDocument(msg.Doc) {
-				return sdkerrors.Wrapf(didmod.ErrInvalidDIDFormat, "invalid did document")
+				return nil, sdkerrors.Wrapf(didmod.ErrInvalidDIDFormat, "invalid did document")
 			}
-			didDoc = msg.Doc
-			return nil
+			return msg.Doc, nil
 		}); err != nil {
 		return nil, err
 	}
@@ -107,8 +106,9 @@ func (k msgServer) AddVerification(
 		goCtx, &k.Keeper,
 		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer,
-		func(didDoc *didmod.DidDocument) error {
-			return didDoc.AddVerifications(msg.Verification)
+		func(didDoc *didmod.DidDocument) (*didmod.DidDocument, error) {
+			err := didDoc.AddVerifications(msg.Verification)
+			return didDoc, err
 		}); err != nil {
 		return nil, err
 	}
@@ -125,8 +125,9 @@ func (k msgServer) AddService(
 		goCtx, &k.Keeper,
 		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer,
-		func(didDoc *didmod.DidDocument) error {
-			return didDoc.AddServices(msg.ServiceData)
+		func(didDoc *didmod.DidDocument) (*didmod.DidDocument, error) {
+			err := didDoc.AddServices(msg.ServiceData)
+			return didDoc, err
 		}); err != nil {
 		return nil, err
 	}
@@ -144,8 +145,9 @@ func (k msgServer) RevokeVerification(
 		goCtx, &k.Keeper,
 		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer,
-		func(didDoc *didmod.DidDocument) error {
-			return didDoc.RevokeVerification(msg.MethodId)
+		func(didDoc *didmod.DidDocument) (*didmod.DidDocument, error) {
+			err := didDoc.RevokeVerification(msg.MethodId)
+			return didDoc, err
 		}); err != nil {
 		return nil, err
 	}
@@ -163,14 +165,14 @@ func (k msgServer) DeleteService(
 		goCtx, &k.Keeper,
 		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer,
-		func(didDoc *didmod.DidDocument) error {
+		func(didDoc *didmod.DidDocument) (*didmod.DidDocument, error) {
 			// Only try to remove service if there are services
 			if len(didDoc.Service) == 0 {
-				return sdkerrors.Wrapf(didmod.ErrInvalidState, "the did document doesn't have services associated")
+				return nil, sdkerrors.Wrapf(didmod.ErrInvalidState, "the did document doesn't have services associated")
 			}
 			// delete service
 			didDoc.DeleteService(msg.ServiceId)
-			return nil
+			return didDoc, nil
 		}); err != nil {
 		return nil, err
 	}
@@ -188,8 +190,9 @@ func (k msgServer) SetVerificationRelationships(
 		goCtx, &k.Keeper,
 		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer,
-		func(didDoc *didmod.DidDocument) error {
-			return didDoc.SetVerificationRelationships(msg.MethodId, msg.Relationships...)
+		func(didDoc *didmod.DidDocument) (*didmod.DidDocument, error) {
+			err := didDoc.SetVerificationRelationships(msg.MethodId, msg.Relationships...)
+			return didDoc, err
 		}); err != nil {
 		return nil, err
 	}
@@ -206,8 +209,9 @@ func (k msgServer) AddController(
 		goCtx, &k.Keeper,
 		didmod.VerificationRelationships{didmod.Authentication},
 		msg.Id, msg.Signer,
-		func(didDoc *didmod.DidDocument) error {
-			return didDoc.AddControllers(msg.ControllerDid)
+		func(didDoc *didmod.DidDocument) (*didmod.DidDocument, error) {
+			err := didDoc.AddControllers(msg.ControllerDid)
+			return didDoc, err
 		}); err != nil {
 		return nil, err
 	}
@@ -224,8 +228,10 @@ func (k msgServer) DeleteController(
 	if err := executeOnDidWithRelationships(
 		goCtx, &k.Keeper,
 		didmod.VerificationRelationships{didmod.Authentication},
-		msg.Id, msg.Signer, func(didDoc *didmod.DidDocument) error {
-			return didDoc.DeleteControllers(msg.ControllerDid)
+		msg.Id, msg.Signer,
+		func(didDoc *didmod.DidDocument) (*didmod.DidDocument, error) {
+			err := didDoc.DeleteControllers(msg.ControllerDid)
+			return didDoc, err
 		}); err != nil {
 		return nil, err
 	}
@@ -244,7 +250,13 @@ func updateDidMetadata(keeper *Keeper, ctx sdk.Context, did string) (err error) 
 	return
 }
 
-func executeOnDidWithRelationships(goCtx context.Context, k *Keeper, constraints didmod.VerificationRelationships, did, signer string, update func(document *didmod.DidDocument) error) (err error) {
+func executeOnDidWithRelationships(
+	goCtx context.Context,
+	k *Keeper,
+	constraints didmod.VerificationRelationships,
+	did, signer string,
+	update func(didDoc *didmod.DidDocument) (*didmod.DidDocument, error),
+) (err error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	k.Logger(ctx).Info("request to update a did document", "target did", did)
 	// check that the did is not a key did
@@ -278,25 +290,25 @@ func executeOnDidWithRelationships(goCtx context.Context, k *Keeper, constraints
 	}
 
 	// apply the update
-	err = update(&didDoc)
-	if err != nil {
+	updatedDidDoc, err := update(&didDoc)
+	if err != nil || updatedDidDoc == nil {
 		k.Logger(ctx).Error(err.Error())
 		return
 	}
 
 	// persist the did document
-	k.SetDidDocument(ctx, []byte(did), didDoc)
+	k.SetDidDocument(ctx, []byte(did), *updatedDidDoc)
 	k.Logger(ctx).Info("Set verification relationship from did document for", "did", did, "controller", signer)
 
 	// update the Metadata
-	if err = updateDidMetadata(k, ctx, didDoc.Id); err != nil {
-		k.Logger(ctx).Error(err.Error(), "did", didDoc.Id)
+	if err = updateDidMetadata(k, ctx, updatedDidDoc.Id); err != nil {
+		k.Logger(ctx).Error(err.Error(), "did", updatedDidDoc.Id)
 		return
 	}
 	// fire the event
 	if err := ctx.EventManager().EmitTypedEvent(didmod.NewDidDocumentUpdatedEvent(did, signer)); err != nil {
 		k.Logger(ctx).Error("failed to emit DidDocumentUpdatedEvent", "did", did, "signer", signer, "err", err)
 	}
-	k.Logger(ctx).Info("request to update did document success", "did", didDoc.Id)
+	k.Logger(ctx).Info("request to update did document success", "did", updatedDidDoc.Id)
 	return
 }
