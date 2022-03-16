@@ -74,25 +74,30 @@ message VerificationMethod {
   option (gogoproto.equal) = true;
   option (gogoproto.goproto_getters)  = false;
 
-  string id                    = 1;
-  string type                  = 2;
-  string controller            = 3;
+  string id                    = 1; // defines the id of the VerificationMethod
+  string type                  = 2; // identifies the types of the VerificationMethod
+  string controller            = 3; // identifies the controller key of the verificationMethod
   oneof verificationMaterial {
-    string blockchainAccountID = 4;
-    string publicKeyHex        = 5;
-    string publicKeyMultibase  = 6;
-    PublicKeyJwk PublicKeyJwk  = 7;
+    string blockchainAccountID = 4; // defines the blockchain account address
+    string publicKeyHex        = 5; // defines a hex encoded public key
+    string publicKeyMultibase  = 6; // defines a multibase encoded public key
+    PublicKeyJwk PublicKeyJwk  = 7; // defines a jwk encoded public key
   }
 }
 
-// Service defines how to find data associated with a identifer
+// The service property is OPTIONAL. If present, the associated value MUST be a
+// set of services,  where each service is described by a map. Each service
+// map MUST contain id, type, and serviceEndpoint properties. Each service
+// extension MAY include additional properties and MAY further
+// restrict the properties associated with the extension.
+// https://www.w3.org/TR/did-core/#services
 message Service {
   option (gogoproto.equal) = true;
   option (gogoproto.goproto_getters)  = false;
 
-  string id          	 = 1;
-  string type         	 = 2;
-  string serviceEndpoint = 3;
+  string id          	 = 1; // defines the id of the service
+  string type         	 = 2; // defines the type of the service
+  string serviceEndpoint = 3; // is a url that can describes the subject of the did document
 }
 
 // DidMetadata defines metadata associated to a did document such as

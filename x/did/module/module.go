@@ -37,6 +37,7 @@ type AppModuleBasic struct {
 	cdc codec.Codec
 }
 
+// NewAppModuleBasic instantiates the AppModuleBasic struct
 func NewAppModuleBasic(cdc codec.Codec) AppModuleBasic {
 	return AppModuleBasic{cdc: cdc}
 }
@@ -46,12 +47,12 @@ func (AppModuleBasic) Name() string {
 	return did.ModuleName
 }
 
-//nolint
+// RegisterCodec registers the modules codec
 func (AppModuleBasic) RegisterCodec(cdc *codec.LegacyAmino) {
 	did.RegisterCodec(cdc)
 }
 
-//nolint
+// RegisterLegacyAminoCodec registers the legacy amino  modules codec
 func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	did.RegisterCodec(cdc)
 }
@@ -105,6 +106,7 @@ type AppModule struct {
 	keeper keeper.Keeper
 }
 
+// NewAppModule instantiates the AppModule struct
 func NewAppModule(cdc codec.Codec, keeper keeper.Keeper, ak did.AccountKeeper, bk did.BankKeeper) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
@@ -207,7 +209,6 @@ func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Rout
 
 }
 
-//nolint
 // LegacyQuerierHandler returns the capability module's Querier.
 func (AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
 	return nil

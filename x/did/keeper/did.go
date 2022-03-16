@@ -30,15 +30,18 @@ func (k Keeper) UnmarshalDidDocument(value []byte) (interface{}, bool) {
 	return data, did.IsValidDIDDocument(&data)
 }
 
+// SetDidMetadata sets the metadata for a DID Document
 func (k Keeper) SetDidMetadata(ctx sdk.Context, key []byte, meta did.DidMetadata) {
 	k.Set(ctx, key, did.DidMetadataKey, meta, k.Marshal)
 }
 
+// GetDidMetadata gets the metadata for a DID Document
 func (k Keeper) GetDidMetadata(ctx sdk.Context, key []byte) (did.DidMetadata, bool) {
 	val, found := k.Get(ctx, key, did.DidMetadataKey, k.UnmarshalDidMetadata)
 	return val.(did.DidMetadata), found
 }
 
+// UnmarshalDidMetadata unmarshalls bytes into a DID document struct
 func (k Keeper) UnmarshalDidMetadata(value []byte) (interface{}, bool) {
 	data := did.DidMetadata{}
 	k.Unmarshal(value, &data)
@@ -60,6 +63,7 @@ func (k Keeper) ResolveDid(ctx sdk.Context, didDoc did.DID) (doc did.DidDocument
 	return
 }
 
+// Marshal marshalls a DID document or DID document metatdata into bytes
 func (k Keeper) Marshal(value interface{}) (bytes []byte) {
 	switch value := value.(type) {
 	case did.DidDocument:

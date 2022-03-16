@@ -16,12 +16,14 @@ type UnmarshalFn func(value []byte) (interface{}, bool)
 // MarshalFn is a generic function to marshal bytes
 type MarshalFn func(value interface{}) []byte
 
+// Keeper defines the Keeper for the did module
 type Keeper struct {
 	cdc      codec.Codec
 	storeKey sdk.StoreKey
 	memKey   sdk.StoreKey
 }
 
+// NewKeeper instanstiates the Keeper for the did module
 func NewKeeper(cdc codec.Codec, storeKey, memKey sdk.StoreKey) *Keeper {
 	return &Keeper{
 		cdc:      cdc,
@@ -30,6 +32,7 @@ func NewKeeper(cdc codec.Codec, storeKey, memKey sdk.StoreKey) *Keeper {
 	}
 }
 
+// Logger defines the logger for the did module
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", did.ModuleName))
 }

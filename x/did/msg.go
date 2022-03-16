@@ -59,6 +59,7 @@ const (
 	TypeMsgUpdateDidDocument = "update-did"
 )
 
+// NewMsgUpdateDidDocument creates a new MsgUpdateDidDocument instance
 func NewMsgUpdateDidDocument(
 	didDoc *DidDocument,
 	signerAccount string,
@@ -187,6 +188,7 @@ func (msg MsgRevokeVerification) GetSigners() []sdk.AccAddress {
 
 var _ sdk.Msg = &MsgSetVerificationRelationships{}
 
+// NewMsgSetVerificationRelationships creates a new MsgSetVerificationRelationships instance
 func NewMsgSetVerificationRelationships(
 	id string,
 	methodID string,
@@ -274,6 +276,7 @@ func (msg MsgAddService) GetSigners() []sdk.AccAddress {
 // DELETE SERVICE
 // --------------------------
 
+// NewMsgDeleteService creates a new MsgDeleteService instance
 func NewMsgDeleteService(
 	id string,
 	serviceID string,
@@ -315,6 +318,7 @@ func (msg MsgDeleteService) GetSigners() []sdk.AccAddress {
 // ADD CONTROLLER
 // --------------------------
 
+// NewMsgAddController creates a new MsgAddController instance
 func NewMsgAddController(
 	id string,
 	controllerDID string,
@@ -356,6 +360,7 @@ func (msg MsgAddController) GetSigners() []sdk.AccAddress {
 // DELETE CONTROLLER
 // --------------------------
 
+// NewMsgDeleteController creates a new MsgDeleteController instance
 func NewMsgDeleteController(
 	id string,
 	controllerDID string,

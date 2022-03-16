@@ -54,12 +54,13 @@ func deriveVMType(pubKey cryptodid.PubKey) (vmType did.VerificationMethodType, e
 	return
 }
 
-// NewCreateDidDocumentCmd defines the command to create a new IBC light client.
+// NewCreateDidDocumentCmd defines the command to create a new DID document for the public key
+// that signed the transaction
 func NewCreateDidDocumentCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "create-did [id]",
-		Short:   "create decentralized did (did) document",
-		Example: "creates a did document for users",
+		Short:   "create a decentralized did (did) document",
+		Example: `tx did create-did regulator --from regulator --chain-id elesto`,
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -114,13 +115,12 @@ func NewCreateDidDocumentCmd() *cobra.Command {
 	return cmd
 }
 
-// NewAddVerificationCmd define the command to add a verification message
+// NewAddVerificationCmd defines the command to add a verification method to a given did
 func NewAddVerificationCmd() *cobra.Command {
-
 	cmd := &cobra.Command{
 		Use:     "add-verification-method [id] [pubkey]",
 		Short:   "add an verification method to a decentralized did (did) document",
-		Example: "adds an verification method for a did document",
+		Example: `tx did add-verification-method emti $(elestod keys show emti -p) --from validator --chain-id elesto`,
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -178,11 +178,12 @@ func NewAddVerificationCmd() *cobra.Command {
 	return cmd
 }
 
+// NewAddServiceCmd adds a new service to a given did document
 func NewAddServiceCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "add-service [id] [service_id] [type] [endpoint]",
 		Short:   "add a service to a decentralized did (did) document",
-		Example: "adds a service to a did document",
+		Example: `tx did add-service emti service:emti-agent DIDComm "https://agents.elesto.app.beta.starport.cloud/emti" --from emti --chain-id elesto`,
 		Args:    cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -218,15 +219,13 @@ func NewAddServiceCmd() *cobra.Command {
 	return cmd
 }
 
+// NewRevokeVerificationCmd revokes a verification method from a given did document
 func NewRevokeVerificationCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "revoke-verification-method [did_id] [verification_method_id_fragment]",
-		Short: "revoke a verification method from a decentralized did (did) document",
-		Example: `elestod tx did revoke-verification-method 575d062c-d110-42a9-9c04-cb1ff8c01f06 \
- Z46DAL1MrJlVW_WmJ19WY8AeIpGeFOWl49Qwhvsnn2M \
- --from alice \
- --node https://rpc.elesto.app.beta.starport.cloud:443 --chain-id cosmoscash-testnet`,
-		Args: cobra.ExactArgs(2),
+		Use:     "revoke-verification-method [did_id] [verification_method_id_fragment]",
+		Short:   "revoke a verification method from a decentralized did (did) document",
+		Example: `tx did revoke-verification-method 575d062c-d110-42a9-9c04-cb1ff8c01f06 Z46DAL1MrJlVW_WmJ19WY8AeIpGeFOWl49Qwhvsnn2M --from alice --chain-id elesto`,
+		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -263,7 +262,7 @@ func NewDeleteServiceCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "delete-service [id] [service-id]",
 		Short:   "deletes a service from a decentralized did (did) document",
-		Example: "delete a service for a did document",
+		Example: "tx did delete-service emti service:emti-agent --from emti --chain-id elesto",
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -301,7 +300,7 @@ func NewAddControllerCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "add-controller [id] [controllerAddress]",
 		Short:   "updates a decentralized identifier (did) document to contain a controller",
-		Example: "add-controller vasp cosmos1kslgpxklq75aj96cz3qwsczr95vdtrd3p0fslp",
+		Example: "add-controller vasp cosmos1kslgpxklq75aj96cz3qwsczr95vdtrd3p0fslp --from emti --chain-id elesto",
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -335,12 +334,12 @@ func NewAddControllerCmd() *cobra.Command {
 	return cmd
 }
 
-// NewDeleteControllerCmd adds a controller to a did document
+// NewDeleteControllerCmd deletes a controller of a did document
 func NewDeleteControllerCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "delete-controller [id] [controllerAddress]",
 		Short:   "updates a decentralized identifier (did) document removing a controller",
-		Example: "delete-controller vasp cosmos1kslgpxklq75aj96cz3qwsczr95vdtrd3p0fslp",
+		Example: "delete-controller vasp cosmos1kslgpxklq75aj96cz3qwsczr95vdtrd3p0fslp --from emti --chain-id elesto",
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -374,7 +373,7 @@ func NewDeleteControllerCmd() *cobra.Command {
 	return cmd
 }
 
-// NewSetVerificationRelationshipCmd adds a verification relationship to a verification method
+// NewSetVerificationRelationshipCmd sets a verification relationship for a verification method
 func NewSetVerificationRelationshipCmd() *cobra.Command {
 
 	// relationships
