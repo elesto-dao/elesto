@@ -30,6 +30,15 @@ func (k msgServer) CreateDidDocument(
 ) (*didmod.MsgCreateDidDocumentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	k.Logger(ctx).Info("request to create a did document", "target did", msg.Id)
+
+	// check that the did is not already taken
+	found := k.Keeper.HasDidDocument(ctx, []byte(msg.Id))
+	if found {
+		err := sdkerrors.Wrapf(didmod.ErrDidDocumentFound, "a document with did %s already exists", msg.Id)
+		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+
 	// check that the did is not a key did
 	if strings.HasPrefix(msg.Id, didmod.DidKeyPrefix) {
 		err := sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format cannot be created %s", msg.Id)
@@ -44,14 +53,6 @@ func (k msgServer) CreateDidDocument(
 		didmod.WithControllers(msg.Controllers...),
 	)
 	if err != nil {
-		k.Logger(ctx).Error(err.Error())
-		return nil, err
-	}
-
-	// check that the did is not already taken
-	_, found := k.Keeper.GetDidDocument(ctx, []byte(msg.Id))
-	if found {
-		err := sdkerrors.Wrapf(didmod.ErrDidDocumentFound, "a document with did %s already exists", msg.Id)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
@@ -86,9 +87,6 @@ func (k msgServer) UpdateDidDocument(
 		//XXX: check this assignment during audit
 		//nolint
 		func(didDoc *didmod.DidDocument) (*didmod.DidDocument, error) {
-			if !didmod.IsValidDIDDocument(msg.Doc) {
-				return nil, sdkerrors.Wrapf(didmod.ErrInvalidDIDFormat, "invalid did document")
-			}
 			return msg.Doc, nil
 		}); err != nil {
 		return nil, err
@@ -296,6 +294,11 @@ func executeOnDidWithRelationships(
 	if err != nil || updatedDidDoc == nil {
 		k.Logger(ctx).Error(err.Error())
 		return
+	}
+
+	// check the did doc is valid before storing
+	if !didmod.IsValidDIDDocument(updatedDidDoc) {
+		return sdkerrors.Wrapf(didmod.ErrInvalidDIDFormat, "invalid did document")
 	}
 
 	// persist the did document

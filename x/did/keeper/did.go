@@ -3,7 +3,6 @@ package keeper
 import (
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/elesto-dao/elesto/x/did"
@@ -12,7 +11,7 @@ import (
 // SetDidDocument store a did document in the keeper, existing DID document with the
 // same key will be overwritten
 func (k Keeper) SetDidDocument(ctx sdk.Context, key []byte, document did.DidDocument) {
-	k.Set(ctx, key, did.DidDocumentKey, document, k.Marshal)
+	k.Set(ctx, key, did.DidDocumentKey, &document, k.cdc.MustMarshal)
 }
 
 // GetDidDocument retrieve a DID document by its key.
@@ -22,17 +21,24 @@ func (k Keeper) GetDidDocument(ctx sdk.Context, key []byte) (did.DidDocument, bo
 	return val.(did.DidDocument), found
 }
 
+// HasDidDocument checks if a DID document is in the store  by its key.
+// The boolean return will be false if the DID document is not found
+func (k Keeper) HasDidDocument(ctx sdk.Context, key []byte) bool {
+	found := k.Has(ctx, key, did.DidDocumentKey, k.UnmarshalDidDocument)
+	return found
+}
+
 // UnmarshalDidDocument unmarshall a did document= and check if it is empty
 // ad DID document is empty if contains no context
 func (k Keeper) UnmarshalDidDocument(value []byte) (interface{}, bool) {
 	data := did.DidDocument{}
-	k.Unmarshal(value, &data)
+	k.cdc.MustUnmarshal(value, &data)
 	return data, did.IsValidDIDDocument(&data)
 }
 
 // SetDidMetadata sets the metadata for a DID Document
 func (k Keeper) SetDidMetadata(ctx sdk.Context, key []byte, meta did.DidMetadata) {
-	k.Set(ctx, key, did.DidMetadataKey, meta, k.Marshal)
+	k.Set(ctx, key, did.DidMetadataKey, &meta, k.cdc.MustMarshal)
 }
 
 // GetDidMetadata gets the metadata for a DID Document
@@ -44,7 +50,7 @@ func (k Keeper) GetDidMetadata(ctx sdk.Context, key []byte) (did.DidMetadata, bo
 // UnmarshalDidMetadata unmarshalls bytes into a DID document struct
 func (k Keeper) UnmarshalDidMetadata(value []byte) (interface{}, bool) {
 	data := did.DidMetadata{}
-	k.Unmarshal(value, &data)
+	k.cdc.MustUnmarshal(value, &data)
 	return data, did.IsValidDIDMetadata(&data)
 }
 
@@ -61,28 +67,6 @@ func (k Keeper) ResolveDid(ctx sdk.Context, didDoc did.DID) (doc did.DidDocument
 	}
 	meta, _ = k.GetDidMetadata(ctx, []byte(didDoc.String()))
 	return
-}
-
-// Marshal marshalls a DID document or DID document metatdata into bytes
-func (k Keeper) Marshal(value interface{}) (bytes []byte) {
-	switch value := value.(type) {
-	case did.DidDocument:
-		bytes = k.cdc.MustMarshal(&value)
-	case did.DidMetadata:
-		bytes = k.cdc.MustMarshal(&value)
-	}
-	return
-}
-
-// Unmarshal unmarshal a byte slice to a struct, return false in case of errors
-func (k Keeper) Unmarshal(data []byte, val codec.ProtoMarshaler) bool {
-	if len(data) == 0 {
-		return false
-	}
-	if err := k.cdc.Unmarshal(data, val); err != nil {
-		return false
-	}
-	return true
 }
 
 // GetAllDidDocumentsWithCondition retrieve a list of

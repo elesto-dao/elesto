@@ -50,9 +50,6 @@ func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {
 			"FAIL: did is of type key (1)",
 			func() {
 				did := "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
-				didDoc, _ := didmod.NewDidDocument(did)
-
-				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 				req = *didmod.NewMsgCreateDidDocument(did, nil, nil, "subject")
 				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format cannot be created %s", did)
 			},
@@ -61,9 +58,6 @@ func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {
 			"FAIL: did is of type key (2)",
 			func() {
 				did := "did:cosmos:key:juno1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
-				didDoc, _ := didmod.NewDidDocument(did)
-
-				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
 				req = *didmod.NewMsgCreateDidDocument(did, nil, nil, "subject")
 				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format cannot be created %s", did)
 			},

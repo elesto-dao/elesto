@@ -14,7 +14,7 @@ import (
 type UnmarshalFn func(value []byte) (interface{}, bool)
 
 // MarshalFn is a generic function to marshal bytes
-type MarshalFn func(value interface{}) []byte
+type MarshalFn func(o codec.ProtoMarshaler) []byte
 
 // Keeper defines the Keeper for the did module
 type Keeper struct {
@@ -41,14 +41,14 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 func (k Keeper) Set(ctx sdk.Context,
 	key []byte,
 	prefix []byte,
-	i interface{},
+	i codec.ProtoMarshaler,
 	marshal MarshalFn,
 ) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(append(prefix, key...), marshal(i))
 }
 
-// Delete - deletes a value form the store
+// Delete deletes a value form the store
 func (k Keeper) Delete(
 	ctx sdk.Context,
 	key []byte,
@@ -69,6 +69,17 @@ func (k Keeper) Get(
 	value := store.Get(append(prefix, key...))
 
 	return unmarshal(value)
+}
+
+// Has returns a bool if item is in the store
+func (k Keeper) Has(
+	ctx sdk.Context,
+	key []byte,
+	prefix []byte,
+	unmarshal UnmarshalFn,
+) (found bool) {
+	store := ctx.KVStore(k.storeKey)
+	return store.Has(append(prefix, key...))
 }
 
 // GetAll values from with a prefix from the store
