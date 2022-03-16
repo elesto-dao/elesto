@@ -250,6 +250,8 @@ func updateDidMetadata(keeper *Keeper, ctx sdk.Context, did string) (err error) 
 	return
 }
 
+// executeOnDidWithRelationships updates a did document with by the given parameters
+// this function takes care of checking that a did can be updated by a given signer
 func executeOnDidWithRelationships(
 	goCtx context.Context,
 	k *Keeper,
@@ -298,7 +300,7 @@ func executeOnDidWithRelationships(
 
 	// persist the did document
 	k.SetDidDocument(ctx, []byte(did), *updatedDidDoc)
-	k.Logger(ctx).Info("Set verification relationship from did document for", "did", did, "controller", signer)
+	k.Logger(ctx).Info("Set did document in the store for", "did", did, "controller", signer)
 
 	// update the Metadata
 	if err = updateDidMetadata(k, ctx, updatedDidDoc.Id); err != nil {
