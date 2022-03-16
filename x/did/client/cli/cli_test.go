@@ -202,11 +202,11 @@ func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
 				//pull out the just created document
 				cmd = cli.GetCmdQueryIdentifer()
 				identifiertoquery := "did:cosmos:net:" + clientCtx.ChainID + ":" + tc.args[0]
-				args_temp := []string{
+				argstemp := []string{
 					identifiertoquery,
 					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				}
-				out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
+				out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argstemp)
 				s.Require().NoError(err)
 				response1 := &did.QueryDidDocumentResponse{}
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response1))
@@ -263,11 +263,11 @@ func (s *IntegrationTestSuite) TestNewAddControllerCmd() {
 
 			//check for update
 			cmd = cli.GetCmdQueryIdentifer()
-			args_temp := []string{
+			argsTemp := []string{
 				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier1,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
-			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
+			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
 			s.Require().NoError(err)
 			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
@@ -351,11 +351,11 @@ func (s *IntegrationTestSuite) TestNewDeleteControllerCmd() {
 
 			//check for update
 			cmd = cli.GetCmdQueryIdentifer()
-			args_temp := []string{
+			argsTemp := []string{
 				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier1,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
-			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
+			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
 			s.Require().NoError(err)
 			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
@@ -413,11 +413,11 @@ func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
 
 			//check for update
 			cmd = cli.GetCmdQueryIdentifer()
-			args_temp := []string{
+			argsTemp := []string{
 				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
-			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
+			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
 			s.Require().NoError(err)
 			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
@@ -472,11 +472,11 @@ func (s *IntegrationTestSuite) TestNewSetVerificationRelationshipsCmd() {
 		s.Run(tc.name, func() {
 			tc.malleate()
 			cmd := cli.GetCmdQueryIdentifer()
-			args_temp := []string{
+			argsTemp := []string{
 				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
+			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
 			s.Require().NoError(err)
 			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
@@ -498,7 +498,7 @@ func (s *IntegrationTestSuite) TestNewSetVerificationRelationshipsCmd() {
 
 			//check for update
 			cmd = cli.GetCmdQueryIdentifer()
-			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
+			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
 			s.Require().NoError(err)
 			response = &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
@@ -545,11 +545,11 @@ func (s *IntegrationTestSuite) TestNewRevokeVerificationCmd() {
 		s.Run(tc.name, func() {
 			tc.malleate()
 			cmd := cli.GetCmdQueryIdentifer()
-			args_temp := []string{
+			argsTemp := []string{
 				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
+			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
 			s.Require().NoError(err)
 			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
@@ -571,7 +571,7 @@ func (s *IntegrationTestSuite) TestNewRevokeVerificationCmd() {
 
 			//check for update
 			cmd = cli.GetCmdQueryIdentifer()
-			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
+			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
 			s.Require().NoError(err)
 			response = &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
@@ -630,11 +630,11 @@ func (s *IntegrationTestSuite) TestNewAddServiceCmd() {
 
 			//check for update
 			cmd = cli.GetCmdQueryIdentifer()
-			args_temp := []string{
+			argsTemp := []string{
 				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
-			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
+			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
 			s.Require().NoError(err)
 			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
@@ -709,11 +709,11 @@ func (s *IntegrationTestSuite) TestNewDeleteServiceCmd() {
 
 			//check for update
 			cmd = cli.GetCmdQueryIdentifer()
-			args_temp := []string{
+			argsTemp := []string{
 				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
-			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args_temp)
+			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
 			s.Require().NoError(err)
 			response := &did.QueryDidDocumentResponse{}
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
@@ -723,7 +723,6 @@ func (s *IntegrationTestSuite) TestNewDeleteServiceCmd() {
 }
 
 func TestGetTxCmd(t *testing.T) {
-
 	expectedCommands := map[string]struct{}{
 		"create-did":                    struct{}{},
 		"add-controller":                struct{}{},
@@ -747,14 +746,13 @@ func TestGetTxCmd(t *testing.T) {
 
 func TestGetQueryCmd(t *testing.T) {
 	expectedCommands := map[string]struct{}{
-		"did":  struct{}{},
-		"dids": struct{}{},
+		"did": struct{}{},
 	}
 
 	t.Run("PASS: Verify command are there ", func(t *testing.T) {
 		for _, x := range cli.GetQueryCmd("").Commands() {
 			if _, ok := expectedCommands[x.Name()]; !ok {
-				t.Errorf("GetTxCmd(): expected command not found %s", x.Name())
+				t.Errorf("GetQueryCmd(): expected command not found %s", x.Name())
 			}
 		}
 	})
