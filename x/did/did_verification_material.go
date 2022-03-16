@@ -43,7 +43,6 @@ func (baID VerificationMethod_BlockchainAccountID) MatchAddress(address string) 
 }
 
 // GetAddress get the address from a blockchain account id
-// TODO: this function shall return an error for invalid addresses
 func (baID VerificationMethod_BlockchainAccountID) GetAddress() string {
 	addrStart := strings.LastIndex(baID.BlockchainAccountID, ":")
 	if addrStart < 0 {
@@ -81,8 +80,11 @@ func NewPublicKeyMultibaseFromHex(pubKeyHex string) (pkm *VerificationMethod_Pub
 	if err != nil {
 		return
 	}
-	// TODO: shall we check if it is conform to the verification material? probably
 	pkm = NewPublicKeyMultibase(pkb)
+
+	if err = pkm.Validate(); err != nil {
+		return nil, err
+	}
 	return
 }
 
@@ -101,8 +103,12 @@ func NewPublicKeyHexFromString(pubKeyHex string) (pkh *VerificationMethod_Public
 	if err != nil {
 		return
 	}
-	// TODO: shall we check if it is conform to the verification material? probably
 	pkh = NewPublicKeyHex(pkb)
+
+	if err = pkh.Validate(); err != nil {
+		return nil, err
+	}
+
 	return
 }
 
