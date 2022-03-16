@@ -83,14 +83,14 @@ func (suite *KeeperTestSuite) TestGenericKeeperSetAndGet() {
 		suite.keeper.Set(suite.ctx,
 			[]byte(dd.Id),
 			[]byte{0x01},
-			dd,
-			suite.keeper.Marshal,
+			&dd,
+			suite.keeper.cdc.MustMarshal,
 		)
 		suite.keeper.Set(suite.ctx,
 			[]byte(dd.Id+"1"),
 			[]byte{0x01},
-			dd,
-			suite.keeper.Marshal,
+			&dd,
+			suite.keeper.cdc.MustMarshal,
 		)
 		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
 			if tc.expPass {
@@ -143,14 +143,14 @@ func (suite *KeeperTestSuite) TestGenericKeeperDelete() {
 		suite.keeper.Set(suite.ctx,
 			[]byte(dd.Id),
 			[]byte{0x01},
-			dd,
-			suite.keeper.Marshal,
+			&dd,
+			suite.keeper.cdc.MustMarshal,
 		)
 		suite.keeper.Set(suite.ctx,
 			[]byte(dd.Id+"1"),
 			[]byte{0x01},
-			dd,
-			suite.keeper.Marshal,
+			&dd,
+			suite.keeper.cdc.MustMarshal,
 		)
 		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
 			if tc.expPass {

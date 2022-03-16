@@ -71,7 +71,7 @@ func (didDoc *DidDocument) getRelationships(rel VerificationRelationship) *[]str
 func parseRelationshipLabels(relNames ...string) (vrs []VerificationRelationship, err error) {
 	names := distinct(relNames)
 	vrs = make([]VerificationRelationship, len(names))
-	for i, vrn := range distinct(relNames) {
+	for i, vrn := range names {
 		vr, validName := supportedRelationships[vrn]
 		if !validName {
 			err = sdkerrors.Wrapf(ErrInvalidInput, "unsupported verification relationship %s", vrn)
@@ -184,9 +184,14 @@ func IsValidDIDDocument(didDoc *DidDocument) bool {
 		}
 	}
 
+	for _, element := range didDoc.VerificationMethod {
+		vm, _ := element.VerificationMaterial.(Validable)
+		if vErr := vm.Validate(); vErr != nil {
+			return false
+		}
+	}
+
 	for _, c := range didDoc.Context {
-		// TODO: write is valid context helper method
-		// this line is incorrect
 		if c == contextDIDBase {
 			return true
 		}
@@ -225,6 +230,13 @@ func ValidateVerification(v *Verification) (err error) {
 		err = sdkerrors.Wrap(ErrInvalidInput, "verification is not defined")
 		return
 	}
+
+	// check the method exists before accessing
+	if v.Method == nil {
+		err = sdkerrors.Wrap(ErrInvalidInput, "verification.Method is not defined")
+		return
+	}
+
 	// verify that the method id is correct
 	if !IsValidDIDURL(v.Method.Id) {
 		err = sdkerrors.Wrapf(ErrInvalidDIDURLFormat, "verification method id: %v", v.Method.Id)
@@ -252,11 +264,25 @@ func ValidateVerification(v *Verification) (err error) {
 	// check the verification material
 	vm, ok := v.Method.VerificationMaterial.(Validable)
 	if !ok {
-		err = sdkerrors.Wrap(ErrInvalidInput, fmt.Sprintf("verification material '%v' unknown for verification method id %s", v.Method.VerificationMaterial, v.Method.Id))
+		err = sdkerrors.Wrap(
+			ErrInvalidInput,
+			fmt.Sprintf(
+				"verification material '%v' unknown for verification method id %s",
+				v.Method.VerificationMaterial,
+				v.Method.Id,
+			),
+		)
 		return
 	}
 	if vErr := vm.Validate(); vErr != nil {
-		err = sdkerrors.Wrap(ErrInvalidInput, fmt.Sprintf("verification material %s for verification method id %s", vErr.Error(), v.Method.Id))
+		err = sdkerrors.Wrap(
+			ErrInvalidInput,
+			fmt.Sprintf(
+				"verification material %s for verification method id %s",
+				vErr.Error(),
+				v.Method.Id,
+			),
+		)
 	}
 	return
 }
@@ -710,7 +736,12 @@ func NewAccountVerification(did DID, chainID, accountAddress string, verificatio
 }
 
 // NewVerificationMethod build a new verification method
-func NewVerificationMethod(id string, controller DID, vmr isVerificationMethod_VerificationMaterial, vmt VerificationMethodType) VerificationMethod {
+func NewVerificationMethod(
+	id string,
+	controller DID,
+	vmr isVerificationMethod_VerificationMaterial,
+	vmt VerificationMethodType,
+) VerificationMethod {
 	vm := VerificationMethod{
 		Id:                   id,
 		Controller:           controller.String(),
