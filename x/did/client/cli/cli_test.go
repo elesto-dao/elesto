@@ -80,8 +80,7 @@ func name(others ...string) string {
 	return fmt.Sprintln(f.Name(), others)
 }
 
-func addnewdiddoc(s *IntegrationTestSuite, identifier string, val *network.Validator) {
-
+func addNewDidDoc(s *IntegrationTestSuite, identifier string, val *network.Validator) {
 	clientCtx := val.ClientCtx
 	args := []string{
 		identifier,
@@ -128,7 +127,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDidDocument() {
 			name() + "_2",
 			codes.OK,
 			&did.QueryDidDocumentResponse{},
-			func() { addnewdiddoc(s, identifier, val) },
+			func() { addNewDidDoc(s, identifier, val) },
 		},
 	}
 
@@ -158,7 +157,6 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDidDocument() {
 }
 
 func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
-
 	identifier := "123456789abcdefghijkc"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
@@ -244,7 +242,7 @@ func (s *IntegrationTestSuite) TestNewAddControllerCmd() {
 				),
 			},
 			&sdk.TxResponse{},
-			func() { addnewdiddoc(s, identifier1, val) },
+			func() { addNewDidDoc(s, identifier1, val) },
 		},
 	}
 
@@ -307,7 +305,7 @@ func (s *IntegrationTestSuite) TestNewDeleteControllerCmd() {
 			&sdk.TxResponse{},
 			func() {
 				// create a new did document
-				addnewdiddoc(s, identifier1, val)
+				addNewDidDoc(s, identifier1, val)
 				// add a controller parameters
 				args := []string{
 					identifier1,
@@ -393,7 +391,7 @@ func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
 			},
 			codes.OK,
 			&sdk.TxResponse{},
-			func() { addnewdiddoc(s, identifier, val) },
+			func() { addNewDidDoc(s, identifier, val) },
 		},
 	}
 
@@ -464,7 +462,7 @@ func (s *IntegrationTestSuite) TestNewSetVerificationRelationshipsCmd() {
 			},
 			codes.OK,
 			&sdk.TxResponse{},
-			func() { addnewdiddoc(s, identifier, val) },
+			func() { addNewDidDoc(s, identifier, val) },
 		},
 	}
 
@@ -537,7 +535,7 @@ func (s *IntegrationTestSuite) TestNewRevokeVerificationCmd() {
 			},
 			codes.OK,
 			&sdk.TxResponse{},
-			func() { addnewdiddoc(s, identifier, val) },
+			func() { addNewDidDoc(s, identifier, val) },
 		},
 	}
 
@@ -611,7 +609,7 @@ func (s *IntegrationTestSuite) TestNewAddServiceCmd() {
 			},
 			codes.OK,
 			&sdk.TxResponse{},
-			func() { addnewdiddoc(s, identifier, val) },
+			func() { addNewDidDoc(s, identifier, val) },
 		},
 	}
 
@@ -675,7 +673,7 @@ func (s *IntegrationTestSuite) TestNewDeleteServiceCmd() {
 			name(),
 			&sdk.TxResponse{},
 			func() {
-				addnewdiddoc(s, identifier, val)
+				addNewDidDoc(s, identifier, val)
 				cmd := cli.NewAddServiceCmd()
 				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
 				s.Require().NoError(err)

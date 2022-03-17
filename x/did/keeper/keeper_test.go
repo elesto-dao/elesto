@@ -68,7 +68,17 @@ func (suite *KeeperTestSuite) TestGenericKeeperSetAndGet() {
 		expPass bool
 	}{
 		{
-			"data stored successfully",
+			"PASS: data stored successfully",
+			func() did.DidDocument {
+				dd, _ := did.NewDidDocument(
+					"did:cosmos:net:elesto:subject",
+				)
+				return dd
+			},
+			true,
+		},
+		{
+			"FAIL: data not available",
 			func() did.DidDocument {
 				dd, _ := did.NewDidDocument(
 					"did:cosmos:net:elesto:subject",
@@ -114,8 +124,12 @@ func (suite *KeeperTestSuite) TestGenericKeeperSetAndGet() {
 				}
 				suite.Require().Equal(2, len(array))
 			} else {
-				// TODO write failure cases
-				suite.Require().False(tc.expPass)
+				found := suite.keeper.Has(
+					suite.ctx,
+					[]byte(dd.Id),
+					[]byte{0x01},
+				)
+				suite.Require().False(found)
 			}
 		})
 	}
@@ -128,30 +142,41 @@ func (suite *KeeperTestSuite) TestGenericKeeperDelete() {
 		expPass bool
 	}{
 		{
-			"data stored successfully",
+			"PASS: data deleted successfully",
 			func() did.DidDocument {
 				dd, _ := did.NewDidDocument(
 					"did:cosmos:net:elesto:subject",
+				)
+				suite.keeper.Set(suite.ctx,
+					[]byte(dd.Id),
+					[]byte{0x01},
+					&dd,
+					suite.keeper.cdc.MustMarshal,
+				)
+				suite.keeper.Set(suite.ctx,
+					[]byte(dd.Id+"1"),
+					[]byte{0x01},
+					&dd,
+					suite.keeper.cdc.MustMarshal,
 				)
 				return dd
 			},
 			true,
 		},
+		{
+			"FAIL: data not available to be deleted",
+			func() did.DidDocument {
+				dd, err := did.NewDidDocument(
+					"did:cosmos:net:elesto:no",
+				)
+				suite.Require().NoError(err)
+				return dd
+			},
+			false,
+		},
 	}
 	for _, tc := range testCases {
 		dd := tc.didFn()
-		suite.keeper.Set(suite.ctx,
-			[]byte(dd.Id),
-			[]byte{0x01},
-			&dd,
-			suite.keeper.cdc.MustMarshal,
-		)
-		suite.keeper.Set(suite.ctx,
-			[]byte(dd.Id+"1"),
-			[]byte{0x01},
-			&dd,
-			suite.keeper.cdc.MustMarshal,
-		)
 		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
 			if tc.expPass {
 				suite.keeper.Delete(
@@ -169,8 +194,17 @@ func (suite *KeeperTestSuite) TestGenericKeeperDelete() {
 				suite.Require().False(found)
 
 			} else {
-				// TODO write failure cases
-				suite.Require().False(tc.expPass)
+				found := suite.keeper.Has(
+					suite.ctx,
+					[]byte(dd.Id),
+					[]byte{0x01},
+				)
+				suite.Require().False(found)
+				suite.keeper.Delete(
+					suite.ctx,
+					[]byte(dd.Id),
+					[]byte{0x01},
+				)
 			}
 		})
 	}

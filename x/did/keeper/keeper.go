@@ -76,7 +76,6 @@ func (k Keeper) Has(
 	ctx sdk.Context,
 	key []byte,
 	prefix []byte,
-	unmarshal UnmarshalFn,
 ) (found bool) {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(append(prefix, key...))
