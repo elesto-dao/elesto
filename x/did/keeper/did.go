@@ -24,11 +24,11 @@ func (k Keeper) GetDidDocument(ctx sdk.Context, key []byte) (did.DidDocument, bo
 // HasDidDocument checks if a DID document is in the store  by its key.
 // The boolean return will be false if the DID document is not found
 func (k Keeper) HasDidDocument(ctx sdk.Context, key []byte) bool {
-	found := k.Has(ctx, key, did.DidDocumentKey, k.UnmarshalDidDocument)
+	found := k.Has(ctx, key, did.DidDocumentKey)
 	return found
 }
 
-// UnmarshalDidDocument unmarshall a did document= and check if it is empty
+// UnmarshalDidDocument unmarshall a did document and check if it is empty
 // ad DID document is empty if contains no context
 func (k Keeper) UnmarshalDidDocument(value []byte) (interface{}, bool) {
 	data := did.DidDocument{}
