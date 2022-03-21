@@ -12,6 +12,7 @@ import (
 // same key will be overwritten
 func (k Keeper) SetDidDocument(ctx sdk.Context, key []byte, document did.DidDocument) {
 	k.Set(ctx, key, did.DidDocumentKey, &document, k.cdc.MustMarshal)
+	k.SetDidMetadata(ctx, key)
 }
 
 // GetDidDocument retrieve a DID document by its key.
@@ -37,7 +38,16 @@ func (k Keeper) UnmarshalDidDocument(value []byte) (interface{}, bool) {
 }
 
 // SetDidMetadata sets the metadata for a DID Document
-func (k Keeper) SetDidMetadata(ctx sdk.Context, key []byte, meta did.DidMetadata) {
+func (k Keeper) SetDidMetadata(ctx sdk.Context, key []byte) {
+	meta, found := k.GetDidMetadata(ctx, key)
+
+	if !found {
+		didM := did.NewDidMetadata(uint64(ctx.BlockHeight()), ctx.BlockTime())
+		k.Set(ctx, key, did.DidMetadataKey, &didM, k.cdc.MustMarshal)
+		return
+	}
+
+	did.UpdateDidMetadata(&meta, uint64(ctx.BlockHeight()), ctx.BlockTime())
 	k.Set(ctx, key, did.DidMetadataKey, &meta, k.cdc.MustMarshal)
 }
 
@@ -55,7 +65,10 @@ func (k Keeper) UnmarshalDidMetadata(value []byte) (interface{}, bool) {
 }
 
 // ResolveDid returning the did document and associated metadata
-func (k Keeper) ResolveDid(ctx sdk.Context, didDoc did.DID) (doc did.DidDocument, meta did.DidMetadata, err error) {
+func (k Keeper) ResolveDid(
+	ctx sdk.Context,
+	didDoc did.DID,
+) (doc did.DidDocument, meta did.DidMetadata, err error) {
 	if strings.HasPrefix(didDoc.String(), did.DidKeyPrefix) {
 		doc, meta, err = did.ResolveAccountDID(didDoc.String(), ctx.ChainID())
 		return
@@ -75,8 +88,8 @@ func (k Keeper) ResolveDid(ctx sdk.Context, didDoc did.DID) (doc did.DidDocument
 func (k Keeper) GetAllDidDocumentsWithCondition(
 	ctx sdk.Context,
 	key []byte,
-	didSelector func(did did.DidDocument) bool,
-) (didDocs []did.DidDocument) {
+	didSelector func(did *did.DidDocument) bool,
+) (didDocs []*did.DidDocument) {
 	iterator := k.GetAll(ctx, key)
 
 	defer iterator.Close()
@@ -85,8 +98,8 @@ func (k Keeper) GetAllDidDocumentsWithCondition(
 		didDoc, _ := k.UnmarshalDidDocument(iterator.Value())
 		didTyped := didDoc.(did.DidDocument)
 
-		if didSelector(didTyped) {
-			didDocs = append(didDocs, didTyped)
+		if didSelector(&didTyped) {
+			didDocs = append(didDocs, &didTyped)
 		}
 	}
 
@@ -94,10 +107,10 @@ func (k Keeper) GetAllDidDocumentsWithCondition(
 }
 
 // GetAllDidDocuments returns all the DidDocuments
-func (k Keeper) GetAllDidDocuments(ctx sdk.Context) []did.DidDocument {
+func (k Keeper) GetAllDidDocuments(ctx sdk.Context) []*did.DidDocument {
 	return k.GetAllDidDocumentsWithCondition(
 		ctx,
 		did.DidDocumentKey,
-		func(did did.DidDocument) bool { return true },
+		func(did *did.DidDocument) bool { return true },
 	)
 }

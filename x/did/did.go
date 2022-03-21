@@ -1,7 +1,6 @@
 package did
 
 import (
-	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"net/url"
@@ -215,7 +214,7 @@ func IsValidDIDMetadata(didMeta *DidMetadata) bool {
 	if didMeta == nil {
 		return false
 	}
-	if IsEmpty(didMeta.VersionId) {
+	if didMeta.VersionId == 0 {
 		return false
 	}
 	if didMeta.Created == nil || didMeta.Created.IsZero() {
@@ -770,7 +769,7 @@ func NewService(id, serviceType, serviceEndpoint string) *Service {
 
 // NewDidMetadata returns a DidMetadata struct that has equals created and updated date,
 // and with deactivated field set to false
-func NewDidMetadata(versionData []byte, created time.Time) DidMetadata {
+func NewDidMetadata(versionData uint64, created time.Time) DidMetadata {
 	m := DidMetadata{
 		Created:     &created,
 		Deactivated: false,
@@ -780,9 +779,8 @@ func NewDidMetadata(versionData []byte, created time.Time) DidMetadata {
 }
 
 // UpdateDidMetadata updates a DID metadata time and version id
-func UpdateDidMetadata(meta *DidMetadata, versionData []byte, updated time.Time) {
-	txH := sha256.Sum256(versionData)
-	meta.VersionId = hex.EncodeToString(txH[:])
+func UpdateDidMetadata(meta *DidMetadata, versionData uint64, updated time.Time) {
+	meta.VersionId = versionData
 	meta.Updated = &updated
 }
 
@@ -795,7 +793,7 @@ func ResolveAccountDID(did, chainID string) (didDoc DidDocument, didMeta DidMeta
 	account := strings.TrimPrefix(did, DidKeyPrefix)
 	accountDID := DID(did)
 	// compose the metadata
-	didMeta = NewDidMetadata([]byte(account), time.Now())
+	didMeta = NewDidMetadata(0, time.Now())
 	// compose the did document
 	didDoc, err = NewDidDocument(did, WithVerifications(
 		NewVerification(

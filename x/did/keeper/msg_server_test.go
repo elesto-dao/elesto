@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -127,7 +126,7 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateDidDocument() {
 					),
 				))
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 
 				newDidDoc, err := didmod.NewDidDocument(did)
 				suite.Require().Nil(err)
@@ -365,7 +364,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddVerification() {
 				)
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 				req = *didmod.NewMsgAddVerification(didDoc.Id, v, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
 				errExp = nil
 			},
@@ -523,7 +522,7 @@ func (suite *KeeperTestSuite) TestHandleMsgSetVerificationRelationships() {
 					),
 				)
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 				// actual test
 				req = *didmod.NewMsgSetVerificationRelationships(
 					"did:cosmos:net:elesto:subject",
@@ -642,7 +641,7 @@ func (suite *KeeperTestSuite) TestHandleMsgRevokeVerification() {
 				)
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 				req = *didmod.NewMsgRevokeVerification(didDoc.Id,
 					"did:cosmos:net:elesto:subject#key-1",
 					"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
@@ -813,7 +812,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddService() {
 				)
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 				if _, found := suite.keeper.GetDidDocument(suite.ctx, []byte(didDoc.Id)); !found {
 					suite.FailNow("test setup failed, did not stored ")
 				}
@@ -853,7 +852,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddService() {
 				)
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 				req = *didmod.NewMsgAddService(didDoc.Id, service, signer)
 				errExp = nil
 			},
@@ -921,7 +920,7 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteService() {
 				)
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 				req = *didmod.NewMsgDeleteService(didDoc.Id, "did:cosmos:net:elesto:subject#linked-domain", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
 				errExp = nil
 			},
@@ -949,7 +948,7 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteService() {
 				serviceID := ""
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 				req = *didmod.NewMsgDeleteService(didDoc.Id, serviceID, "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8")
 				errExp = sdkerrors.Wrapf(didmod.ErrInvalidState, "the did document doesn't have services associated")
 			},
@@ -1130,7 +1129,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 				}
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 
 				req = *didmod.NewMsgAddController(
 					"did:cosmos:net:elesto:subject",
@@ -1164,7 +1163,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 				}
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 
 				req = *didmod.NewMsgAddController(
 					"did:cosmos:net:elesto:subject",
@@ -1198,7 +1197,7 @@ func (suite *KeeperTestSuite) TestHandleMsgAddController() {
 				}
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 
 				req = *didmod.NewMsgAddController(
 					"did:cosmos:net:elesto:subject",
@@ -1304,7 +1303,7 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteController() {
 				}
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 
 				req = *didmod.NewMsgDeleteController(
 					"did:cosmos:net:elesto:subject",
@@ -1340,7 +1339,7 @@ func (suite *KeeperTestSuite) TestHandleMsgDeleteController() {
 				}
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id), didmod.NewDidMetadata([]byte{1}, time.Now()))
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(didDoc.Id))
 
 				req = *didmod.NewMsgDeleteController(
 					"did:cosmos:net:elesto:subject",

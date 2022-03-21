@@ -3,6 +3,7 @@ package module
 import ( // this line is used by starport scaffolding # 1
 	"context"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -63,7 +64,9 @@ func (a AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
 }
 
 // DefaultGenesis returns the capability module's default genesis state.
-func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage { return nil }
+func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
+	return cdc.MustMarshalJSON(did.NewGenesisState())
+}
 
 // ValidateGenesis performs genesis state validation for the capability module.
 func (AppModuleBasic) ValidateGenesis(
@@ -71,7 +74,13 @@ func (AppModuleBasic) ValidateGenesis(
 	config client.TxEncodingConfig,
 	bz json.RawMessage,
 ) error {
-	return nil
+	var data did.GenesisState
+	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", did.ModuleName, err)
+	}
+
+	return data.Validate()
+
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
@@ -141,17 +150,17 @@ func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 // InitGenesis performs the capability module's genesis initialization It returns
 // no validator updates.
-func (AppModule) InitGenesis(
+func (am AppModule) InitGenesis(
 	ctx sdk.Context,
 	cdc codec.JSONCodec,
 	gs json.RawMessage,
 ) []abci.ValidatorUpdate {
-	return nil
+	return am.keeper.InitGenesis(ctx, cdc, gs)
 }
 
 // ExportGenesis returns the capability module's exported genesis state as raw JSON bytes.
-func (AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	return nil
+func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
+	return cdc.MustMarshalJSON(am.keeper.ExportGenesis(ctx, cdc))
 }
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the capability module.
@@ -206,7 +215,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 
 // RegisterRESTRoutes registers the capability module's REST service handlers.
 func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
-
 }
 
 // LegacyQuerierHandler returns the capability module's Querier.

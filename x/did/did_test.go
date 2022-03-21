@@ -269,7 +269,7 @@ func TestIsValidDIDMetadata(t *testing.T) {
 			func() *DidMetadata {
 				now := time.Now()
 				return &DidMetadata{
-					VersionId: "d95daac05a36f93d1494208d02d1522d758466c62ea6b64c50b78999d2021f51",
+					VersionId: uint64(100),
 					Created:   &now,
 				}
 			},
@@ -279,18 +279,7 @@ func TestIsValidDIDMetadata(t *testing.T) {
 			func() *DidMetadata {
 				now := time.Now()
 				return &DidMetadata{
-					VersionId: "",
-					Created:   &now,
-				}
-			},
-			false, // missing version
-		},
-		{
-			func() *DidMetadata {
-				now := time.Now()
-				return &DidMetadata{
-					VersionId: "d95daac05a36f93d1494208d02d1522d758466c62ea6b64c50b78999d2021f51",
-					Updated:   &now,
+					Updated: &now,
 				}
 			},
 			false, // null created
@@ -299,7 +288,7 @@ func TestIsValidDIDMetadata(t *testing.T) {
 			func() *DidMetadata {
 				var now time.Time
 				return &DidMetadata{
-					VersionId: "d95daac05a36f93d1494208d02d1522d758466c62ea6b64c50b78999d2021f51",
+					VersionId: 0,
 					Created:   &now,
 				}
 			},
@@ -2583,7 +2572,7 @@ func TestResolveAccountDID(t *testing.T) {
 				return dd
 			},
 			func() DidMetadata {
-				meta := NewDidMetadata([]byte("cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"), time.Now())
+				meta := NewDidMetadata(0, time.Now())
 				return meta
 			},
 			nil,

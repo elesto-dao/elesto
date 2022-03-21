@@ -1,0 +1,12 @@
+syntax = "proto3";
+package elestodao.elesto.did.v1;
+
+option go_package = "github.com/elesto-dao/elesto/x/did";
+
+import "did/v1/did.proto";
+
+// GenesisState defines the did module's genesis state.
+message GenesisState {
+  // did documents present at genesis
+  repeated DidDocument didDocuments = 1;
+}
