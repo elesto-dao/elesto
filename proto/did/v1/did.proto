@@ -100,18 +100,6 @@ message Service {
   string serviceEndpoint = 3; // is a url that can describes the subject of the did document
 }
 
-// DidMetadata defines metadata associated to a did document such as
-// the status of the DID document
-message DidMetadata {
-  option (gogoproto.equal) = true;
-  option (gogoproto.goproto_getters)  = false;
-
-  uint64 versionId                  = 1; // version id is the block height of the did creation
-  google.protobuf.Timestamp created = 2 [(gogoproto.stdtime) = true];
-  google.protobuf.Timestamp updated = 3 [(gogoproto.stdtime) = true];
-  bool deactivated                  = 4;
-}
-
 // PublicKeyJwk is a type of verification material, the implementation
 // support is limited to elliptic curve public keys
 // see https://www.w3.org/TR/did-core/#dfn-publickeyjwk
