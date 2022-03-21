@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -203,21 +202,6 @@ func IsValidDIDDocument(didDoc *DidDocument) bool {
 // that is the ID must be a bech32 address no longer than 255 bytes
 func IsValidDIDKeyFormat(did string) bool {
 	if _, err := sdk.AccAddressFromBech32(strings.TrimPrefix(did, DidKeyPrefix)); err != nil {
-		return false
-	}
-	return true
-}
-
-// IsValidDIDMetadata tells if a DID metadata is valid,
-// that is if it has a non empty versionId and a non-zero create date
-func IsValidDIDMetadata(didMeta *DidMetadata) bool {
-	if didMeta == nil {
-		return false
-	}
-	if didMeta.VersionId == 0 {
-		return false
-	}
-	if didMeta.Created == nil || didMeta.Created.IsZero() {
 		return false
 	}
 	return true
@@ -767,33 +751,14 @@ func NewService(id, serviceType, serviceEndpoint string) *Service {
 	}
 }
 
-// NewDidMetadata returns a DidMetadata struct that has equals created and updated date,
-// and with deactivated field set to false
-func NewDidMetadata(versionData uint64, created time.Time) DidMetadata {
-	m := DidMetadata{
-		Created:     &created,
-		Deactivated: false,
-	}
-	UpdateDidMetadata(&m, versionData, created)
-	return m
-}
-
-// UpdateDidMetadata updates a DID metadata time and version id
-func UpdateDidMetadata(meta *DidMetadata, versionData uint64, updated time.Time) {
-	meta.VersionId = versionData
-	meta.Updated = &updated
-}
-
 // ResolveAccountDID generates a DID document from an address
-func ResolveAccountDID(did, chainID string) (didDoc DidDocument, didMeta DidMetadata, err error) {
+func ResolveAccountDID(did, chainID string) (didDoc DidDocument, err error) {
 	if !IsValidDIDKeyFormat(did) {
 		err = ErrInvalidDidMethodFormat
 		return
 	}
 	account := strings.TrimPrefix(did, DidKeyPrefix)
 	accountDID := DID(did)
-	// compose the metadata
-	didMeta = NewDidMetadata(0, time.Now())
 	// compose the did document
 	didDoc, err = NewDidDocument(did, WithVerifications(
 		NewVerification(

@@ -23,12 +23,11 @@ func (k Keeper) DidDocument(
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	doc, meta, err := k.ResolveDid(ctx, did.DID(req.Id))
+	doc, err := k.ResolveDid(ctx, did.DID(req.Id))
 	if err != nil {
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 	return &did.QueryDidDocumentResponse{
 		DidDocument: doc,
-		DidMetadata: meta,
 	}, nil
 }

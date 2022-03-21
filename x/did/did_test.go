@@ -8,14 +8,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewChainDID(t *testing.T) {
-
 	tests := []struct {
 		did   string
 		chain string
@@ -47,7 +45,6 @@ func TestNewChainDID(t *testing.T) {
 }
 
 func TestNewKeyDID(t *testing.T) {
-
 	tests := []struct {
 		name    string
 		account string
@@ -67,7 +64,6 @@ func TestNewKeyDID(t *testing.T) {
 }
 
 func TestDID_NewVerificationMethodID(t *testing.T) {
-
 	tests := []struct {
 		name string
 		did  DID
@@ -254,57 +250,6 @@ func TestIsValidDIDDocument(t *testing.T) {
 		t.Run(fmt.Sprint("TestIsValidDIDDocument#", tt.name), func(t *testing.T) {
 			if got := IsValidDIDDocument(tt.didFn()); got != tt.want {
 				t.Errorf("TestIsValidDIDDocument() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestIsValidDIDMetadata(t *testing.T) {
-
-	tests := []struct {
-		didMetaFn func() *DidMetadata
-		want      bool
-	}{
-		{
-			func() *DidMetadata {
-				now := time.Now()
-				return &DidMetadata{
-					VersionId: uint64(100),
-					Created:   &now,
-				}
-			},
-			true, // all good
-		},
-		{
-			func() *DidMetadata {
-				now := time.Now()
-				return &DidMetadata{
-					Updated: &now,
-				}
-			},
-			false, // null created
-		},
-		{
-			func() *DidMetadata {
-				var now time.Time
-				return &DidMetadata{
-					VersionId: 0,
-					Created:   &now,
-				}
-			},
-			false, // zero created
-		},
-		{
-			func() *DidMetadata {
-				return nil
-			},
-			false, // nil pointer
-		},
-	}
-	for i, tt := range tests {
-		t.Run(fmt.Sprint("TestIsValidDIDMetadata#", i), func(t *testing.T) {
-			if got := IsValidDIDMetadata(tt.didMetaFn()); got != tt.want {
-				t.Errorf("TestIsValidDIDMetadata() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -2117,13 +2062,11 @@ func TestBlockchainAccountID_GetAddress(t *testing.T) {
 			"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 		},
 		{
-			// TODO: this should result in an error
 			"PASS: address is empty",
 			NewBlockchainAccountIDFromString("cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"),
 			"",
 		},
 		{
-			// TODO: this should result in an error
 			"PASS: can get address (but address is wrong)",
 			NewBlockchainAccountIDFromString("cosmos:foochain:whatever"),
 			"whatever",
@@ -2520,11 +2463,10 @@ func TestResolveAccountDID(t *testing.T) {
 		chainID string
 	}
 	tests := []struct {
-		name        string
-		args        args
-		wantDidDoc  func() DidDocument
-		wantDidMeta func() DidMetadata
-		wantErr     error
+		name       string
+		args       args
+		wantDidDoc func() DidDocument
+		wantErr    error
 	}{
 		{
 			"FAIL: not a key did",
@@ -2534,9 +2476,6 @@ func TestResolveAccountDID(t *testing.T) {
 			},
 			func() DidDocument {
 				return DidDocument{}
-			},
-			func() DidMetadata {
-				return DidMetadata{}
 			},
 			ErrInvalidDidMethodFormat,
 		},
@@ -2571,20 +2510,15 @@ func TestResolveAccountDID(t *testing.T) {
 				assert.NoError(t, err)
 				return dd
 			},
-			func() DidMetadata {
-				meta := NewDidMetadata(0, time.Now())
-				return meta
-			},
 			nil,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotDidDoc, gotDidMeta, err := ResolveAccountDID(tt.args.did, tt.args.chainID)
+			gotDidDoc, err := ResolveAccountDID(tt.args.did, tt.args.chainID)
 			if tt.wantErr == nil {
 				assert.NoError(t, err)
 				assert.Equalf(t, tt.wantDidDoc(), gotDidDoc, "ResolveAccountDID(%v, %v)", tt.args.did, tt.args.chainID)
-				assert.Equalf(t, tt.wantDidMeta().VersionId, gotDidMeta.VersionId, "ResolveAccountDID(%v, %v)", tt.args.did, tt.args.chainID)
 			} else {
 				assert.Error(t, err)
 				assert.Equal(t, tt.wantErr.Error(), err.Error())

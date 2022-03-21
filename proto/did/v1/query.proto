@@ -28,8 +28,5 @@ message QueryDidDocumentRequest {
 message QueryDidDocumentResponse {
   // Returns a did document
   DidDocument didDocument = 1  [(gogoproto.nullable) = false];
-
-  // Returns a did documents metadata
-  DidMetadata didMetadata = 2  [(gogoproto.nullable) = false];
 }
 // this line is used by starport scaffolding # 3
