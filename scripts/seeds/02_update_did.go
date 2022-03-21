@@ -9,13 +9,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
+	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	"google.golang.org/grpc"
 
-	"github.com/elesto-dao/elesto/app"
-	"github.com/elesto-dao/elesto/app/params"
 	"github.com/elesto-dao/elesto/x/did"
 )
 
@@ -67,7 +67,7 @@ func CreateGRPCConnection(addr string) *grpc.ClientConn {
 // SignMsg signs an sdk.Message with a given private key, account number and account sequence
 // this returns a signed byte array for broadcasting to the network
 func SignMsg(
-	encCfg params.EncodingConfig,
+	encCfg cosmoscmd.EncodingConfig,
 	msg sdk.Msg,
 	priv1 *secp256k1.PrivKey,
 	accNum uint64,
@@ -129,7 +129,8 @@ func main() {
 
 	addr := "localhost:9090"
 	conn := CreateGRPCConnection(addr)
-	encCfg := app.MakeEncodingConfig()
+	moduleBasics := module.NewBasicManager()
+	encCfg := cosmoscmd.MakeEncodingConfig(moduleBasics)
 	txClient := txtypes.NewServiceClient(conn)
 	qc := did.NewQueryClient(conn)
 

@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/elesto-dao/elesto/x/did"
 )
@@ -66,42 +65,42 @@ func (suite *KeeperTestSuite) TestDidDocumentKeeper() {
 func (suite *KeeperTestSuite) TestDidDocumentMetadataKeeper() {
 	testCases := []struct {
 		msg     string
-		didFn   func() (did.DidMetadata, did.DidDocument)
+		didFn   func() did.DidDocument
 		expPass bool
 	}{
 		{
 			"PASS: did document metadata stored successfully",
-			func() (did.DidMetadata, did.DidDocument) {
+			func() did.DidDocument {
 				dd, _ := did.NewDidDocument("did:cosmos:net:elesto:subject")
-				didMeta := did.NewDidMetadata([]byte("xxx"), time.Now())
 				suite.keeper.SetDidDocument(suite.ctx, []byte(dd.Id), dd)
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(dd.Id), didMeta)
-				return didMeta, dd
+				return dd
 			},
 			true,
 		},
 		{
 			"FAIL: did document does not exist",
-			func() (did.DidMetadata, did.DidDocument) {
+			func() did.DidDocument {
 				dd, _ := did.NewDidDocument("did:cosmos:net:elesto:fail")
-				didMeta := did.NewDidMetadata([]byte("xxx"), time.Now().Local())
-				suite.keeper.SetDidMetadata(suite.ctx, []byte(dd.Id), didMeta)
-				return didMeta, dd
+				suite.keeper.SetDidMetadata(suite.ctx, []byte(dd.Id))
+				return dd
 			},
 			false,
 		},
 	}
 	for _, tc := range testCases {
-		didMeta, dd := tc.didFn()
+		dd := tc.didFn()
 
 		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
 			if tc.expPass {
-				didMetaGet, found := suite.keeper.GetDidMetadata(
+				didMetaGet, _ := suite.keeper.GetDidMetadata(
 					suite.ctx,
 					[]byte(dd.Id),
 				)
-				suite.Require().True(found)
-				suite.Require().Equal(didMeta.VersionId, didMetaGet.VersionId)
+
+				suite.Require().Equal(
+					uint64(0x0),
+					didMetaGet.VersionId,
+				)
 			} else {
 				_, _, err := suite.keeper.ResolveDid(
 					suite.ctx,

@@ -106,7 +106,7 @@ message DidMetadata {
   option (gogoproto.equal) = true;
   option (gogoproto.goproto_getters)  = false;
 
-  string versionId                  = 1; // version id is the tansaction hash of the did creation
+  uint64 versionId                  = 1; // version id is the block height of the did creation
   google.protobuf.Timestamp created = 2 [(gogoproto.stdtime) = true];
   google.protobuf.Timestamp updated = 3 [(gogoproto.stdtime) = true];
   bool deactivated                  = 4;

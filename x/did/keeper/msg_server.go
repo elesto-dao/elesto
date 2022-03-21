@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -59,10 +58,6 @@ func (k msgServer) CreateDidDocument(
 
 	// persist the did document
 	k.Keeper.SetDidDocument(ctx, []byte(msg.Id), didDoc)
-
-	// now create and persist the metadata
-	didM := didmod.NewDidMetadata(ctx.TxBytes(), ctx.BlockTime())
-	k.Keeper.SetDidMetadata(ctx, []byte(msg.Id), didM)
 
 	k.Logger(ctx).Info("created did document", "did", msg.Id, "controller", msg.Signer)
 
@@ -236,18 +231,6 @@ func (k msgServer) DeleteController(
 	return &didmod.MsgDeleteControllerResponse{}, nil
 }
 
-// helper function to update the did metadata
-func updateDidMetadata(keeper *Keeper, ctx sdk.Context, did string) (err error) {
-	didMeta, found := keeper.GetDidMetadata(ctx, []byte(did))
-	if found {
-		didmod.UpdateDidMetadata(&didMeta, ctx.TxBytes(), ctx.BlockTime())
-		keeper.SetDidMetadata(ctx, []byte(did), didMeta)
-	} else {
-		err = fmt.Errorf("(warning) did metadata not found")
-	}
-	return
-}
-
 // executeOnDidWithRelationships updates a did document with by the given parameters
 // this function takes care of checking that a did can be updated by a given signer
 func executeOnDidWithRelationships(
@@ -305,11 +288,6 @@ func executeOnDidWithRelationships(
 	k.SetDidDocument(ctx, []byte(did), *updatedDidDoc)
 	k.Logger(ctx).Info("Set did document in the store for", "did", did, "controller", signer)
 
-	// update the Metadata
-	if err = updateDidMetadata(k, ctx, updatedDidDoc.Id); err != nil {
-		k.Logger(ctx).Error(err.Error(), "did", updatedDidDoc.Id)
-		return
-	}
 	// fire the event
 	if err := ctx.EventManager().EmitTypedEvent(didmod.NewDidDocumentUpdatedEvent(did, signer)); err != nil {
 		k.Logger(ctx).Error("failed to emit DidDocumentUpdatedEvent", "did", did, "signer", signer, "err", err)
