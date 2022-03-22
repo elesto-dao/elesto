@@ -12,7 +12,8 @@ import (
 
 var _ did.QueryServer = Keeper{}
 
-// DidDocument implements the DidDocument gRPC method
+// DidDocument implements the DidDocument gRPC method, it querys the store and returns
+// a did document and it's metadata to a gRPC client
 func (k Keeper) DidDocument(
 	c context.Context,
 	req *did.QueryDidDocumentRequest,

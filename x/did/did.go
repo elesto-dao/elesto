@@ -16,6 +16,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+// VerificationRelationship defines the enum that represents the VerificationRelationship
 type VerificationRelationship int
 
 // A verification relationship expresses the relationship between the DID subject and a verification method.
@@ -184,6 +185,8 @@ func IsValidDIDDocument(didDoc *DidDocument) bool {
 	}
 
 	for _, c := range didDoc.Context {
+		// TODO: write is valid context helper method
+		// this line is incorrect
 		if c == contextDIDBase {
 			return true
 		}
