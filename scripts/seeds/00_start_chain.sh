@@ -21,7 +21,7 @@ then
     echo "y" | elestod keys add regulator
     echo "y" | elestod keys add emti # e-money token issuer
     echo "y" | elestod keys add arti # asset-referenced token issuer
-    echo "y" | elestod keys add bob
+    echo "video adult rule exhaust tube crater lunch route clap pudding poet pencil razor pluck veteran hill stock thunder sense riot fox oppose glare bar" | elestod keys add bob --recover --keyring-backend test
     echo "y" | elestod keys add alice
 
     echo "Adding genesis account"
