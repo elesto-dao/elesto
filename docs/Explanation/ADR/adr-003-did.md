@@ -57,7 +57,7 @@ The namespace specific identifier is defined by the following ABNF:
 ```ABNF
 cosmos-did                = "did:cosmos:" identifier-type
 identifier-type           = cosmos-key / cosmos-network
-cosmos-key                = "key:" 1*255id-char "1" 20*255HEXDIG 
+cosmos-key                = "key:" 1*255id-char "1" 20*255HEXDIG
 cosmos-network            = "net:" 1*255id-char ":" unique-identifier
 unique-identifier         = 38*255id-char
 id-char                   = ALPHA / DIGIT / (ALPHA "-") / (DIGIT "-")
@@ -65,14 +65,14 @@ id-char                   = ALPHA / DIGIT / (ALPHA "-") / (DIGIT "-")
 
 For the `unique-identifier` it is RECOMMENDED to use a UUID.
 
-The `identifier-type` distinguishes between two DID types: 
+The `identifier-type` distinguishes between two DID types:
 
 1. The `key` type, inspired from the [`did:key`](https://w3c-ccg.github.io/did-method-key/) method
 2. The `net` type that identifies the DID and the originating network of the DID
 
 DIDs of `key` type are ephemeral and immutable. DIDs of `key` type are always generated from the Cosmos blockchain address they refer to. For example, see these DIDs of `key` type:
 
-- `did:cosmos:key:elesto1ts9ejqg7k4ht2sm53hycty875362yqxqmt9grj` 
+- `did:cosmos:key:elesto1ts9ejqg7k4ht2sm53hycty875362yqxqmt9grj`
 
 DIDs of `net` type are persistent and mutable. DIDs of `net` type are stored in the node database and can be created and updated according to rules described in the [DID Operations](#did-operations) section. For example, see this DID of `net` type:
 
@@ -81,11 +81,11 @@ DIDs of `net` type are persistent and mutable. DIDs of `net` type are stored in 
 
 ##### DID Operations
 
-DID and associated DID documents are managed by a Cosmos SDK module that uses the gRPC communication protocol. See [Method operations](https://www.w3.org/TR/2021/PR-did-core-20210803//#method-operations) for details on how the create, read, update and delete (CRUD) operations are handed in a Cosmos DID. 
+DID and associated DID documents are managed by a Cosmos SDK module that uses the gRPC communication protocol. See [Method operations](https://www.w3.org/TR/2021/PR-did-core-20210803//#method-operations) for details on how the create, read, update and delete (CRUD) operations are handed in a Cosmos DID.
 
 ###### Create
 
-To create and publish a DID document use the message 
+To create and publish a DID document use the message
 
 ```golang
 MsgCreateDidDocument(id string, signerPubKey string)
@@ -104,9 +104,9 @@ The verification method id SHOULD be generated as:
 {verificationMethodController}#{CosmosAddressFromPubKey}
 ```
 
-The verification method id MUST be listed in the `authentication` relationships. 
+The verification method id MUST be listed in the `authentication` relationships.
 
-If the input DID is not a valid DID for the Cosmos method, or if the DID already exists on-chain, the message returns an error. 
+If the input DID is not a valid DID for the Cosmos method, or if the DID already exists on-chain, the message returns an error.
 
 Contextually with the creation of a DID document, a [DID document metadata](#did-document-metadata) MUST be created with the following values:
 
@@ -158,17 +158,11 @@ This example shows a DID document that was resolved using the gRPC interface:
       "did:cosmos:net:elesto:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0"
     ]
   },
-  "didMetadata": {
-    "versionId": "9f7c547dc852af60c9da1fd514e1497d407b6a3d8ae3e52b626d536519dc8f4c",
-    "created": "2021-08-23T08:24:26.972761898Z",
-    "updated": "2021-08-24T15:54:40.902858856Z",
-    "deactivated": false
-  }
 }
 ```
 
 
-> Note: the DID document resolution following the [W3C DID core recommendations](https://www.w3.org/TR/2021/PR-did-core-20210803/) and pass the [DID Core Specification Test Suite](https://w3c.github.io/did-test-suite/) SHOULD be managed outside the node implementation, in a dedicated project. 
+> Note: the DID document resolution following the [W3C DID core recommendations](https://www.w3.org/TR/2021/PR-did-core-20210803/) and pass the [DID Core Specification Test Suite](https://w3c.github.io/did-test-suite/) SHOULD be managed outside the node implementation, in a dedicated project.
 
 
 ###### Update
@@ -183,12 +177,12 @@ A DID document can be updated only if it is persisted on-chain on-chain and must
 
 The constraints on updating a DID document are **one of** the following:
 
-- The `signerAccount` must exist as a verification method in a verification relationship of type `authentication` 
-- The `signerAccount` `key` DID is listed as a DID controller. 
+- The `signerAccount` must exist as a verification method in a verification relationship of type `authentication`
+- The `signerAccount` `key` DID is listed as a DID controller.
 
 Each update operation MUST update the `versionId` and the `updated` field of the associated [DID document metadata](#did-document-metadata) with the transaction hash and the block time respectively.
 
-**Add DID document controller** 
+**Add DID document controller**
 
 Add DID document controllers using the gRPC message:
 
@@ -196,7 +190,7 @@ Add DID document controllers using the gRPC message:
 AddController(
    MsgAddController{ Id string, ControllerDid []string, SignerAccount string}
 )
-``` 
+```
 
 The parameters are as follows:
 
@@ -206,7 +200,7 @@ The parameters are as follows:
 
 A controller of a DID document MUST be a DID of subtype `key`.
 
-**Remove a DID document controller** 
+**Remove a DID document controller**
 
 Remove DID document controllers using the gRPC message:
 
@@ -214,7 +208,7 @@ Remove DID document controllers using the gRPC message:
 DeleteController(
    MsgDeleteController{ Id string, ControllerDid []string, SignerAccount string}
 )
-``` 
+```
 
 The parameters are:
 
@@ -222,13 +216,13 @@ The parameters are:
  - `Controller` the DID to be removed from the controllers list
  - `SignerAccount` is the account address that signs the transaction
 
-**Add a service** 
+**Add a service**
 
 A service MUST be an entity with the following properties:
-  
-- `id`: a valid RFC3986 URI string. 
+
+- `id`: a valid RFC3986 URI string.
 - `type`: a non empty string.
-- `serviceEndpoint`: a valid RFC3986 URI string.  
+- `serviceEndpoint`: a valid RFC3986 URI string.
 
 A service can be added using the gRPC method:
 
@@ -245,7 +239,7 @@ The parameters are:
  - `SignerAccount` is the account address that signs the transaction
 
 
-**Remove a service** 
+**Remove a service**
 
 A service can be deleted using the gRPC message:
 
@@ -253,7 +247,7 @@ A service can be deleted using the gRPC message:
 DeleteService(
    MsgDeleteService{Id string, ServiceID string, SignerAccount string}
 )
-``` 
+```
 
 The parameters are as follows:
 
@@ -268,9 +262,9 @@ The parameters are as follows:
 
 A verification method and its relationships are manipulated via the `Verification` object with the following properties:
 
-- `method` a verification method as described in the [W3C specification](https://www.w3.org/TR/2021/NOTE-did-spec-registries-20211102/#verificationmethod) 
+- `method` a verification method as described in the [W3C specification](https://www.w3.org/TR/2021/NOTE-did-spec-registries-20211102/#verificationmethod)
 - `relationships` a non-empty list of relationships associated to the verification method
-- `context` a list of additional json-ld contexts to be added to the did document 
+- `context` a list of additional json-ld contexts to be added to the did document
 
 
 **Add a verification method**
@@ -280,8 +274,8 @@ Add a new verification method using the gRPC message:
 ```golang
 AddVefication(
    MsgAddVerification{
-      Id string, 
-      Verification Verification, 
+      Id string,
+      Verification Verification,
       SignerAccount string
    }
 )
@@ -324,9 +318,9 @@ Set the relationships of a verification method using the gRPC message:
 ```golang
 SetVerificationRelationships(
    MsgSetVerificationRelationships{
-      Id string, 
-      MethodId string, 
-      Relationships []string, 
+      Id string,
+      MethodId string,
+      Relationships []string,
       SignerAccount string
    }
 )
@@ -366,17 +360,17 @@ The DID of the new DID document must match the existing document. All the valida
 
 Deactivation of a DID document is not currently supported
 
-### Method-Specific Properties 
+### Method-Specific Properties
 
 #### DID Core Verification Material
 
 The [Verification Material](https://www.w3.org/TR/2021/PR-did-core-20210803//#verification-material) type MUST support:
 
 - Type `EcdsaSecp256k1VerificationKey2019` with `pubKeyMultibase` to encode a Cosmos account public key in hexadecimal format
-- Type `CosmosAccountAddress` with `blockchainAccountID` to represent a Cosmos account 
+- Type `CosmosAccountAddress` with `blockchainAccountID` to represent a Cosmos account
 
 
-Support for other verification materials can be added. 
+Support for other verification materials can be added.
 
 #### Verification Relationships
 
@@ -395,7 +389,7 @@ The implementation for [DID document metadata](https://www.w3.org/TR/2021/PR-did
 
 - `created`: a [datetime](https://www.w3.org/TR/xmlschema11-2/#dateTime) string of the creation date that is the UTC date associated with the block height when the DID document was submitted the first time
 - `updated`: a [datetime](https://www.w3.org/TR/xmlschema11-2/#dateTime) string of the last update date that is the UTC date associated with the block height when the DID document was submitted the last time
-- `deactivated`: a boolean field that indicates if the DID document is [deactivated](#Deactivate) 
+- `deactivated`: a boolean field that indicates if the DID document is [deactivated](#Deactivate)
 - `versionId`: a hex-encoded BLAKE2b hash of the transaction that created or updated the DID
 
 #### DID Resolution Metadata
@@ -410,12 +404,12 @@ The [DID URL Syntax](https://www.w3.org/TR/2021/PR-did-core-20210803//#did-url-s
 
 The [DID Query parameters](https://www.w3.org/TR/2021/PR-did-core-20210803//#did-parameters) URL is outside the scope of the gRPC interface and is not covered in this ADR.
 
-<!-- 
+<!--
 
 The implementation MUST support the following query parameters:
 
-- `versionId` - to retrieve a DID document with a specific version 
-- `versionTime` - to retrieve the version of the DID document valid at a specific time, the parameter MUST be a valid [datetime](https://www.w3.org/TR/xmlschema11-2/#dateTime).   
+- `versionId` - to retrieve a DID document with a specific version
+- `versionTime` - to retrieve the version of the DID document valid at a specific time, the parameter MUST be a valid [datetime](https://www.w3.org/TR/xmlschema11-2/#dateTime).
 
 The format for the queries is:
 -->
@@ -428,7 +422,7 @@ Using personally identifiable information as DID Method-specific identifiers (fo
 
 ## Security Considerations
 
-Ephemeral DIDs (`did:cosmos:key` type) are generated based on blockchain addresses. If access to the authoritative keys for an account is lost, the DID's control and verifiable data issued by the DID is lost. 
+Ephemeral DIDs (`did:cosmos:key` type) are generated based on blockchain addresses. If access to the authoritative keys for an account is lost, the DID's control and verifiable data issued by the DID is lost.
 
 ## Consequences
 
@@ -457,7 +451,7 @@ While an ADR is in the DRAFT or PROPOSED stage, this section summarizes issues t
 Later, this section can optionally list ideas or improvements the author or reviewers found during the analysis of this ADR.
 
 - The `did:key` method specifies a key format that is different from the one used in this ADR. This ADR needs to be amended or follow a different approach.
-- The approach proposed is somewhat locked into the current implementation and will have to be revised in successive iterations. 
+- The approach proposed is somewhat locked into the current implementation and will have to be revised in successive iterations.
 ## Test Cases [optional]
 
 N/A
@@ -466,7 +460,3 @@ N/A
 
 - [DID Core v1.0](https://www.w3.org/TR/2021/PR-did-core-20210803/)
 - [DID Specification Registries (11 February 2022)](https://w3c.github.io/did-spec-registries)
-
-
-
-

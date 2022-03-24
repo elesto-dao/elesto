@@ -36,7 +36,7 @@ in addition, the following fields map the verification relationships defined in 
 - `capabilityInvocation`
 - `capabilityDelegation`
 
-#### Source 
+#### Source
 +++ https://github.com/elesto-dao/elesto/blob/v1.0.0/proto/did/did.proto#L15
 
 ### Verification Method
@@ -46,15 +46,15 @@ Verification methods are stored within a DidDocument and are used to store publi
 A verification method has the following fields:
 
 - `id` - a string containing the unique identifier of the verification method (required).
-- `type` - a string the type of verification method 
-- `controller` - a string containing the did of the owner of the key 
-- `verificationMaterial`: a string that is either   
+- `type` - a string the type of verification method
+- `controller` - a string containing the did of the owner of the key
+- `verificationMaterial`: a string that is either
   - `blockchainAccountID` - a string representing a cosmos based account address
   - `publicKeyHex` - a string representing a public key encoded as a hex string
   - `publicKeyMultibase` - a string representing a public key encoded according to the Multibase Data Format [Hexadecimal upper-case encoding](https://datatracker.ietf.org/doc/html/draft-multiformats-multibase#appendix-B.1)
   - `publicKeyJwk` - an object representing a [json web public key](https://www.w3.org/TR/did-spec-registries/#publickeyjwk)
-  
-#### Source 
+
+#### Source
 +++ https://github.com/elesto-dao/elesto/blob/v1.0.0/proto/did/did.proto#L73
 
 
@@ -67,19 +67,6 @@ A service has the following fields:
 - `type` - a string representing the type of the service (for example: DIDComm)
 - `serviceEndpoint` - a string representing the endpoint of the service, such as an URL
 
-#### Source 
+#### Source
 
 +++ https://github.com/elesto-dao/elesto/blob/v1.0.0/proto/did/did.proto#L87
-
-## DidMetadata
-
-A DidMetadata stores information relative to a DID document. The implementation supports the following fields: 
-
-- `versionId` - the version of the last update operation for the did document
-- `updated` - the timestamp of the last update operation for the did document 
-- `created` - the timestamp of the create operation.
-- `deactivated` - a boolean indicating if the did has been deactivated
-#### Source 
-+++ https://github.com/elesto-dao/elesto/blob/v1.0.0/proto/did/did.proto#L98
-
-

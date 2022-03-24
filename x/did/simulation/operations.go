@@ -203,7 +203,11 @@ func SimulateMsgCreateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 
 		if found {
 			// return an error that will not stop simulation as the did was found
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgCreateDidDocument, "did found, could not create did"), nil, nil
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgCreateDidDocument,
+				"did found, could not create did",
+			), nil, nil
 		}
 		return opMsg, fOp, err
 	}
@@ -225,6 +229,17 @@ func SimulateMsgAddVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Accou
 		didvmkeyID := did.NewChainDID(ctx.ChainID(), keyAddress)
 		vmkeyID := didvmkeyID.NewVerificationMethodID(keyAddress)
 		vmkeyType := did.EcdsaSecp256k1VerificationKey2019
+
+		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
+		for _, vm := range didDoc.VerificationMethod {
+			if vmkeyID == vm.Id {
+				return simtypes.NoOpMsg(
+					did.ModuleName,
+					TypeMsgAddVerification,
+					"vm already exists, could not add verification method",
+				), nil, nil
+			}
+		}
 
 		vm := did.NewVerification(
 			did.NewVerificationMethod(
@@ -260,16 +275,13 @@ func SimulateMsgAddVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Accou
 
 		opMsg, fOp, err := simulation.GenAndDeliverTxWithRandFees(txCtx)
 
-		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
 		if !found {
 			// return an error that will not stop simulation as the did was not found or the verification method already exists
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgAddVerification, "did not found, could not add verification method"), nil, nil
-		}
-
-		for _, vm := range didDoc.VerificationMethod {
-			if vmkeyID == vm.Id {
-				return simtypes.NoOpMsg(did.ModuleName, TypeMsgAddVerification, "vm already exists, could not add verification method"), nil, nil
-			}
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgAddVerification,
+				"did not found, could not add verification method",
+			), nil, nil
 		}
 
 		return opMsg, fOp, err
@@ -289,12 +301,20 @@ func SimulateMsgRevokeVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Ac
 
 		// return an error that will not stop simulation as the did was not found or the verification method does not exists
 		if !found {
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgRevokeVerification, "did not found, could not remove verification method"), nil, nil
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgRevokeVerification,
+				"did not found, could not remove verification method",
+			), nil, nil
 		}
 
 		// return an error that will not stop simulation if the length of the VM array is 1
 		if len(vm) == 1 {
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgRevokeVerification, "could not remove verification method as it would break the did document"), nil, nil
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgRevokeVerification,
+				"could not remove verification method as it would break the did document",
+			), nil, nil
 		}
 
 		msg := did.NewMsgRevokeVerification(
@@ -336,12 +356,20 @@ func SimulateMsgSetVerificationRelationships(k keeper.Keeper, bk did.BankKeeper,
 
 		// return an error that will not stop simulation as the did was not found or the verification method does not exists
 		if !found {
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgSetVerificationRelationships, "did not found, could not remove verification method"), nil, nil
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgSetVerificationRelationships,
+				"did not found, could not remove verification method",
+			), nil, nil
 		}
 
 		// return an error that will not stop simulation if the length of the VM array is 1
 		if len(vm) == 1 {
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgSetVerificationRelationships, "could not remove verification method as it would break the did document"), nil, nil
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgSetVerificationRelationships,
+				"could not remove verification method as it would break the did document",
+			), nil, nil
 		}
 
 		msg := did.NewMsgSetVerificationRelationships(
@@ -410,7 +438,11 @@ func SimulateMsgAddService(k keeper.Keeper, bk did.BankKeeper, ak did.AccountKee
 
 		// return an error that will not stop simulation as the did was not found
 		if !found {
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgAddService, "did not found, could not add service"), nil, nil
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgAddService,
+				"did not found, could not add service",
+			), nil, nil
 		}
 
 		return opMsg, fOp, err
@@ -454,12 +486,20 @@ func SimulateMsgDeleteService(k keeper.Keeper, bk did.BankKeeper, ak did.Account
 
 		// return an error that will not stop simulation as the did was not found
 		if !found {
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgDeleteService, "did not found, could not remove service"), nil, nil
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgDeleteService,
+				"did not found, could not remove service",
+			), nil, nil
 		}
 
 		// return an error that will not stop simulation if the length of the Service array is 0
 		if len(service) == 0 {
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgDeleteService, "could not remove verification method as it would break the did document"), nil, nil
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgDeleteService,
+				"could not remove verification method as it would break the did document",
+			), nil, nil
 		}
 
 		return opMsg, fOp, err
@@ -505,7 +545,11 @@ func SimulateMsgAddController(k keeper.Keeper, bk did.BankKeeper, ak did.Account
 
 		// return an error that will not stop simulation as the did was not found
 		if !found {
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgAddController, "did not found, could not add controller"), nil, nil
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgAddController,
+				"did not found, could not add controller",
+			), nil, nil
 		}
 
 		return opMsg, fOp, err
@@ -552,14 +596,22 @@ func SimulateMsgDeleteController(k keeper.Keeper, bk did.BankKeeper, ak did.Acco
 
 		// return an error that will not stop simulation as the did was not found
 		if !found {
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgDeleteController, "did not found, could not remove service"), nil, nil
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgDeleteController,
+				"did not found, could not remove service",
+			), nil, nil
 		}
 
 		controller := didDoc.Controller
 
 		// return an error that will not stop simulation if the length of the Controller array is 0
 		if len(controller) == 0 {
-			return simtypes.NoOpMsg(did.ModuleName, TypeMsgDeleteController, "could not remove verification method as it would break the did document"), nil, nil
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgDeleteController,
+				"could not remove verification method as it would break the did document",
+			), nil, nil
 		}
 
 		return opMsg, fOp, err
