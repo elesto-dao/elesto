@@ -7,26 +7,24 @@ This document describes the state transitions pertaining a [DidDocument](02_stat
 3. [Update](03_state_transitions.md#Update)
 4. [Deactivate](03_state_transitions.md#Deactivate)
 
-A [DidMetadata](02_state.md#didmetadata) lifecycle follows the lifecycle of a  [DidDocument](02_state.md#diddocument) 
-
 ### Create
 
 [DidDocument](02_state.md#diddocument) are created via the rpc method [CreateDidDocument](https://github.com/elesto-dao/elesto/blob/v1.0.0/proto/did/tx.proto#L13) that accepts a [MsgCreateDidDocument](./04_messages.md#MsgCreateDidDocument) messages as parameter.
 
 The operation will fail if:
-- the signer account has insufficient funds 
-- the did is malformed 
+- the signer account has insufficient funds
+- the did is malformed
 - a did document with the same did exists
-- verifications 
-  - the verification method is invalid (according to the verification method specifications) 
+- verifications
+  - the verification method is invalid (according to the verification method specifications)
   - there is more than one verification method with the same id
   - relationships are empty
   - relationships contain unsupported values (according to the did method specifications)
-- services are invalid (according to the services specifications) 
+- services are invalid (according to the services specifications)
 
-Example: 
+Example:
 
-<!-- 
+<!--
 
 elestod tx did create-did \
  900d82bc-2bfe-45a7-ab22-a8d11773568e \
@@ -81,12 +79,6 @@ CreateDidDocument(
     "capabilityInvocation": [],
     "capabilityDelegation": []
   },
-  "didMetadata": {
-    "versionId": "571615b8146082deaac90fa01afc8ff88e5a71b4c9c29bcaffef2d11b39a0437",
-    "created": "2021-08-23T08:24:26.972761898Z",
-    "updated": "2021-08-23T08:24:26.972761898Z",
-    "deactivated": false
-  }
 }
 
 ```
@@ -104,7 +96,7 @@ CreateDidDocument(
 The operation will fail if:
 - the did does not exists
 
-Example: 
+Example:
 
 <!--
 elestod query did did did:cosmos:cash:900d82bc-2bfe-45a7-ab22-a8d11773568e \
@@ -145,12 +137,6 @@ QueryDidDocument(
     "capabilityInvocation": [],
     "capabilityDelegation": []
   },
-  "didMetadata": {
-    "versionId": "571615b8146082deaac90fa01afc8ff88e5a71b4c9c29bcaffef2d11b39a0437",
-    "created": "2021-08-23T08:24:26.972761898Z",
-    "updated": "2021-08-23T08:24:26.972761898Z",
-    "deactivated": false
-  }
 }
 
 ```
@@ -179,7 +165,7 @@ All the operations will fail if:
 
 The following sections provide specific details for each method invocation.
 
-#### UpdateDidDocument 
+#### UpdateDidDocument
 
 The  `UpdateDidDocument` method will is used to **overwrite** the  [DidDocument](02_state.md#diddocument). It accepts a [MsgUpdateDidDocument](./04_messages.md#MsgUpdateDidDocument) as a parameter.
 
@@ -188,7 +174,7 @@ The operation will fail if:
 - any integrity and sanity checks on the DID document fail
 - the DID document is not found
 
-<!-- 
+<!--
 
 elestod tx did update-did-document \
  900d82bc-2bfe-45a7-ab22-a8d11773568e \
@@ -257,12 +243,6 @@ UpdateDidDocument(
     "capabilityInvocation": [],
     "capabilityDelegation": []
   },
-  "didMetadata": {
-    "versionId": "9f7c547dc852af60c9da1fd514e1497d407b6a3d8ae3e52b626d536519dc8f4c",
-    "created": "2021-08-23T08:24:26.972761898Z",
-    "updated": "2021-08-24T13:27:50.024635302Z",
-    "deactivated": false
-  }
 }
 ```
 
@@ -277,12 +257,12 @@ The `AddVerification` method is used to add new [verification methods](https://w
 
 The operation will fail if:
 
-- the verification method is invalid (according to the verification method specifications) 
+- the verification method is invalid (according to the verification method specifications)
 - the verification method id already exists for the did document
 - the verification relationships are empty
 - the verification relationships contain unsupported values (according to the did method specification)
 
-<!-- 
+<!--
 
 elestod tx did add-verification-method \
  900d82bc-2bfe-45a7-ab22-a8d11773568e \
@@ -344,12 +324,6 @@ AddVerification(
     "capabilityInvocation": [],
     "capabilityDelegation": []
   },
-  "didMetadata": {
-    "versionId": "37467691e6ad832534f5d13df0be3362ec6aeb8cce1f252bb448879e1847de77",
-    "created": "2021-08-23T08:24:26.972761898Z",
-    "updated": "2021-08-24T14:09:11.322038045Z",
-    "deactivated": false
-  }
 }
 
 ```
@@ -414,12 +388,6 @@ RevokeVerification(
     "capabilityInvocation": [],
     "capabilityDelegation": []
   },
-  "didMetadata": {
-    "versionId": "d89461469fcac09d7f126c94493af54f58bbac27aae946aeed443b9ac669993d",
-    "created": "2021-08-23T08:24:26.972761898Z",
-    "updated": "2021-08-24T14:28:31.821486259Z",
-    "deactivated": false
-  }
 }
 
 ```
@@ -438,7 +406,7 @@ The `SetVerificationRelationships` method is used to **overwrite** existing [ver
 The operation will fail if:
 
 - the verification method id is not found for the target did document
-- the verification relationships are empty 
+- the verification relationships are empty
 - the verification relationships contain unsupported values (according to the did method specification)
 
 <!--
@@ -491,12 +459,6 @@ SetVerificationRelationships(
     ],
     "capabilityDelegation": []
   },
-  "didMetadata": {
-    "versionId": "4f0f8857ab36bdeee0ddb541ea7e7b9cb509d29e1103cc7def44d3d1e8220c22",
-    "created": "2021-08-23T08:24:26.972761898Z",
-    "updated": "2021-08-24T15:54:40.902858856Z",
-    "deactivated": false
-  }
 }
 
 ```
@@ -521,7 +483,7 @@ The operation will fail if:
 
 elestod tx did add-service \
  900d82bc-2bfe-45a7-ab22-a8d11773568e \
- 
+
 TODO
 
  --from vasp --node https://elesto.app.beta.starport.cloud:443 --chain-id cosmoscash-testnet
@@ -577,12 +539,6 @@ AddService(
     ],
     "capabilityDelegation": []
   },
-  "didMetadata": {
-    "versionId": "3021b47687e682bdd31dac8996537dea14bd0d4e7d90dc618a7f400a3024c048",
-    "created": "2021-08-23T08:24:26.972761898Z",
-    "updated": "2021-08-24T16:24:40.902858856Z",
-    "deactivated": false
-  }
 }
 
 ```
@@ -604,7 +560,7 @@ The operation will fail if:
 
 elestod tx did add-service \
  900d82bc-2bfe-45a7-ab22-a8d11773568e \
- 
+
 TODO
 
  --from vasp --node https://elesto.app.beta.starport.cloud:443 --chain-id cosmoscash-testnet
@@ -650,12 +606,6 @@ DeleteService(
     ],
     "capabilityDelegation": []
   },
-  "didMetadata": {
-    "versionId": "5b3fc976d1393bf4a144cdd4d99612b813777a60ca6368dcd396cc687f58c872",
-    "created": "2021-08-23T08:24:26.972761898Z",
-    "updated": "2021-08-24T17:51:40.902858856Z",
-    "deactivated": false
-  }
 }
 
 ```
@@ -677,7 +627,7 @@ The operation will fail if:
 
 elestod tx did add-controller \
  900d82bc-2bfe-45a7-ab22-a8d11773568e \
- 
+
 TODO
 
  --from vasp --node https://elesto.app.beta.starport.cloud:443 --chain-id cosmoscash-testnet
@@ -723,12 +673,6 @@ AddController(
     ],
     "capabilityDelegation": []
   },
-  "didMetadata": {
-    "versionId": "5b3fc976d1393bf4a144cdd4d99612b813777a60ca6368dcd396cc687f58c872",
-    "created": "2021-08-23T08:24:26.972761898Z",
-    "updated": "2021-08-24T17:51:40.902858856Z",
-    "deactivated": false
-  }
 }
 
 ```
@@ -749,7 +693,7 @@ The operation will fail if:
 
 elestod tx did add-controller \
  900d82bc-2bfe-45a7-ab22-a8d11773568e \
- 
+
 TODO
 
  --from vasp --node https://elesto.app.beta.starport.cloud:443 --chain-id cosmoscash-testnet
@@ -794,12 +738,6 @@ DeleteController(
     ],
     "capabilityDelegation": []
   },
-  "didMetadata": {
-    "versionId": "5b3fc976d1393bf4a144cdd4d99612b813777a60ca6368dcd396cc687f58c872",
-    "created": "2021-08-23T08:24:26.972761898Z",
-    "updated": "2021-08-24T17:51:40.902858856Z",
-    "deactivated": false
-  }
 }
 
 ```

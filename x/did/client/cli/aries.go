@@ -200,7 +200,6 @@ func NewLinkAriesAgentCmd() *cobra.Command {
 			)
 			// broadcast the messages
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msgAV, msgAS)
-
 		},
 	}
 
