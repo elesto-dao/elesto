@@ -54,10 +54,7 @@ func (msg MsgCreateDidDocument) GetSigners() []sdk.AccAddress {
 // UPDATE IDENTIFIER
 // --------------------------
 
-// msg types
-const (
-	TypeMsgUpdateDidDocument = "update-did"
-)
+var _ sdk.Msg = &MsgUpdateDidDocument{}
 
 // NewMsgUpdateDidDocument creates a new MsgUpdateDidDocument instance
 func NewMsgUpdateDidDocument(
@@ -76,13 +73,14 @@ func (MsgUpdateDidDocument) Route() string {
 }
 
 // Type implements sdk.Msg
-func (MsgUpdateDidDocument) Type() string {
-	return TypeMsgUpdateDidDocument
+func (msg MsgUpdateDidDocument) Type() string {
+	return sdk.MsgTypeURL(&msg)
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (MsgUpdateDidDocument) GetSignBytes() []byte {
-	panic("TODO: needed in simulations for fuzz testing")
+func (msg MsgUpdateDidDocument) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg
