@@ -41,11 +41,11 @@ func TestMsgUpdateDidDocument_Route(t *testing.T) {
 }
 
 func TestMsgUpdateDidDocument_Type(t *testing.T) {
-	assert.Equalf(t, TypeMsgUpdateDidDocument, MsgUpdateDidDocument{}.Type(), "Type()")
+	assert.Equalf(t, sdk.MsgTypeURL(&MsgUpdateDidDocument{}), MsgUpdateDidDocument{}.Type(), "Type()")
 }
 
 func TestMsgUpdateDidDocument_GetSignBytes(t *testing.T) {
-	assert.Panicsf(t, func() { MsgUpdateDidDocument{}.GetSignBytes() }, "GetSignBytes()")
+	assert.Equal(t, sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&MsgUpdateDidDocument{})), MsgUpdateDidDocument{}.GetSignBytes(), "GetSignBytes()")
 }
 
 func TestMsgUpdateDidDocument_GetSigners(t *testing.T) {
