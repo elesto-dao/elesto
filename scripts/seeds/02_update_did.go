@@ -21,12 +21,15 @@ import (
 
 // Test data for the sees to run
 const (
-	GrpcConnectionTimeoutSeconds = 3
-	TestKey                      = "092181614ac581d525722912a6152e71ec9f2a19ca0c34ec7d5266120eb868f5"
-	TestKey2                     = "d154a53e883271a6444edb933993594338e01b02244974861215d4eb77f020c9"
-	TestKey3                     = "b2210c3c17118f55f8fc70a8650cae033708149b814d4d89757655889a64cdf3"
-	AccountAddressPrefix         = "elesto"
-	ChainID                      = "elesto"
+	GrpcConnectionTimeoutSeconds = 10
+	// TestKey is defined in the 00_start_chain.sh seed using the add-genesis-account cmd
+	// this key is used to create the did in this seed
+	TestKey              = "0c7636a266c5b92a3940ba15c136a87f03e29a5fa111034b31bbbfc75d606739"
+	TestKey2             = "d154a53e883271a6444edb933993594338e01b02244974861215d4eb77f020c9"
+	TestKey3             = "b2210c3c17118f55f8fc70a8650cae033708149b814d4d89757655889a64cdf3"
+	AccountAddressPrefix = "elesto"
+	ChainID              = "elesto"
+	SampleDIDID          = "bob"
 )
 
 // Various prefixes for accounts and public keys
@@ -138,11 +141,11 @@ func main() {
 	bz, _ := hex.DecodeString(TestKey)
 	priv1 := &secp256k1.PrivKey{Key: bz}
 
-	accNum := uint64(3)
+	accNum := uint64(15)
 	accSeq := uint64(0)
 
 	// create a did for the user
-	didID := did.NewChainDID(ChainID, "bob")
+	didID := did.NewChainDID(ChainID, SampleDIDID)
 	pubKey := priv1.PubKey()
 	accAddress := sdk.AccAddress(priv1.PubKey().Address())
 	vmID := didID.NewVerificationMethodID(accAddress.String())
@@ -168,13 +171,14 @@ func main() {
 	// Sign the create did message
 	txBytes := SignMsg(encCfg, msg, priv1, accNum, accSeq)
 
-	_, err := txClient.BroadcastTx(
+	resp, err := txClient.BroadcastTx(
 		context.Background(),
 		&txtypes.BroadcastTxRequest{
 			Mode:    txtypes.BroadcastMode_BROADCAST_MODE_BLOCK,
 			TxBytes: txBytes,
 		},
 	)
+	fmt.Println(resp)
 	if err != nil {
 		panic(err)
 	}
