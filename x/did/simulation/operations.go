@@ -17,6 +17,7 @@ import (
 
 var (
 	TypeMsgCreateDidDocument            = sdk.MsgTypeURL(&did.MsgCreateDidDocument{})
+	TypeMsgUpdateDidDocument            = sdk.MsgTypeURL(&did.MsgUpdateDidDocument{})
 	TypeMsgAddVerification              = sdk.MsgTypeURL(&did.MsgAddVerification{})
 	TypeMsgRevokeVerification           = sdk.MsgTypeURL(&did.MsgRevokeVerification{})
 	TypeMsgSetVerificationRelationships = sdk.MsgTypeURL(&did.MsgSetVerificationRelationships{})
@@ -28,6 +29,7 @@ var (
 
 const (
 	opWeightMsgCreateDidDocument            = "op_weight_msg_create_did_document"
+	opWeightMsgUpdateDidDocument            = "op_weight_msg_update_did_document"
 	opWeightMsgAddVerification              = "op_weight_msg_create_add_verification"
 	opWeightMsgRevokeVerification           = "op_weight_msg_create_revoke_verification"
 	opWeightMsgSetVerificationRelationships = "op_weight_msg_create_set_verification_relationships"
@@ -38,6 +40,7 @@ const (
 
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCreateDidDocument            int = 100
+	defaultWeightMsgUpdateDidDocument            int = 100
 	defaultWeightMsgAddVerification              int = 100
 	defaultWeightMsgRevokeVerification           int = 100
 	defaultWeightMsgSetVerificationRelationships int = 200
@@ -57,6 +60,13 @@ func WeightedOperations(simState module.SimulationState, didKeeper keeper.Keeper
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateDidDocument, &weightMsgCreateDidDocument, nil,
 		func(_ *rand.Rand) {
 			weightMsgCreateDidDocument = defaultWeightMsgCreateDidDocument
+		},
+	)
+
+	var weightMsgUpdateDidDocument int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateDidDocument, &weightMsgUpdateDidDocument, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateDidDocument = defaultWeightMsgUpdateDidDocument
 		},
 	)
 
@@ -112,6 +122,11 @@ func WeightedOperations(simState module.SimulationState, didKeeper keeper.Keeper
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCreateDidDocument,
 		SimulateMsgCreateDidDocument(didKeeper, bk, ak),
+	))
+
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateDidDocument,
+		SimulateMsgUpdateDidDocument(didKeeper, bk, ak),
 	))
 
 	operations = append(operations, simulation.NewWeightedOperation(
@@ -209,6 +224,121 @@ func SimulateMsgCreateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 				"did found, could not create did",
 			), nil, nil
 		}
+		return opMsg, fOp, err
+	}
+}
+
+// SimulateMsgUpdateDidDocument simulates a MsgUpdateDidDocument message
+func SimulateMsgUpdateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.AccountKeeper) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		didOwner, _ := simtypes.RandomAcc(r, accs)
+		ownerAddress := didOwner.Address.String()
+		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+
+		// build vm 1
+		vmKey, _ := simtypes.RandomAcc(r, accs)
+		keyAddress := vmKey.Address.String()
+		didvmkeyID := did.NewChainDID(ctx.ChainID(), keyAddress)
+		vmkeyID := didvmkeyID.NewVerificationMethodID(keyAddress)
+		vmkeyType := did.EcdsaSecp256k1VerificationKey2019
+		vm := did.NewVerification(
+			did.NewVerificationMethod(
+				vmkeyID,
+				didID,
+				did.NewPublicKeyMultibase(vmKey.PubKey.Bytes()),
+				vmkeyType,
+			),
+			[]string{did.Authentication},
+			nil,
+		)
+
+		// build vm 2
+		vmKey2, _ := simtypes.RandomAcc(r, accs)
+		accAddress2 := sdk.AccAddress(vmKey2.PubKey.Address())
+		vmID2 := didID.NewVerificationMethodID(accAddress2.String())
+		vmType2 := did.CosmosAccountAddress
+		vm2 := did.NewVerification(
+			did.NewVerificationMethod(
+				vmID2,
+				didID,
+				did.NewBlockchainAccountID("elesto", accAddress2.String()),
+				vmType2,
+			),
+			[]string{did.KeyAgreement, did.AssertionMethod, did.Authentication},
+			nil,
+		)
+
+		// create services to add to did doc
+		service1 := did.NewService("service:emti-agent1", "DIDComm", "https://agents.elesto.app.beta.starport.cloud/emti")
+		service2 := did.NewService("service:emti-agent2", "DIDComm", "https://agents.elesto.app.beta.starport.cloud/emti")
+		service3 := did.NewService("service:emti-agent3", "DIDComm", "https://agents.elesto.app.beta.starport.cloud/emti")
+
+		// create controllers to add to did doc
+		controller, _ := simtypes.RandomAcc(r, accs)
+		controllerAddress := sdk.AccAddress(controller.PubKey.Address())
+		controllerDidID := did.NewKeyDID(controllerAddress.String())
+
+		// update the did document
+		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
+		err := didDoc.AddControllers(controllerDidID.String())
+		if err != nil {
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgUpdateDidDocument,
+				"did not found, could not add controller",
+			), nil, err
+		}
+
+		err = didDoc.AddVerifications(vm, vm2)
+		if err != nil {
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgUpdateDidDocument,
+				"did not found, could not add vm",
+			), nil, err
+		}
+		err = didDoc.AddServices(service1, service2, service3)
+		if err != nil {
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgUpdateDidDocument,
+				"did not found, could not add service",
+			), nil, err
+		}
+
+		msg := did.NewMsgUpdateDidDocument(
+			&didDoc,
+			ownerAddress,
+		)
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         TypeMsgUpdateDidDocument,
+			Context:         ctx,
+			SimAccount:      didOwner,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      did.ModuleName,
+			CoinsSpentInMsg: sdk.NewCoins(),
+		}
+
+		opMsg, fOp, err := simulation.GenAndDeliverTxWithRandFees(txCtx)
+
+		if !found {
+			// return an error that will not stop simulation as the did was not found
+			return simtypes.NoOpMsg(
+				did.ModuleName,
+				TypeMsgUpdateDidDocument,
+				"did not found, could not add verification method",
+			), nil, nil
+		}
+
 		return opMsg, fOp, err
 	}
 }
