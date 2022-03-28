@@ -244,6 +244,7 @@ start-dev: install
 
 seed:
 	./scripts/seeds/01_identifier_seeds.sh
+	@go run ./scripts/seeds/02_update_did.go
 
 ###############################################################################
 ###                                CI / CD                                  ###
