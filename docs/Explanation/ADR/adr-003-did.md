@@ -56,11 +56,10 @@ The namespace specific identifier is defined by the following ABNF:
 
 ```ABNF
 cosmos-did                = "did:cosmos:" identifier-type
-identifier-type           = cosmos-key / cosmos-network
+identifier-type           = cosmos-key / unique-identifier
 cosmos-key                = "key:" 1*255id-char "1" 20*255HEXDIG
-cosmos-network            = "net:" 1*255id-char ":" unique-identifier
 unique-identifier         = 38*255id-char
-id-char                   = ALPHA / DIGIT / (ALPHA "-") / (DIGIT "-")
+id-char                   = ALPHA / DIGIT / (ALPHA "-") / (DIGIT "-") / (ALPHA ":") / (DIGIT ":")
 ```
 
 For the `unique-identifier` it is RECOMMENDED to use a UUID.
@@ -68,7 +67,7 @@ For the `unique-identifier` it is RECOMMENDED to use a UUID.
 The `identifier-type` distinguishes between two DID types:
 
 1. The `key` type, inspired from the [`did:key`](https://w3c-ccg.github.io/did-method-key/) method
-2. The `net` type that identifies the DID and the originating network of the DID
+2. The `unique-identifier` type that identifies the DID and the originating network of the DID
 
 DIDs of `key` type are ephemeral and immutable. DIDs of `key` type are always generated from the Cosmos blockchain address they refer to. For example, see these DIDs of `key` type:
 
@@ -76,7 +75,7 @@ DIDs of `key` type are ephemeral and immutable. DIDs of `key` type are always ge
 
 DIDs of `net` type are persistent and mutable. DIDs of `net` type are stored in the node database and can be created and updated according to rules described in the [DID Operations](#did-operations) section. For example, see this DID of `net` type:
 
-- `did:cosmos:net:elesto:806e557e-ecdb-4e80-ab0d-a82ad35c9ceb`
+- `did:cosmos:elesto:806e557e-ecdb-4e80-ab0d-a82ad35c9ceb`
 
 
 ##### DID Operations
@@ -142,20 +141,20 @@ This example shows a DID document that was resolved using the gRPC interface:
     "context": [
       "https://www.w3.org/ns/did/v1"
     ],
-    "id": "did:cosmos:net:elesto:900d82bc-2bfe-45a7-ab22-a8d11773568e",
+    "id": "did:cosmos:elesto:900d82bc-2bfe-45a7-ab22-a8d11773568e",
     "controller": [
       "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
     ],
     "verificationMethod": [
       {
-        "controller": "did:cosmos:net:elesto:900d82bc-2bfe-45a7-ab22-a8d11773568e",
-        "id": "did:cosmos:net:elesto:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0",
+        "controller": "did:cosmos:elesto:900d82bc-2bfe-45a7-ab22-a8d11773568e",
+        "id": "did:cosmos:elesto:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0",
         "publicKeyMultibase": "0248a5178d7a90ec187b3c3d533a4385db905f6fcdaac5026859ca5ef7b0b1c3b5",
         "type": "EcdsaSecp256k1VerificationKey2019"
       }
     ],
     "authentication": [
-      "did:cosmos:net:elesto:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0"
+      "did:cosmos:elesto:900d82bc-2bfe-45a7-ab22-a8d11773568e#cosmos1x5hrv0hngmg8gls5cft7nphqs83njj25pwxpt0"
     ]
   },
 }
