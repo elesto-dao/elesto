@@ -35,7 +35,7 @@ func GetCmdQueryIdentifer() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "did [id]",
 		Short:   "Query for an did",
-		Example: "elestod query did did did:cosmos:net:elesto:bob",
+		Example: "elestod query did did did:cosmos:elesto:bob",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
