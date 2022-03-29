@@ -497,7 +497,6 @@ func (didDoc *DidDocument) SetVerificationRelationships(methodID string, relatio
 
 // setRelationships overwrite relationships for a did document
 func (didDoc *DidDocument) setRelationships(methodID string, relationships ...VerificationRelationship) {
-
 	// first remove existing relationships
 	for _, vr := range supportedRelationships {
 		vrs := didDoc.getRelationships(vr)

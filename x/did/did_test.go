@@ -22,17 +22,17 @@ func TestNewChainDID(t *testing.T) {
 		{
 			"subject",
 			"cash",
-			DID("did:cosmos:net:cash:subject"),
+			DID("did:cosmos:cash:subject"),
 		},
 		{
 			"",
 			"cash",
-			DID("did:cosmos:net:cash:"),
+			DID("did:cosmos:cash:"),
 		},
 		{
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			"cosmoshub",
-			DID("did:cosmos:net:cosmoshub:cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75"),
+			DID("did:cosmos:cosmoshub:cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75"),
 		},
 	}
 	for i, tt := range tests {
@@ -72,9 +72,9 @@ func TestDID_NewVerificationMethodID(t *testing.T) {
 	}{
 		{
 			"PASS: generated vmId for network DID",
-			DID("did:cosmos:net:foochain:whatever"),
+			DID("did:cosmos:foochain:whatever"),
 			"123456",
-			"did:cosmos:net:foochain:whatever#123456",
+			"did:cosmos:foochain:whatever#123456",
 		},
 		{
 			"PASS: generated vmId for key DID",
@@ -95,11 +95,11 @@ func TestIsValidDID(t *testing.T) {
 		input string
 		want  bool
 	}{
-		{"did:cosmos:net:cash:subject", true},
+		{"did:cosmos:cash:subject", true},
 		{"did:cosmos:key:cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75", true},
 		{"did:cosmos:key:cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75#key-1", false},
 		{"did:subject", false},
-		{"DID:cosmos:net:elesto:subject", false},
+		{"DID:cosmos:elesto:subject", false},
 		{"d1d:cash:subject", false},
 		{"d1d:#:subject", false},
 		{"", false},
@@ -118,13 +118,13 @@ func TestIsValidDIDURL(t *testing.T) {
 		input string
 		want  bool
 	}{
-		{"did:cosmos:net:subject", true},
+		{"did:cosmos:subject", true},
 		{"did:cosmos:key:cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75", true},
 		{"did:cosmos:key:cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75#key-1", true},
 		{"did:cosmos:key:cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75?key=1", true},
-		{"did:cosmos:net:cosmoscash-testnet:575d062c-d110-42a9-9c04-cb1ff8c01f06#Z46DAL1MrJlVW_WmJ19WY8AeIpGeFOWl49Qwhvsnn2M", true},
+		{"did:cosmos:cosmoscash-testnet:575d062c-d110-42a9-9c04-cb1ff8c01f06#Z46DAL1MrJlVW_WmJ19WY8AeIpGeFOWl49Qwhvsnn2M", true},
 		{"did:subject", false},
-		{"DID:cosmos:net:subject", false},
+		{"DID:cosmos:subject", false},
 		{"d1d:cash:subject", false},
 		{"d1d:#:subject", false},
 		{"", false},
@@ -180,7 +180,7 @@ func TestIsValidDIDDocument(t *testing.T) {
 			func() *DidDocument {
 				return &DidDocument{
 					Context: []string{contextDIDBase},
-					Id:      "did:cosmos:net:cash:1",
+					Id:      "did:cosmos:cash:1",
 				}
 			},
 			true, // all good
@@ -190,7 +190,7 @@ func TestIsValidDIDDocument(t *testing.T) {
 			func() *DidDocument {
 				return &DidDocument{
 					Context: []string{},
-					Id:      "did:cosmos:net:cash:1",
+					Id:      "did:cosmos:cash:1",
 				}
 			},
 			false, // missing context
@@ -237,9 +237,9 @@ func TestIsValidDIDDocument(t *testing.T) {
 			func() *DidDocument {
 				return &DidDocument{
 					Context: []string{contextDIDBase},
-					Id:      "did:cosmos:net:foochain:1",
+					Id:      "did:cosmos:foochain:1",
 					Controller: []string{
-						"did:cosmos:net:foochain:whatever",
+						"did:cosmos:foochain:whatever",
 					},
 				}
 			},
@@ -271,7 +271,7 @@ func TestValidateVerification(t *testing.T) {
 			v: NewVerification(
 				NewVerificationMethod(
 					"not:a:did",
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject",
 					NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 					EcdsaSecp256k1VerificationKey2019,
 				),
@@ -284,7 +284,7 @@ func TestValidateVerification(t *testing.T) {
 			name: "FAIL: invalid method controller",
 			v: NewVerification(
 				NewVerificationMethod(
-					"did:cosmos:net:elesto:subject#key-1",
+					"did:cosmos:elesto:subject#key-1",
 					"not:a:did",
 					NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 					EcdsaSecp256k1VerificationKey2019,
@@ -298,64 +298,64 @@ func TestValidateVerification(t *testing.T) {
 			name: "FAIL: empty method type",
 			v: NewVerification(
 				NewVerificationMethod(
-					"did:cosmos:net:elesto:subject#key-1",
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject#key-1",
+					"did:cosmos:elesto:subject",
 					NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 					"",
 				),
 				[]string{Authentication},
 				nil,
 			),
-			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification method type not set for verification method %s", "did:cosmos:net:elesto:subject#key-1"),
+			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification method type not set for verification method %s", "did:cosmos:elesto:subject#key-1"),
 		},
 		{
 			name: "FAIL: invalid blockchain id",
 			v: NewVerification(
 				NewVerificationMethod(
-					"did:cosmos:net:elesto:subject#key-1",
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject#key-1",
+					"did:cosmos:elesto:subject",
 					&VerificationMethod_BlockchainAccountID{BlockchainAccountID: ""},
 					CosmosAccountAddress,
 				),
 				[]string{Authentication},
 				nil,
 			),
-			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification material blockchainAccountId is empty for verification method id did:cosmos:net:elesto:subject#key-1"),
+			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification material blockchainAccountId is empty for verification method id did:cosmos:elesto:subject#key-1"),
 		},
 		{
 			name: "FAIL: invalid multibase key",
 			v: NewVerification(
 				NewVerificationMethod(
-					"did:cosmos:net:elesto:subject#key-1",
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject#key-1",
+					"did:cosmos:elesto:subject",
 					&VerificationMethod_PublicKeyMultibase{PublicKeyMultibase: ""},
 					EcdsaSecp256k1VerificationKey2019,
 				),
 				[]string{Authentication},
 				nil,
 			),
-			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification material publicKeyMultibase is empty for verification method id did:cosmos:net:elesto:subject#key-1"),
+			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification material publicKeyMultibase is empty for verification method id did:cosmos:elesto:subject#key-1"),
 		},
 		{
 			name: "FAIL: invalid hex key",
 			v: NewVerification(
 				NewVerificationMethod(
-					"did:cosmos:net:elesto:subject#key-1",
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject#key-1",
+					"did:cosmos:elesto:subject",
 					&VerificationMethod_PublicKeyHex{PublicKeyHex: ""},
 					EcdsaSecp256k1VerificationKey2019,
 				),
 				[]string{string(Authentication)},
 				nil,
 			),
-			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification material publicKeyHex is empty for verification method id did:cosmos:net:elesto:subject#key-1"),
+			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification material publicKeyHex is empty for verification method id did:cosmos:elesto:subject#key-1"),
 		},
 		{
 			name: "FAIL: no relationships defined",
 			v: NewVerification(
 				NewVerificationMethod(
-					"did:cosmos:net:elesto:subject#key-1",
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject#key-1",
+					"did:cosmos:elesto:subject",
 					NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 					EcdsaSecp256k1VerificationKey2019,
 				),
@@ -368,22 +368,22 @@ func TestValidateVerification(t *testing.T) {
 			name: "FAIL: undefined verification material",
 			v: NewVerification(
 				NewVerificationMethod(
-					"did:cosmos:net:elesto:subject#key-1",
-					DID("did:cosmos:net:elesto:subject"),
+					"did:cosmos:elesto:subject#key-1",
+					DID("did:cosmos:elesto:subject"),
 					nil,
 					EcdsaSecp256k1VerificationKey2019,
 				),
 				[]string{string(AssertionMethod)},
 				nil,
 			),
-			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification material '<nil>' unknown for verification method id did:cosmos:net:elesto:subject#key-1"),
+			wantErr: sdkerrors.Wrapf(ErrInvalidInput, "verification material '<nil>' unknown for verification method id did:cosmos:elesto:subject#key-1"),
 		},
 		{
 			name: "PASS: can add verification",
 			v: NewVerification(
 				NewVerificationMethod(
-					"did:cosmos:net:elesto:subject#key-1",
-					DID("did:cosmos:net:elesto:subject"),
+					"did:cosmos:elesto:subject#key-1",
+					DID("did:cosmos:elesto:subject"),
 					NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 					EcdsaSecp256k1VerificationKey2019,
 				),
@@ -415,7 +415,7 @@ func TestValidateService(t *testing.T) {
 	}{
 		{
 			name:    "PASS: valid service",
-			s:       NewService("did:cosmos:net:elesto:subject#did-comm", "DIDCommMessaging", "https://agent.abc/abc"),
+			s:       NewService("did:cosmos:elesto:subject#did-comm", "DIDCommMessaging", "https://agent.abc/abc"),
 			wantErr: nil,
 		},
 		{
@@ -430,7 +430,7 @@ func TestValidateService(t *testing.T) {
 		},
 		{
 			name:    "FAIL: invalid service endpoint",
-			s:       NewService("did:cosmos:net:elesto:subject#did-comm", "DIDCommMessaging", "not-an-uri"),
+			s:       NewService("did:cosmos:elesto:subject#did-comm", "DIDCommMessaging", "not-an-uri"),
 			wantErr: sdkerrors.Wrapf(ErrInvalidRFC3986UriFormat, "service endpoint %s is not a valid RFC3986 uri", "not-an-uri"),
 		},
 	}
@@ -479,13 +479,13 @@ func TestNewDidDocument(t *testing.T) {
 	}{
 		{
 			params: params{
-				"did:cosmos:net:elesto:subject",
+				"did:cosmos:elesto:subject",
 				[]DocumentOption{
 					WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-1",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-1",
+								"did:cosmos:elesto:subject",
 								NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -502,8 +502,8 @@ func TestNewDidDocument(t *testing.T) {
 					WithVerifications( // multiple verifications in separate entity
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-2",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-2",
+								"did:cosmos:elesto:subject",
 								NewBlockchainAccountID("cash", "cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2"),
 								CosmosAccountAddress,
 							),
@@ -528,19 +528,19 @@ func TestNewDidDocument(t *testing.T) {
 					"https://gpg.jsld.org/contexts/lds-gpg2020-v0.0.jsonld",
 					contextDIDBase,
 				},
-				Id:         "did:cosmos:net:elesto:subject",
+				Id:         "did:cosmos:elesto:subject",
 				Controller: []string{"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2"},
 				VerificationMethod: []*VerificationMethod{
 					{
-						"did:cosmos:net:elesto:subject#key-1",
+						"did:cosmos:elesto:subject#key-1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_PublicKeyMultibase{"F03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					{
-						"did:cosmos:net:elesto:subject#key-2",
+						"did:cosmos:elesto:subject#key-2",
 						CosmosAccountAddress.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_BlockchainAccountID{"cosmos:cash:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2"},
 					},
 				},
@@ -551,20 +551,20 @@ func TestNewDidDocument(t *testing.T) {
 						"https://agent.xyz/1234",
 					},
 				},
-				Authentication: []string{"did:cosmos:net:elesto:subject#key-1", "did:cosmos:net:elesto:subject#key-2"},
-				KeyAgreement:   []string{"did:cosmos:net:elesto:subject#key-1"},
+				Authentication: []string{"did:cosmos:elesto:subject#key-1", "did:cosmos:elesto:subject#key-2"},
+				KeyAgreement:   []string{"did:cosmos:elesto:subject#key-1"},
 			},
 			wantErr: false,
 		},
 		{
 			params: params{
-				"did:cosmos:net:elesto:subject",
+				"did:cosmos:elesto:subject",
 				[]DocumentOption{
 					WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-1",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-1",
+								"did:cosmos:elesto:subject",
 								NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -578,8 +578,8 @@ func TestNewDidDocument(t *testing.T) {
 						),
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-1", // duplicate key
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-1", // duplicate key
+								"did:cosmos:elesto:subject",
 								NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -602,13 +602,13 @@ func TestNewDidDocument(t *testing.T) {
 		},
 		{
 			params: params{
-				"did:cosmos:net:elesto:subject",
+				"did:cosmos:elesto:subject",
 				[]DocumentOption{
 					WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-1",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-1",
+								"did:cosmos:elesto:subject",
 								NewPublicKeyMultibase([]byte("02503c8ace59c085b15c5f9c2474e9235bcb9694f07516bdc06f7caec788c3dd2c")),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -674,7 +674,7 @@ func TestDidDocument_AddControllers(t *testing.T) {
 		{
 			"PASS: controllers added",
 			func() DidDocument {
-				dd, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+				dd, _ := NewDidDocument("did:cosmos:elesto:subject",
 					WithControllers(
 						"did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 						"did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8", // duplicate controllers
@@ -694,7 +694,7 @@ func TestDidDocument_AddControllers(t *testing.T) {
 		{
 			"FAIL: invalid controller did",
 			func() DidDocument {
-				dd, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+				dd, _ := NewDidDocument("did:cosmos:elesto:subject",
 					WithControllers(
 						"did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 					),
@@ -711,7 +711,7 @@ func TestDidDocument_AddControllers(t *testing.T) {
 		{
 			"FAIL: controller did is not type key",
 			func() DidDocument {
-				dd, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+				dd, _ := NewDidDocument("did:cosmos:elesto:subject",
 					WithControllers(
 						"did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 					),
@@ -720,15 +720,15 @@ func TestDidDocument_AddControllers(t *testing.T) {
 			},
 			[]string{
 				"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
-				"did:cosmos:net:foochain:1234",
+				"did:cosmos:foochain:1234",
 			},
 			[]string{},
-			sdkerrors.Wrapf(ErrInvalidInput, "did document controller 'did:cosmos:net:foochain:1234' must be of type key"),
+			sdkerrors.Wrapf(ErrInvalidInput, "did document controller 'did:cosmos:foochain:1234' must be of type key"),
 		},
 		{
 			"PASS: controllers empty",
 			func() DidDocument {
-				dd, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+				dd, _ := NewDidDocument("did:cosmos:elesto:subject",
 					WithControllers(
 						"did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 						"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
@@ -771,7 +771,7 @@ func TestDidDocument_DeleteControllers(t *testing.T) {
 		{
 			"PASS: controllers deleted",
 			func() DidDocument {
-				dd, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+				dd, _ := NewDidDocument("did:cosmos:elesto:subject",
 					WithControllers(
 						"did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 						"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
@@ -790,7 +790,7 @@ func TestDidDocument_DeleteControllers(t *testing.T) {
 		{
 			"FAIL: invalid controller did",
 			func() DidDocument {
-				dd, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+				dd, _ := NewDidDocument("did:cosmos:elesto:subject",
 					WithControllers(
 						"did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 					),
@@ -806,7 +806,7 @@ func TestDidDocument_DeleteControllers(t *testing.T) {
 		{
 			"PASS: controllers empty",
 			func() DidDocument {
-				dd, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+				dd, _ := NewDidDocument("did:cosmos:elesto:subject",
 					WithControllers(
 						"did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 						"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
@@ -851,14 +851,14 @@ func TestDidDocument_AddVerifications(t *testing.T) {
 			wantErr: false,
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject")
+					d, _ := NewDidDocument("did:cosmos:elesto:subject")
 					return d
 				},
 				[]*Verification{
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-1",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-1",
+							"did:cosmos:elesto:subject",
 							NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 							EcdsaSecp256k1VerificationKey2019,
 						),
@@ -870,8 +870,8 @@ func TestDidDocument_AddVerifications(t *testing.T) {
 					),
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-2",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-2",
+							"did:cosmos:elesto:subject",
 							NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 							EcdsaSecp256k1VerificationKey2019,
 						),
@@ -890,37 +890,37 @@ func TestDidDocument_AddVerifications(t *testing.T) {
 					"https://gpg.jsld.org/contexts/lds-gpg2020-v0.0.jsonld",
 					contextDIDBase,
 				},
-				Id:         "did:cosmos:net:elesto:subject",
+				Id:         "did:cosmos:elesto:subject",
 				Controller: nil,
 				VerificationMethod: []*VerificationMethod{
 					{
-						"did:cosmos:net:elesto:subject#key-1",
+						"did:cosmos:elesto:subject#key-1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_PublicKeyMultibase{"F03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					{
-						"did:cosmos:net:elesto:subject#key-2",
+						"did:cosmos:elesto:subject#key-2",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_PublicKeyMultibase{"F03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 				},
 				Service:              nil,
-				Authentication:       []string{"did:cosmos:net:elesto:subject#key-1", "did:cosmos:net:elesto:subject#key-2"},
-				KeyAgreement:         []string{"did:cosmos:net:elesto:subject#key-1"},
-				CapabilityInvocation: []string{"did:cosmos:net:elesto:subject#key-2"},
+				Authentication:       []string{"did:cosmos:elesto:subject#key-1", "did:cosmos:elesto:subject#key-2"},
+				KeyAgreement:         []string{"did:cosmos:elesto:subject#key-1"},
+				CapabilityInvocation: []string{"did:cosmos:elesto:subject#key-2"},
 			},
 		},
 		{
 			wantErr: true, // duplicated existing method id
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+					d, _ := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-1",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-1",
+								"did:cosmos:elesto:subject",
 								NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -939,8 +939,8 @@ func TestDidDocument_AddVerifications(t *testing.T) {
 				[]*Verification{
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-1",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-1",
+							"did:cosmos:elesto:subject",
 							NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 							EcdsaSecp256k1VerificationKey2019,
 						),
@@ -959,11 +959,11 @@ func TestDidDocument_AddVerifications(t *testing.T) {
 			wantErr: true, // duplicated new method id
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+					d, _ := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-1",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-1",
+								"did:cosmos:elesto:subject",
 								NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -982,8 +982,8 @@ func TestDidDocument_AddVerifications(t *testing.T) {
 				[]*Verification{
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-2",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-2",
+							"did:cosmos:elesto:subject",
 							NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 							EcdsaSecp256k1VerificationKey2019,
 						),
@@ -996,8 +996,8 @@ func TestDidDocument_AddVerifications(t *testing.T) {
 					),
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-2",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-2",
+							"did:cosmos:elesto:subject",
 							NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 							EcdsaSecp256k1VerificationKey2019,
 						),
@@ -1016,11 +1016,11 @@ func TestDidDocument_AddVerifications(t *testing.T) {
 			wantErr: true, // fail validation
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+					d, _ := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-1",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-1",
+								"did:cosmos:elesto:subject",
 								NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1046,7 +1046,7 @@ func TestDidDocument_AddVerifications(t *testing.T) {
 						&VerificationMethod{
 							"invalid method url",
 							EcdsaSecp256k1VerificationKey2019.String(),
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject",
 							&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 						},
 						[]string{
@@ -1061,7 +1061,7 @@ func TestDidDocument_AddVerifications(t *testing.T) {
 			wantErr: true, // verification relationship does not exists
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject")
+					d, _ := NewDidDocument("did:cosmos:elesto:subject")
 					return d
 				},
 				[]*Verification{
@@ -1072,9 +1072,9 @@ func TestDidDocument_AddVerifications(t *testing.T) {
 							KeyAgreement,
 						},
 						&VerificationMethod{
-							"did:cosmos:net:elesto:subject#key1",
+							"did:cosmos:elesto:subject#key1",
 							EcdsaSecp256k1VerificationKey2019.String(),
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject",
 							&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 						},
 						[]string{
@@ -1117,12 +1117,12 @@ func TestDidDocument_RevokeVerification(t *testing.T) {
 			wantErr: false,
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+					d, _ := NewDidDocument("did:cosmos:elesto:subject",
 						WithVerifications(
 							NewVerification(
 								NewVerificationMethod(
-									"did:cosmos:net:elesto:subject#key-1",
-									"did:cosmos:net:elesto:subject",
+									"did:cosmos:elesto:subject#key-1",
+									"did:cosmos:elesto:subject",
 									NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 									EcdsaSecp256k1VerificationKey2019,
 								),
@@ -1134,8 +1134,8 @@ func TestDidDocument_RevokeVerification(t *testing.T) {
 							),
 							NewVerification(
 								NewVerificationMethod(
-									"did:cosmos:net:elesto:subject#key-2",
-									"did:cosmos:net:elesto:subject",
+									"did:cosmos:elesto:subject#key-2",
+									"did:cosmos:elesto:subject",
 									NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 									EcdsaSecp256k1VerificationKey2019,
 								),
@@ -1151,39 +1151,39 @@ func TestDidDocument_RevokeVerification(t *testing.T) {
 					)
 					return d
 				},
-				"did:cosmos:net:elesto:subject#key-2",
+				"did:cosmos:elesto:subject#key-2",
 			},
 			wantDid: DidDocument{
 				Context: []string{
 					"https://gpg.jsld.org/contexts/lds-gpg2020-v0.0.jsonld",
 					contextDIDBase,
 				},
-				Id:         "did:cosmos:net:elesto:subject",
+				Id:         "did:cosmos:elesto:subject",
 				Controller: nil,
 				VerificationMethod: []*VerificationMethod{
 					{
-						"did:cosmos:net:elesto:subject#key-1",
+						"did:cosmos:elesto:subject#key-1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_PublicKeyMultibase{"F03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 				},
 				Service:        nil,
-				Authentication: []string{"did:cosmos:net:elesto:subject#key-1"},
-				KeyAgreement:   []string{"did:cosmos:net:elesto:subject#key-1"},
+				Authentication: []string{"did:cosmos:elesto:subject#key-1"},
+				KeyAgreement:   []string{"did:cosmos:elesto:subject#key-1"},
 			},
 		},
 		{
 			wantErr: false,
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+					d, _ := NewDidDocument("did:cosmos:elesto:subject",
 						WithVerifications(
 							NewVerification(
 								VerificationMethod{
-									"did:cosmos:net:elesto:subject#key-1",
+									"did:cosmos:elesto:subject#key-1",
 									EcdsaSecp256k1VerificationKey2019.String(),
-									"did:cosmos:net:elesto:subject",
+									"did:cosmos:elesto:subject",
 									&VerificationMethod_PublicKeyMultibase{"F03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 								},
 								[]string{
@@ -1196,26 +1196,26 @@ func TestDidDocument_RevokeVerification(t *testing.T) {
 					)
 					return d
 				},
-				"did:cosmos:net:elesto:subject#key-1",
+				"did:cosmos:elesto:subject#key-1",
 			},
 			wantDid: DidDocument{
 				Context: []string{
 					contextDIDBase,
 				},
-				Id: "did:cosmos:net:elesto:subject",
+				Id: "did:cosmos:elesto:subject",
 			},
 		},
 		{
 			wantErr: false,
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+					d, _ := NewDidDocument("did:cosmos:elesto:subject",
 						WithVerifications(
 							NewVerification(
 								VerificationMethod{
-									"did:cosmos:net:elesto:subject#key-1",
+									"did:cosmos:elesto:subject#key-1",
 									EcdsaSecp256k1VerificationKey2019.String(),
-									"did:cosmos:net:elesto:subject",
+									"did:cosmos:elesto:subject",
 									&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 								},
 								[]string{
@@ -1226,9 +1226,9 @@ func TestDidDocument_RevokeVerification(t *testing.T) {
 							),
 							NewVerification(
 								VerificationMethod{
-									"did:cosmos:net:elesto:subject#key-2",
+									"did:cosmos:elesto:subject#key-2",
 									EcdsaSecp256k1VerificationKey2019.String(),
-									"did:cosmos:net:elesto:subject",
+									"did:cosmos:elesto:subject",
 									&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 								},
 								[]string{
@@ -1239,9 +1239,9 @@ func TestDidDocument_RevokeVerification(t *testing.T) {
 							),
 							NewVerification(
 								VerificationMethod{
-									"did:cosmos:net:elesto:subject#key-3",
+									"did:cosmos:elesto:subject#key-3",
 									EcdsaSecp256k1VerificationKey2019.String(),
-									"did:cosmos:net:elesto:subject",
+									"did:cosmos:elesto:subject",
 									&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 								},
 								[]string{
@@ -1255,44 +1255,44 @@ func TestDidDocument_RevokeVerification(t *testing.T) {
 					)
 					return d
 				},
-				"did:cosmos:net:elesto:subject#key-2",
+				"did:cosmos:elesto:subject#key-2",
 			},
 			wantDid: DidDocument{
 				Context: []string{
 					contextDIDBase,
 				},
-				Id:         "did:cosmos:net:elesto:subject",
+				Id:         "did:cosmos:elesto:subject",
 				Controller: nil,
 				VerificationMethod: []*VerificationMethod{
 					{
-						"did:cosmos:net:elesto:subject#key-1",
+						"did:cosmos:elesto:subject#key-1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					{
-						"did:cosmos:net:elesto:subject#key-3",
+						"did:cosmos:elesto:subject#key-3",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 				},
 				Service:         nil,
-				Authentication:  []string{"did:cosmos:net:elesto:subject#key-1", "did:cosmos:net:elesto:subject#key-3"},
-				KeyAgreement:    []string{"did:cosmos:net:elesto:subject#key-1", "did:cosmos:net:elesto:subject#key-3"},
-				AssertionMethod: []string{"did:cosmos:net:elesto:subject#key-3"},
+				Authentication:  []string{"did:cosmos:elesto:subject#key-1", "did:cosmos:elesto:subject#key-3"},
+				KeyAgreement:    []string{"did:cosmos:elesto:subject#key-1", "did:cosmos:elesto:subject#key-3"},
+				AssertionMethod: []string{"did:cosmos:elesto:subject#key-3"},
 			},
 		},
 		{
 			wantErr: true, // verification method not found
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+					d, _ := NewDidDocument("did:cosmos:elesto:subject",
 						WithVerifications(
 							NewVerification(
 								NewVerificationMethod(
-									"did:cosmos:net:elesto:subject#key-1",
-									"did:cosmos:net:elesto:subject",
+									"did:cosmos:elesto:subject#key-1",
+									"did:cosmos:elesto:subject",
 									NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 									EcdsaSecp256k1VerificationKey2019,
 								),
@@ -1304,8 +1304,8 @@ func TestDidDocument_RevokeVerification(t *testing.T) {
 							),
 							NewVerification(
 								NewVerificationMethod(
-									"did:cosmos:net:elesto:subject#key-2",
-									"did:cosmos:net:elesto:subject",
+									"did:cosmos:elesto:subject#key-2",
+									"did:cosmos:elesto:subject",
 									NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 									EcdsaSecp256k1VerificationKey2019,
 								),
@@ -1321,7 +1321,7 @@ func TestDidDocument_RevokeVerification(t *testing.T) {
 					)
 					return d
 				},
-				"did:cosmos:net:elesto:subject#key-3",
+				"did:cosmos:elesto:subject#key-3",
 			},
 			wantDid: DidDocument{},
 		},
@@ -1359,25 +1359,25 @@ func TestDidDocument_SetVerificationRelationships(t *testing.T) {
 			wantErr: true, // empty relationships
 			params: params{
 				malleate: func() DidDocument {
-					dd, _ := NewDidDocument("did:cosmos:net:elesto:subject")
+					dd, _ := NewDidDocument("did:cosmos:elesto:subject")
 					return dd
 				},
-				methodID:      "did:cosmos:net:elesto:subject#key-1",
+				methodID:      "did:cosmos:elesto:subject#key-1",
 				relationships: []string{},
 			},
 			wantDid: DidDocument{
 				Context: []string{contextDIDBase},
-				Id:      "did:cosmos:net:elesto:subject",
+				Id:      "did:cosmos:elesto:subject",
 			},
 		},
 		{
 			wantErr: true, //invalid method id
 			params: params{
 				malleate: func() DidDocument {
-					dd, _ := NewDidDocument("did:cosmos:net:elesto:subject")
+					dd, _ := NewDidDocument("did:cosmos:elesto:subject")
 					return dd
 				},
-				methodID:      "did:cosmos:net:elesto:subject#key-1 invalid ",
+				methodID:      "did:cosmos:elesto:subject#key-1 invalid ",
 				relationships: []string{},
 			},
 			wantDid: DidDocument{},
@@ -1386,12 +1386,12 @@ func TestDidDocument_SetVerificationRelationships(t *testing.T) {
 			wantErr: false,
 			params: params{
 				malleate: func() DidDocument {
-					dd, _ := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+					dd, _ := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 						NewVerification(
 							VerificationMethod{
-								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:elesto:subject#key-1",
 								EcdsaSecp256k1VerificationKey2019.String(),
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject",
 								&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 							},
 							[]string{
@@ -1403,7 +1403,7 @@ func TestDidDocument_SetVerificationRelationships(t *testing.T) {
 					))
 					return dd
 				},
-				methodID: "did:cosmos:net:elesto:subject#key-1",
+				methodID: "did:cosmos:elesto:subject#key-1",
 				relationships: []string{
 					string(AssertionMethod),
 					string(AssertionMethod), // test duplicated relationship
@@ -1414,28 +1414,28 @@ func TestDidDocument_SetVerificationRelationships(t *testing.T) {
 
 			wantDid: DidDocument{
 				Context: []string{contextDIDBase},
-				Id:      "did:cosmos:net:elesto:subject",
+				Id:      "did:cosmos:elesto:subject",
 				VerificationMethod: []*VerificationMethod{
 					{
-						"did:cosmos:net:elesto:subject#key-1",
+						"did:cosmos:elesto:subject#key-1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 				},
-				AssertionMethod: []string{"did:cosmos:net:elesto:subject#key-1"},
+				AssertionMethod: []string{"did:cosmos:elesto:subject#key-1"},
 			},
 		},
 		{
 			wantErr: false, // different delete scenarios
 			params: params{
 				malleate: func() DidDocument {
-					dd, _ := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+					dd, _ := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 						NewVerification(
 							VerificationMethod{
-								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:elesto:subject#key-1",
 								EcdsaSecp256k1VerificationKey2019.String(),
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject",
 								&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 							},
 							[]string{
@@ -1446,9 +1446,9 @@ func TestDidDocument_SetVerificationRelationships(t *testing.T) {
 						),
 						NewVerification(
 							VerificationMethod{
-								"did:cosmos:net:elesto:subject#key-2",
+								"did:cosmos:elesto:subject#key-2",
 								EcdsaSecp256k1VerificationKey2019.String(),
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject",
 								&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 							},
 							[]string{
@@ -1459,40 +1459,40 @@ func TestDidDocument_SetVerificationRelationships(t *testing.T) {
 					))
 					return dd
 				},
-				methodID:      "did:cosmos:net:elesto:subject#key-1",
+				methodID:      "did:cosmos:elesto:subject#key-1",
 				relationships: []string{string(AssertionMethod)},
 			},
 			wantDid: DidDocument{
 				Context: []string{contextDIDBase},
-				Id:      "did:cosmos:net:elesto:subject",
+				Id:      "did:cosmos:elesto:subject",
 				VerificationMethod: []*VerificationMethod{
 					{
-						"did:cosmos:net:elesto:subject#key-1",
+						"did:cosmos:elesto:subject#key-1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					{
-						"did:cosmos:net:elesto:subject#key-2",
+						"did:cosmos:elesto:subject#key-2",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 				},
-				Authentication:  []string{"did:cosmos:net:elesto:subject#key-2"},
-				AssertionMethod: []string{"did:cosmos:net:elesto:subject#key-1"},
+				Authentication:  []string{"did:cosmos:elesto:subject#key-2"},
+				AssertionMethod: []string{"did:cosmos:elesto:subject#key-1"},
 			},
 		},
 		{
 			wantErr: false, // different delete scenarios
 			params: params{
 				malleate: func() DidDocument {
-					dd, _ := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+					dd, _ := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 						NewVerification(
 							VerificationMethod{
-								"did:cosmos:net:elesto:subject#key-2",
+								"did:cosmos:elesto:subject#key-2",
 								EcdsaSecp256k1VerificationKey2019.String(),
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject",
 								&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 							},
 							[]string{
@@ -1502,9 +1502,9 @@ func TestDidDocument_SetVerificationRelationships(t *testing.T) {
 						),
 						NewVerification(
 							VerificationMethod{
-								"did:cosmos:net:elesto:subject#key-3",
+								"did:cosmos:elesto:subject#key-3",
 								EcdsaSecp256k1VerificationKey2019.String(),
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject",
 								&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 							},
 							[]string{
@@ -1514,9 +1514,9 @@ func TestDidDocument_SetVerificationRelationships(t *testing.T) {
 						),
 						NewVerification(
 							VerificationMethod{
-								"did:cosmos:net:elesto:subject#key-1",
+								"did:cosmos:elesto:subject#key-1",
 								EcdsaSecp256k1VerificationKey2019.String(),
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject",
 								&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 							},
 							[]string{
@@ -1528,35 +1528,35 @@ func TestDidDocument_SetVerificationRelationships(t *testing.T) {
 					))
 					return dd
 				},
-				methodID:      "did:cosmos:net:elesto:subject#key-1",
+				methodID:      "did:cosmos:elesto:subject#key-1",
 				relationships: []string{string(AssertionMethod)},
 			},
 			wantDid: DidDocument{
 				Context: []string{contextDIDBase},
-				Id:      "did:cosmos:net:elesto:subject",
+				Id:      "did:cosmos:elesto:subject",
 				VerificationMethod: []*VerificationMethod{
 					{
-						"did:cosmos:net:elesto:subject#key-2",
+						"did:cosmos:elesto:subject#key-2",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					{
-						"did:cosmos:net:elesto:subject#key-3",
+						"did:cosmos:elesto:subject#key-3",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					{
-						"did:cosmos:net:elesto:subject#key-1",
+						"did:cosmos:elesto:subject#key-1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 				},
 
-				Authentication:  []string{"did:cosmos:net:elesto:subject#key-2", "did:cosmos:net:elesto:subject#key-3"},
-				AssertionMethod: []string{"did:cosmos:net:elesto:subject#key-1"},
+				Authentication:  []string{"did:cosmos:elesto:subject#key-2", "did:cosmos:elesto:subject#key-3"},
+				AssertionMethod: []string{"did:cosmos:elesto:subject#key-1"},
 			},
 		},
 	}
@@ -1594,11 +1594,11 @@ func TestDidDocument_HasRelationship(t *testing.T) {
 			expectedHasRelationship: true,
 			params: params{
 				didFn: func() DidDocument {
-					dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+					dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-1",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-1",
+								"did:cosmos:elesto:subject",
 								NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1624,11 +1624,11 @@ func TestDidDocument_HasRelationship(t *testing.T) {
 			expectedHasRelationship: false,
 			params: params{
 				didFn: func() DidDocument {
-					dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+					dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-1",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-1",
+								"did:cosmos:elesto:subject",
 								NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1640,8 +1640,8 @@ func TestDidDocument_HasRelationship(t *testing.T) {
 						),
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:controller-1#key-2",
-								"did:cosmos:net:elesto:controller-1",
+								"did:cosmos:elesto:controller-1#key-2",
+								"did:cosmos:elesto:controller-1",
 								NewBlockchainAccountID("cash", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"),
 								CosmosAccountAddress,
 							),
@@ -1652,8 +1652,8 @@ func TestDidDocument_HasRelationship(t *testing.T) {
 						),
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-3",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-3",
+								"did:cosmos:elesto:subject",
 								NewPublicKeyHex([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1678,7 +1678,7 @@ func TestDidDocument_HasRelationship(t *testing.T) {
 			expectedHasRelationship: false,
 			params: params{
 				didFn: func() DidDocument {
-					dd, err := NewDidDocument("did:cosmos:net:elesto:subject")
+					dd, err := NewDidDocument("did:cosmos:elesto:subject")
 					assert.NoError(t, err)
 					return dd
 				},
@@ -1693,11 +1693,11 @@ func TestDidDocument_HasRelationship(t *testing.T) {
 			expectedHasRelationship: false,
 			params: params{
 				didFn: func() DidDocument {
-					dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+					dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-1",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-1",
+								"did:cosmos:elesto:subject",
 								NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1720,11 +1720,11 @@ func TestDidDocument_HasRelationship(t *testing.T) {
 			expectedHasRelationship: true,
 			params: params{
 				didFn: func() DidDocument {
-					dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+					dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-1",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-1",
+								"did:cosmos:elesto:subject",
 								NewPublicKeyMultibase([]byte("00dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7")),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1735,8 +1735,8 @@ func TestDidDocument_HasRelationship(t *testing.T) {
 						),
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-2",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-2",
+								"did:cosmos:elesto:subject",
 								NewBlockchainAccountID("cash", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"),
 								CosmosAccountAddress,
 							),
@@ -1760,11 +1760,11 @@ func TestDidDocument_HasRelationship(t *testing.T) {
 			expectedHasRelationship: false,
 			params: params{
 				didFn: func() DidDocument {
-					dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+					dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 						NewVerification(
 							NewVerificationMethod(
-								"did:cosmos:net:elesto:subject#key-1",
-								"did:cosmos:net:elesto:subject",
+								"did:cosmos:elesto:subject#key-1",
+								"did:cosmos:elesto:subject",
 								NewPublicKeyHex([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 								EcdsaSecp256k1VerificationKey2019,
 							),
@@ -1806,7 +1806,7 @@ func TestDidDocument_AddServices(t *testing.T) {
 			wantErr: false,
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject")
+					d, _ := NewDidDocument("did:cosmos:elesto:subject")
 					return d
 				},
 				[]*Service{
@@ -1824,7 +1824,7 @@ func TestDidDocument_AddServices(t *testing.T) {
 			},
 			wantDid: DidDocument{
 				Context: []string{contextDIDBase},
-				Id:      "did:cosmos:net:elesto:subject",
+				Id:      "did:cosmos:elesto:subject",
 				Service: []*Service{
 					NewService(
 						"agent:abc",
@@ -1844,7 +1844,7 @@ func TestDidDocument_AddServices(t *testing.T) {
 			params: params{
 				func() DidDocument {
 					d, _ := NewDidDocument(
-						"did:cosmos:net:elesto:subject",
+						"did:cosmos:elesto:subject",
 						WithServices(
 							NewService(
 								"agent:xyz",
@@ -1873,7 +1873,7 @@ func TestDidDocument_AddServices(t *testing.T) {
 			wantErr: true, // duplicated new service id
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject")
+					d, _ := NewDidDocument("did:cosmos:elesto:subject")
 					return d
 				},
 				[]*Service{
@@ -1894,7 +1894,7 @@ func TestDidDocument_AddServices(t *testing.T) {
 			wantErr: true, // fail validation
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject")
+					d, _ := NewDidDocument("did:cosmos:elesto:subject")
 					return d
 				},
 				[]*Service{
@@ -1943,7 +1943,7 @@ func TestDidDocument_DeleteService(t *testing.T) {
 			wantErr: false,
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+					d, _ := NewDidDocument("did:cosmos:elesto:subject",
 						WithServices(
 							&Service{
 								"agent:abc",
@@ -1958,14 +1958,14 @@ func TestDidDocument_DeleteService(t *testing.T) {
 			},
 			wantDid: DidDocument{
 				Context: []string{contextDIDBase},
-				Id:      "did:cosmos:net:elesto:subject",
+				Id:      "did:cosmos:elesto:subject",
 			},
 		},
 		{
 			wantErr: false,
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+					d, _ := NewDidDocument("did:cosmos:elesto:subject",
 						WithServices(
 							&Service{
 								"agent:zyz",
@@ -1985,7 +1985,7 @@ func TestDidDocument_DeleteService(t *testing.T) {
 			},
 			wantDid: DidDocument{
 				Context: []string{contextDIDBase},
-				Id:      "did:cosmos:net:elesto:subject",
+				Id:      "did:cosmos:elesto:subject",
 				Service: []*Service{
 					{
 						"agent:zyz",
@@ -1999,7 +1999,7 @@ func TestDidDocument_DeleteService(t *testing.T) {
 			wantErr: false,
 			params: params{
 				func() DidDocument {
-					d, _ := NewDidDocument("did:cosmos:net:elesto:subject",
+					d, _ := NewDidDocument("did:cosmos:elesto:subject",
 						WithServices(
 							&Service{
 								"agent:zyz",
@@ -2024,7 +2024,7 @@ func TestDidDocument_DeleteService(t *testing.T) {
 			},
 			wantDid: DidDocument{
 				Context: []string{contextDIDBase},
-				Id:      "did:cosmos:net:elesto:subject",
+				Id:      "did:cosmos:elesto:subject",
 				Service: []*Service{
 					{
 						"agent:zyz",
@@ -2090,11 +2090,11 @@ func TestDidDocument_HasPublicKey(t *testing.T) {
 		{
 			"PASS: has public key (multibase)",
 			func() DidDocument {
-				dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+				dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-1",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-1",
+							"did:cosmos:elesto:subject",
 							NewPublicKeyMultibase([]byte{2, 201, 95, 248, 187, 133, 206, 97, 166, 70, 229, 226, 88, 124, 29, 43, 70, 3, 244, 225, 19, 128, 44, 132, 110, 15, 15, 35, 40, 189, 237, 71, 245}),
 							EcdsaSecp256k1VerificationKey2019,
 						),
@@ -2121,11 +2121,11 @@ func TestDidDocument_HasPublicKey(t *testing.T) {
 		{
 			"PASS: doesn't have public key (multibase)",
 			func() DidDocument {
-				dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+				dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-1",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-1",
+							"did:cosmos:elesto:subject",
 							NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 							EcdsaSecp256k1VerificationKey2019,
 						),
@@ -2152,11 +2152,11 @@ func TestDidDocument_HasPublicKey(t *testing.T) {
 		{
 			"PASS: has public key (blockchainAccount)",
 			func() DidDocument {
-				dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+				dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-1",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-1",
+							"did:cosmos:elesto:subject",
 							NewBlockchainAccountID("foochain", "cosmos17t8t3t6a6vpgk69perfyq930593sa8dn4kzsdf"),
 							CosmosAccountAddress,
 						),
@@ -2183,11 +2183,11 @@ func TestDidDocument_HasPublicKey(t *testing.T) {
 		{
 			"PASS: doesn't have public key (blockchainAccountId)",
 			func() DidDocument {
-				dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+				dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-1",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-1",
+							"did:cosmos:elesto:subject",
 							NewBlockchainAccountID("foochain", "cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2"),
 							CosmosAccountAddress,
 						),
@@ -2214,11 +2214,11 @@ func TestDidDocument_HasPublicKey(t *testing.T) {
 		{
 			"PASS: has public key (publicKeyHex)",
 			func() DidDocument {
-				dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+				dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-1",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-1",
+							"did:cosmos:elesto:subject",
 							NewPublicKeyHex([]byte{2, 201, 95, 248, 187, 133, 206, 97, 166, 70, 229, 226, 88, 124, 29, 43, 70, 3, 244, 225, 19, 128, 44, 132, 110, 15, 15, 35, 40, 189, 237, 71, 245}),
 							EcdsaSecp256k1VerificationKey2019,
 						),
@@ -2245,11 +2245,11 @@ func TestDidDocument_HasPublicKey(t *testing.T) {
 		{
 			"PASS: doesn't have public key (pubKeyHex)",
 			func() DidDocument {
-				dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+				dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-1",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-1",
+							"did:cosmos:elesto:subject",
 							NewPublicKeyHex([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 							EcdsaSecp256k1VerificationKey2019,
 						),
@@ -2295,11 +2295,11 @@ func TestDidDocument_GetVerificationMethodBlockchainAddress(t *testing.T) {
 		{
 			"PASS: get address (PublicKeyMultibase)",
 			func() DidDocument {
-				dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+				dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-1",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-1",
+							"did:cosmos:elesto:subject",
 							NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 							EcdsaSecp256k1VerificationKey2019,
 						),
@@ -2313,18 +2313,18 @@ func TestDidDocument_GetVerificationMethodBlockchainAddress(t *testing.T) {
 				assert.NoError(t, err)
 				return dd
 			},
-			"did:cosmos:net:elesto:subject#key-1",
+			"did:cosmos:elesto:subject#key-1",
 			"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 			nil,
 		},
 		{
 			"PASS: get address (PublicKeyHex)",
 			func() DidDocument {
-				dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+				dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-1",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-1",
+							"did:cosmos:elesto:subject",
 							NewPublicKeyHex([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 							EcdsaSecp256k1VerificationKey2019,
 						),
@@ -2338,18 +2338,18 @@ func TestDidDocument_GetVerificationMethodBlockchainAddress(t *testing.T) {
 				assert.NoError(t, err)
 				return dd
 			},
-			"did:cosmos:net:elesto:subject#key-1",
+			"did:cosmos:elesto:subject#key-1",
 			"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 			nil,
 		},
 		{
 			"PASS: get address (BlockchainAccountID)",
 			func() DidDocument {
-				dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+				dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-1",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-1",
+							"did:cosmos:elesto:subject",
 							NewBlockchainAccountID("foochain", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"),
 							CosmosAccountAddress,
 						),
@@ -2363,18 +2363,18 @@ func TestDidDocument_GetVerificationMethodBlockchainAddress(t *testing.T) {
 				assert.NoError(t, err)
 				return dd
 			},
-			"did:cosmos:net:elesto:subject#key-1",
+			"did:cosmos:elesto:subject#key-1",
 			"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 			nil,
 		},
 		{
 			"PASS: get address (BlockchainAccountID)",
 			func() DidDocument {
-				dd, err := NewDidDocument("did:cosmos:net:elesto:subject", WithVerifications(
+				dd, err := NewDidDocument("did:cosmos:elesto:subject", WithVerifications(
 					NewVerification(
 						NewVerificationMethod(
-							"did:cosmos:net:elesto:subject#key-1",
-							"did:cosmos:net:elesto:subject",
+							"did:cosmos:elesto:subject#key-1",
+							"did:cosmos:elesto:subject",
 							NewBlockchainAccountID("foochain", "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"),
 							CosmosAccountAddress,
 						),
@@ -2388,7 +2388,7 @@ func TestDidDocument_GetVerificationMethodBlockchainAddress(t *testing.T) {
 				assert.NoError(t, err)
 				return dd
 			},
-			"did:cosmos:net:elesto:subject#key-2",
+			"did:cosmos:elesto:subject#key-2",
 			"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 			ErrVerificationMethodNotFound,
 		},
@@ -2420,7 +2420,7 @@ func TestDidDocument_HasController(t *testing.T) {
 			"PASS: controller found",
 			func() DidDocument {
 				dd, err := NewDidDocument(
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject",
 					WithControllers(
 						"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 						"did:cosmos:key:cosmos17t8t3t6a6vpgk69perfyq930593sa8dn4kzsdf",
@@ -2436,7 +2436,7 @@ func TestDidDocument_HasController(t *testing.T) {
 			"PASS: controller not found",
 			func() DidDocument {
 				dd, err := NewDidDocument(
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject",
 					WithControllers(
 						"did:cosmos:key:cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 						"did:cosmos:key:cosmos17t8t3t6a6vpgk69perfyq930593sa8dn4kzsdf",
@@ -2471,7 +2471,7 @@ func TestResolveAccountDID(t *testing.T) {
 		{
 			"FAIL: not a key did",
 			args{
-				"did:cosmos:net:elesto:1234",
+				"did:cosmos:elesto:1234",
 				"elesto",
 			},
 			func() DidDocument {
@@ -2543,15 +2543,15 @@ func TestNewAccountVerification(t *testing.T) {
 		{
 			"PASS: net did",
 			args{
-				DID("did:cosmos:net:elesto:1234"),
+				DID("did:cosmos:elesto:1234"),
 				"elesto",
 				"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 				[]string{Authentication},
 			},
 			&Verification{
 				Method: &VerificationMethod{
-					Id:                   "did:cosmos:net:elesto:1234#cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
-					Controller:           "did:cosmos:net:elesto:1234",
+					Id:                   "did:cosmos:elesto:1234#cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
+					Controller:           "did:cosmos:elesto:1234",
 					VerificationMaterial: &VerificationMethod_BlockchainAccountID{BlockchainAccountID: "cosmos:elesto:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"},
 					Type:                 CosmosAccountAddress.String(),
 				},
