@@ -18,14 +18,14 @@ func TestMsgCreateDidDocument(t *testing.T) {
 		expectPass    bool
 	}{
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{
 				&Verification{
 					[]string{string(Authentication)},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#1",
+						"did:cosmos:elesto:whatever#1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:whatever",
+						"did:cosmos:elesto:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					[]string{},
@@ -36,14 +36,14 @@ func TestMsgCreateDidDocument(t *testing.T) {
 			true,
 		},
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{
 				&Verification{
 					[]string{string(Authentication)},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#1",
+						"did:cosmos:elesto:whatever#1",
 						CosmosAccountAddress.String(),
-						"did:cosmos:net:elesto:whatever",
+						"did:cosmos:elesto:whatever",
 						&VerificationMethod_BlockchainAccountID{""},
 					},
 					[]string{},
@@ -54,14 +54,14 @@ func TestMsgCreateDidDocument(t *testing.T) {
 			false, // empty pub key
 		},
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{
 				&Verification{
 					[]string{string(Authentication)},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#1",
+						"did:cosmos:elesto:whatever#1",
 						"",
-						"did:cosmos:net:elesto:whatever",
+						"did:cosmos:elesto:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					[]string{},
@@ -72,14 +72,14 @@ func TestMsgCreateDidDocument(t *testing.T) {
 			false, // emtpy verification method type
 		},
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{
 				&Verification{
 					[]string{},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#1",
+						"did:cosmos:elesto:whatever#1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:whatever",
+						"did:cosmos:elesto:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					[]string{},
@@ -90,14 +90,14 @@ func TestMsgCreateDidDocument(t *testing.T) {
 			false, // empty relationships
 		},
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{
 				&Verification{
 					[]string{string(Authentication)},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#/asd 123",
+						"did:cosmos:elesto:whatever#/asd 123",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:whatever",
+						"did:cosmos:elesto:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					[]string{},
@@ -108,14 +108,14 @@ func TestMsgCreateDidDocument(t *testing.T) {
 			false, // invalid method id
 		},
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{
 				&Verification{
 					[]string{string(Authentication)},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#1",
+						"did:cosmos:elesto:whatever#1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:whatever",
+						"did:cosmos:elesto:whatever",
 						&VerificationMethod_PublicKeyHex{""},
 					},
 					[]string{},
@@ -126,14 +126,14 @@ func TestMsgCreateDidDocument(t *testing.T) {
 			false, // empty verification key
 		},
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{
 				&Verification{
 					[]string{string(Authentication)},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#1",
+						"did:cosmos:elesto:whatever#1",
 						"",
-						"did:cosmos:net:elesto:whatever",
+						"did:cosmos:elesto:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					[]string{},
@@ -144,12 +144,12 @@ func TestMsgCreateDidDocument(t *testing.T) {
 			false, // empty verification method type
 		},
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{
 				&Verification{
 					[]string{string(Authentication)},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#1",
+						"did:cosmos:elesto:whatever#1",
 						CosmosAccountAddress.String(),
 						"",
 						&VerificationMethod_BlockchainAccountID{"cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"},
@@ -162,7 +162,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 			false, // invalid verification method controller
 		},
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{},
 			Services{},
 			"owner",
@@ -175,7 +175,7 @@ func TestMsgCreateDidDocument(t *testing.T) {
 				&Verification{
 					[]string{string(Authentication)},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#1",
+						"did:cosmos:elesto:whatever#1",
 						EcdsaSecp256k1VerificationKey2019.String(),
 						"cont",
 						&VerificationMethod_BlockchainAccountID{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
@@ -188,14 +188,14 @@ func TestMsgCreateDidDocument(t *testing.T) {
 			false, // invalid did
 		},
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{
 				&Verification{
 					[]string{string(Authentication)},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#1",
+						"did:cosmos:elesto:whatever#1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:whatever",
+						"did:cosmos:elesto:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					[]string{},
@@ -212,14 +212,14 @@ func TestMsgCreateDidDocument(t *testing.T) {
 			true,
 		},
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{
 				&Verification{
 					[]string{string(Authentication)},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#1",
+						"did:cosmos:elesto:whatever#1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:whatever",
+						"did:cosmos:elesto:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					[]string{},
@@ -236,14 +236,14 @@ func TestMsgCreateDidDocument(t *testing.T) {
 			false, // empty service type
 		},
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{
 				&Verification{
 					[]string{string(Authentication)},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#1",
+						"did:cosmos:elesto:whatever#1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:whatever",
+						"did:cosmos:elesto:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					[]string{},
@@ -260,14 +260,14 @@ func TestMsgCreateDidDocument(t *testing.T) {
 			false, // service id is not valid
 		},
 		{
-			"did:cosmos:net:elesto:whatever",
+			"did:cosmos:elesto:whatever",
 			Verifications{
 				&Verification{
 					[]string{string(Authentication)},
 					&VerificationMethod{
-						"did:cosmos:net:elesto:whatever#1",
+						"did:cosmos:elesto:whatever#1",
 						EcdsaSecp256k1VerificationKey2019.String(),
-						"did:cosmos:net:elesto:whatever",
+						"did:cosmos:elesto:whatever",
 						&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 					},
 					[]string{},
@@ -309,20 +309,20 @@ func TestMsgUpdateDidDocument(t *testing.T) {
 		expectPass  bool
 	}{
 		{
-			"did:cosmos:net:elesto:subject",
+			"did:cosmos:elesto:subject",
 			[]string{"did:cosmos:controller-1"},
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			true,
 		},
 		{
-			"did:cosmos:net:elesto:subject",
+			"did:cosmos:elesto:subject",
 			[]string{},
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			true,
 		},
 		{
 			// FIXME: duplicated controller
-			"did:cosmos:net:elesto:subject",
+			"did:cosmos:elesto:subject",
 			[]string{"did:cosmos:controller-1", "did:cosmos:controller-1"},
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			true,
@@ -334,13 +334,13 @@ func TestMsgUpdateDidDocument(t *testing.T) {
 			false, // invalid did
 		},
 		{
-			"did:cosmos:net:elesto:subject",
+			"did:cosmos:elesto:subject",
 			[]string{"invalid:controller"},
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			false, // invalid controller
 		},
 		{
-			"did:cosmos:net:elesto:subject",
+			"did:cosmos:elesto:subject",
 			[]string{"did:cosmos:controller-1", "did:cosmos:controller-2", ""},
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			false, // invalid controller
@@ -369,13 +369,13 @@ func TestMsgAddVerification(t *testing.T) {
 		expectPass bool
 	}{
 		{
-			"did:cosmos:net:elesto:subject",
+			"did:cosmos:elesto:subject",
 			Verification{
 				[]string{string(Authentication)},
 				&VerificationMethod{
-					"did:cosmos:net:elesto:subject#1",
+					"did:cosmos:elesto:subject#1",
 					EcdsaSecp256k1VerificationKey2019.String(),
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject",
 					&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 				},
 				[]string{},
@@ -388,9 +388,9 @@ func TestMsgAddVerification(t *testing.T) {
 			Verification{
 				[]string{string(Authentication)},
 				&VerificationMethod{
-					"did:cosmos:net:elesto:subject#1",
+					"did:cosmos:elesto:subject#1",
 					EcdsaSecp256k1VerificationKey2019.String(),
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject",
 					&VerificationMethod_PublicKeyHex{"03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
 				},
 				[]string{},
@@ -423,26 +423,26 @@ func TestMsgRevokeVerification(t *testing.T) {
 		expectPass bool
 	}{
 		{
-			"did:cosmos:net:elesto:subject",
-			"did:cosmos:net:elesto:subject#key-method-1",
+			"did:cosmos:elesto:subject",
+			"did:cosmos:elesto:subject#key-method-1",
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			true,
 		},
 		{
 			"invalid did",
-			"did:cosmos:net:elesto:subject#key-method-1",
+			"did:cosmos:elesto:subject#key-method-1",
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			false, // invalid did
 		},
 		{
-			"did:cosmos:net:elesto:subject",
-			"did:cosmos:net:elesto:subject  #   key-method-1",
+			"did:cosmos:elesto:subject",
+			"did:cosmos:elesto:subject  #   key-method-1",
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			false, // invalid method id
 		},
 		{
-			"did:cosmos:net:elesto:subject",
-			"did:cosmos:net:elesto:subject#key-method-1",
+			"did:cosmos:elesto:subject",
+			"did:cosmos:elesto:subject#key-method-1",
 			"",
 			true, // empty signer
 		},
@@ -472,43 +472,43 @@ func TestMsgSetVerificationRelationships(t *testing.T) {
 		expectPass    bool
 	}{
 		{
-			"did:cosmos:net:elesto:subject",
-			"did:cosmos:net:elesto:subject#key-method-1",
+			"did:cosmos:elesto:subject",
+			"did:cosmos:elesto:subject#key-method-1",
 			[]string{"authorization", "keyExchange"},
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			true,
 		},
 		{
-			"did:cosmos:net:elesto:subject",
-			"did:cosmos:net:elesto:subject#key-method-1",
+			"did:cosmos:elesto:subject",
+			"did:cosmos:elesto:subject#key-method-1",
 			[]string{"authorization"},
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			true,
 		},
 		{
-			"did:cosmos:net:elesto:subject",
-			"did:cosmos:net:elesto:subject  #   key-method-1",
+			"did:cosmos:elesto:subject",
+			"did:cosmos:elesto:subject  #   key-method-1",
 			[]string{"authorization", "keyExchange"},
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			false, // invalid method id
 		},
 		{
 			"invalid did",
-			"did:cosmos:net:elesto:subject#key-method-1",
+			"did:cosmos:elesto:subject#key-method-1",
 			[]string{"authorization", "keyExchange"},
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			false, // invalid did
 		},
 		{
-			"did:cosmos:net:elesto:subject",
-			"did:cosmos:net:elesto:subject#key-method-1",
+			"did:cosmos:elesto:subject",
+			"did:cosmos:elesto:subject#key-method-1",
 			[]string{},
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			false, // empty relationship
 		},
 		{
-			"did:cosmos:net:elesto:subject",
-			"did:cosmos:net:elesto:subject#key-method-1",
+			"did:cosmos:elesto:subject",
+			"did:cosmos:elesto:subject#key-method-1",
 			[]string{"authorization", "keyExchange"},
 			"",
 			true, // empty signer
@@ -540,7 +540,7 @@ func TestMsgAddService(t *testing.T) {
 		expectPass bool
 	}{
 		{
-			"did:cosmos:net:elesto:subject",
+			"did:cosmos:elesto:subject",
 			&Service{
 				Id:              "a:valid:url",
 				Type:            "DIDCommMessaging",
@@ -560,7 +560,7 @@ func TestMsgAddService(t *testing.T) {
 			false, // invalid did
 		},
 		{
-			"did:cosmos:net:elesto:subject",
+			"did:cosmos:elesto:subject",
 			&Service{
 				Id:              "",
 				Type:            "DIDCommMessaging",
@@ -570,7 +570,7 @@ func TestMsgAddService(t *testing.T) {
 			false, // invalid agent id
 		},
 		{
-			"did:cosmos:net:elesto:subject",
+			"did:cosmos:elesto:subject",
 			&Service{
 				Id:              "my:agent",
 				Type:            "",
@@ -580,7 +580,7 @@ func TestMsgAddService(t *testing.T) {
 			false, // empty type
 		},
 		{
-			"did:cosmos:net:elesto:subject",
+			"did:cosmos:elesto:subject",
 			&Service{
 				Id:              "my:agent",
 				Type:            "DIDCommMessaging",
@@ -615,7 +615,7 @@ func TestMsgDeleteService(t *testing.T) {
 		expectPass bool
 	}{
 		{
-			"did:cosmos:net:elesto:subject",
+			"did:cosmos:elesto:subject",
 			"my:service:uri",
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			true,
@@ -627,7 +627,7 @@ func TestMsgDeleteService(t *testing.T) {
 			false, //invalid did
 		},
 		{
-			"did:cosmos:net:elesto:subject",
+			"did:cosmos:elesto:subject",
 			"",
 			"cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75",
 			false, // empty service id
@@ -664,7 +664,7 @@ func TestMsgAddController_ValidateBasic(t *testing.T) {
 		{
 			"PASS: controller is valid",
 			fields{
-				Id:            "did:cosmos:net:foochain:12345",
+				Id:            "did:cosmos:foochain:12345",
 				ControllerDid: "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 				Signer:        "cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 			},
@@ -682,11 +682,11 @@ func TestMsgAddController_ValidateBasic(t *testing.T) {
 		{
 			"FAIL: invalid controller did",
 			fields{
-				Id:            "did:cosmos:net:foochain:12345",
-				ControllerDid: "did:cosmos:net:foochain:whatever",
+				Id:            "did:cosmos:foochain:12345",
+				ControllerDid: "did:cosmos:foochain:whatever",
 				Signer:        "cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 			},
-			sdkerrors.Wrap(ErrInvalidDIDFormat, "did:cosmos:net:foochain:whatever"),
+			sdkerrors.Wrap(ErrInvalidDIDFormat, "did:cosmos:foochain:whatever"),
 		},
 	}
 	for _, tt := range tests {
@@ -722,7 +722,7 @@ func TestMsgDeleteController_ValidateBasic(t *testing.T) {
 		{
 			"PASS: controller is valid",
 			fields{
-				Id:            "did:cosmos:net:foochain:12345",
+				Id:            "did:cosmos:foochain:12345",
 				ControllerDid: "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 				Signer:        "cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 			},
@@ -740,7 +740,7 @@ func TestMsgDeleteController_ValidateBasic(t *testing.T) {
 		{
 			"FAIL: invalid controller did",
 			fields{
-				Id:            "did:cosmos:net:foochain:12345",
+				Id:            "did:cosmos:foochain:12345",
 				ControllerDid: "not a did",
 				Signer:        "cosmos1lvl2s8x4pta5f96appxrwn3mypsvumukvk7ck2",
 			},

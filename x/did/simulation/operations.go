@@ -271,9 +271,9 @@ func SimulateMsgUpdateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 		)
 
 		// create services to add to did doc
-		service1 := did.NewService("service:emti-agent1", "DIDComm", "https://agents.elesto.app.beta.starport.cloud/emti")
-		service2 := did.NewService("service:emti-agent2", "DIDComm", "https://agents.elesto.app.beta.starport.cloud/emti")
-		service3 := did.NewService("service:emti-agent3", "DIDComm", "https://agents.elesto.app.beta.starport.cloud/emti")
+		service1 := did.NewService(fmt.Sprint("service:emti-agent1", r.Int()), "DIDComm", "https://agents.elesto.app.beta.starport.cloud/emti")
+		service2 := did.NewService(fmt.Sprint("service:emti-agent", r.Int()), "DIDComm", "https://agents.elesto.app.beta.starport.cloud/emti")
+		service3 := did.NewService(fmt.Sprint("service:emti-agent", r.Int()), "DIDComm", "https://agents.elesto.app.beta.starport.cloud/emti")
 
 		// create controllers to add to did doc
 		controller, _ := simtypes.RandomAcc(r, accs)
@@ -293,9 +293,7 @@ func SimulateMsgUpdateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 
 		err = didDoc.AddVerifications(vm, vm2)
 		if err != nil {
-			return simtypes.NoOpMsg(
-				did.ModuleName,
-				TypeMsgUpdateDidDocument,
+			return simtypes.NoOpMsg(did.ModuleName, TypeMsgUpdateDidDocument,
 				"did not found, could not add vm",
 			), nil, err
 		}

@@ -71,7 +71,7 @@ func (suite *KeeperTestSuite) TestGenericKeeperSetAndGet() {
 			"PASS: data stored successfully",
 			func() did.DidDocument {
 				dd, _ := did.NewDidDocument(
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject",
 				)
 				return dd
 			},
@@ -81,7 +81,7 @@ func (suite *KeeperTestSuite) TestGenericKeeperSetAndGet() {
 			"FAIL: data not available",
 			func() did.DidDocument {
 				dd, _ := did.NewDidDocument(
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject",
 				)
 				return dd
 			},
@@ -145,7 +145,7 @@ func (suite *KeeperTestSuite) TestGenericKeeperDelete() {
 			"PASS: data deleted successfully",
 			func() did.DidDocument {
 				dd, _ := did.NewDidDocument(
-					"did:cosmos:net:elesto:subject",
+					"did:cosmos:elesto:subject",
 				)
 				suite.keeper.Set(suite.ctx,
 					[]byte(dd.Id),
@@ -167,7 +167,7 @@ func (suite *KeeperTestSuite) TestGenericKeeperDelete() {
 			"FAIL: data not available to be deleted",
 			func() did.DidDocument {
 				dd, err := did.NewDidDocument(
-					"did:cosmos:net:elesto:no",
+					"did:cosmos:elesto:no",
 				)
 				suite.Require().NoError(err)
 				return dd
