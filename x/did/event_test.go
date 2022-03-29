@@ -18,11 +18,11 @@ func TestNewDidDocumentCreatedEvent(t *testing.T) {
 		{
 			"PASS: did created event",
 			args{
-				did:   "did:cosmos:net:foochain:123",
+				did:   "did:cosmos:foochain:123",
 				owner: "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 			},
 			&DidDocumentCreatedEvent{
-				Did:    "did:cosmos:net:foochain:123",
+				Did:    "did:cosmos:foochain:123",
 				Signer: "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 			},
 		},
@@ -47,11 +47,11 @@ func TestNewDidDocumentUpdatedEvent(t *testing.T) {
 		{
 			"PASS: did updated event",
 			args{
-				did:    "did:cosmos:net:foochain:123",
+				did:    "did:cosmos:foochain:123",
 				signer: "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 			},
 			&DidDocumentUpdatedEvent{
-				Did:    "did:cosmos:net:foochain:123",
+				Did:    "did:cosmos:foochain:123",
 				Signer: "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
 			},
 		},

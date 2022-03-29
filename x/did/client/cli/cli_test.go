@@ -135,7 +135,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDidDocument() {
 		s.Run(tc.name, func() {
 			tc.malleate()
 			cmd := cli.GetCmdQueryIdentifer()
-			identifiertoquery := "did:cosmos:net:" + clientCtx.ChainID + ":" + identifier
+			identifiertoquery := "did:cosmos:" + clientCtx.ChainID + ":" + identifier
 			args := []string{
 				identifiertoquery,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
@@ -199,7 +199,7 @@ func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
 
 				//pull out the just created document
 				cmd = cli.GetCmdQueryIdentifer()
-				identifiertoquery := "did:cosmos:net:" + clientCtx.ChainID + ":" + tc.args[0]
+				identifiertoquery := "did:cosmos:" + clientCtx.ChainID + ":" + tc.args[0]
 				argstemp := []string{
 					identifiertoquery,
 					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
@@ -262,7 +262,7 @@ func (s *IntegrationTestSuite) TestNewAddControllerCmd() {
 			//check for update
 			cmd = cli.GetCmdQueryIdentifer()
 			argsTemp := []string{
-				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier1,
+				"did:cosmos:" + clientCtx.ChainID + ":" + identifier1,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
 			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
@@ -350,7 +350,7 @@ func (s *IntegrationTestSuite) TestNewDeleteControllerCmd() {
 			//check for update
 			cmd = cli.GetCmdQueryIdentifer()
 			argsTemp := []string{
-				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier1,
+				"did:cosmos:" + clientCtx.ChainID + ":" + identifier1,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
 			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
@@ -412,7 +412,7 @@ func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
 			//check for update
 			cmd = cli.GetCmdQueryIdentifer()
 			argsTemp := []string{
-				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier,
+				"did:cosmos:" + clientCtx.ChainID + ":" + identifier,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
 			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
@@ -471,7 +471,7 @@ func (s *IntegrationTestSuite) TestNewSetVerificationRelationshipsCmd() {
 			tc.malleate()
 			cmd := cli.GetCmdQueryIdentifer()
 			argsTemp := []string{
-				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier,
+				"did:cosmos:" + clientCtx.ChainID + ":" + identifier,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
@@ -544,7 +544,7 @@ func (s *IntegrationTestSuite) TestNewRevokeVerificationCmd() {
 			tc.malleate()
 			cmd := cli.GetCmdQueryIdentifer()
 			argsTemp := []string{
-				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier,
+				"did:cosmos:" + clientCtx.ChainID + ":" + identifier,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
@@ -629,7 +629,7 @@ func (s *IntegrationTestSuite) TestNewAddServiceCmd() {
 			//check for update
 			cmd = cli.GetCmdQueryIdentifer()
 			argsTemp := []string{
-				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier,
+				"did:cosmos:" + clientCtx.ChainID + ":" + identifier,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
 			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
@@ -708,7 +708,7 @@ func (s *IntegrationTestSuite) TestNewDeleteServiceCmd() {
 			//check for update
 			cmd = cli.GetCmdQueryIdentifer()
 			argsTemp := []string{
-				"did:cosmos:net:" + clientCtx.ChainID + ":" + identifier,
+				"did:cosmos:" + clientCtx.ChainID + ":" + identifier,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
 			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)

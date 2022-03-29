@@ -52,6 +52,12 @@ func init() {
 	simapp.GetSimulatorFlags()
 }
 
+// fauxMerkleModeOpt returns a BaseApp option to use a dbStoreAdapter instead of
+// an IAVLStore for faster simulation speed.
+func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
+	bapp.SetFauxMerkleMode()
+}
+
 type SimApp interface {
 	cosmoscmd.App
 	GetBaseApp() *baseapp.BaseApp
@@ -112,6 +118,7 @@ func TestFullAppSimulation(t *testing.T) {
 		0,
 		encoding,
 		simapp.EmptyAppOptions{},
+		fauxMerkleModeOpt,
 	)
 
 	simApp, ok := app.(SimApp)
@@ -174,6 +181,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		0,
 		encoding,
 		simapp.EmptyAppOptions{},
+		fauxMerkleModeOpt,
 	)
 
 	simApp, ok := app.(SimApp)
@@ -231,6 +239,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		0,
 		encoding,
 		simapp.EmptyAppOptions{},
+		fauxMerkleModeOpt,
 	)
 	simApp1, ok := app1.(SimApp)
 	require.True(t, ok, "can't use simapp")
@@ -279,10 +288,12 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		true,
 		map[int64]bool{},
 		app.DefaultNodeHome,
-		0,
+		1,
 		encoding,
 		simapp.EmptyAppOptions{},
+		fauxMerkleModeOpt,
 	)
+
 	simApp2, ok := newApp.(SimApp)
 	require.True(t, ok, "can't use simapp")
 
@@ -354,6 +365,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				0,
 				encoding,
 				simapp.EmptyAppOptions{},
+				fauxMerkleModeOpt,
 			)
 			simApp, ok := app.(SimApp)
 			require.True(t, ok, "can't use simapp")

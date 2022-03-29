@@ -15,7 +15,7 @@ func (suite *KeeperTestSuite) TestDidDocumentKeeper() {
 		{
 			"PASS: did document stored successfully",
 			func() did.DidDocument {
-				dd, _ := did.NewDidDocument("did:cosmos:net:elesto:subject")
+				dd, _ := did.NewDidDocument("did:cosmos:elesto:subject")
 				suite.keeper.SetDidDocument(suite.ctx, []byte(dd.Id), dd)
 				return dd
 			},
@@ -24,7 +24,7 @@ func (suite *KeeperTestSuite) TestDidDocumentKeeper() {
 		{
 			"FAIL: did document does not exist",
 			func() did.DidDocument {
-				dd, _ := did.NewDidDocument("did:cosmos:net:elesto:not")
+				dd, _ := did.NewDidDocument("did:cosmos:elesto:not")
 				return dd
 			},
 			false,
