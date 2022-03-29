@@ -11,7 +11,7 @@ import (
 func (suite *KeeperTestSuite) TestGenesisExport() {
 	moduleBasics := module.NewBasicManager()
 	cdc := cosmoscmd.MakeEncodingConfig(moduleBasics)
-	didID := "did:cosmos:net:elesto:subject"
+	didID := "did:cosmos:elesto:subject"
 
 	dd, _ := did.NewDidDocument(didID)
 	suite.keeper.SetDidDocument(suite.ctx, []byte(dd.Id), dd)
@@ -35,7 +35,7 @@ func (suite *KeeperTestSuite) TestGenesisExport() {
 func (suite *KeeperTestSuite) TestGenesisInit() {
 	moduleBasics := module.NewBasicManager()
 	cdc := cosmoscmd.MakeEncodingConfig(moduleBasics)
-	didID := "did:cosmos:net:elesto:subject"
+	didID := "did:cosmos:elesto:subject"
 	dd, _ := did.NewDidDocument(didID)
 	suite.keeper.SetDidDocument(suite.ctx, []byte(dd.Id), dd)
 	dd2, _ := did.NewDidDocument(didID + "2")
