@@ -92,6 +92,11 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
+	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 	"github.com/elesto-dao/elesto/v2/docs"
 	"github.com/elesto-dao/elesto/v2/x/credential"
 	credentialModuleKeeper "github.com/elesto-dao/elesto/v2/x/credential/keeper"
@@ -172,6 +177,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
+		icatypes.ModuleName: nil,
 	}
 )
 
@@ -224,6 +230,10 @@ type App struct {
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
+
+	// ICA host
+	ICAHostKeeper       icahostkeeper.Keeper
+	ScopedICAHostKeeper capabilitykeeper.ScopedKeeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -285,6 +295,7 @@ func New(
 		// this line is used by starport scaffolding # stargate/app/storeKey
 		did.StoreKey,
 		credential.StoreKey,
+		icahosttypes.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -313,6 +324,8 @@ func New(
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	app.CapabilityKeeper.Seal()
 	// this line is used by starport scaffolding # stargate/app/scopedKeeper
+
+	scopedICAHostKeeper := app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
 
 	// add keepers
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
@@ -397,6 +410,14 @@ func New(
 		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
 	)
 
+	app.ICAHostKeeper = icahostkeeper.NewKeeper(
+		appCodec, keys[icahosttypes.StoreKey], app.GetSubspace(icahosttypes.SubModuleName),
+		app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
+		app.AccountKeeper, scopedICAHostKeeper, app.MsgServiceRouter(),
+	)
+	icaModule := ica.NewAppModule(nil, &app.ICAHostKeeper)
+	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
+
 	// register the proposal types
 	govRouter := govtypes.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
@@ -447,7 +468,8 @@ func New(
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
-	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
+		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule)
 	// this line is used by starport scaffolding # ibc/app/router
 	app.IBCKeeper.SetRouter(ibcRouter)
 
@@ -485,6 +507,7 @@ func New(
 		app.transferModule,
 		didModule,
 		credentialModule,
+		icaModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants), // always be last to make sure that it checks for all invariants and not only part of them
 	)
@@ -514,6 +537,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		did.ModuleName,
 		credential.ModuleName,
+		icatypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -537,6 +561,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		did.ModuleName,
 		credential.ModuleName,
+		icatypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -566,6 +591,7 @@ func New(
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 		did.ModuleName,
 		credential.ModuleName,
+		icatypes.ModuleName,
 		crisistypes.ModuleName, // this has to be loaded after the staking module
 	)
 
@@ -643,6 +669,7 @@ func New(
 
 	app.ScopedIBCKeeper = scopedIBCKeeper
 	app.ScopedTransferKeeper = scopedTransferKeeper
+	app.ScopedICAHostKeeper = scopedICAHostKeeper
 	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
 
 	return app
@@ -793,6 +820,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(did.ModuleName)
 	paramsKeeper.Subspace(credential.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
