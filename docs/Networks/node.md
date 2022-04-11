@@ -63,7 +63,7 @@ the binary will be installed in `~/go/bin/elestod`
 sudo ufw allow ssh
 
 ## allow port to submit transactions
-sudo ufw allow 26657/tcp
+sudo ufw allow 26656/tcp
 
 ## start the firewall
 sudo ufw enable

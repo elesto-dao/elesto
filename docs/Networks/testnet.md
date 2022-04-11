@@ -23,22 +23,20 @@ Choose a name for your node, for this guide we'll be using `{{ nodeName }}`. The
 elestod init {{ nodeName }} --chain-id={{ chainId }}
 ```
 
-Edit the configuration file `config.toml` with your editor of choice:
+Update the persistent peers list in the `config.toml`:
 
 ```shell
-edit ~/.elesto/config/config.toml 
+sed -i 's/persistent_peers = ""/persistent_peers = "833d9eacfec93c3df2e721d8ce818011418752a0@35.232.91.19:26656"/g' ~/.elesto/config/config.toml
 ```
 
-Under the section *P2P Configuration Options* edit the seeds and peers configuration entries as follows:
-
-> TODO: add the nodes and peers 
+The updated peers configuration should look like this:
 
 ```shell
 # Comma separated list of seed nodes to connect to
 seeds = ""
 
 # Comma separated list of nodes to keep persistent connections to
-persistent_peers = ""
+persistent_peers = "833d9eacfec93c3df2e721d8ce818011418752a0@35.232.91.19:26656"
 ```
 
 
