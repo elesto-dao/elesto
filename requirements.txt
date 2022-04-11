@@ -1,2 +1,3 @@
 mkdocs-build-plantuml-plugin==1.5.0
 mkdocs-material-extensions==1.0.3
+mkdocs-macros-plugin==0.7.0
