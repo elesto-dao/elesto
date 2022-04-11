@@ -43,11 +43,11 @@ persistent_peers = ""
 
 
 
-## Set up Cosmosvisor
+## Set up Cosmovisor
 
-Cosmosvisor allows automatic upgrades for the node, and it is the recommended way of running an Elesto node.
+Cosmovisor allows automatic upgrades for the node, and it is the recommended way of running an Elesto node.
 
-Install the Cosmosvisor binary:
+Install the Cosmovisor binary:
 
 ```shell
 go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
@@ -82,10 +82,15 @@ You may leave out `UNSAFE_SKIP_BACKUP=true`, however, the backup takes a decent 
 Download and replace the genesis file:
 
 ```shell
-cd ~/.elesto/config
-curl https://github.com/elesto-dao/networks/raw/main/elesto-canary-1/genesis.tar.bz2
+cd ~/.elesto
+# TODO: when the repos are public
+# the correct url is https://github.com/elesto-dao/networks/raw/main/elesto-canary-1/genesis.tar.bz2
+curl -L -O https://filedn.eu/lDrGVxedryyQhhwkHmVd7sJ/genesis.tar.bz2 
 tar -xjf genesis.tar.bz2 && rm genesis.tar.bz2
 ```
+
+
+
 
 Copy the current elestod binary into the cosmovisor/genesis folder:
 
@@ -113,12 +118,13 @@ elestod unsafe-reset-all
 Set up a service to allow cosmovisor to run in the background as well as restart automatically if it runs into any problems:
 
 ```shell
+cd ~
 echo "[Unit]
 Description=Cosmovisor daemon
 After=network-online.target
 [Service]
 Environment="DAEMON_NAME=elestod"
-Environment="DAEMON_HOME=${HOME}/.elestod"
+Environment="DAEMON_HOME=${HOME}/.elesto"
 Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
 Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
 Environment="DAEMON_LOG_BUFFER_SIZE=512"
@@ -148,7 +154,7 @@ sudo systemctl restart systemd-journald
 Start the service:
 
 ```shell
-sudo systemctl start cosmosvisor
+sudo systemctl start cosmovisor
 ```
 
 Check the service status:
@@ -160,7 +166,7 @@ sudo systemctl status cosmovisor
 Inspect the service logs:
 
 ```shell
-journalctl -u cosmosvisor -f
+journalctl -u cosmovisor -f
 ```
 
 
@@ -183,7 +189,7 @@ If this command returns true then your node is still catching up. If it returns 
 ## Upgrading to validator
 
 ??? Important "Keys and Balances" 
-    To became a validator you need an account with a positive balance. Follow the [keys management](../How-To/chain_002_key_managemnt.md) to learn how to create an account and the [faucet](../How-To/chain_001_faucet.md) how-to to learn how to get tokens for the testnet. 
+    To became a validator you need an account with a positive balance. Follow the [keys management](../How-To/chain_002_key_management.md) to learn how to create an account and the [faucet](../How-To/chain_001_faucet.md) how-to to learn how to get tokens for the testnet. 
 
 
 To upgrade the node to a validator, you will need to submit a create-validator transaction:
