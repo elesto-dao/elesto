@@ -1,0 +1,90 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: elesto-node-external
+  namespace: cosmos-cash
+  labels:
+    app: elesto-node-external
+spec:
+  type: ClusterIP
+  ports:
+  - name: metrics
+    port: 26660
+    targetPort: 26660
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: elesto-node-external
+  namespace: cosmos-cash
+subsets:
+  - addresses:
+    - ip: 35.232.91.19
+    ports: 
+      - name: metrics
+        port: 26660
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: monitoring-stack
+  name: elesto-node-external
+  namespace: cosmos-cash
+spec:
+  namespaceSelector:
+    matchNames:
+    - cosmos-cash
+  endpoints:
+  - path: /metrics
+    port: metrics
+    interval: 30s
+  selector:
+    matchLabels:
+      app: elesto-node-external
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: elesto-node-exporter-external
+  namespace: cosmos-cash
+  labels:
+    app: elesto-node-exporter-external
+spec:
+  type: ClusterIP
+  ports:
+  - name: metrics
+    port: 9100
+    targetPort: 9100
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: elesto-node-exporter-external
+  namespace: cosmos-cash
+subsets:
+  - addresses:
+    - ip: 35.232.91.19
+    ports: 
+      - name: metrics
+        port: 9100
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: monitoring-stack
+  name: elesto-node-exporter-external
+  namespace: cosmos-cash
+spec:
+  namespaceSelector:
+    matchNames:
+    - cosmos-cash
+  endpoints:
+  - path: /metrics
+    port: metrics
+    interval: 30s
+  selector:
+    matchLabels:
+      app: elesto-node-exporter-external
+
