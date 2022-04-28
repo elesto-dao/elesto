@@ -1,0 +1,15 @@
+syntax = "proto3";
+package elestodao.elesto.mint.v1;
+
+option go_package = "github.com/elesto-dao/elesto/x/mint/types";
+
+import "gogoproto/gogo.proto";
+
+// MintEvent is an event triggered on a minting event
+message MintEvent {
+  option (gogoproto.equal) = true;
+  option (gogoproto.goproto_getters)  = false;
+
+  string amount  = 1; // the amount being minted
+}
+

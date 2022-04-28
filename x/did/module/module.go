@@ -181,6 +181,7 @@ func (AppModule) ConsensusVersion() uint64 { return 1 }
 
 // GenerateGenesisState creates a randomized GenState of the did module.
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
+
 }
 
 // ProposalContents returns all the did content functions used to
@@ -200,13 +201,14 @@ func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
 }
 
 // WeightedOperations returns the all the gov module operations with their respective weights.
-func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	return simulation.WeightedOperations(
-		simState,
-		am.keeper,
-		am.bk,
-		am.ak,
-	)
+func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
+	//return simulation.WeightedOperations(
+	//	simState,
+	//	am.keeper,
+	//	am.bk,
+	//	am.ak,
+	//)
+	return nil
 }
 
 // ----------------------------------------------------------------------------
