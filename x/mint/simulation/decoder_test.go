@@ -7,10 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
 
-	utils "github.com/elesto-dao/elesto/types"
 	"github.com/elesto-dao/elesto/x/mint/simulation"
 	"github.com/elesto-dao/elesto/x/mint/types"
 )
@@ -20,11 +18,9 @@ func TestDecodeLastBlockTimeStore(t *testing.T) {
 	cdc := simapp.MakeTestEncodingConfig()
 	dec := simulation.NewDecodeStore(cdc.Marshaler)
 
-	tc := utils.ParseTime("2022-01-01T00:00:00Z")
-
 	kvPairs := kv.Pairs{
 		Pairs: []kv.Pair{
-			{Key: types.LastBlockTimeKey, Value: sdk.FormatTimeBytes(tc)},
+			{Key: types.CurrentInflationKey, Value: []byte{0x31}},
 			{Key: []byte{0x99}, Value: []byte{0x99}},
 		},
 	}
@@ -33,7 +29,7 @@ func TestDecodeLastBlockTimeStore(t *testing.T) {
 		name        string
 		expectedLog string
 	}{
-		{"LastBlockTime", fmt.Sprintf("%v\n%v", tc, tc)},
+		{"LastBlockTime", fmt.Sprintf("%v\n%v", 31, 31)},
 		{"other", ""},
 	}
 	for i, tt := range tests {

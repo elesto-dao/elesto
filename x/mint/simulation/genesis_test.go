@@ -14,7 +14,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	chain "github.com/elesto-dao/elesto/app"
 	"github.com/elesto-dao/elesto/x/mint/simulation"
 	"github.com/elesto-dao/elesto/x/mint/types"
 )
@@ -35,7 +34,7 @@ func TestRandomizedGenState(t *testing.T) {
 		Accounts:     simtypes.RandomAccounts(r, 3),
 		InitialStake: 1000,
 		GenState:     make(map[string]json.RawMessage),
-		GenTimestamp: time.Unix(chain.FlagGenesisTimeValue, 0),
+		GenTimestamp: time.Unix(1, 0),
 	}
 
 	simulation.RandomizedGenState(&simState)
@@ -44,9 +43,9 @@ func TestRandomizedGenState(t *testing.T) {
 	simState.Cdc.MustUnmarshalJSON(simState.GenState[types.ModuleName], &genState)
 
 	require.Equal(t, sdk.DefaultBondDenom, genState.Params.MintDenom)
-	require.Equal(t, types.DefaultParams().BlockTimeThreshold, genState.Params.BlockTimeThreshold)
-	require.Equal(t, types.DefaultInflationSchedules, genState.Params.InflationSchedules)
-	require.Equal(t, (*time.Time)(nil), genState.LastBlockTime)
+	require.Equal(t, types.DefaultParams().BlocksPerYear, genState.Params.BlocksPerYear)
+	require.Equal(t, types.DefaultParams().MaxSupply, genState.Params.MaxSupply)
+	require.Equal(t, types.DefaultParams().InflationRates, genState.Params.InflationRates)
 }
 
 // TestRandomizedGenState tests abnormal scenarios of applying RandomizedGenState.
