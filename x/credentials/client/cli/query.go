@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/elesto-dao/elesto/x/credentials"
-	"github.com/elesto-dao/elesto/x/did"
 )
 
 // GetQueryCmd returns the cli query commands for this module
@@ -25,10 +24,42 @@ func GetQueryCmd(_ string) *cobra.Command {
 
 	// this line is used by starport scaffolding # 1
 	cmd.AddCommand(
+		NewQueryCredentialDefinitionCmd(),
 		NewQueryCredentialIssuerCmd(),
-		NewQueryRevocationListCmd(),
 		NewQueryPublicCredentialsCmd(),
 	)
+
+	return cmd
+}
+
+func NewQueryCredentialDefinitionCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "credential-definition [did]",
+		Short:   "query a credential definition by its id",
+		Example: "elestod query credentials credential-definition did:cosmos:elesto:cd-1",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := credentials.NewQueryClient(clientCtx)
+
+			result, err := queryClient.CredentialDefinition(
+				context.Background(),
+				&credentials.QueryCredentialDefinitionRequest{
+					Id: args[0],
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(result)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -37,7 +68,7 @@ func NewQueryCredentialIssuerCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "issuer [did]",
 		Short:   "get a credential issuer",
-		Example: "elestod query credentials issuer did:cosmos:net:elesto:example-issuer",
+		Example: "elestod query credentials issuer did:cosmos:elesto:example-issuer",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -71,26 +102,22 @@ func NewQueryRevocationListCmd() *cobra.Command {
 		Short: "get the revocation list for a credential issuer",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			queryClient := credentials.NewQueryClient(clientCtx)
+			//clientCtx, err := client.GetClientQueryContext(cmd)
+			//if err != nil {
+			//	return err
+			//}
+			//queryClient := credentials.NewQueryClient(clientCtx)
 
-			// did
-			did := did.NewChainDID(clientCtx.ChainID, args[0])
-
-			result, err := queryClient.RevocationList(
-				context.Background(),
-				&credentials.QueryRevocationListRequest{
-					Id: did.String(),
-				},
-			)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(result)
+			//// did
+			//did := did.NewChainDID(clientCtx.ChainID, args[0])
+			//
+			//
+			//if err != nil {
+			//	return err
+			//}
+			//
+			//return clientCtx.PrintProto(result)
+			return fmt.Errorf("not implemented")
 		},
 	}
 

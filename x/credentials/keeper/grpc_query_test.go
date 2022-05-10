@@ -32,23 +32,6 @@ func (suite *KeeperTestSuite) TestGRPCQueryDidDocument() {
 			false,
 		},
 		{
-			"Pass: will pass because a did is found",
-			func() {
-
-				dd, _ := did.NewDidDocument("did:cosmos:cash:1234")
-
-				suite.keeper.SetDidDocument(
-					suite.ctx,
-					[]byte(dd.Id),
-					dd,
-				)
-				req = &did.QueryDidDocumentRequest{
-					Id: "did:cosmos:cash:1234",
-				}
-			},
-			true,
-		},
-		{
 			"Pass: will pass because a address did is autoresolved",
 			func() {
 				req = &did.QueryDidDocumentRequest{

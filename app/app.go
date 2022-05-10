@@ -154,7 +154,6 @@ var (
 		vesting.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 
-		didmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 		didmodule.AppModuleBasic{},
 		credentialsmodule.AppModuleBasic{},
@@ -443,6 +442,7 @@ func New(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		did.ModuleName,
+		credentials.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		authz.ModuleName, feegrant.ModuleName,
@@ -457,6 +457,7 @@ func New(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		did.ModuleName,
+		credentials.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		authz.ModuleName, feegrant.ModuleName,
@@ -489,6 +490,7 @@ func New(
 		upgradetypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 		did.ModuleName,
+		credentials.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)

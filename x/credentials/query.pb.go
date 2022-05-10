@@ -119,95 +119,6 @@ func (m *QueryCredentialIssuerResponse) GetIssuer() *CredentialIssuer {
 	return nil
 }
 
-type QueryRevocationListRequest struct {
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-}
-
-func (m *QueryRevocationListRequest) Reset()         { *m = QueryRevocationListRequest{} }
-func (m *QueryRevocationListRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryRevocationListRequest) ProtoMessage()    {}
-func (*QueryRevocationListRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a18cc5d37fb7ced7, []int{2}
-}
-func (m *QueryRevocationListRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryRevocationListRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryRevocationListRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryRevocationListRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryRevocationListRequest.Merge(m, src)
-}
-func (m *QueryRevocationListRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryRevocationListRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryRevocationListRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryRevocationListRequest proto.InternalMessageInfo
-
-func (m *QueryRevocationListRequest) GetId() string {
-	if m != nil {
-		return m.Id
-	}
-	return ""
-}
-
-type QueryRevocationListResponse struct {
-	// Returns a did document
-	RevocationList *RevocationList `protobuf:"bytes,1,opt,name=revocationList,proto3" json:"revocationList,omitempty"`
-}
-
-func (m *QueryRevocationListResponse) Reset()         { *m = QueryRevocationListResponse{} }
-func (m *QueryRevocationListResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryRevocationListResponse) ProtoMessage()    {}
-func (*QueryRevocationListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a18cc5d37fb7ced7, []int{3}
-}
-func (m *QueryRevocationListResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryRevocationListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryRevocationListResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryRevocationListResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryRevocationListResponse.Merge(m, src)
-}
-func (m *QueryRevocationListResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryRevocationListResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryRevocationListResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryRevocationListResponse proto.InternalMessageInfo
-
-func (m *QueryRevocationListResponse) GetRevocationList() *RevocationList {
-	if m != nil {
-		return m.RevocationList
-	}
-	return nil
-}
-
 type QueryPublicCredentialsRequest struct {
 }
 
@@ -215,7 +126,7 @@ func (m *QueryPublicCredentialsRequest) Reset()         { *m = QueryPublicCreden
 func (m *QueryPublicCredentialsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryPublicCredentialsRequest) ProtoMessage()    {}
 func (*QueryPublicCredentialsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a18cc5d37fb7ced7, []int{4}
+	return fileDescriptor_a18cc5d37fb7ced7, []int{2}
 }
 func (m *QueryPublicCredentialsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -252,7 +163,7 @@ func (m *QueryPublicCredentialsResponse) Reset()         { *m = QueryPublicCrede
 func (m *QueryPublicCredentialsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryPublicCredentialsResponse) ProtoMessage()    {}
 func (*QueryPublicCredentialsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a18cc5d37fb7ced7, []int{5}
+	return fileDescriptor_a18cc5d37fb7ced7, []int{3}
 }
 func (m *QueryPublicCredentialsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -288,48 +199,221 @@ func (m *QueryPublicCredentialsResponse) GetCredentials() []*PublicVerifiableCre
 	return nil
 }
 
+// QueryCredentialDefinitionRequest is request type for Query/DidDocuments RPC method.
+type QueryCredentialDefinitionRequest struct {
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (m *QueryCredentialDefinitionRequest) Reset()         { *m = QueryCredentialDefinitionRequest{} }
+func (m *QueryCredentialDefinitionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCredentialDefinitionRequest) ProtoMessage()    {}
+func (*QueryCredentialDefinitionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a18cc5d37fb7ced7, []int{4}
+}
+func (m *QueryCredentialDefinitionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCredentialDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCredentialDefinitionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCredentialDefinitionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCredentialDefinitionRequest.Merge(m, src)
+}
+func (m *QueryCredentialDefinitionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCredentialDefinitionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCredentialDefinitionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCredentialDefinitionRequest proto.InternalMessageInfo
+
+func (m *QueryCredentialDefinitionRequest) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+type QueryCredentialDefinitionResponse struct {
+	Definition *CredentialDefinition `protobuf:"bytes,1,opt,name=definition,proto3" json:"definition,omitempty"`
+}
+
+func (m *QueryCredentialDefinitionResponse) Reset()         { *m = QueryCredentialDefinitionResponse{} }
+func (m *QueryCredentialDefinitionResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCredentialDefinitionResponse) ProtoMessage()    {}
+func (*QueryCredentialDefinitionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a18cc5d37fb7ced7, []int{5}
+}
+func (m *QueryCredentialDefinitionResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCredentialDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCredentialDefinitionResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCredentialDefinitionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCredentialDefinitionResponse.Merge(m, src)
+}
+func (m *QueryCredentialDefinitionResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCredentialDefinitionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCredentialDefinitionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCredentialDefinitionResponse proto.InternalMessageInfo
+
+func (m *QueryCredentialDefinitionResponse) GetDefinition() *CredentialDefinition {
+	if m != nil {
+		return m.Definition
+	}
+	return nil
+}
+
+type QueryCredentialDefinitionsRequest struct {
+}
+
+func (m *QueryCredentialDefinitionsRequest) Reset()         { *m = QueryCredentialDefinitionsRequest{} }
+func (m *QueryCredentialDefinitionsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCredentialDefinitionsRequest) ProtoMessage()    {}
+func (*QueryCredentialDefinitionsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a18cc5d37fb7ced7, []int{6}
+}
+func (m *QueryCredentialDefinitionsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCredentialDefinitionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCredentialDefinitionsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCredentialDefinitionsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCredentialDefinitionsRequest.Merge(m, src)
+}
+func (m *QueryCredentialDefinitionsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCredentialDefinitionsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCredentialDefinitionsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCredentialDefinitionsRequest proto.InternalMessageInfo
+
+type QueryCredentialDefinitionsResponse struct {
+	Definitions []*CredentialDefinition `protobuf:"bytes,1,rep,name=definitions,proto3" json:"definitions,omitempty"`
+}
+
+func (m *QueryCredentialDefinitionsResponse) Reset()         { *m = QueryCredentialDefinitionsResponse{} }
+func (m *QueryCredentialDefinitionsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCredentialDefinitionsResponse) ProtoMessage()    {}
+func (*QueryCredentialDefinitionsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a18cc5d37fb7ced7, []int{7}
+}
+func (m *QueryCredentialDefinitionsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCredentialDefinitionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCredentialDefinitionsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCredentialDefinitionsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCredentialDefinitionsResponse.Merge(m, src)
+}
+func (m *QueryCredentialDefinitionsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCredentialDefinitionsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCredentialDefinitionsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCredentialDefinitionsResponse proto.InternalMessageInfo
+
+func (m *QueryCredentialDefinitionsResponse) GetDefinitions() []*CredentialDefinition {
+	if m != nil {
+		return m.Definitions
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryCredentialIssuerRequest)(nil), "elestodao.elesto.credentials.v1.QueryCredentialIssuerRequest")
 	proto.RegisterType((*QueryCredentialIssuerResponse)(nil), "elestodao.elesto.credentials.v1.QueryCredentialIssuerResponse")
-	proto.RegisterType((*QueryRevocationListRequest)(nil), "elestodao.elesto.credentials.v1.QueryRevocationListRequest")
-	proto.RegisterType((*QueryRevocationListResponse)(nil), "elestodao.elesto.credentials.v1.QueryRevocationListResponse")
 	proto.RegisterType((*QueryPublicCredentialsRequest)(nil), "elestodao.elesto.credentials.v1.QueryPublicCredentialsRequest")
 	proto.RegisterType((*QueryPublicCredentialsResponse)(nil), "elestodao.elesto.credentials.v1.QueryPublicCredentialsResponse")
+	proto.RegisterType((*QueryCredentialDefinitionRequest)(nil), "elestodao.elesto.credentials.v1.QueryCredentialDefinitionRequest")
+	proto.RegisterType((*QueryCredentialDefinitionResponse)(nil), "elestodao.elesto.credentials.v1.QueryCredentialDefinitionResponse")
+	proto.RegisterType((*QueryCredentialDefinitionsRequest)(nil), "elestodao.elesto.credentials.v1.QueryCredentialDefinitionsRequest")
+	proto.RegisterType((*QueryCredentialDefinitionsResponse)(nil), "elestodao.elesto.credentials.v1.QueryCredentialDefinitionsResponse")
 }
 
 func init() { proto.RegisterFile("credentials/v1/query.proto", fileDescriptor_a18cc5d37fb7ced7) }
 
 var fileDescriptor_a18cc5d37fb7ced7 = []byte{
-	// 454 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0xcd, 0xaa, 0xd3, 0x40,
-	0x1c, 0xc5, 0x3b, 0x55, 0x0b, 0x4e, 0xa1, 0xe8, 0x88, 0x50, 0xd2, 0x9a, 0x96, 0x20, 0x52, 0x4a,
-	0x9d, 0xd8, 0xba, 0xac, 0x1f, 0xa0, 0x6e, 0x0a, 0x2e, 0x34, 0x0b, 0x05, 0x41, 0x24, 0x1f, 0x63,
-	0x1d, 0x89, 0x99, 0x36, 0x33, 0x09, 0x8a, 0x88, 0xe0, 0x13, 0x08, 0x3e, 0x89, 0x0f, 0x50, 0xdc,
-	0xba, 0x2c, 0xb8, 0x71, 0x79, 0x69, 0xef, 0x83, 0x5c, 0xee, 0x64, 0xee, 0x6d, 0x9a, 0x26, 0x37,
-	0xa5, 0xbb, 0xa1, 0xf3, 0x3f, 0xe7, 0xff, 0x3b, 0xd3, 0x43, 0xa0, 0xe6, 0x86, 0xc4, 0x23, 0x81,
-	0xa0, 0xb6, 0xcf, 0xcd, 0x78, 0x68, 0xce, 0x23, 0x12, 0x7e, 0xc1, 0xb3, 0x90, 0x09, 0x86, 0x3a,
-	0xc4, 0x27, 0x5c, 0x30, 0xcf, 0x66, 0x38, 0x39, 0xe1, 0xd4, 0x30, 0x8e, 0x87, 0x5a, 0x7b, 0xca,
-	0xd8, 0xd4, 0x27, 0xa6, 0x3d, 0xa3, 0xa6, 0x1d, 0x04, 0x4c, 0xd8, 0x82, 0xb2, 0x80, 0x27, 0x72,
-	0xad, 0x9b, 0xb1, 0x4e, 0x8b, 0xe5, 0x84, 0x81, 0x61, 0xfb, 0xe5, 0xe9, 0xbe, 0xa7, 0xe7, 0x37,
-	0x13, 0xce, 0x23, 0x12, 0x5a, 0x64, 0x1e, 0x11, 0x2e, 0x50, 0x03, 0x56, 0xa9, 0xd7, 0x04, 0x5d,
-	0xd0, 0xbb, 0x6a, 0x55, 0xa9, 0x67, 0x7c, 0x84, 0xb7, 0x0a, 0xe6, 0xf9, 0x8c, 0x05, 0x9c, 0xa0,
-	0x09, 0xac, 0x51, 0xf9, 0x8b, 0x14, 0xd5, 0x47, 0x43, 0x5c, 0x12, 0x01, 0xef, 0x58, 0x29, 0x03,
-	0x63, 0x00, 0x35, 0xb9, 0xcb, 0x22, 0x31, 0x73, 0x65, 0xae, 0xe7, 0x94, 0x8b, 0x22, 0xb2, 0x18,
-	0xb6, 0x72, 0xa7, 0x15, 0xd7, 0x6b, 0xd8, 0x08, 0xb7, 0x6e, 0x14, 0x9f, 0x59, 0xca, 0x97, 0x31,
-	0xcc, 0xd8, 0x18, 0x1d, 0xf5, 0x22, 0x2f, 0x22, 0xc7, 0xa7, 0xee, 0x26, 0x0c, 0x57, 0xa0, 0xc6,
-	0x77, 0xa8, 0x17, 0x0d, 0x28, 0xb6, 0xb7, 0xb0, 0x9e, 0xda, 0xd9, 0x04, 0xdd, 0x4b, 0xbd, 0xfa,
-	0x68, 0x5c, 0x0a, 0x96, 0x18, 0xbe, 0x22, 0x21, 0x7d, 0x4f, 0x6d, 0xc7, 0x27, 0x1b, 0x6b, 0x2b,
-	0xed, 0x37, 0x5a, 0x5c, 0x86, 0x57, 0x24, 0x01, 0xfa, 0x03, 0xe0, 0xb5, 0xec, 0x73, 0xa3, 0x87,
-	0xa5, 0x8b, 0x2e, 0x6a, 0x88, 0xf6, 0xe8, 0x50, 0x79, 0x12, 0xde, 0x18, 0xfc, 0xf8, 0x77, 0xfc,
-	0xab, 0x7a, 0x07, 0xdd, 0x36, 0x13, 0x75, 0xba, 0xa4, 0x5b, 0xe7, 0xaf, 0xd4, 0xfb, 0x86, 0x16,
-	0x00, 0x36, 0xb6, 0xff, 0x10, 0x34, 0xde, 0x0f, 0x20, 0xb7, 0x45, 0xda, 0x83, 0xc3, 0xc4, 0x8a,
-	0xfd, 0x9e, 0x64, 0xef, 0xa3, 0x5e, 0x1e, 0xfb, 0xa6, 0x27, 0xef, 0x7c, 0xca, 0x45, 0xc2, 0xff,
-	0x1b, 0xc0, 0xeb, 0x3b, 0x45, 0x40, 0x7b, 0xbe, 0x61, 0x51, 0xc5, 0xb4, 0xc7, 0x07, 0xeb, 0x55,
-	0x90, 0x96, 0x0c, 0x72, 0x13, 0xdd, 0xc8, 0x09, 0xf2, 0xe4, 0xd9, 0xdf, 0x95, 0x0e, 0x96, 0x2b,
-	0x1d, 0x1c, 0xad, 0x74, 0xf0, 0x73, 0xad, 0x57, 0x96, 0x6b, 0xbd, 0xf2, 0x7f, 0xad, 0x57, 0xde,
-	0xf4, 0xa7, 0x54, 0x7c, 0x88, 0x1c, 0xec, 0xb2, 0x4f, 0x4a, 0x78, 0xd7, 0xb3, 0xd9, 0x99, 0xc7,
-	0xe7, 0xb4, 0x8b, 0x53, 0x93, 0x1f, 0x9c, 0xfb, 0x27, 0x01, 0x00, 0x00, 0xff, 0xff, 0xad, 0x07,
-	0x5a, 0x1c, 0xef, 0x04, 0x00, 0x00,
+	// 495 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x4a, 0x2e, 0x4a, 0x4d,
+	0x49, 0xcd, 0x2b, 0xc9, 0x4c, 0xcc, 0x29, 0xd6, 0x2f, 0x33, 0xd4, 0x2f, 0x2c, 0x4d, 0x2d, 0xaa,
+	0xd4, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x92, 0x4f, 0xcd, 0x49, 0x2d, 0x2e, 0xc9, 0x4f, 0x49,
+	0xcc, 0xd7, 0x83, 0xb0, 0xf4, 0x90, 0x14, 0xeb, 0x95, 0x19, 0x4a, 0xc9, 0xa4, 0xe7, 0xe7, 0xa7,
+	0xe7, 0xa4, 0xea, 0x27, 0x16, 0x64, 0xea, 0x27, 0xe6, 0xe5, 0xe5, 0x97, 0x24, 0x96, 0x64, 0xe6,
+	0xe7, 0x15, 0x43, 0xb4, 0x4b, 0x29, 0xa0, 0x19, 0x8d, 0xac, 0x19, 0xac, 0x42, 0x49, 0x8f, 0x4b,
+	0x26, 0x10, 0x64, 0x9f, 0x33, 0x5c, 0xc6, 0xb3, 0xb8, 0xb8, 0x34, 0xb5, 0x28, 0x28, 0xb5, 0xb0,
+	0x34, 0xb5, 0xb8, 0x44, 0x88, 0x8f, 0x8b, 0x29, 0x33, 0x45, 0x82, 0x51, 0x81, 0x51, 0x83, 0x33,
+	0x88, 0x29, 0x33, 0x45, 0x29, 0x8b, 0x4b, 0x16, 0x87, 0xfa, 0xe2, 0x82, 0xfc, 0xbc, 0xe2, 0x54,
+	0x21, 0x4f, 0x2e, 0xb6, 0x4c, 0xb0, 0x08, 0x58, 0x13, 0xb7, 0x91, 0xa1, 0x1e, 0x01, 0x2f, 0xe8,
+	0x61, 0x18, 0x05, 0x35, 0x40, 0x49, 0x1e, 0x6a, 0x57, 0x40, 0x69, 0x52, 0x4e, 0x66, 0x32, 0x42,
+	0x59, 0x31, 0xd4, 0x71, 0x4a, 0xf5, 0x5c, 0x72, 0xb8, 0x14, 0x40, 0x5d, 0x13, 0xcb, 0xc5, 0x8d,
+	0x64, 0x9b, 0x04, 0xa3, 0x02, 0xb3, 0x06, 0xb7, 0x91, 0x35, 0x41, 0x27, 0x41, 0x0c, 0x0c, 0x4b,
+	0x2d, 0xca, 0x4c, 0xcb, 0x4c, 0x4c, 0xca, 0x49, 0x45, 0x18, 0x1d, 0x84, 0x6c, 0x9e, 0x92, 0x11,
+	0x97, 0x02, 0x5a, 0x68, 0xb8, 0xa4, 0xa6, 0x65, 0xe6, 0x65, 0x82, 0xe2, 0x00, 0x57, 0x08, 0x56,
+	0x71, 0x29, 0xe2, 0xd1, 0x03, 0x75, 0x77, 0x28, 0x17, 0x57, 0x0a, 0x5c, 0x14, 0x1a, 0x92, 0xa6,
+	0x24, 0x84, 0x24, 0x92, 0x91, 0x48, 0x06, 0x29, 0x29, 0xe3, 0xb1, 0x1b, 0x1e, 0xaa, 0xb5, 0x5c,
+	0x4a, 0xf8, 0x14, 0x41, 0x5d, 0x18, 0xce, 0xc5, 0x8d, 0x30, 0x18, 0x16, 0xb2, 0x64, 0x3a, 0x11,
+	0xd9, 0x24, 0xa3, 0xe9, 0x6c, 0x5c, 0xac, 0x60, 0xfb, 0x85, 0xf6, 0x33, 0x72, 0x09, 0xa0, 0x27,
+	0x0e, 0x21, 0x5b, 0x82, 0x56, 0xe0, 0x4b, 0xcf, 0x52, 0x76, 0xe4, 0x6a, 0x87, 0x78, 0x5b, 0x49,
+	0xa7, 0xe9, 0xf2, 0x93, 0xc9, 0x4c, 0x6a, 0x42, 0x2a, 0xfa, 0x10, 0xdd, 0xc8, 0x59, 0x0a, 0x85,
+	0x5d, 0x9d, 0x99, 0x52, 0x2b, 0xb4, 0x91, 0x91, 0x4b, 0x10, 0x23, 0x71, 0x0a, 0x11, 0xe9, 0x06,
+	0x5c, 0xc9, 0x5e, 0xca, 0x9e, 0x6c, 0xfd, 0x50, 0x4f, 0x48, 0x83, 0x3d, 0x21, 0x2a, 0x24, 0x8c,
+	0xc5, 0x13, 0x42, 0xa7, 0x19, 0xb9, 0x44, 0xb0, 0xc5, 0x92, 0x90, 0x23, 0xa9, 0x41, 0x87, 0x91,
+	0x17, 0xa4, 0x9c, 0x28, 0x31, 0x82, 0x98, 0x18, 0x40, 0x4a, 0x48, 0x90, 0x18, 0x38, 0xc9, 0xc8,
+	0x25, 0x8a, 0x35, 0x21, 0x0b, 0x51, 0xe0, 0x16, 0x78, 0x4c, 0x38, 0x53, 0x64, 0x06, 0xd4, 0x43,
+	0xea, 0x60, 0x0f, 0x29, 0x0a, 0xc9, 0x13, 0xf0, 0x90, 0x93, 0xcb, 0x89, 0x47, 0x72, 0x8c, 0x17,
+	0x1e, 0xc9, 0x31, 0x3e, 0x78, 0x24, 0xc7, 0x38, 0xe1, 0xb1, 0x1c, 0xc3, 0x85, 0xc7, 0x72, 0x0c,
+	0x37, 0x1e, 0xcb, 0x31, 0x44, 0x69, 0xa5, 0x67, 0x96, 0x64, 0x94, 0x26, 0xe9, 0x25, 0xe7, 0xe7,
+	0x42, 0x0d, 0xd1, 0x4d, 0x49, 0xcc, 0x87, 0x99, 0x57, 0x81, 0x6c, 0x62, 0x12, 0x1b, 0xb8, 0xe0,
+	0x37, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0x4c, 0xbd, 0xd5, 0x97, 0x77, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -344,10 +428,14 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
+	// CredentialIssuer
 	CredentialIssuer(ctx context.Context, in *QueryCredentialIssuerRequest, opts ...grpc.CallOption) (*QueryCredentialIssuerResponse, error)
-	// RevocationList fetch the revocation list for an issuer
-	RevocationList(ctx context.Context, in *QueryRevocationListRequest, opts ...grpc.CallOption) (*QueryRevocationListResponse, error)
+	// PublicCredentials
 	PublicCredentials(ctx context.Context, in *QueryPublicCredentialsRequest, opts ...grpc.CallOption) (*QueryPublicCredentialsResponse, error)
+	// CredentialDefinition
+	CredentialDefinition(ctx context.Context, in *QueryCredentialDefinitionRequest, opts ...grpc.CallOption) (*QueryCredentialDefinitionResponse, error)
+	// CredentialDefinition
+	CredentialDefinitions(ctx context.Context, in *QueryCredentialDefinitionsRequest, opts ...grpc.CallOption) (*QueryCredentialDefinitionsResponse, error)
 }
 
 type queryClient struct {
@@ -367,15 +455,6 @@ func (c *queryClient) CredentialIssuer(ctx context.Context, in *QueryCredentialI
 	return out, nil
 }
 
-func (c *queryClient) RevocationList(ctx context.Context, in *QueryRevocationListRequest, opts ...grpc.CallOption) (*QueryRevocationListResponse, error) {
-	out := new(QueryRevocationListResponse)
-	err := c.cc.Invoke(ctx, "/elestodao.elesto.credentials.v1.Query/RevocationList", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *queryClient) PublicCredentials(ctx context.Context, in *QueryPublicCredentialsRequest, opts ...grpc.CallOption) (*QueryPublicCredentialsResponse, error) {
 	out := new(QueryPublicCredentialsResponse)
 	err := c.cc.Invoke(ctx, "/elestodao.elesto.credentials.v1.Query/PublicCredentials", in, out, opts...)
@@ -385,12 +464,34 @@ func (c *queryClient) PublicCredentials(ctx context.Context, in *QueryPublicCred
 	return out, nil
 }
 
+func (c *queryClient) CredentialDefinition(ctx context.Context, in *QueryCredentialDefinitionRequest, opts ...grpc.CallOption) (*QueryCredentialDefinitionResponse, error) {
+	out := new(QueryCredentialDefinitionResponse)
+	err := c.cc.Invoke(ctx, "/elestodao.elesto.credentials.v1.Query/CredentialDefinition", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) CredentialDefinitions(ctx context.Context, in *QueryCredentialDefinitionsRequest, opts ...grpc.CallOption) (*QueryCredentialDefinitionsResponse, error) {
+	out := new(QueryCredentialDefinitionsResponse)
+	err := c.cc.Invoke(ctx, "/elestodao.elesto.credentials.v1.Query/CredentialDefinitions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
+	// CredentialIssuer
 	CredentialIssuer(context.Context, *QueryCredentialIssuerRequest) (*QueryCredentialIssuerResponse, error)
-	// RevocationList fetch the revocation list for an issuer
-	RevocationList(context.Context, *QueryRevocationListRequest) (*QueryRevocationListResponse, error)
+	// PublicCredentials
 	PublicCredentials(context.Context, *QueryPublicCredentialsRequest) (*QueryPublicCredentialsResponse, error)
+	// CredentialDefinition
+	CredentialDefinition(context.Context, *QueryCredentialDefinitionRequest) (*QueryCredentialDefinitionResponse, error)
+	// CredentialDefinition
+	CredentialDefinitions(context.Context, *QueryCredentialDefinitionsRequest) (*QueryCredentialDefinitionsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -400,11 +501,14 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) CredentialIssuer(ctx context.Context, req *QueryCredentialIssuerRequest) (*QueryCredentialIssuerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CredentialIssuer not implemented")
 }
-func (*UnimplementedQueryServer) RevocationList(ctx context.Context, req *QueryRevocationListRequest) (*QueryRevocationListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RevocationList not implemented")
-}
 func (*UnimplementedQueryServer) PublicCredentials(ctx context.Context, req *QueryPublicCredentialsRequest) (*QueryPublicCredentialsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublicCredentials not implemented")
+}
+func (*UnimplementedQueryServer) CredentialDefinition(ctx context.Context, req *QueryCredentialDefinitionRequest) (*QueryCredentialDefinitionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CredentialDefinition not implemented")
+}
+func (*UnimplementedQueryServer) CredentialDefinitions(ctx context.Context, req *QueryCredentialDefinitionsRequest) (*QueryCredentialDefinitionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CredentialDefinitions not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -429,24 +533,6 @@ func _Query_CredentialIssuer_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_RevocationList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryRevocationListRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).RevocationList(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/elestodao.elesto.credentials.v1.Query/RevocationList",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).RevocationList(ctx, req.(*QueryRevocationListRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Query_PublicCredentials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryPublicCredentialsRequest)
 	if err := dec(in); err != nil {
@@ -465,6 +551,42 @@ func _Query_PublicCredentials_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_CredentialDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCredentialDefinitionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).CredentialDefinition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/elestodao.elesto.credentials.v1.Query/CredentialDefinition",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).CredentialDefinition(ctx, req.(*QueryCredentialDefinitionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_CredentialDefinitions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCredentialDefinitionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).CredentialDefinitions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/elestodao.elesto.credentials.v1.Query/CredentialDefinitions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).CredentialDefinitions(ctx, req.(*QueryCredentialDefinitionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "elestodao.elesto.credentials.v1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -474,12 +596,16 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_CredentialIssuer_Handler,
 		},
 		{
-			MethodName: "RevocationList",
-			Handler:    _Query_RevocationList_Handler,
-		},
-		{
 			MethodName: "PublicCredentials",
 			Handler:    _Query_PublicCredentials_Handler,
+		},
+		{
+			MethodName: "CredentialDefinition",
+			Handler:    _Query_CredentialDefinition_Handler,
+		},
+		{
+			MethodName: "CredentialDefinitions",
+			Handler:    _Query_CredentialDefinitions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -539,71 +665,6 @@ func (m *QueryCredentialIssuerResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	if m.Issuer != nil {
 		{
 			size, err := m.Issuer.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintQuery(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryRevocationListRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryRevocationListRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryRevocationListRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Id) > 0 {
-		i -= len(m.Id)
-		copy(dAtA[i:], m.Id)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Id)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryRevocationListResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryRevocationListResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryRevocationListResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.RevocationList != nil {
-		{
-			size, err := m.RevocationList.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -676,6 +737,131 @@ func (m *QueryPublicCredentialsResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryCredentialDefinitionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCredentialDefinitionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCredentialDefinitionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCredentialDefinitionResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCredentialDefinitionResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCredentialDefinitionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Definition != nil {
+		{
+			size, err := m.Definition.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCredentialDefinitionsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCredentialDefinitionsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCredentialDefinitionsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCredentialDefinitionsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCredentialDefinitionsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCredentialDefinitionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Definitions) > 0 {
+		for iNdEx := len(m.Definitions) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Definitions[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -713,32 +899,6 @@ func (m *QueryCredentialIssuerResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryRevocationListRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Id)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryRevocationListResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.RevocationList != nil {
-		l = m.RevocationList.Size()
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
 func (m *QueryPublicCredentialsRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -756,6 +916,56 @@ func (m *QueryPublicCredentialsResponse) Size() (n int) {
 	_ = l
 	if len(m.Credentials) > 0 {
 		for _, e := range m.Credentials {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QueryCredentialDefinitionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryCredentialDefinitionResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Definition != nil {
+		l = m.Definition.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryCredentialDefinitionsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryCredentialDefinitionsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Definitions) > 0 {
+		for _, e := range m.Definitions {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -937,174 +1147,6 @@ func (m *QueryCredentialIssuerResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryRevocationListRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryRevocationListRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryRevocationListRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Id = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryRevocationListResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryRevocationListResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryRevocationListResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RevocationList", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.RevocationList == nil {
-				m.RevocationList = &RevocationList{}
-			}
-			if err := m.RevocationList.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
 func (m *QueryPublicCredentialsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -1215,6 +1257,308 @@ func (m *QueryPublicCredentialsResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.Credentials = append(m.Credentials, &PublicVerifiableCredential{})
 			if err := m.Credentials[len(m.Credentials)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCredentialDefinitionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCredentialDefinitionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCredentialDefinitionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCredentialDefinitionResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCredentialDefinitionResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCredentialDefinitionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Definition", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Definition == nil {
+				m.Definition = &CredentialDefinition{}
+			}
+			if err := m.Definition.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCredentialDefinitionsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCredentialDefinitionsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCredentialDefinitionsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCredentialDefinitionsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCredentialDefinitionsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCredentialDefinitionsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Definitions", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Definitions = append(m.Definitions, &CredentialDefinition{})
+			if err := m.Definitions[len(m.Definitions)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

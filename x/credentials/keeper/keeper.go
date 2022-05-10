@@ -14,7 +14,7 @@ import (
 type UnmarshalFn func(value []byte) (interface{}, bool)
 
 // MarshalFn is a generic function to marshal bytes
-type MarshalFn func(value interface{}) []byte
+type MarshalFn func(o codec.ProtoMarshaler) []byte
 
 type Keeper struct {
 	cdc      codec.Codec
@@ -38,7 +38,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 func (k Keeper) Set(ctx sdk.Context,
 	key []byte,
 	prefix []byte,
-	i interface{},
+	i codec.ProtoMarshaler,
 	marshal MarshalFn,
 ) {
 	store := ctx.KVStore(k.storeKey)

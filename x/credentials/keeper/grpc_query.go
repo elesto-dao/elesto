@@ -14,23 +14,31 @@ import (
 
 var _ credentials.QueryServer = Keeper{}
 
-// RevocationList implements the DidDocument gRPC method
-func (k Keeper) RevocationList(
+func (k Keeper) CredentialDefinition(
 	c context.Context,
-	req *credentials.QueryRevocationListRequest,
-) (*credentials.QueryRevocationListResponse, error) {
+	req *credentials.QueryCredentialDefinitionRequest,
+) (*credentials.QueryCredentialDefinitionResponse, error) {
 
 	if !did.IsValidDID(req.Id) {
 		return nil, status.Error(codes.InvalidArgument, "did document id cannot be empty")
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	ci, found := k.GetCredentialIssuer(ctx, []byte(req.Id))
+
+	cd, found := k.GetCredentialDefinition(ctx, req.Id)
 	if !found {
-		return nil, status.Error(codes.NotFound, "credential issuer not found")
+		return nil, status.Error(codes.NotFound, "credential definition not found")
 	}
 
-	return &credentials.QueryRevocationListResponse{RevocationList: ci.Revocations}, nil
+	return &credentials.QueryCredentialDefinitionResponse{Definition: &cd}, nil
+}
+
+func (k Keeper) CredentialDefinitions(
+	c context.Context,
+	req *credentials.QueryCredentialDefinitionsRequest,
+) (*credentials.QueryCredentialDefinitionsResponse, error) {
+
+	return nil, fmt.Errorf("not implemented")
 }
 
 func (k Keeper) CredentialIssuer(
@@ -49,7 +57,6 @@ func (k Keeper) CredentialIssuer(
 	}
 
 	return &credentials.QueryCredentialIssuerResponse{Issuer: &ci}, nil
-
 }
 
 func (k Keeper) PublicCredentials(

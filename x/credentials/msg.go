@@ -2,10 +2,12 @@ package credentials
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/elesto-dao/elesto/x/did"
 )
 
 // --------------------------
-// CREATE IDENTIFIER
+// REGISTER ISSUER
 // --------------------------
 
 var _ sdk.Msg = &MsgRegisterCredentialIssuerRequest{}
@@ -13,13 +15,11 @@ var _ sdk.Msg = &MsgRegisterCredentialIssuerRequest{}
 // NewMsgRegisterCredentialIssuerRequest creates a new MsgRegisterCredentialIssuerRequest instance
 func NewMsgRegisterCredentialIssuerRequest(
 	issuer *CredentialIssuer,
-	revocationServiceURL string,
 	signerAccount string,
 ) *MsgRegisterCredentialIssuerRequest {
 	return &MsgRegisterCredentialIssuerRequest{
-		Issuer:               issuer,
-		RevocationServiceURL: revocationServiceURL,
-		Signer:               signerAccount,
+		Issuer: issuer,
+		Signer: signerAccount,
 	}
 }
 
@@ -49,13 +49,13 @@ func (msg MsgRegisterCredentialIssuerRequest) GetSigners() []sdk.AccAddress {
 }
 
 // --------------------------
-// ADD VERIFICATION
+// CREDENTIAL DEFINITIONS
 // --------------------------
 
 var _ sdk.Msg = &MsgPublishCredentialDefinitionRequest{}
 
-// NewMsgPublishCredentialDefinition creates a new MsgPublishCredentialDefinition instance
-func NewMsgPublishCredentialDefinition(
+// NewMsgPublishCredentialDefinitionRequest creates a new MsgPublishCredentialDefinition instance
+func NewMsgPublishCredentialDefinitionRequest(
 	credentialDefinition *CredentialDefinition,
 	signerAccount string,
 ) *MsgPublishCredentialDefinitionRequest {
@@ -90,49 +90,48 @@ func (msg MsgPublishCredentialDefinitionRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{accAddr}
 }
 
-// --------------------------
-// REVOKE VERIFICATION
-// --------------------------
+var _ sdk.Msg = &MsgUpdateCredentialDefinitionRequest{}
 
-var _ sdk.Msg = &MsgUpdateRevocationListRequest{}
-
-// NewMsgUpdateRevocationListRequest creates a new MsgUpdateRevocationListRequest instance
-func NewMsgUpdateRevocationListRequest(
-	issuerDID string,
-	revocationList *RevocationList,
+// NewMsgUpdateCredentialDefinitionRequest creates a new MsgUpdateCredentialDefinitionRequest instance
+func NewMsgUpdateCredentialDefinitionRequest(
+	isActive bool, supersededBy did.DID,
 	signerAccount string,
-) *MsgUpdateRevocationListRequest {
-	return &MsgUpdateRevocationListRequest{
-		IssuerDid:  issuerDID,
-		Revocation: revocationList,
-		Signer:     signerAccount,
+) *MsgUpdateCredentialDefinitionRequest {
+	return &MsgUpdateCredentialDefinitionRequest{
+		Active:       isActive,
+		SupersededBy: supersededBy.String(),
+		Signer:       signerAccount,
 	}
 }
 
 // Route implements sdk.Msg
-func (MsgUpdateRevocationListRequest) Route() string {
+func (MsgUpdateCredentialDefinitionRequest) Route() string {
 	return RouterKey
 }
 
 // Type implements sdk.Msg
-func (msg MsgUpdateRevocationListRequest) Type() string {
+func (msg MsgUpdateCredentialDefinitionRequest) Type() string {
 	return sdk.MsgTypeURL(&msg)
 }
 
 // GetSignBytes implements the LegacyMsg.GetSignBytes method.
-func (msg MsgUpdateRevocationListRequest) GetSignBytes() []byte {
+func (msg MsgUpdateCredentialDefinitionRequest) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(&msg)
 	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners implements sdk.Msg
-func (msg MsgUpdateRevocationListRequest) GetSigners() []sdk.AccAddress {
+func (msg MsgUpdateCredentialDefinitionRequest) GetSigners() []sdk.AccAddress {
 	accAddr, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		panic(err)
 	}
 	return []sdk.AccAddress{accAddr}
 }
+
+// --------------------------
+// ISSUER CREDENTIAL ISSUANCE
+// --------------------------
 
 var _ sdk.Msg = &MsgAddCredentialIssuanceRequest{}
 

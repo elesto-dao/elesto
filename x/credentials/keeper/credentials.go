@@ -7,38 +7,39 @@ import (
 	"github.com/elesto-dao/elesto/x/credentials"
 )
 
+// SetCredentialIssuer persist a credential issuer to the store. The credential issuer DID is used as key.
 func (k Keeper) SetCredentialIssuer(ctx sdk.Context, issuer credentials.CredentialIssuer) {
-	k.Set(ctx, []byte(issuer.Did), credentials.CredentialIssuerKey, issuer, k.Marshal)
+	k.Set(ctx, []byte(issuer.Did), credentials.CredentialIssuerKey, &issuer, k.cdc.MustMarshal)
 }
 
-// GetCredentialIssuer retrieve a DID document by its key.
-// The boolean return will be false if the DID document is not found
+// GetCredentialIssuer retrieve a credential issuer by its key.
+// The boolean return will be false if the credential issuer is not found
 func (k Keeper) GetCredentialIssuer(ctx sdk.Context, key []byte) (credentials.CredentialIssuer, bool) {
-	val, found := k.Get(ctx, key, credentials.CredentialIssuerKey, k.UnmarshalCredentialIssuer)
+	val, found := k.Get(ctx, key, credentials.CredentialIssuerKey, func(value []byte) (interface{}, bool) {
+		var data credentials.CredentialIssuer
+		ok := k.Unmarshal(value, &data)
+		return data, ok
+	})
 	return val.(credentials.CredentialIssuer), found
 }
 
-// UnmarshalCredentialIssuer unmarshall a did document= and check if it is empty
-// ad DID document is empty if contains no context
-func (k Keeper) UnmarshalCredentialIssuer(value []byte) (interface{}, bool) {
-	data := credentials.CredentialIssuer{}
-	ok := k.Unmarshal(value, &data)
-	return data, ok
+// SetCredentialDefinition persist a credential definition to the store. The credential definition ID is used as key.
+func (k Keeper) SetCredentialDefinition(ctx sdk.Context, def *credentials.CredentialDefinition) {
+	k.Set(ctx, []byte(def.Id), credentials.CredentialDefinitionKey, def, k.cdc.MustMarshal)
 }
 
-func (k Keeper) Marshal(value interface{}) (bytes []byte) {
-	switch value := value.(type) {
-	case credentials.CredentialIssuer:
-		bytes = k.cdc.MustMarshal(&value)
-	case credentials.PublicVerifiableCredential:
-		bytes = k.cdc.MustMarshal(&value)
-	default:
-		panic("serialization not supported")
-	}
-	return
+// GetCredentialDefinition retrieve a credential definition by its key.
+// The boolean return will be false if the credential definition is not found
+func (k Keeper) GetCredentialDefinition(ctx sdk.Context, key string) (credentials.CredentialDefinition, bool) {
+	val, found := k.Get(ctx, []byte(key), credentials.CredentialDefinitionKey, func(value []byte) (interface{}, bool) {
+		var data credentials.CredentialDefinition
+		ok := k.Unmarshal(value, &data)
+		return data, ok
+	})
+	return val.(credentials.CredentialDefinition), found
 }
 
-// Unmarshal unmarshal a byte slice to a struct, return false in case of errors
+// Unmarshal from byte slice to a struct, return false in case of errors
 func (k Keeper) Unmarshal(data []byte, val codec.ProtoMarshaler) bool {
 	if len(data) == 0 {
 		return false

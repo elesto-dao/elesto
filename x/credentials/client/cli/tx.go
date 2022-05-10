@@ -24,8 +24,8 @@ func GetTxCmd() *cobra.Command {
 
 	// this line is used by starport scaffolding # 1
 	cmd.AddCommand(
+		NewPublishCredentialDefinition(),
 		NewRegisterIssuerCmd(),
-		NewUpdateRevocationList(),
 	)
 
 	return cmd
@@ -33,8 +33,6 @@ func GetTxCmd() *cobra.Command {
 
 // NewRegisterIssuerCmd defines the command to create a new IBC light client.
 func NewRegisterIssuerCmd() *cobra.Command {
-
-	var revocationServiceURL string
 
 	cmd := &cobra.Command{
 		Use:     "register-issuer [id]",
@@ -51,83 +49,84 @@ func NewRegisterIssuerCmd() *cobra.Command {
 			// verification
 			signer := clientCtx.GetFromAddress()
 
-			// initialize revocation list
-			rl, secret, err := InitRevocationList()
-			if err != nil {
-				return err
-			}
-
 			// initialize the issuer
-			issuer, err := credentials.NewCredentialIssuer(didID, credentials.WithRevocationList(*rl))
+			issuer, err := credentials.NewCredentialIssuer(didID)
 			if err != nil {
 				return err
 			}
 			// create the message
 			msg := credentials.NewMsgRegisterCredentialIssuerRequest(
 				issuer,
-				revocationServiceURL,
 				signer.String(),
 			)
 			// execute
 			if err := tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg); err != nil {
 				return err
 			}
-			fmt.Println("Store this information in a safe place:")
-			fmt.Println("credential issuer DID:  ", didID.String())
-			fmt.Println("revocation list secret: ", secret)
 			return nil
 		},
 	}
-
 	// add flags to set did relationships
-	cmd.Flags().StringVarP(&revocationServiceURL, "revocationServiceURL", "r", "http://localhost:2109/revocations", "The revocation service URL to check for revoked credentials")
 	flags.AddTxFlagsToCmd(cmd)
-
 	return cmd
 }
 
-// NewUpdateRevocationList defines the command to create a new IBC light client.
-func NewUpdateRevocationList() *cobra.Command {
+// NewPublishCredentialDefinition defines the command to publish credential definitions
+func NewPublishCredentialDefinition() *cobra.Command {
 
-	var doDelete bool
+	var (
+		isPublic       bool
+		inactive       bool
+		publisherID    string
+		descr          string
+		expirationDays int
+	)
 
 	cmd := &cobra.Command{
-		Use:     "update-revocation-list [id] [revocation-list-secret] [entry]",
-		Short:   "adds a new entry to the issuer revocation list",
-		Example: "elestod credentials update-revocation-list example-issuer 1234 elesto-dao:membership/andrea",
-		Args:    cobra.ExactArgs(3),
+		Use:     "publish-credential-definition id name schemaFile vocabFile",
+		Short:   "publish a credential definition",
+		Example: "elestod tx credentials publish-credential-definition example-definition-id example-credential schema.json vocab.json",
+		Args:    cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
+
+			cID, name, schemaFile, vocabFIle := args[0], args[1], args[2], args[3]
+
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-
-			id, seed, credentialID := args[0], args[1], args[2]
 			// did
-			didID := did.NewChainDID(clientCtx.ChainID, id)
+			definitionDID := did.NewChainDID(clientCtx.ChainID, cID)
 			// verification
 			signer := clientCtx.GetFromAddress()
-			if doDelete {
-				return fmt.Errorf("delete not implemented")
+
+			publisherDID := did.NewKeyDID(signer.String())
+			if !credentials.IsEmpty(publisherID) {
+				publisherDID = did.DID(publisherID)
 			}
 
-			// TODO: fetch current revocation list
-
-			rl, err := BuildRevocationList(seed, credentialID)
+			// initialize the definition
+			def, err := credentials.NewCredentialDefinitionFromFile(definitionDID, publisherDID, name, descr, isPublic, !inactive, schemaFile, vocabFIle)
 			if err != nil {
+				println("error building credential definition", err)
 				return err
 			}
-
-			msg := credentials.NewMsgUpdateRevocationListRequest(didID.String(), rl, signer.String())
+			// create the message
+			msg := credentials.NewMsgPublishCredentialDefinitionRequest(
+				def,
+				signer.String(),
+			)
 			// execute
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-
 	// add flags to set did relationships
-	cmd.Flags().BoolVar(&doDelete, "delete", false, fmt.Sprint("delete the credential instead of adding it "))
-
+	cmd.Flags().StringVar(&descr, "description", "", "a human-readable description about the credential usage")
+	cmd.Flags().StringVarP(&publisherID, "publisher", "p", "", "the publisher DID. If not set, the DID key of the signer account will be used instead")
+	cmd.Flags().BoolVar(&isPublic, "public", false, "if is set, the credential is a public one and can be issued on chain")
+	cmd.Flags().BoolVar(&inactive, "inactive", false, "if is set, the credential definition will be flagged as inactive, client may refuse to issue credentials based on an inactive definition")
+	cmd.Flags().IntVar(&expirationDays, "expiration", 365, "number of days that the definition can be ")
+	// add flags to set did relationships
 	flags.AddTxFlagsToCmd(cmd)
-
 	return cmd
 }

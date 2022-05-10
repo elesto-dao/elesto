@@ -22,4 +22,5 @@ type BankKeeper interface {
 type DidKeeper interface {
 	GetDidDocument(ctx sdk.Context, key []byte) (did.DidDocument, bool)
 	SetDidDocument(ctx sdk.Context, key []byte, document did.DidDocument)
+	ResolveDid(ctx sdk.Context, didDoc did.DID) (doc did.DidDocument, err error)
 }
