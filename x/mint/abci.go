@@ -39,16 +39,41 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			panic(fmt.Sprintf("begin block error: %v", err))
 		}
 		// get current supply
-		supply := k.GetSupply(ctx, params.MintDenom)
+		circulatingSupply := k.GetSupply(ctx, params.MintDenom)
 		// calculate total inflation amount per year
-		yearInflationAmount := inflationRate.MulInt(supply.Amount)
+		yearInflationAmount := inflationRate.MulInt(circulatingSupply.Amount)
+
 		// verify that does not overflow the max supply
 		maxSupply := sdk.NewInt(params.MaxSupply)
-		futureSupply := supply.Amount.Add(yearInflationAmount.RoundInt())
+		futureSupply := circulatingSupply.Amount.Add(yearInflationAmount.RoundInt())
 		if futureSupply.GT(maxSupply) {
 			// if it does overflow, adjust the total inflation amount so we converge to max supply
-			yearInflationAmount = maxSupply.Sub(supply.Amount).ToDec()
+			yearInflationAmount = maxSupply.Sub(circulatingSupply.Amount).ToDec()
+			// TODO check the following calculation
+			// update the current inflation
+			params.InflationRates[inflationYear] = yearInflationAmount.Quo(circulatingSupply.Amount.ToDec()).String()
 		}
+
+		// mint team allocation
+		teamAllocation, err := sdk.NewDecFromStr(params.TeamReward)
+		if err != nil {
+			ctx.Logger().Error("cannot retrieve team allocation reward", "error", err)
+			panic(err)
+		}
+		teamAmount := yearInflationAmount.Mul(teamAllocation)
+		// mint teamAmount and send to team address
+		yearInflationAmount = yearInflationAmount.Sub(teamAmount)
+		//
+		mintedCoin := sdk.NewCoin(params.MintDenom, teamAmount.RoundInt())
+		mintedCoins := sdk.NewCoins(mintedCoin)
+		if err := k.MintCoins(ctx, mintedCoins); err != nil {
+			panic(err)
+		}
+		// transfer the tokens to the team account
+		if err := k.CollectAmount(ctx, params.TeamAddress, mintedCoins); err != nil {
+			panic(err)
+		}
+
 		// calculate the amount to mint for each block
 		// note: do not use floor or there is the risk of not reaching the max supply
 		amountToMint := yearInflationAmount.Quo(blocksPerYear.ToDec()).RoundInt()
@@ -61,8 +86,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	blockInflationAmount := k.GetBlockInflation(ctx)
 	mintedCoin := sdk.NewCoin(params.MintDenom, blockInflationAmount)
 	mintedCoins := sdk.NewCoins(mintedCoin)
-	err := k.MintCoins(ctx, mintedCoins)
-	if err != nil {
+	if err := k.MintCoins(ctx, mintedCoins); err != nil {
 		panic(err)
 	}
 
@@ -71,8 +95,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	// - 10: team account
 	// - 10: community pool
 	// send the minted coins to the fee collector account
-	err = k.AddInflationToFeeCollector(ctx, mintedCoins)
-	if err != nil {
+	if err := k.AddInflationToFeeCollector(ctx, mintedCoins); err != nil {
 		panic(err)
 	}
 

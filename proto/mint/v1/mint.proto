@@ -18,5 +18,11 @@ message Params {
 
   // total max supply
   int64 max_supply = 5;
+
+  // team address
+  string team_address = 6;
+
+  // team fee
+  string team_reward = 7;
 }
 

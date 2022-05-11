@@ -75,6 +75,15 @@ func (k Keeper) AddInflationToFeeCollector(ctx sdk.Context, fees sdk.Coins) erro
 	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, fees)
 }
 
+// CollectAmount implement an alias to call SendCoinsFromModuleToAccount
+func (k Keeper) CollectAmount(ctx sdk.Context, address string, amount sdk.Coins) error {
+	addr, err := sdk.AccAddressFromBech32(address)
+	if err != nil {
+		return err
+	}
+	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, addr, amount)
+}
+
 // GetSupply returns the current supply on the chain for a denom
 func (k Keeper) GetSupply(ctx sdk.Context, denom string) sdk.Coin {
 	return k.bankKeeper.GetSupply(ctx, denom)

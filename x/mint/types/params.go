@@ -3,7 +3,6 @@ package types
 import (
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,6 +15,8 @@ var (
 	KeyInflationRates = []byte("InflationRates")
 	KeyMaxSupply      = []byte("MaxSupply")
 	KeyBlocksPerYear  = []byte("BlocksPerYear")
+	KeyTeamReward     = []byte("TeamReward")
+	KeyTeamAddress    = []byte("TeamAddress")
 )
 
 // ParamKeyTable for mint module.
@@ -41,6 +42,8 @@ func DefaultParams() Params {
 		},
 		BlocksPerYear: 6_308_000,
 		MaxSupply:     1_000_000_000_000_000,
+		TeamReward:    "0.1",
+		TeamAddress:   "elesto1ms2wrq8k04cug7ea6ekf60nfke6a8vu8pwm684",
 	}
 }
 
@@ -58,6 +61,7 @@ func (p Params) Validate() error {
 	if err := validateInflationRates(p.InflationRates); err != nil {
 		return err
 	}
+
 	return nil
 
 }
@@ -69,6 +73,8 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMaxSupply, &p.MaxSupply, validateMaxSupply),
 		paramtypes.NewParamSetPair(KeyBlocksPerYear, &p.BlocksPerYear, validateBlocksPerYear),
 		paramtypes.NewParamSetPair(KeyInflationRates, &p.InflationRates, validateInflationRates),
+		paramtypes.NewParamSetPair(KeyTeamAddress, &p.TeamAddress, validateTeamAddress),
+		paramtypes.NewParamSetPair(KeyTeamReward, &p.TeamReward, validateTeamReward),
 	}
 }
 
@@ -97,12 +103,12 @@ func validateInflationRates(i interface{}) error {
 		return fmt.Errorf("inflation rates must be provided")
 	}
 	for _, rs := range v {
-		r, err := strconv.ParseFloat(rs, 64)
+		r, err := sdk.NewDecFromStr(rs)
 		if err != nil {
 			return err
 		}
-		if r < 0 {
-			return fmt.Errorf("inflation rate value must be a positive number, got: %v", r)
+		if r.LT(sdk.NewDec(0)) {
+			return fmt.Errorf("inflation must be a value greather than 0, got: %s", v)
 		}
 	}
 
@@ -129,4 +135,30 @@ func validateBlocksPerYear(i interface{}) error {
 		return fmt.Errorf("blocks per year must be positive: %d", v)
 	}
 	return nil
+}
+
+func validateTeamReward(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	d, err := sdk.NewDecFromStr(v)
+	if err != nil {
+		return err
+	}
+
+	if d.LT(sdk.NewDec(0)) || d.GT(sdk.NewDec(1)) {
+		return fmt.Errorf("team reward must be a value between 0 and 1, got: %s", v)
+	}
+	return nil
+}
+
+func validateTeamAddress(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	_, err := sdk.AccAddressFromBech32(v)
+	// TODO: shall we check the prefix as well?
+	return err
 }
