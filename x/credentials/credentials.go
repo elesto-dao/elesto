@@ -6,23 +6,6 @@ import (
 	"github.com/elesto-dao/elesto/x/did"
 )
 
-func NewCredentialIssuer(did did.DID, options ...IssuerOption) (*CredentialIssuer, error) {
-	issuer := &CredentialIssuer{
-		Did:     did.String(),
-		Issues:  make([]*CredentialIssuance, 0),
-		Accepts: make([]*CredentialConstraint, 0),
-	}
-	for _, fn := range options {
-		if err := fn(issuer); err != nil {
-			return nil, err
-		}
-	}
-	return issuer, nil
-}
-
-// IssuerOption implements variadic pattern for optional did document fields
-type IssuerOption func(issuer *CredentialIssuer) error
-
 // NewCredentialDefinitionFromFile create a credential definition by reading the data from a file
 func NewCredentialDefinitionFromFile(did, publisherDID did.DID,
 	name, description string,

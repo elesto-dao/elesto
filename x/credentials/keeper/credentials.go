@@ -7,22 +7,6 @@ import (
 	"github.com/elesto-dao/elesto/x/credentials"
 )
 
-// SetCredentialIssuer persist a credential issuer to the store. The credential issuer DID is used as key.
-func (k Keeper) SetCredentialIssuer(ctx sdk.Context, issuer credentials.CredentialIssuer) {
-	k.Set(ctx, []byte(issuer.Did), credentials.CredentialIssuerKey, &issuer, k.cdc.MustMarshal)
-}
-
-// GetCredentialIssuer retrieve a credential issuer by its key.
-// The boolean return will be false if the credential issuer is not found
-func (k Keeper) GetCredentialIssuer(ctx sdk.Context, key []byte) (credentials.CredentialIssuer, bool) {
-	val, found := k.Get(ctx, key, credentials.CredentialIssuerKey, func(value []byte) (interface{}, bool) {
-		var data credentials.CredentialIssuer
-		ok := k.Unmarshal(value, &data)
-		return data, ok
-	})
-	return val.(credentials.CredentialIssuer), found
-}
-
 // SetCredentialDefinition persist a credential definition to the store. The credential definition ID is used as key.
 func (k Keeper) SetCredentialDefinition(ctx sdk.Context, def *credentials.CredentialDefinition) {
 	k.Set(ctx, []byte(def.Id), credentials.CredentialDefinitionKey, def, k.cdc.MustMarshal)

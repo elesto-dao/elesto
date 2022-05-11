@@ -1,10 +1,9 @@
 package keeper
 
 import (
-	"fmt"
+	"github.com/elesto-dao/elesto/x/credentials"
 	"testing"
 
-	"github.com/elesto-dao/elesto/x/did"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/suite"
 
@@ -25,18 +24,18 @@ type KeeperTestSuite struct {
 
 	ctx         sdk.Context
 	keeper      Keeper
-	queryClient did.QueryClient
+	queryClient credentials.QueryClient
 }
 
 // SetupTest creates a test suite to test the did
 func (suite *KeeperTestSuite) SetupTest() {
-	keyDidDocument := sdk.NewKVStoreKey(did.StoreKey)
-	memKeyDidDocument := sdk.NewKVStoreKey(did.MemStoreKey)
+	keyCreden := sdk.NewKVStoreKey(credentials.StoreKey)
+	memKeyCreden := sdk.NewKVStoreKey(credentials.MemStoreKey)
 
 	db := dbm.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
-	ms.MountStoreWithDB(keyDidDocument, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(memKeyDidDocument, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyCreden, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(memKeyCreden, sdk.StoreTypeIAVL, db)
 	_ = ms.LoadLatestVersion()
 
 	ctx := sdk.NewContext(ms, tmproto.Header{ChainID: "foochainid"}, true, server.ZeroLogWrapper{log.Logger})
@@ -46,132 +45,17 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 	k := NewKeeper(
 		marshaler,
-		keyDidDocument,
-		memKeyDidDocument,
+		keyCreden,
+		memKeyCreden,
 	)
 
 	queryHelper := baseapp.NewQueryServerTestHelper(ctx, interfaceRegistry)
-	did.RegisterQueryServer(queryHelper, k)
-	queryClient := did.NewQueryClient(queryHelper)
+	credentials.RegisterQueryServer(queryHelper, k)
+	queryClient := credentials.NewQueryClient(queryHelper)
 
 	suite.ctx, suite.keeper, suite.queryClient = ctx, *k, queryClient
 }
 
 func TestKeeperTestSuite(t *testing.T) {
 	suite.Run(t, new(KeeperTestSuite))
-}
-
-func (suite *KeeperTestSuite) TestGenericKeeperSetAndGet() {
-	testCases := []struct {
-		msg     string
-		didFn   func() did.DidDocument
-		expPass bool
-	}{
-		{
-			"data stored successfully",
-			func() did.DidDocument {
-				dd, _ := did.NewDidDocument(
-					"did:cosmos:net:elesto:subject",
-				)
-				return dd
-			},
-			true,
-		},
-	}
-	for _, tc := range testCases {
-		dd := tc.didFn()
-		suite.keeper.Set(suite.ctx,
-			[]byte(dd.Id),
-			[]byte{0x01},
-			dd,
-			suite.keeper.Marshal,
-		)
-		suite.keeper.Set(suite.ctx,
-			[]byte(dd.Id+"1"),
-			[]byte{0x01},
-			dd,
-			suite.keeper.Marshal,
-		)
-		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
-			if tc.expPass {
-				_, found := suite.keeper.Get(
-					suite.ctx,
-					[]byte(dd.Id),
-					[]byte{0x01},
-					suite.keeper.UnmarshalDidDocument,
-				)
-				suite.Require().True(found)
-
-				iterator := suite.keeper.GetAll(
-					suite.ctx,
-					[]byte{0x01},
-				)
-				defer iterator.Close()
-
-				var array []interface{}
-				for ; iterator.Valid(); iterator.Next() {
-					array = append(array, iterator.Value())
-				}
-				suite.Require().Equal(2, len(array))
-			} else {
-				// TODO write failure cases
-				suite.Require().False(tc.expPass)
-			}
-		})
-	}
-}
-
-func (suite *KeeperTestSuite) TestGenericKeeperDelete() {
-	testCases := []struct {
-		msg     string
-		didFn   func() did.DidDocument
-		expPass bool
-	}{
-		{
-			"data stored successfully",
-			func() did.DidDocument {
-				dd, _ := did.NewDidDocument(
-					"did:cosmos:net:elesto:subject",
-				)
-				return dd
-			},
-			true,
-		},
-	}
-	for _, tc := range testCases {
-		dd := tc.didFn()
-		suite.keeper.Set(suite.ctx,
-			[]byte(dd.Id),
-			[]byte{0x01},
-			dd,
-			suite.keeper.Marshal,
-		)
-		suite.keeper.Set(suite.ctx,
-			[]byte(dd.Id+"1"),
-			[]byte{0x01},
-			dd,
-			suite.keeper.Marshal,
-		)
-		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
-			if tc.expPass {
-				suite.keeper.Delete(
-					suite.ctx,
-					[]byte(dd.Id),
-					[]byte{0x01},
-				)
-
-				_, found := suite.keeper.Get(
-					suite.ctx,
-					[]byte(dd.Id),
-					[]byte{0x01},
-					suite.keeper.UnmarshalDidDocument,
-				)
-				suite.Require().False(found)
-
-			} else {
-				// TODO write failure cases
-				suite.Require().False(tc.expPass)
-			}
-		})
-	}
 }

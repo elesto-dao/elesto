@@ -25,7 +25,7 @@ func GetQueryCmd(_ string) *cobra.Command {
 	// this line is used by starport scaffolding # 1
 	cmd.AddCommand(
 		NewQueryCredentialDefinitionCmd(),
-		NewQueryCredentialIssuerCmd(),
+		NewQueryPublicCredentialCmd(),
 		NewQueryPublicCredentialsCmd(),
 	)
 
@@ -48,39 +48,7 @@ func NewQueryCredentialDefinitionCmd() *cobra.Command {
 			result, err := queryClient.CredentialDefinition(
 				context.Background(),
 				&credentials.QueryCredentialDefinitionRequest{
-					Id: args[0],
-				},
-			)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(result)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-
-	return cmd
-}
-
-func NewQueryCredentialIssuerCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "issuer [did]",
-		Short:   "get a credential issuer",
-		Example: "elestod query credentials issuer did:cosmos:elesto:example-issuer",
-		Args:    cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			queryClient := credentials.NewQueryClient(clientCtx)
-
-			result, err := queryClient.CredentialIssuer(
-				context.Background(),
-				&credentials.QueryCredentialIssuerRequest{
-					Id: args[0],
+					Did: args[0],
 				},
 			)
 			if err != nil {
@@ -126,12 +94,41 @@ func NewQueryRevocationListCmd() *cobra.Command {
 	return cmd
 }
 
+func NewQueryPublicCredentialCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "public-credential ID",
+		Short:   "fetch a public credential by id",
+		Example: "elestod credentials query public-credential example-credential-id",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := credentials.NewQueryClient(clientCtx)
+
+			result, err := queryClient.PublicCredential(
+				context.Background(),
+				&credentials.QueryPublicCredentialRequest{
+					Id: args[0],
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(result)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
 func NewQueryPublicCredentialsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "public-credentials",
 		Short:   "list public credentials",
 		Example: "elestod credentials query public-credentials",
-		Args:    cobra.ExactArgs(1),
+		Args:    cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {

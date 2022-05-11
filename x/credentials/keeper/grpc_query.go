@@ -19,18 +19,26 @@ func (k Keeper) CredentialDefinition(
 	req *credentials.QueryCredentialDefinitionRequest,
 ) (*credentials.QueryCredentialDefinitionResponse, error) {
 
-	if !did.IsValidDID(req.Id) {
+	if !did.IsValidDID(req.Did) {
 		return nil, status.Error(codes.InvalidArgument, "did document id cannot be empty")
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	cd, found := k.GetCredentialDefinition(ctx, req.Id)
+	cd, found := k.GetCredentialDefinition(ctx, req.Did)
 	if !found {
 		return nil, status.Error(codes.NotFound, "credential definition not found")
 	}
 
 	return &credentials.QueryCredentialDefinitionResponse{Definition: &cd}, nil
+}
+
+func (k Keeper) CredentialDefinitionsByPublisher(
+	c context.Context,
+	req *credentials.QueryCredentialDefinitionsByPublisherRequest,
+) (*credentials.QueryCredentialDefinitionsByPublisherResponse, error) {
+
+	return nil, fmt.Errorf("not implemented")
 }
 
 func (k Keeper) CredentialDefinitions(
@@ -41,22 +49,25 @@ func (k Keeper) CredentialDefinitions(
 	return nil, fmt.Errorf("not implemented")
 }
 
-func (k Keeper) CredentialIssuer(
+func (k Keeper) PublicCredential(
 	c context.Context,
-	req *credentials.QueryCredentialIssuerRequest,
-) (*credentials.QueryCredentialIssuerResponse, error) {
+	req *credentials.QueryPublicCredentialRequest,
+) (*credentials.QueryPublicCredentialResponse, error) {
+	return nil, fmt.Errorf("not implemented")
+}
 
-	if !did.IsValidDID(req.Id) {
-		return nil, status.Error(codes.InvalidArgument, "did document id cannot be empty")
-	}
+func (k Keeper) PublicCredentialsByHolder(
+	c context.Context,
+	req *credentials.QueryPublicCredentialsByHolderRequest,
+) (*credentials.QueryPublicCredentialsByHolderResponse, error) {
+	return nil, fmt.Errorf("not implemented")
+}
 
-	ctx := sdk.UnwrapSDKContext(c)
-	ci, found := k.GetCredentialIssuer(ctx, []byte(req.Id))
-	if !found {
-		return nil, status.Error(codes.NotFound, "credential issuer not found")
-	}
-
-	return &credentials.QueryCredentialIssuerResponse{Issuer: &ci}, nil
+func (k Keeper) PublicCredentialsByIssuer(
+	c context.Context,
+	req *credentials.QueryPublicCredentialsByIssuerRequest,
+) (*credentials.QueryPublicCredentialsByIssuerResponse, error) {
+	return nil, fmt.Errorf("not implemented")
 }
 
 func (k Keeper) PublicCredentials(

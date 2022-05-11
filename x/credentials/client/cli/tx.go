@@ -25,49 +25,8 @@ func GetTxCmd() *cobra.Command {
 	// this line is used by starport scaffolding # 1
 	cmd.AddCommand(
 		NewPublishCredentialDefinition(),
-		NewRegisterIssuerCmd(),
 	)
 
-	return cmd
-}
-
-// NewRegisterIssuerCmd defines the command to create a new IBC light client.
-func NewRegisterIssuerCmd() *cobra.Command {
-
-	cmd := &cobra.Command{
-		Use:     "register-issuer [id]",
-		Short:   "register a credential issuer for a did",
-		Example: "elestod tx credentials register-issuer example-issuer",
-		Args:    cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-			// did
-			didID := did.NewChainDID(clientCtx.ChainID, args[0])
-			// verification
-			signer := clientCtx.GetFromAddress()
-
-			// initialize the issuer
-			issuer, err := credentials.NewCredentialIssuer(didID)
-			if err != nil {
-				return err
-			}
-			// create the message
-			msg := credentials.NewMsgRegisterCredentialIssuerRequest(
-				issuer,
-				signer.String(),
-			)
-			// execute
-			if err := tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg); err != nil {
-				return err
-			}
-			return nil
-		},
-	}
-	// add flags to set did relationships
-	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
