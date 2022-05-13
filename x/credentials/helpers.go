@@ -6,6 +6,9 @@ import (
 	"os"
 	"sort"
 	"strings"
+
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/gogo/protobuf/proto"
 )
 
 // IsEmpty checks if a string is empty, it trims spaces before checking for empty string
@@ -13,7 +16,7 @@ func IsEmpty(v string) bool {
 	return strings.TrimSpace(v) == ""
 }
 
-// CompactJSON read a json from a file and return a compact version of it
+// CompactJSON read a JSON from a file and return a compact version of it
 func CompactJSON(filePath string) (compact string, err error) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
@@ -25,6 +28,15 @@ func CompactJSON(filePath string) (compact string, err error) {
 	}
 	compact = cp.String()
 	return
+}
+
+// LoadProtoJSON read JSON data from a file and un-marshall it to a struct
+func LoadProtoJSON(cdc codec.Codec, filePath string, to proto.Message) (err error) {
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return
+	}
+	return cdc.UnmarshalJSON(data, to)
 }
 
 // StringUnion perform union, distinct amd sort operation between two slices

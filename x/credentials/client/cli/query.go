@@ -96,9 +96,9 @@ func NewQueryRevocationListCmd() *cobra.Command {
 
 func NewQueryPublicCredentialCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "public-credential ID",
+		Use:     "public-credential [ID]",
 		Short:   "fetch a public credential by id",
-		Example: "elestod credentials query public-credential example-credential-id",
+		Example: "elestod query credentials public-credential example-credential-id",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -116,7 +116,13 @@ func NewQueryPublicCredentialCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return clientCtx.PrintProto(result)
+
+			wc, err := credentials.NewWrappedCredential(result.Credential)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintBytes(wc.GetBytes())
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)

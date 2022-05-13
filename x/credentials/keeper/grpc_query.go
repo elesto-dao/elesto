@@ -53,7 +53,16 @@ func (k Keeper) PublicCredential(
 	c context.Context,
 	req *credentials.QueryPublicCredentialRequest,
 ) (*credentials.QueryPublicCredentialResponse, error) {
-	return nil, fmt.Errorf("not implemented")
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	pc, found := k.GetPublicCredential(ctx, req.Id)
+	if !found {
+		return nil, status.Error(codes.NotFound, "credential definition not found")
+	}
+
+	return &credentials.QueryPublicCredentialResponse{Credential: &pc}, nil
+
 }
 
 func (k Keeper) PublicCredentialsByHolder(

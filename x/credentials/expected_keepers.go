@@ -1,6 +1,7 @@
 package credentials
 
 import (
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -10,6 +11,7 @@ import (
 // AccountKeeper defines the expected account keeper (noalias)
 type AccountKeeper interface {
 	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+	GetPubKey(ctx sdk.Context, addr sdk.AccAddress) (cryptotypes.PubKey, error)
 }
 
 // BankKeeper defines the expected interface needed to retrieve account balances.

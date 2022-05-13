@@ -92,11 +92,13 @@ var _ sdk.Msg = &MsgIssuePublicVerifiableCredentialRequest{}
 // NewMsgIssuePublicVerifiableCredentialRequest creates a new MsgIssuePublicVerifiableCredentialRequest instance
 func NewMsgIssuePublicVerifiableCredentialRequest(
 	credential *PublicVerifiableCredential,
-	signerAccount string,
+	definitionDID did.DID,
+	signerAccount sdk.AccAddress,
 ) *MsgIssuePublicVerifiableCredentialRequest {
 	return &MsgIssuePublicVerifiableCredentialRequest{
-		Credential: credential,
-		Signer:     signerAccount,
+		Credential:              credential,
+		CredentialDefinitionDid: definitionDID.String(),
+		Signer:                  signerAccount.String(),
 	}
 }
 

@@ -23,6 +23,22 @@ func (k Keeper) GetCredentialDefinition(ctx sdk.Context, key string) (credential
 	return val.(credentials.CredentialDefinition), found
 }
 
+// SetPublicCredential persist a public verifiable credential to the store. The credential ID is used as key
+func (k Keeper) SetPublicCredential(ctx sdk.Context, pc *credentials.PublicVerifiableCredential) {
+	k.Set(ctx, []byte(pc.Id), credentials.PublicCredentialKey, pc, k.cdc.MustMarshal)
+}
+
+// GetPublicCredential retrieve a public verifiable credential by its key.
+// The boolean return will be false if the credential is not found
+func (k Keeper) GetPublicCredential(ctx sdk.Context, key string) (credentials.PublicVerifiableCredential, bool) {
+	val, found := k.Get(ctx, []byte(key), credentials.PublicCredentialKey, func(value []byte) (interface{}, bool) {
+		var data credentials.PublicVerifiableCredential
+		ok := k.Unmarshal(value, &data)
+		return data, ok
+	})
+	return val.(credentials.PublicVerifiableCredential), found
+}
+
 // Unmarshal from byte slice to a struct, return false in case of errors
 func (k Keeper) Unmarshal(data []byte, val codec.ProtoMarshaler) bool {
 	if len(data) == 0 {

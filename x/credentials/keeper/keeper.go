@@ -20,13 +20,17 @@ type Keeper struct {
 	cdc      codec.Codec
 	storeKey sdk.StoreKey
 	memKey   sdk.StoreKey
+	did      credentials.DidKeeper
+	account  credentials.AccountKeeper
 }
 
-func NewKeeper(cdc codec.Codec, storeKey, memKey sdk.StoreKey) *Keeper {
+func NewKeeper(cdc codec.Codec, storeKey, memKey sdk.StoreKey, did credentials.DidKeeper, account credentials.AccountKeeper) *Keeper {
 	return &Keeper{
 		cdc:      cdc,
 		storeKey: storeKey,
 		memKey:   memKey,
+		did:      did,
+		account:  account,
 	}
 }
 

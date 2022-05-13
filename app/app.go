@@ -382,6 +382,8 @@ func New(
 		appCodec,
 		keys[credentials.StoreKey],
 		keys[credentials.MemStoreKey],
+		app.DidKeeper,
+		app.AccountKeeper,
 	)
 	credentialsModule := credentialsmodule.NewAppModule(appCodec, app.CredentialsKeeper, app.AccountKeeper, app.BankKeeper, app.DidKeeper)
 

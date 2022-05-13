@@ -1,11 +1,16 @@
 package cli
 
 import (
+	"encoding/base64"
 	"fmt"
+	"os"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
 	"github.com/elesto-dao/elesto/x/credentials"
@@ -25,6 +30,7 @@ func GetTxCmd() *cobra.Command {
 	// this line is used by starport scaffolding # 1
 	cmd.AddCommand(
 		NewPublishCredentialDefinition(),
+		NewIssuePublicCredential(),
 	)
 
 	return cmd
@@ -32,6 +38,77 @@ func GetTxCmd() *cobra.Command {
 
 // NewPublishCredentialDefinition defines the command to publish credential definitions
 func NewPublishCredentialDefinition() *cobra.Command {
+
+	var credentialFileOut string
+
+	cmd := &cobra.Command{
+		Use:     "issue-public-credential credential-definition-id credential_file",
+		Short:   "issue a public, on-chain, credential",
+		Example: "elestod tx credentials issue-public-credential example-definition-id credential.json",
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			cID, credentialFile := args[0], args[1]
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			// did
+			definitionDID := did.NewChainDID(clientCtx.ChainID, cID)
+			// verification
+			signer := clientCtx.GetFromAddress()
+
+			// initialize the definition
+			wc, err := credentials.NewWrappedPublicCredentialFromFile(credentialFile)
+			if err != nil {
+				println("error building credential definition", err)
+				return err
+			}
+			// get the issuer did
+			vmID := wc.GetIssuerDID().NewVerificationMethodID(signer.String())
+			if err = sign(wc, clientCtx.Keyring, signer, vmID); err != nil {
+				println("error signing the credential:", err)
+				return err
+			}
+			// write to the output file
+			if !credentials.IsEmpty(credentialFileOut) {
+				if err = os.WriteFile(credentialFileOut, wc.GetBytes(), 0600); err != nil {
+					fmt.Printf("error writing the credential to %v: %v", credentialFileOut, err)
+					return err
+				}
+			}
+
+			if err = sign(wc, clientCtx.Keyring, signer, vmID); err != nil {
+				println("error signing the credential:", err)
+				return err
+			}
+
+			pvc, err := wc.GetCredential()
+			if err != nil {
+				println("error extracting the credential:", err)
+				return err
+			}
+
+			// create the message
+			msg := credentials.NewMsgIssuePublicVerifiableCredentialRequest(
+				pvc,
+				definitionDID,
+				signer,
+			)
+			// execute
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	// add flags
+	cmd.Flags().StringVar(&credentialFileOut, "export", "", "export the signed credential to a json file")
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+// NewIssuePublicCredential defines the command to publish credential definitions
+func NewIssuePublicCredential() *cobra.Command {
 
 	var (
 		isPublic       bool
@@ -88,4 +165,33 @@ func NewPublishCredentialDefinition() *cobra.Command {
 	// add flags to set did relationships
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
+}
+
+// Sign signs a credential with a provided private key
+func sign(
+	wc *credentials.WrappedCredential,
+	keyring keyring.Keyring,
+	address sdk.Address,
+	verificationMethodID string,
+) error {
+	tm := time.Now()
+	// reset the proof
+	wc.Proof = nil
+	// TODO: this could be expensive review this signing method
+	// TODO: we can hash this an make this less expensive
+	signature, pubKey, err := keyring.SignByAddress(address, wc.GetBytes())
+	if err != nil {
+		return err
+	}
+
+	p := credentials.NewProof(
+		pubKey.Type(),
+		tm.Format(time.RFC3339),
+		// TODO: define proof purposes
+		did.AssertionMethod,
+		verificationMethodID,
+		base64.StdEncoding.EncodeToString(signature),
+	)
+	wc.Proof = &p
+	return nil
 }
