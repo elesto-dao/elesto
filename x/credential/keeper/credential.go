@@ -49,3 +49,24 @@ func (k Keeper) Unmarshal(data []byte, val codec.ProtoMarshaler) bool {
 	}
 	return true
 }
+
+// GetPublicCredentialWithFilter retrieve a list of verifiable credentials
+// filtered by properties
+func (k Keeper) GetPublicCredentialWithFilter(ctx sdk.Context, filter func(verifiableCredential *credential.PublicVerifiableCredential) bool) []*credential.PublicVerifiableCredential {
+	var pvcs []*credential.PublicVerifiableCredential
+
+	iterator := k.GetAll(ctx, credential.PublicCredentialKey)
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var pvc credential.PublicVerifiableCredential
+		err := k.cdc.Unmarshal(iterator.Value(), &pvc)
+		if err != nil {
+			panic(err)
+		}
+		if filter(&pvc) {
+			pvcs = append(pvcs, &pvc)
+		}
+	}
+	return pvcs
+}

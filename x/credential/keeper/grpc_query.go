@@ -69,19 +69,41 @@ func (k Keeper) PublicCredentialsByHolder(
 	c context.Context,
 	req *credential.QueryPublicCredentialsByHolderRequest,
 ) (*credential.QueryPublicCredentialsByHolderResponse, error) {
-	return nil, fmt.Errorf("not implemented")
+	ctx := sdk.UnwrapSDKContext(c)
+
+	pvcs := k.GetPublicCredentialWithFilter(ctx, func(vc *credential.PublicVerifiableCredential) bool {
+		wc, err := credential.NewWrappedCredential(vc)
+		if err != nil {
+			return false
+		}
+		subjectID, hasIt := wc.GetSubjectID()
+		if !hasIt {
+			return false
+		}
+		return subjectID == req.Did
+	})
+
+	return &credential.QueryPublicCredentialsByHolderResponse{Credential: pvcs}, nil
 }
 
 func (k Keeper) PublicCredentialsByIssuer(
 	c context.Context,
 	req *credential.QueryPublicCredentialsByIssuerRequest,
 ) (*credential.QueryPublicCredentialsByIssuerResponse, error) {
-	return nil, fmt.Errorf("not implemented")
+	ctx := sdk.UnwrapSDKContext(c)
+	pvcs := k.GetPublicCredentialWithFilter(ctx, func(vc *credential.PublicVerifiableCredential) bool {
+		return vc.Issuer == req.Did
+	})
+	return &credential.QueryPublicCredentialsByIssuerResponse{Credential: pvcs}, nil
 }
 
 func (k Keeper) PublicCredentials(
 	c context.Context,
 	req *credential.QueryPublicCredentialsRequest,
 ) (*credential.QueryPublicCredentialsResponse, error) {
-	return nil, fmt.Errorf("not implemented")
+	ctx := sdk.UnwrapSDKContext(c)
+	pvcs := k.GetPublicCredentialWithFilter(ctx, func(vc *credential.PublicVerifiableCredential) bool {
+		return true
+	})
+	return &credential.QueryPublicCredentialsResponse{Credential: pvcs}, nil
 }
