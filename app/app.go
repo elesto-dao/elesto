@@ -94,9 +94,9 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/elesto-dao/elesto/docs"
-	"github.com/elesto-dao/elesto/x/credentials"
-	credentialsModuleKeeper "github.com/elesto-dao/elesto/x/credentials/keeper"
-	credentialsmodule "github.com/elesto-dao/elesto/x/credentials/module"
+	"github.com/elesto-dao/elesto/x/credential"
+	credentialModuleKeeper "github.com/elesto-dao/elesto/x/credential/keeper"
+	credentialmodule "github.com/elesto-dao/elesto/x/credential/module"
 	"github.com/elesto-dao/elesto/x/did"
 	didmodulekeeper "github.com/elesto-dao/elesto/x/did/keeper"
 	didmodule "github.com/elesto-dao/elesto/x/did/module"
@@ -156,7 +156,7 @@ var (
 
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 		didmodule.AppModuleBasic{},
-		credentialsmodule.AppModuleBasic{},
+		credentialmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -227,7 +227,7 @@ type App struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
 	DidKeeper         didmodulekeeper.Keeper
-	CredentialsKeeper credentialsModuleKeeper.Keeper
+	CredentialsKeeper credentialModuleKeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -268,7 +268,7 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey,
 		upgradetypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		did.StoreKey, credentials.StoreKey,
+		did.StoreKey, credential.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -378,14 +378,14 @@ func New(
 	)
 	didModule := didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper)
 
-	app.CredentialsKeeper = *credentialsModuleKeeper.NewKeeper(
+	app.CredentialsKeeper = *credentialModuleKeeper.NewKeeper(
 		appCodec,
-		keys[credentials.StoreKey],
-		keys[credentials.MemStoreKey],
+		keys[credential.StoreKey],
+		keys[credential.MemStoreKey],
 		app.DidKeeper,
 		app.AccountKeeper,
 	)
-	credentialsModule := credentialsmodule.NewAppModule(appCodec, app.CredentialsKeeper, app.AccountKeeper, app.BankKeeper, app.DidKeeper)
+	credentialModule := credentialmodule.NewAppModule(appCodec, app.CredentialsKeeper, app.AccountKeeper, app.BankKeeper, app.DidKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
@@ -427,7 +427,7 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		didModule,
-		credentialsModule,
+		credentialModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -444,7 +444,7 @@ func New(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		did.ModuleName,
-		credentials.ModuleName,
+		credential.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		authz.ModuleName, feegrant.ModuleName,
@@ -459,7 +459,7 @@ func New(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		did.ModuleName,
-		credentials.ModuleName,
+		credential.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		authz.ModuleName, feegrant.ModuleName,
@@ -492,7 +492,7 @@ func New(
 		upgradetypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 		did.ModuleName,
-		credentials.ModuleName,
+		credential.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -516,7 +516,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper),
-		credentialsmodule.NewAppModule(appCodec, app.CredentialsKeeper, app.AccountKeeper, app.BankKeeper, app.DidKeeper),
+		credentialmodule.NewAppModule(appCodec, app.CredentialsKeeper, app.AccountKeeper, app.BankKeeper, app.DidKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -705,7 +705,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(did.ModuleName)
-	paramsKeeper.Subspace(credentials.ModuleName)
+	paramsKeeper.Subspace(credential.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
