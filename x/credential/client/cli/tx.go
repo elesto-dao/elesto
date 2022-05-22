@@ -39,7 +39,10 @@ func GetTxCmd() *cobra.Command {
 // NewIssuePublicCredential defines the command to publish credential definitions
 func NewIssuePublicCredential() *cobra.Command {
 
-	var credentialFileOut string
+	var (
+		credentialFileOut string
+		nonRevocable      bool
+	)
 
 	cmd := &cobra.Command{
 		Use:     "issue-public-credential credential-definition-id credential_file",
@@ -63,6 +66,11 @@ func NewIssuePublicCredential() *cobra.Command {
 			wc, err := credential.NewWrappedPublicCredentialFromFile(credentialFile)
 			if err != nil {
 				println("error building credential definition", err)
+				return err
+			}
+			// is it revocable
+			if !nonRevocable && wc.CredentialStatus == nil {
+				println("credential status for revocation is missing, if this is intended use the flag --non-revocable", err)
 				return err
 			}
 			// get the issuer did
@@ -102,7 +110,7 @@ func NewIssuePublicCredential() *cobra.Command {
 	}
 	// add flags
 	cmd.Flags().StringVar(&credentialFileOut, "export", "", "export the signed credential to a json file")
-
+	cmd.Flags().BoolVar(&nonRevocable, "non-revocable", false, "if not set, the credential must contain the credentialStatus field")
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

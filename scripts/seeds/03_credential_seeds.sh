@@ -20,6 +20,7 @@ echo "Sign and issue public credential"
 
 elestod tx credential issue-public-credential revocation-list-2020 03_credential.json \
  --export 03_credential.signed.json \
+ --non-revocable \
  --from regulator \
  --chain-id elesto -y --broadcast-mode block
 
