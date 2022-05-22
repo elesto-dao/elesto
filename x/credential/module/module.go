@@ -132,7 +132,7 @@ func (AppModule) QuerierRoute() string { return credential.QuerierRoute }
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	credential.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper, am.didKeeper))
+	credential.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
 	credential.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 }
 

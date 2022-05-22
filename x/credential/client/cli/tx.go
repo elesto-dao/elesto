@@ -36,8 +36,8 @@ func GetTxCmd() *cobra.Command {
 	return cmd
 }
 
-// NewPublishCredentialDefinition defines the command to publish credential definitions
-func NewPublishCredentialDefinition() *cobra.Command {
+// NewIssuePublicCredential defines the command to publish credential definitions
+func NewIssuePublicCredential() *cobra.Command {
 
 	var credentialFileOut string
 
@@ -107,8 +107,8 @@ func NewPublishCredentialDefinition() *cobra.Command {
 	return cmd
 }
 
-// NewIssuePublicCredential defines the command to publish credential definitions
-func NewIssuePublicCredential() *cobra.Command {
+// NewPublishCredentialDefinition defines the command to publish credential definitions
+func NewPublishCredentialDefinition() *cobra.Command {
 
 	var (
 		isPublic       bool

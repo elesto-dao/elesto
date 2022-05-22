@@ -14,13 +14,12 @@ import (
 
 type msgServer struct {
 	Keeper
-	DIDs credential.DidKeeper
 }
 
 // NewMsgServerImpl returns an implementation of the identity MsgServer interface
 // for the provided Keeper.
-func NewMsgServerImpl(keeper Keeper, dids credential.DidKeeper) credential.MsgServer {
-	return &msgServer{Keeper: keeper, DIDs: dids}
+func NewMsgServerImpl(keeper Keeper) credential.MsgServer {
+	return &msgServer{Keeper: keeper}
 }
 
 var _ credential.MsgServer = msgServer{}
@@ -41,7 +40,7 @@ func (k msgServer) PublishCredentialDefinition(
 	}
 
 	// resolve the publisher DID
-	if _, err := k.DIDs.ResolveDid(ctx, did.DID(msg.CredentialDefinition.PublisherId)); err != nil {
+	if _, err := k.did.ResolveDid(ctx, did.DID(msg.CredentialDefinition.PublisherId)); err != nil {
 		err := sdkerrors.Wrapf(did.ErrDidDocumentFound, "the credential publisher DID cannot be resolved: %v", msg.CredentialDefinition.PublisherId)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
