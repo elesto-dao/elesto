@@ -29,6 +29,7 @@ func GetQueryCmd(_ string) *cobra.Command {
 		NewQueryPublicCredentialCmd(),
 		NewQueryPublicCredentialsCmd(),
 		NewQueryCredentialStatusCmd(),
+		NewQueryPublicCredentialStatusCmd(),
 	)
 
 	return cmd
@@ -180,41 +181,11 @@ func NewQueryCredentialStatusCmd() *cobra.Command {
 				println("error building credential definition", err)
 				return err
 			}
-			if wc.CredentialStatus == nil {
-				err = fmt.Errorf("missing credentialStatus definition from the credential, revocation cannot be checked")
-				println(err.Error())
-				return err
-			}
-			// retrieve the revocation list
-			result, err := queryClient.PublicCredential(
-				context.Background(),
-				&credential.QueryPublicCredentialRequest{
-					Id: wc.CredentialStatus.RevocationListCredential,
-				},
-			)
+			revoked, err := checkRevocation(queryClient, wc)
 			if err != nil {
-				fmt.Printf("revocation list credential %s not found\n", wc.CredentialStatus.RevocationListCredential)
+				println("error processing credential revocation:", err)
 				return err
 			}
-			// check issuer
-			if result.Credential.Issuer != wc.Issuer {
-				err = fmt.Errorf("credential issuer mismatch, expected: %v, got %v", wc.Issuer, result.Credential.Issuer)
-				println(err.Error())
-				return err
-			}
-			// load the revocation list
-			rl, err := rl2020.NewRevocationListFromJSON(result.Credential.CredentialSubject)
-			if err != nil {
-				println("error parsing the credential revocation list", err)
-				return err
-			}
-			//
-			revoked, err := rl.IsRevoked(*wc.CredentialStatus)
-			if err != nil {
-				println("error parsing the credential revocation list", err)
-				return err
-			}
-			// check for revocation
 			status := fmt.Sprintf("credential %v is NOT REVOKED", wc.Id)
 			if revoked {
 				status = fmt.Sprintf("credential %v is REVOKED", wc.Id)
@@ -225,4 +196,87 @@ func NewQueryCredentialStatusCmd() *cobra.Command {
 	}
 	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
+}
+
+func NewQueryPublicCredentialStatusCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "public-credential-status",
+		Short:   "verify the credential status of a credential",
+		Example: "elestod query credential public-credential-status credentialID",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := credential.NewQueryClient(clientCtx)
+
+			credentialID := args[0]
+
+			// initialize the definition
+			result, err := queryClient.PublicCredential(
+				context.Background(),
+				&credential.QueryPublicCredentialRequest{
+					Id: credentialID,
+				},
+			)
+			if err != nil {
+				fmt.Printf("public credential %s not found\n", credentialID)
+				return err
+			}
+			wc, err := credential.NewWrappedCredential(result.Credential)
+			if err != nil {
+				println("error processing credential", err)
+				return err
+			}
+
+			revoked, err := checkRevocation(queryClient, wc)
+			if err != nil {
+				println("error processing credential revocation:", err)
+				return err
+			}
+			status := fmt.Sprintf("credential %v is NOT REVOKED", wc.Id)
+			if revoked {
+				status = fmt.Sprintf("credential %v is REVOKED", wc.Id)
+			}
+			// print result
+			return clientCtx.PrintString(status)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func checkRevocation(qc credential.QueryClient, wc *credential.WrappedCredential) (revoked bool, err error) {
+
+	// is there a credential status to use?
+	if wc.CredentialStatus == nil {
+		err = fmt.Errorf("missing credentialStatus definition from the credential, revocation cannot be checked")
+		return
+	}
+	// retrieve the revocation list
+	res, err := qc.PublicCredential(
+		context.Background(),
+		&credential.QueryPublicCredentialRequest{
+			Id: wc.CredentialStatus.RevocationListCredential,
+		},
+	)
+	if err != nil {
+		fmt.Printf("revocation list credential %s not found\n", wc.CredentialStatus.RevocationListCredential)
+		return
+	}
+	// check issuer
+	if res.Credential.Issuer != wc.Issuer {
+		err = fmt.Errorf("credential issuer mismatch, expected: %v, got %v", wc.Issuer, res.Credential.Issuer)
+		println(err.Error())
+		return
+	}
+	// load the revocation list
+	rl, err := rl2020.NewRevocationListFromJSON(res.Credential.CredentialSubject)
+	if err != nil {
+		println("error parsing the credential revocation list", err)
+		return
+	}
+	//
+	return rl.IsRevoked(*wc.CredentialStatus)
 }
