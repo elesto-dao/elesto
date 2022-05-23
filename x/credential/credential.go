@@ -149,3 +149,15 @@ func NewProof(
 		Signature:          signature,
 	}
 }
+
+// implement the credential status interface required by the rl2020 lib
+
+// Coordinates retun the revocation list id and credential index within the list
+func (m CredentialStatus) Coordinates() (string, int) {
+	return m.RevocationListCredential, int(m.RevocationListIndex)
+}
+
+// TypeDef returns the credential status ID and type for correctness check
+func (m CredentialStatus) TypeDef() (string, string) {
+	return m.Id, m.Type
+}
