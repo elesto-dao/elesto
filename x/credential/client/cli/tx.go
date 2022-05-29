@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -11,6 +12,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/noandrea/rl2020"
 	"github.com/spf13/cobra"
 
 	"github.com/elesto-dao/elesto/x/credential"
@@ -29,78 +32,67 @@ func GetTxCmd() *cobra.Command {
 
 	// this line is used by starport scaffolding # 1
 	cmd.AddCommand(
-		NewPublishCredentialDefinition(),
-		NewIssuePublicCredential(),
+		NewPublishCredentialDefinitionCmd(),
+		NewIssuePublicCredentialCmd(),
+		NewCreateRevocationListCmd(),
+		NewUpdateRevocationListCmd(),
 	)
 
 	return cmd
 }
 
-// NewIssuePublicCredential defines the command to publish credential definitions
-func NewIssuePublicCredential() *cobra.Command {
+func exTx(cmd ...string) string {
+	return fmt.Sprintln(version.AppName, "tx", credential.ModuleName, strings.Join(cmd, " "))
+}
+
+// NewIssuePublicCredentialCmd defines the command to publish credentials
+func NewIssuePublicCredentialCmd() *cobra.Command {
 
 	var (
+		command           = "issue-public-credential"
 		credentialFileOut string
-		nonRevocable      bool
 	)
 
 	cmd := &cobra.Command{
-		Use:     "issue-public-credential credential-definition-id credential_file",
+		Use:     fmt.Sprintln(command, "credential-definition-id", "credential_file"),
 		Short:   "issue a public, on-chain, credential",
-		Example: "elestod tx credentials issue-public-credential example-definition-id credential.json",
+		Example: exTx(command, "example-definition-id", "credential.json"),
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
-			cID, credentialFile := args[0], args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-			// did
-			definitionDID := did.NewChainDID(clientCtx.ChainID, cID)
-			// verification
-			signer := clientCtx.GetFromAddress()
+
+			var (
+				cID, credentialFile = args[0], args[1]
+				definitionDID       = did.NewChainDID(clientCtx.ChainID, cID)
+				signer              = clientCtx.GetFromAddress()
+				pwc                 *credential.WrappedCredential
+			)
 
 			// initialize the definition
-			wc, err := credential.NewWrappedPublicCredentialFromFile(credentialFile)
-			if err != nil {
+			if pwc, err = credential.NewWrappedPublicCredentialFromFile(credentialFile); err != nil {
 				println("error building credential definition", err)
 				return err
 			}
-			// is it revocable
-			if !nonRevocable && wc.CredentialStatus == nil {
-				println("credential status for revocation is missing, if this is intended use the flag --non-revocable", err)
-				return err
-			}
 			// get the issuer did
-			vmID := wc.GetIssuerDID().NewVerificationMethodID(signer.String())
-			if err = sign(wc, clientCtx.Keyring, signer, vmID); err != nil {
+			vmID := pwc.GetIssuerDID().NewVerificationMethodID(signer.String())
+			if err = sign(pwc, clientCtx.Keyring, signer, vmID); err != nil {
 				println("error signing the credential:", err)
 				return err
 			}
 			// write to the output file
 			if !credential.IsEmpty(credentialFileOut) {
-				if err = os.WriteFile(credentialFileOut, wc.GetBytes(), 0600); err != nil {
+				if err = os.WriteFile(credentialFileOut, pwc.GetBytes(), 0600); err != nil {
 					fmt.Printf("error writing the credential to %v: %v", credentialFileOut, err)
 					return err
 				}
 			}
-
-			if err = sign(wc, clientCtx.Keyring, signer, vmID); err != nil {
-				println("error signing the credential:", err)
-				return err
-			}
-
-			pvc, err := wc.GetCredential()
-			if err != nil {
-				println("error extracting the credential:", err)
-				return err
-			}
-
 			// create the message
 			msg := credential.NewMsgIssuePublicVerifiableCredentialRequest(
-				pvc,
+				pwc.PublicVerifiableCredential,
 				definitionDID,
 				signer,
 			)
@@ -110,15 +102,193 @@ func NewIssuePublicCredential() *cobra.Command {
 	}
 	// add flags
 	cmd.Flags().StringVar(&credentialFileOut, "export", "", "export the signed credential to a json file")
-	cmd.Flags().BoolVar(&nonRevocable, "non-revocable", false, "if not set, the credential must contain the credentialStatus field")
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
-// NewPublishCredentialDefinition defines the command to publish credential definitions
-func NewPublishCredentialDefinition() *cobra.Command {
+// NewCreateRevocationListCmd update a revocation list
+func NewCreateRevocationListCmd() *cobra.Command {
 
 	var (
+		command            = "create-revocation-list"
+		issuerDIDstr       string
+		definitionID       string
+		revocationListSize int
+		revocationIndexes  []int
+	)
+
+	cmd := &cobra.Command{
+		Use:     fmt.Sprintln(command, "revocation-credential-id"),
+		Short:   "create a revocation list credential",
+		Example: exTx(command, "https://revocations.id/list/001"),
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			var (
+				cID           = args[0]
+				signer        = clientCtx.GetFromAddress()
+				definitionDID = did.NewChainDID(clientCtx.ChainID, definitionID)
+				pwc           *credential.WrappedCredential
+				rl            rl2020.RevocationList2020
+				issuerDID     = did.NewChainDID(clientCtx.ChainID, signer.String())
+			)
+			// REVOCATION LIST CREATION
+			// create the revocation list
+			if rl, err = rl2020.NewRevocationList(cID, revocationListSize); err != nil {
+				err = fmt.Errorf("revocation list corrupted: %w", err)
+				return err
+			}
+			// update the revocation list
+			if err = rl.Revoke(revocationIndexes...); err != nil {
+				err = fmt.Errorf("credential revocations failed: %w", err)
+				return err
+			}
+			// check if credential exits
+			if _, err = queryPublicCredential(credential.NewQueryClient(clientCtx), cID); err == nil {
+				err = fmt.Errorf("revocation list credential %s exists", cID)
+				return err
+			}
+			// if issuer is set use the provided one
+			if issuerDIDstr != "" {
+				issuerDID = did.DID(issuerDIDstr)
+			}
+			// PUBLIC CREDENTIAL
+			// create the credential
+			if pwc, err = credential.NewWrappedCredential(
+				credential.NewPublicVerifiableCredential(
+					cID,
+					credential.WithIssuerDID(issuerDID),
+					credential.WithContext("https://w3id.org/vc-revocation-list-2020/v1"),
+					credential.WithType(rl2020.TypeRevocationList2020),
+					credential.WithIssuanceDate(time.Now()),
+				),
+			); err != nil {
+				err = fmt.Errorf("error composing credential: %w", err)
+				return err
+			}
+			// set the credential subject
+			if err = pwc.SetSubject(rl); err != nil {
+				err = fmt.Errorf("encoding of credentials failed: %w", err)
+				return err
+			}
+			// sign the updated credential
+			vmID := pwc.GetIssuerDID().NewVerificationMethodID(signer.String())
+			if err = sign(pwc, clientCtx.Keyring, signer, vmID); err != nil {
+				println("error signing the credential:", err)
+				return err
+			}
+			// publish the new credential
+			msg := credential.NewMsgIssuePublicVerifiableCredentialRequest(
+				pwc.PublicVerifiableCredential,
+				definitionDID,
+				signer,
+			)
+			// execute
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	// add flags
+	cmd.Flags().IntVar(&revocationListSize, "size", 16, "the size of the revocation list, in KB")
+	cmd.Flags().StringVar(&issuerDIDstr, "issuer", "", "the issuer DID. If not set the signer key will be used as issuer")
+	cmd.Flags().StringVar(&definitionID, "definition-id", "revocation-list-2020", "the RevocationList2020 definition ID")
+	cmd.Flags().IntSliceVarP(&revocationIndexes, "revoke", "r", []int{}, "index of credentials to be revoked")
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+// NewUpdateRevocationListCmd update a revocation list
+func NewUpdateRevocationListCmd() *cobra.Command {
+
+	var (
+		command           = "update-revocation-list"
+		definitionID      string
+		revocationIndexes []int
+		resetIndexes      []int
+	)
+
+	cmd := &cobra.Command{
+		Use:     fmt.Sprintln(command, "credentialID"),
+		Short:   "update a revocation list",
+		Example: exTx(command, "https://revocations.id/list/001"),
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			var (
+				cID           = args[0]
+				signer        = clientCtx.GetFromAddress()
+				definitionDID = did.NewChainDID(clientCtx.ChainID, definitionID)
+				pwc           *credential.WrappedCredential
+				rl            rl2020.RevocationList2020
+			)
+
+			// query the credential
+			if pwc, err = queryPublicCredential(credential.NewQueryClient(clientCtx), cID); err != nil {
+				err = fmt.Errorf("revocation list credential not available: %w", err)
+				return err
+			}
+			// check the credential type, it must be a revocation list
+			if !pwc.HasType(rl2020.TypeRevocationList2020) {
+				err = fmt.Errorf("expecting credential type %v, found: %v", rl2020.TypeRevocationList2020, pwc.Type)
+				return err
+			}
+			// parse the revocation list
+			if rl, err = rl2020.NewRevocationListFromJSON(pwc.PublicVerifiableCredential.CredentialSubject); err != nil {
+				err = fmt.Errorf("revocation list corrupted: %w", err)
+				return err
+			}
+			// update the revocation list
+			if err = rl.Revoke(revocationIndexes...); err != nil {
+				err = fmt.Errorf("credential revocations failed: %w", err)
+				return err
+			}
+			if err = rl.Reset(resetIndexes...); err != nil {
+				err = fmt.Errorf("credential resets failed: %w", err)
+				return err
+			}
+			// update the credential
+			if err = pwc.SetSubject(rl); err != nil {
+				err = fmt.Errorf("encoding of credentials failed: %w", err)
+				return err
+			}
+			// sign the updated credential
+			vmID := pwc.GetIssuerDID().NewVerificationMethodID(signer.String())
+			if err = sign(pwc, clientCtx.Keyring, signer, vmID); err != nil {
+				println("error signing the credential:", err)
+				return err
+			}
+			// publish the new credential
+			msg := credential.NewMsgIssuePublicVerifiableCredentialRequest(
+				pwc.PublicVerifiableCredential,
+				definitionDID,
+				signer,
+			)
+			// execute
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	// add flags
+	cmd.Flags().StringVar(&definitionID, "definition-id", "revocation-list-2020", "the RevocationList2020 definition ID")
+	cmd.Flags().IntSliceVarP(&revocationIndexes, "revoke", "r", []int{}, "index of credentials to be revoked")
+	cmd.Flags().IntSliceVarP(&resetIndexes, "reset", "t", []int{}, "index of credentials to be reset")
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+// NewPublishCredentialDefinitionCmd defines the command to publish credential definitions
+func NewPublishCredentialDefinitionCmd() *cobra.Command {
+
+	var (
+		command        = "publish-credential-definition"
 		isPublic       bool
 		inactive       bool
 		publisherID    string
@@ -127,9 +297,9 @@ func NewPublishCredentialDefinition() *cobra.Command {
 	)
 
 	cmd := &cobra.Command{
-		Use:     "publish-credential-definition id name schemaFile vocabFile",
+		Use:     fmt.Sprintln(command, "id", "name", "schemaFile", "contextFile"),
 		Short:   "publish a credential definition",
-		Example: "elestod tx credentials publish-credential-definition example-definition-id example-credential schema.json vocab.json",
+		Example: exTx(command, "example-definition-id", "example-credential", "schema.json", "vocab.json"),
 		Args:    cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -187,7 +357,9 @@ func sign(
 	wc.Proof = nil
 	// TODO: this could be expensive review this signing method
 	// TODO: we can hash this an make this less expensive
-	signature, pubKey, err := keyring.SignByAddress(address, wc.GetBytes())
+	data := wc.GetBytes()
+	fmt.Printf("%s", data)
+	signature, pubKey, err := keyring.SignByAddress(address, data)
 	if err != nil {
 		return err
 	}

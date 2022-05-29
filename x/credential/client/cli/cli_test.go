@@ -95,7 +95,7 @@ func publishCredentialDefinition(s *IntegrationTestSuite, identifier, name, sche
 		),
 	}
 
-	cmd := cli.NewPublishCredentialDefinition()
+	cmd := cli.NewPublishCredentialDefinitionCmd()
 	out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
 	s.Require().NoError(err)
 	response := &sdk.TxResponse{}
@@ -166,8 +166,10 @@ func TestGetTxCmd(t *testing.T) {
 	//TODO: implement
 
 	expectedCommands := map[string]struct{}{
-		"issue-public-credential":       struct{}{},
-		"publish-credential-definition": struct{}{},
+		"issue-public-credential":       {},
+		"publish-credential-definition": {},
+		"create-revocation-list":        {},
+		"update-revocation-list":        {},
 	}
 
 	t.Run("PASS: Verify command are there ", func(t *testing.T) {
@@ -181,9 +183,13 @@ func TestGetTxCmd(t *testing.T) {
 
 func TestGetQueryCmd(t *testing.T) {
 	expectedCommands := map[string]struct{}{
-		"credential-definition": struct{}{},
-		"public-credential":     struct{}{},
-		"public-credentials":    struct{}{},
+		"credential-definition":        {},
+		"public-credential":            {},
+		"public-credentials":           {},
+		"credential-status":            {},
+		"prepare-credential":           {},
+		"public-credential-status":     {},
+		"public-credentials-by-issuer": {},
 	}
 
 	t.Run("PASS: Verify command are there ", func(t *testing.T) {
