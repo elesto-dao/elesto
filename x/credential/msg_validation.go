@@ -7,6 +7,10 @@ import (
 )
 
 func (msg MsgPublishCredentialDefinitionRequest) ValidateBasic() error {
+	if msg.CredentialDefinition == nil {
+		return fmt.Errorf("credential definition must be set")
+	}
+
 	if !did.IsValidDID(msg.CredentialDefinition.Id) {
 		return fmt.Errorf("credential definition id must be a valid DID")
 	}
