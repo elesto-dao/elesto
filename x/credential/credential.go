@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	"github.com/noandrea/rl2020"
 
 	"github.com/elesto-dao/elesto/x/did"
 )
@@ -40,6 +42,53 @@ func NewCredentialDefinitionFromFile(did, publisherDID did.DID,
 	return def, nil
 }
 
+func NewPublicVerifiableCredential(id string, opts ...PublicVerifiableCredentialOption) *PublicVerifiableCredential {
+	pvc := &PublicVerifiableCredential{
+		Context: []string{"https://www.w3.org/2018/credentials/v1"},
+		Id:      id,
+		Type:    []string{"VerifiableCredential"},
+	}
+	for _, opt := range opts {
+		opt(pvc)
+	}
+	return pvc
+}
+
+type PublicVerifiableCredentialOption func(credential *PublicVerifiableCredential)
+
+func WithContext(context ...string) PublicVerifiableCredentialOption {
+	return func(pvc *PublicVerifiableCredential) {
+		pvc.Context = append(pvc.Context, context...)
+	}
+}
+
+func WithType(typ ...string) PublicVerifiableCredentialOption {
+	return func(pvc *PublicVerifiableCredential) {
+		pvc.Type = append(pvc.Type, typ...)
+	}
+}
+
+func WithIssuerDID(issuer did.DID) PublicVerifiableCredentialOption {
+	return func(pvc *PublicVerifiableCredential) {
+		pvc.Issuer = issuer.String()
+	}
+}
+
+func WithIssuanceDate(date time.Time) PublicVerifiableCredentialOption {
+	return func(pvc *PublicVerifiableCredential) {
+		// this is to avoid
+		utc := date.Truncate(time.Minute).UTC()
+		pvc.IssuanceDate = &utc
+	}
+}
+
+func WithExpirationDate(date time.Time) PublicVerifiableCredentialOption {
+	return func(pvc *PublicVerifiableCredential) {
+		utc := date.Truncate(time.Minute).UTC()
+		pvc.ExpirationDate = &utc
+	}
+}
+
 // WrappedCredential wraps a PublicVerifiableCredential, this is a workaround
 // to deal with the variable content of the credential subject
 type WrappedCredential struct {
@@ -53,10 +102,13 @@ func NewWrappedCredential(pvc *PublicVerifiableCredential) (wc *WrappedCredentia
 		PublicVerifiableCredential: pvc,
 		CredentialSubject:          map[string]interface{}{},
 	}
-	err = json.Unmarshal(pvc.CredentialSubject, &wc.CredentialSubject)
+	if len(pvc.CredentialSubject) > 0 {
+		err = json.Unmarshal(pvc.CredentialSubject, &wc.CredentialSubject)
+	}
 	return
 }
 
+// NewWrappedPublicCredentialFromFile read a credential from file
 func NewWrappedPublicCredentialFromFile(credentialFile string) (wc *WrappedCredential, err error) {
 	wc = &WrappedCredential{}
 	data, err := os.ReadFile(credentialFile)
@@ -66,18 +118,13 @@ func NewWrappedPublicCredentialFromFile(credentialFile string) (wc *WrappedCrede
 	if err = json.Unmarshal(data, wc); err != nil {
 		return
 	}
+	if wc.PublicVerifiableCredential.CredentialSubject, err = json.Marshal(wc.CredentialSubject); err != nil {
+		return
+	}
 	return
 }
 
-func (wc *WrappedCredential) GetCredential() (*PublicVerifiableCredential, error) {
-	sbj, err := json.Marshal(wc.CredentialSubject)
-	if err != nil {
-		return nil, err
-	}
-	wc.PublicVerifiableCredential.CredentialSubject = sbj
-	return wc.PublicVerifiableCredential, nil
-}
-
+// GetBytes returns the JSON encoded byte slice of the credential
 func (wc *WrappedCredential) GetBytes() []byte {
 	dAtA, err := json.Marshal(wc)
 	if err != nil {
@@ -86,7 +133,15 @@ func (wc *WrappedCredential) GetBytes() []byte {
 	return dAtA
 }
 
-func (wc *WrappedCredential) GetSubjectID() (s string, hasSubject bool) {
+// Copy create a deep copy of the WrappedCredential
+func (wc *WrappedCredential) Copy() WrappedCredential {
+	pvc := *wc.PublicVerifiableCredential
+	wcCopy := *wc
+	wcCopy.PublicVerifiableCredential = &pvc
+	return wcCopy
+}
+
+func (wc *WrappedCredential) GetSubjectID() (s string, isDID bool) {
 	v, hasSubject := wc.CredentialSubject["id"]
 	if !hasSubject || IsEmpty(v.(string)) {
 		return
@@ -98,8 +153,28 @@ func (wc *WrappedCredential) GetSubjectID() (s string, hasSubject bool) {
 	return id, IsEmpty(id)
 }
 
+// GetIssuerDID returns the DID of the issuer
 func (pvc PublicVerifiableCredential) GetIssuerDID() did.DID {
 	return did.DID(pvc.Issuer)
+}
+
+// HasType check if the credential has the type in input
+func (wc *WrappedCredential) HasType(credentialType string) bool {
+	for _, t := range wc.Type {
+		if t == credentialType {
+			return true
+		}
+	}
+	return false
+}
+
+// SetSubject set the credential subject of the credential, it must be json serializable
+func (wc *WrappedCredential) SetSubject(val interface{}) (err error) {
+	if wc.PublicVerifiableCredential.CredentialSubject, err = json.Marshal(val); err != nil {
+		return
+	}
+	// now unmarshal the wc
+	return json.Unmarshal(wc.PublicVerifiableCredential.CredentialSubject, &wc.CredentialSubject)
 }
 
 // GetBytes is a helper for serializing
@@ -114,23 +189,20 @@ func (pvc PublicVerifiableCredential) GetBytes() []byte {
 // Validate validates a verifiable credential against a provided public key
 func (wc WrappedCredential) Validate(
 	pk cryptotypes.PubKey,
-) bool {
-	s, err := base64.StdEncoding.DecodeString(wc.Proof.Signature)
+) (err error) {
+	sig, err := base64.StdEncoding.DecodeString(wc.Proof.Signature)
 	if err != nil {
-		panic(err)
+		return
 	}
-
-	// reset the proof
-	wc.Proof = nil
-
+	// create a copy to reset the proof
+	wcCopy := wc.Copy()
+	wcCopy.Proof = nil
 	// TODO: this is an expensive operation, could lead to DDOS
 	// TODO: we can hash this and make this less expensive
-	isCorrectPubKey := pk.VerifySignature(
-		wc.GetBytes(),
-		s,
-	)
-
-	return isCorrectPubKey
+	if !pk.VerifySignature(wcCopy.GetBytes(), sig) {
+		err = fmt.Errorf("signature cannot be verified")
+	}
+	return
 }
 
 // NewProof create a new proof for a verifiable credential
@@ -151,6 +223,16 @@ func NewProof(
 }
 
 // implement the credential status interface required by the rl2020 lib
+
+// NewCredentialStatus returns a new credential status
+func NewCredentialStatus(credentialList string, index int) *CredentialStatus {
+	return &CredentialStatus{
+		Id:                       fmt.Sprint(credentialList, "/", index),
+		Type:                     rl2020.TypeRevocationList2020Status,
+		RevocationListIndex:      int32(index),
+		RevocationListCredential: credentialList,
+	}
+}
 
 // Coordinates retun the revocation list id and credential index within the list
 func (m CredentialStatus) Coordinates() (string, int) {

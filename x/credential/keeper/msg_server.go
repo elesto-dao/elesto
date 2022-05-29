@@ -68,9 +68,9 @@ func (k msgServer) IssuePublicVerifiableCredential(
 	goCtx context.Context,
 	msg *credential.MsgIssuePublicVerifiableCredentialRequest,
 ) (*credential.MsgIssuePublicVerifiableCredentialResponse, error) {
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	k.Logger(ctx).Info("request to issuer a PublicCredential", "credential Definition ID", msg.Credential.Id)
+
 	// fetch the credential definition
 	cd, found := k.GetCredentialDefinition(ctx, msg.CredentialDefinitionDid)
 	if !found {
@@ -124,7 +124,7 @@ func (k msgServer) IssuePublicVerifiableCredential(
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
-
+	//TODO the proof gets deleted
 	k.SetPublicCredential(ctx, msg.Credential)
 
 	// TODO fire events
@@ -211,10 +211,10 @@ Outer:
 		)
 	}
 	//
-	if isValid := wc.Validate(pk); !isValid {
+	if err = wc.Validate(pk); err != nil {
 		return sdkerrors.Wrapf(
 			credential.ErrMessageSigner,
-			"verification error %v",
+			"verification error: %v",
 			err,
 		)
 	}
