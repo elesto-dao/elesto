@@ -1,14 +1,12 @@
-# DID Module 
+# Credential Module 
 
 
-This module implements the DID core spec. For more information please see the [DID W3C core-spec](https://w3c.github.io/did-core/).
+This module implements support for verifiable credentials. For more information see  
+- [Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model/).
+- [Verifiable Credentials JSON Schema Specification](https://w3c-ccg.github.io/vc-json-schemas/v2/index.html)
+- [JSON-based Serialization for Linked Data](https://w3c.github.io/json-ld-syntax/)
 
-Decentralized identifiers (DIDs) are a type of identifier that enables verifiable, decentralized digital identity. A DID identifies any subject (e.g., a person, organization, thing, data model, abstract entity, etc.) that the controller of the DID decides that it identifies.
 
-A DID is a globally unique persistent identifier that does not require a centralized registration authority and is often generated and/or registered cryptographically.
- 
-
-The DID module provides the functionalities to create and manage the lifecycle of a DID document on chain.
 
 ## Reference
 
