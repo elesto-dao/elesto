@@ -71,28 +71,33 @@ func (k msgServer) IssuePublicVerifiableCredential(
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	k.Logger(ctx).Info("request to issuer a PublicCredential", "credential Definition ID", msg.Credential.Id)
 
+	var (
+		err error
+		cd  credential.CredentialDefinition
+		wc  *credential.WrappedCredential
+	)
+
 	// fetch the credential definition
-	cd, found := k.GetCredentialDefinition(ctx, msg.CredentialDefinitionDid)
-	if !found {
-		err := sdkerrors.Wrapf(credential.ErrCredentialDefinitionFound, "a credential definition with did %s already exists", msg.CredentialDefinitionDid)
+	var found bool
+	if cd, found = k.GetCredentialDefinition(ctx, msg.CredentialDefinitionDid); !found {
+		err = sdkerrors.Wrapf(credential.ErrCredentialDefinitionFound, "a credential definition with did %s already exists", msg.CredentialDefinitionDid)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 	// verify that can be published
 	if !cd.IsPublic {
-		err := sdkerrors.Wrapf(credential.ErrCredentialIsNotPublic, "the credential definition %s cannot be issued on-chain", msg.CredentialDefinitionDid)
+		err = sdkerrors.Wrapf(credential.ErrCredentialIsNotPublic, "the credential definition %s cannot be issued on-chain", msg.CredentialDefinitionDid)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 	// verify that is not suspended
 	if !cd.IsActive {
-		err := sdkerrors.Wrapf(credential.ErrCredentialIsNotActive, "the credential definition %s cannot be issued on-chain", msg.CredentialDefinitionDid)
+		err = sdkerrors.Wrapf(credential.ErrCredentialIsNotActive, "the credential definition %s cannot be issued on-chain", msg.CredentialDefinitionDid)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 	// Wrap the credential
-	wc, err := credential.NewWrappedCredential(msg.Credential)
-	if err != nil {
+	if wc, err = credential.NewWrappedCredential(msg.Credential); err != nil {
 		err = sdkerrors.Wrapf(credential.ErrInvalidCredential, "the credential %s is malformed: %v", msg.Credential, err)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
@@ -124,7 +129,6 @@ func (k msgServer) IssuePublicVerifiableCredential(
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
-	//TODO the proof gets deleted
 	k.SetPublicCredential(ctx, msg.Credential)
 
 	// TODO fire events

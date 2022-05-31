@@ -164,7 +164,7 @@ func NewCreateRevocationListCmd() *cobra.Command {
 					cID,
 					credential.WithIssuerDID(issuerDID),
 					credential.WithContext("https://w3id.org/vc-revocation-list-2020/v1"),
-					credential.WithType(rl2020.TypeRevocationList2020),
+					credential.WithType(fmt.Sprint(rl2020.TypeRevocationList2020, "Credential")),
 					credential.WithIssuanceDate(time.Now()),
 				),
 			); err != nil {
@@ -358,7 +358,6 @@ func sign(
 	// TODO: this could be expensive review this signing method
 	// TODO: we can hash this an make this less expensive
 	data := wc.GetBytes()
-	fmt.Printf("%s", data)
 	signature, pubKey, err := keyring.SignByAddress(address, data)
 	if err != nil {
 		return err
