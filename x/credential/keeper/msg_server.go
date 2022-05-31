@@ -98,7 +98,7 @@ func (k msgServer) IssuePublicVerifiableCredential(
 		return nil, err
 	}
 	// verify the credential against the schema
-	schema, err := gojsonschema.NewSchema(gojsonschema.NewStringLoader(cd.Schema))
+	schema, err := gojsonschema.NewSchema(gojsonschema.NewBytesLoader(cd.Schema))
 	if err != nil {
 		err = sdkerrors.Wrapf(credential.ErrCredentialDefinitionCorrupted, "the credential definition %s is corrupted: %v", msg.CredentialDefinitionDid, cd)
 		k.Logger(ctx).Error(err.Error())
