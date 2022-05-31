@@ -23,7 +23,7 @@ func (msg MsgPublishCredentialDefinitionRequest) ValidateBasic() error {
 		return fmt.Errorf("publisher id must be a valid DID")
 	}
 
-	if IsEmpty(msg.CredentialDefinition.Schema) {
+	if len(msg.CredentialDefinition.Schema) == 0 {
 		return fmt.Errorf("schema cannot be empty")
 	}
 
