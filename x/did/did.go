@@ -800,7 +800,7 @@ func toAddress(hexKey string) (addr string, err error) {
 }
 
 // union perform union, distinct amd sort operation between two slices
-// duplicated element in list a are
+// duplicated element in list are removed
 func union(a, b []string) []string {
 	if len(b) == 0 {
 		return a
@@ -822,6 +822,7 @@ func union(a, b []string) []string {
 	return u
 }
 
+// intersection - keep only strings that are in both slices
 func intersection(a, b []string) []string {
 	m := make(map[string]struct{})
 	for _, item := range a {

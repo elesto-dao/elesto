@@ -69,7 +69,7 @@ The `identifier-type` distinguishes between two DID types:
 1. The `key` type, inspired from the [`did:key`](https://w3c-ccg.github.io/did-method-key/) method
 2. The `unique-identifier` type that identifies the DID and the originating network of the DID
 
-DIDs of `key` type are ephemeral and immutable. DIDs of `key` type are always generated from the Cosmos blockchain address they refer to. For example, see these DIDs of `key` type:
+DIDs of `key` type are ephemeral and immutable. DIDs of `key` type are always generated from the Cosmos blockchain address they refer to. For example, see this DID of `key` type:
 
 - `did:cosmos:key:elesto1ts9ejqg7k4ht2sm53hycty875362yqxqmt9grj`
 

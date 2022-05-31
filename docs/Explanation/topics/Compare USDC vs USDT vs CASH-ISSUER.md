@@ -47,7 +47,7 @@ Each function is labeled based on the following criteria:
 ## TL;DR;
 
 | Label     | USDT                                 | USDC                                                                                                                   | Cosmos Cash Issuer              |
-|:--------- |:------------------------------------ |:---------------------------------------------------------------------------------------------------------------------- |:------------------------------- |
+| :-------- | :----------------------------------- | :--------------------------------------------------------------------------------------------------------------------- | :------------------------------ |
 | Mintable  | issue(amount)                        | mint(\_to, \_amount)                                                                                                   | mintToken(amount, owner)        |
 | Burnable  | redeem(amount)                       | burn(\_amount)                                                                                                         | burnToken(amount, owner)        |
 | Pausable  | pause                                | pause                                                                                                                  | TO DO                           |
@@ -72,10 +72,10 @@ Each function is labeled based on the following criteria:
 | RBAC      | n/a                                  | updateMasterMinter(\_newMasterMinter)                                                                                  |                                 |
 | RBAC      | n/a                                  | updatePauser(\_newPauser)                                                                                              |                                 |
 | RBAC      | n/a                                  | updateRescuer(newRescuer)                                                                                              |                                 |
-| Proxy   | n/a                                  | initialize(tokenName, tokenSymbol, tokenCurrency, tokenDecimals, newMasterMinter, newPauser, newBlacklister, newOwner) | createIssuer(token, fee, owner) |
-| Proxy   | n/a                                  | initializeV2(string)                                                                                                   |                                 |
-| Proxy   | n/a                                  | initializeV2\_1(newName)                                                                                               |                                 |
-| Proxy   | deprecate(\_upgradedAddress)         | n/a                                                                                                                    |                                 |
+| Proxy     | n/a                                  | initialize(tokenName, tokenSymbol, tokenCurrency, tokenDecimals, newMasterMinter, newPauser, newBlacklister, newOwner) | createIssuer(token, fee, owner) |
+| Proxy     | n/a                                  | initializeV2(string)                                                                                                   |                                 |
+| Proxy     | n/a                                  | initializeV2\_1(newName)                                                                                               |                                 |
+| Proxy     | deprecate(\_upgradedAddress)         | n/a                                                                                                                    |                                 |
 
 
 ---
