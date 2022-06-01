@@ -31,6 +31,8 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		inflationYear := int(math.Floor(float64(ctx.BlockHeight()) / float64(blocksPerYear.Int64())))
 		// the inflation goes to 0 after we get over the last year
 		if inflationYear > len(params.InflationRates) {
+			// reset the mint amount
+			k.SetBlockInflation(ctx, sdk.NewInt(0))
 			return
 		}
 		// get the current year inflation rate
@@ -52,6 +54,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			// TODO check the following calculation
 			// update the current inflation
 			params.InflationRates[inflationYear] = yearInflationAmount.Quo(circulatingSupply.Amount.ToDec()).String()
+			k.SetParams(ctx, params)
 		}
 
 		// mint team allocation
@@ -81,7 +84,6 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		ctx.Logger().Info("updated inflation rate", "inflation", amountToMint.String())
 		// save the block inflation amount to mint to the state
 		k.SetBlockInflation(ctx, amountToMint)
-
 	}
 	blockInflationAmount := k.GetBlockInflation(ctx)
 	mintedCoin := sdk.NewCoin(params.MintDenom, blockInflationAmount)
