@@ -4,25 +4,27 @@ import (
 	"reflect"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	utils "github.com/elesto-dao/elesto/types"
 	"github.com/stretchr/testify/require"
 
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
+	"github.com/elesto-dao/elesto/app"
 	"github.com/elesto-dao/elesto/x/mint/types"
 )
 
 func TestParams(t *testing.T) {
+	app.Setup(false);
 	require.IsType(t, paramstypes.KeyTable{}, types.ParamKeyTable())
 
 	defaultParams := types.DefaultParams()
 
-	paramsStr := `mint_denom:"stake" block_time_threshold:<seconds:10 > inflation_schedules:<start_time:<seconds:1640995200 > end_time:<seconds:1672531200 > amount:"300000000000000" > inflation_schedules:<start_time:<seconds:1672531200 > end_time:<seconds:1704067200 > amount:"200000000000000" > `
+	paramsStr := `mint_denom:"stake" inflation_rates:"1" inflation_rates:"0.5" inflation_rates:"0.25" inflation_rates:"0.125" inflation_rates:"0.0625" inflation_rates:"0.03125" inflation_rates:"0.02" inflation_rates:"0.02" inflation_rates:"0.02" inflation_rates:"0.02" blocks_per_year:6308000 max_supply:1000000000000000 team_address:"elesto1ms2wrq8k04cug7ea6ekf60nfke6a8vu8pwm684" team_reward:"0.1" `
 	require.Equal(t, paramsStr, defaultParams.String())
 }
 
 func TestParamsValidate(t *testing.T) {
+	app.Setup(false);
+
 	require.NoError(t, types.DefaultParams().Validate())
 
 	testCases := []struct {
@@ -50,116 +52,80 @@ func TestParamsValidate(t *testing.T) {
 			"invalid denom: a",
 		},
 		{
-			"negative block time threshold",
+			"nil inflation rates",
 			func(params *types.Params) {
-				params.BlockTimeThreshold = -1
+				params.InflationRates = nil
 			},
-			"block time threshold must be positive: -1",
+			"inflation rates must be provided",
 		},
 		{
-			"nil inflation schedules",
+			"inflation rates has element with less than 0 value value",
 			func(params *types.Params) {
-				params.InflationSchedules = nil
+				params.InflationRates = []string{"-1"}
 			},
-			"",
+			"inflation must be a value greather than 0, got: -1.000000000000000000",
 		},
 		{
-			"empty inflation schedules",
+			"inflation rates has element with non-numerical value",
 			func(params *types.Params) {
-				params.InflationSchedules = []types.InflationSchedule{}
+				params.InflationRates = []string{"random"}
 			},
-			"",
+			"failed to set decimal string: random000000000000000000",
 		},
 		{
-			"invalid inflation schedule start, end time",
+			"max supply is 0",
 			func(params *types.Params) {
-				params.InflationSchedules = []types.InflationSchedule{
-					{
-						StartTime: utils.ParseTime("2023-01-01T00:00:00Z"),
-						EndTime:   utils.ParseTime("2022-01-01T00:00:00Z"),
-						Amount:    sdk.NewInt(300000000000000),
-					},
-				}
+				params.MaxSupply = 0
 			},
-			"inflation end time 2022-01-01T00:00:00Z must be greater than start time 2023-01-01T00:00:00Z",
+			"max supply must be greater than zero, got 0",
 		},
 		{
-			"negative inflation Amount",
+			"blocks per year are zero",
 			func(params *types.Params) {
-				params.InflationSchedules = []types.InflationSchedule{
-					{
-						StartTime: utils.ParseTime("2022-01-01T00:00:00Z"),
-						EndTime:   utils.ParseTime("2023-01-01T00:00:00Z"),
-						Amount:    sdk.NewInt(-1),
-					},
-				}
+				params.BlocksPerYear = 0
 			},
-			"inflation schedule amount must be positive: -1",
+			"blocks per year must be positive, got 0",
 		},
 		{
-			"too small inflation Amount",
+			"team reward is not a valid number",
 			func(params *types.Params) {
-				params.InflationSchedules = []types.InflationSchedule{
-					{
-						StartTime: utils.ParseTime("2022-01-01T00:00:00Z"),
-						EndTime:   utils.ParseTime("2023-01-01T00:00:00Z"),
-						Amount:    sdk.NewInt(31535999),
-					},
-				}
+				params.TeamReward = "not valid"
 			},
-			"inflation amount too small, it should be over period duration seconds: 31535999",
+			"failed to set decimal string: not valid000000000000000000",
 		},
 		{
-			"overlapped inflation schedules",
+			"team reward is less than 0",
 			func(params *types.Params) {
-				params.InflationSchedules = []types.InflationSchedule{
-					{
-						StartTime: utils.ParseTime("2022-01-01T00:00:00Z"),
-						EndTime:   utils.ParseTime("2023-01-01T00:00:00Z"),
-						Amount:    sdk.NewInt(31536000),
-					},
-					{
-						StartTime: utils.ParseTime("2022-12-01T00:00:00Z"),
-						EndTime:   utils.ParseTime("2024-01-01T00:00:00Z"),
-						Amount:    sdk.NewInt(31536000),
-					},
-				}
+				params.TeamReward = "-1"
 			},
-			"inflation periods cannot be overlapped 2022-01-01T00:00:00Z ~ 2023-01-01T00:00:00Z with 2022-12-01T00:00:00Z ~ 2024-01-01T00:00:00Z",
+			"team reward must be a value between 0 and 1, got: -1",
 		},
 		{
-			"valid inflation schedules",
+			"team reward is greater than 1",
 			func(params *types.Params) {
-				params.InflationSchedules = []types.InflationSchedule{
-					{
-						StartTime: utils.ParseTime("2022-01-01T00:00:00Z"),
-						EndTime:   utils.ParseTime("2023-01-01T00:00:00Z"),
-						Amount:    sdk.NewInt(31536000),
-					},
-					{
-						StartTime: utils.ParseTime("2023-01-01T00:00:01Z"),
-						EndTime:   utils.ParseTime("2024-01-01T00:00:00Z"),
-						Amount:    sdk.NewInt(31536000),
-					},
-				}
+				params.TeamReward = "1.1"
 			},
-			"",
+			"team reward must be a value between 0 and 1, got: 1.1",
 		},
 		{
-			"same start date with end date is allowed on inflation schedules",
+			"team address has non-elesto prefix",
 			func(params *types.Params) {
-				params.InflationSchedules = []types.InflationSchedule{
-					{
-						StartTime: utils.ParseTime("2022-01-01T00:00:00Z"),
-						EndTime:   utils.ParseTime("2023-01-01T00:00:00Z"),
-						Amount:    sdk.NewInt(31536000),
-					},
-					{
-						StartTime: utils.ParseTime("2023-01-01T00:00:00Z"),
-						EndTime:   utils.ParseTime("2024-01-01T00:00:00Z"),
-						Amount:    sdk.NewInt(31536000),
-					},
-				}
+				params.TeamAddress = "nonelesto1ms2wrq8k04cug7ea6ekf60nfke6a8vu82xzwuk"
+			},
+			"invalid Bech32 prefix; expected elesto, got nonelesto",
+		},
+		{
+			"malformed address",
+			func(params *types.Params) {
+				// here, the last six characters are wrong (the checksum, that is)
+				params.TeamAddress = "elesto1ms2wrq8k04cug7ea6ekf60nfke6a8vu82xzwuk"
+			},
+			"decoding bech32 failed: invalid checksum (expected pwm684 got 2xzwuk)",
+		},
+		{
+			"a fine address",
+			func(params *types.Params) {
+				params.TeamAddress = "elesto1ms2wrq8k04cug7ea6ekf60nfke6a8vu8pwm684"
 			},
 			"",
 		},
