@@ -12,12 +12,7 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, ak types.AccountKeeper, 
 	if err := types.ValidateGenesis(*data); err != nil {
 		panic(err)
 	}
-	// init to prevent nil slice, []types.InflationSchedule(nil)
-	// TODO: empty inflation reates should fail the ValidateGenesis
-	// this part should not be necessary
-	if data.Params.InflationRates == nil {
-		data.Params.InflationRates = make([]string, 0)
-	}
+
 	keeper.SetParams(ctx, data.Params)
 	ak.GetModuleAccount(ctx, types.ModuleName)
 }
