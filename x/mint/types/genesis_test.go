@@ -1,12 +1,16 @@
 package types_test
 
 import (
+	"testing"
+
+	"github.com/elesto-dao/elesto/app"
 	"github.com/elesto-dao/elesto/x/mint/types"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
+	app.Setup(false)
+	
 	for _, tc := range []struct {
 		name        string
 		malleate    func(genState *types.GenesisState)
@@ -16,6 +20,13 @@ func TestGenesisState_Validate(t *testing.T) {
 			"default is valid",
 			func(genState *types.GenesisState) {},
 			"",
+		},
+		{
+			"invalid params",
+			func(genState *types.GenesisState) {
+				genState.Params.MintDenom = ""
+			},
+			"mint genesis validation failed, mint denom cannot be blank",
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
