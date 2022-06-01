@@ -61,6 +61,12 @@ func (p Params) Validate() error {
 	if err := validateInflationRates(p.InflationRates); err != nil {
 		return err
 	}
+	if err := validateTeamReward(p.TeamReward); err != nil {
+		return err
+	}
+	if err := validateTeamAddress(p.TeamAddress); err != nil {
+		return err
+	}
 
 	return nil
 
@@ -108,7 +114,7 @@ func validateInflationRates(i interface{}) error {
 			return err
 		}
 		if r.LT(sdk.NewDec(0)) {
-			return fmt.Errorf("inflation must be a value greather than 0, got: %s", v)
+			return fmt.Errorf("inflation must be a value greather than 0, got: %s", r)
 		}
 	}
 
@@ -121,7 +127,7 @@ func validateMaxSupply(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 	if v <= 0 {
-		return fmt.Errorf("max supply must be positive: %d", v)
+		return fmt.Errorf("max supply must be greater than zero, got %d", v)
 	}
 	return nil
 }
@@ -132,7 +138,7 @@ func validateBlocksPerYear(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 	if v <= 0 {
-		return fmt.Errorf("blocks per year must be positive: %d", v)
+		return fmt.Errorf("blocks per year must be positive, got %d", v)
 	}
 	return nil
 }
@@ -159,6 +165,6 @@ func validateTeamAddress(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 	_, err := sdk.AccAddressFromBech32(v)
-	// TODO: shall we check the prefix as well?
+
 	return err
 }
