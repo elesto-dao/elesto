@@ -510,6 +510,7 @@ func New(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		did.ModuleName,
+		credential.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -532,6 +533,7 @@ func New(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		did.ModuleName,
+		credential.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -560,6 +562,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 		did.ModuleName,
+		credential.ModuleName,
 		crisistypes.ModuleName, // this has to be loaded after the staking module
 	)
 
