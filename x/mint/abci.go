@@ -1,7 +1,6 @@
 package mint
 
 import (
-	"fmt"
 	"math"
 	"time"
 
@@ -18,75 +17,42 @@ that has 200_000_000 tokens as strategic reserve
 TODO: testnet upgrade
 */
 
+var (
+	BlockInflationAmount = map[int]int64{
+		1:  31709792,
+		2:  31709792,
+		3:  23782344,
+		4:  14863965,
+		5:  8360980,
+		6:  4441771,
+		7:  2931569,
+		8:  2990200,
+		9:  3050004,
+		10: 2998751,
+	}
+
+	blocksPerYear = int64(6_307_200)
+)
+
 // BeginBlocker mints new tokens for the previous block.
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+	if ctx.BlockHeight() == 0 {
+		return
+	}
+
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
 	params := k.GetParams(ctx)
 
-	if ctx.BlockHeight() == 1 || ctx.BlockHeight()%params.BlocksPerYear == 0 {
-		// we change the inflation every year
-		blocksPerYear := sdk.NewInt(params.BlocksPerYear)
-		// calculate inflation
-		inflationYear := int(math.Floor(float64(ctx.BlockHeight()) / float64(blocksPerYear.Int64())))
-		// the inflation goes to 0 after we get over the last year
-		if inflationYear > len(params.InflationRates) {
-			// reset the mint amount
-			k.SetBlockInflation(ctx, sdk.NewInt(0))
-			return
-		}
-		// get the current year inflation rate
-		inflationRate, err := sdk.NewDecFromStr(params.InflationRates[inflationYear])
-		if err != nil {
-			panic(fmt.Sprintf("begin block error: %v", err))
-		}
-		// get current supply
-		circulatingSupply := k.GetSupply(ctx, params.MintDenom)
-		// calculate total inflation amount per year
-		yearInflationAmount := inflationRate.MulInt(circulatingSupply.Amount)
+	// calculate inflation
+	inflationYear := int(math.Floor(float64(ctx.BlockHeight()) / float64(blocksPerYear)))
 
-		// verify that does not overflow the max supply
-		maxSupply := sdk.NewInt(params.MaxSupply)
-		futureSupply := circulatingSupply.Amount.Add(yearInflationAmount.RoundInt())
-		if futureSupply.GT(maxSupply) {
-			// if it does overflow, adjust the total inflation amount so we converge to max supply
-			yearInflationAmount = maxSupply.Sub(circulatingSupply.Amount).ToDec()
-			// TODO check the following calculation
-			// update the current inflation
-			params.InflationRates[inflationYear] = yearInflationAmount.Quo(circulatingSupply.Amount.ToDec()).String()
-			k.SetParams(ctx, params)
-		}
-
-		// mint team allocation
-		teamAllocation, err := sdk.NewDecFromStr(params.TeamReward)
-		if err != nil {
-			ctx.Logger().Error("cannot retrieve team allocation reward", "error", err)
-			panic(err)
-		}
-		teamAmount := yearInflationAmount.Mul(teamAllocation)
-		// mint teamAmount and send to team address
-		yearInflationAmount = yearInflationAmount.Sub(teamAmount)
-		//
-		mintedCoin := sdk.NewCoin(params.MintDenom, teamAmount.RoundInt())
-		mintedCoins := sdk.NewCoins(mintedCoin)
-		if err := k.MintCoins(ctx, mintedCoins); err != nil {
-			panic(err)
-		}
-		// transfer the tokens to the team account
-		if err := k.CollectAmount(ctx, params.TeamAddress, mintedCoins); err != nil {
-			panic(err)
-		}
-
-		// calculate the amount to mint for each block
-		// note: do not use floor or there is the risk of not reaching the max supply
-		amountToMint := yearInflationAmount.Quo(blocksPerYear.ToDec()).RoundInt()
-		// log the inflation change
-		ctx.Logger().Info("updated inflation rate", "inflation", amountToMint.String())
-		// save the block inflation amount to mint to the state
-		k.SetBlockInflation(ctx, amountToMint)
+	inflationAmount, ok := BlockInflationAmount[inflationYear]
+	if !ok {
+		return
 	}
-	blockInflationAmount := k.GetBlockInflation(ctx)
-	mintedCoin := sdk.NewCoin(params.MintDenom, blockInflationAmount)
+
+	mintedCoin := sdk.NewCoin(params.MintDenom, sdk.NewInt(inflationAmount))
 	mintedCoins := sdk.NewCoins(mintedCoin)
 	if err := k.MintCoins(ctx, mintedCoins); err != nil {
 		panic(err)

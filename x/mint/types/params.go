@@ -29,6 +29,7 @@ func DefaultParams() Params {
 	return Params{
 		MintDenom: sdk.DefaultBondDenom,
 		InflationRates: []string{
+			"0",
 			"1",
 			"0.5",
 			"0.25",

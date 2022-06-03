@@ -1,8 +1,10 @@
 package mint_test
 
 import (
-	"github.com/stretchr/testify/suite"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	chain "github.com/elesto-dao/elesto/app"
@@ -24,7 +26,9 @@ type ModuleTestSuite struct {
 	app    *chain.App
 	ctx    sdk.Context
 	keeper keeper.Keeper
-	addrs  []sdk.AccAddress
+
+	// TODO(gsora): figure out if we need addresses funded in some way.
+	//addrs  []sdk.AccAddress
 }
 
 func TestModuleTestSuite(t *testing.T) {
@@ -32,17 +36,12 @@ func TestModuleTestSuite(t *testing.T) {
 }
 
 func (suite *ModuleTestSuite) SetupTest() {
-	//app := chain.Setup(false)
-	//ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	//
-	//suite.app = app
-	//suite.ctx = ctx
-	//suite.keeper = suite.app.MintKeeper
-	//suite.addrs = chain.AddTestAddrs(suite.app, suite.ctx, 6, sdk.ZeroInt())
-	//for _, addr := range suite.addrs {
-	//	err := chain.FundAccount(suite.app.BankKeeper, suite.ctx, addr, initialBalances)
-	//	suite.Require().NoError(err)
-	//}
+	app := chain.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+
+	suite.app = app
+	suite.ctx = ctx
+	suite.keeper = suite.app.MintKeeper
 }
 
 func (s *ModuleTestSuite) TestInitGenesis() {
@@ -51,46 +50,65 @@ func (s *ModuleTestSuite) TestInitGenesis() {
 	mint.InitGenesis(s.ctx, s.app.MintKeeper, s.app.AccountKeeper, genState)
 	got := mint.ExportGenesis(s.ctx, s.app.MintKeeper)
 	s.Require().Equal(*genState, *got)
-
-	// not nil last block time case
-	//testTime := utils.ParseTime("2023-01-01T00:00:00Z")
-	//genState.LastBlockTime = &testTime
-	//mint.InitGenesis(s.ctx, s.app.MintKeeper, s.app.AccountKeeper, genState)
-	//got = mint.ExportGenesis(s.ctx, s.app.MintKeeper)
-	//s.Require().Equal(*genState, *got)
-	//
-	//// invalid last block time case
-	//testTime2 := time.Unix(-62136697901, 0)
-	//genState.LastBlockTime = &testTime2
-	//s.Require().Panics(func() {
-	//	mint.InitGenesis(s.ctx, s.app.MintKeeper, s.app.AccountKeeper, genState)
-	//})
-	//got = mint.ExportGenesis(s.ctx, s.app.MintKeeper)
-	//s.Require().NotEqual(*genState, *got)
 }
 
 func (s *ModuleTestSuite) TestImportExportGenesis() {
-	//k, ctx := s.keeper, s.ctx
-	//genState := mint.ExportGenesis(ctx, k)
-	//bz := s.app.AppCodec().MustMarshalJSON(genState)
-	//
-	//var genState2, genState5 types.GenesisState
-	//s.app.AppCodec().MustUnmarshalJSON(bz, &genState2)
-	//mint.InitGenesis(ctx, s.app.MintKeeper, s.app.AccountKeeper, &genState2)
-	//
-	//genState3 := mint.ExportGenesis(ctx, k)
-	//s.Require().Equal(*genState, genState2)
-	//s.Require().Equal(genState2, *genState3)
+	k, ctx := s.keeper, s.ctx
+	genState := mint.ExportGenesis(ctx, k)
+	bz := s.app.AppCodec().MustMarshalJSON(genState)
 
-	//ctx = ctx.WithBlockTime(utils.ParseTime("2022-01-01T00:00:00Z"))
-	//mint.BeginBlocker(ctx, k)
-	//genState4 := mint.ExportGenesis(ctx, k)
-	//bz = s.app.AppCodec().MustMarshalJSON(genState4)
-	//s.app.AppCodec().MustUnmarshalJSON(bz, &genState5)
-	//s.Require().Equal(*genState5.LastBlockTime, utils.ParseTime("2022-01-01T00:00:00Z"))
-	//mint.InitGenesis(s.ctx, s.app.MintKeeper, s.app.AccountKeeper, &genState5)
-	//genState6 := mint.ExportGenesis(ctx, k)
-	//s.Require().Equal(*genState4, genState5, genState6)
+	var genState2 types.GenesisState
+	s.app.AppCodec().MustUnmarshalJSON(bz, &genState2)
+	mint.InitGenesis(ctx, s.app.MintKeeper, s.app.AccountKeeper, &genState2)
+
+	genState3 := mint.ExportGenesis(ctx, k)
+	s.Require().Equal(*genState, genState2)
+	s.Require().Equal(genState2, *genState3)
+}
+
+func (s *ModuleTestSuite) TestInflationRate() {
+	// This test simulates data taken from here:
+	// https://docs.google.com/spreadsheets/d/1sXwR-cYHS98in1aMzBabF7FNjqikbA3btnPMlFqgQ50/edit#gid=0
+
+	// Simulation ends at a given estimated amount of blocks, we simulate them + 1 to account for a block that's
+	// happened past the last inflation year.
+
+	blocksPerYear := 6_307_200
+	simulationYears := 10
+	initialSupply := 200_000_000_000_000
+
+	ctx := s.ctx.WithBlockHeight(int64(0))
+
+	// set initial supply to 200_000_000_000_000
+	mint.BeginBlocker(ctx, s.keeper)
+	err := s.keeper.MintCoins(ctx, sdk.NewCoins(sdk.NewInt64Coin("stake", int64(initialSupply))))
+	s.Require().NoError(err)
+	s.Require().EqualValues(s.keeper.GetSupply(
+		s.ctx.WithBlockHeight(1),
+		"stake",
+	).Amount.Int64(), int64(initialSupply))
+
+	s.T().Log("circulating supply at block 0:", s.keeper.GetSupply(ctx, "stake").String())
+
+	for year := 1; year <= simulationYears; year++ {
+		blockHeight := year * blocksPerYear
+
+		s.T().Log("simulating year", year, "block height", blockHeight)
+		ctx := s.ctx.WithBlockHeight(int64(blockHeight))
+
+		mint.BeginBlocker(ctx, s.keeper)
+
+		// we mint the total amount of coins for current year in one go,
+		// because running this simulation for each block is too slow
+		blockInflationAmount := mint.BlockInflationAmount[year]
+		mintAmount := sdk.NewInt(blockInflationAmount).Mul(sdk.NewInt(int64(blocksPerYear-1)))
+		mintedCoin := sdk.NewCoin("stake", mintAmount)
+		mintedCoins := sdk.NewCoins(mintedCoin)
+		s.Require().NoError(s.keeper.MintCoins(ctx, mintedCoins))
+		supply := s.keeper.GetSupply(ctx, "stake")
+		s.T().Log("inflation for year", year, ":", "supply", supply.Amount.Quo(sdk.NewInt(1000000)))
+	}
+
 }
 
 func TestConstantInflation(t *testing.T) {
