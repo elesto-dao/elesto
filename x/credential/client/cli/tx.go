@@ -50,6 +50,7 @@ func NewIssuePublicCredentialCmd() *cobra.Command {
 
 	var (
 		command           = "issue-public-credential"
+		signOnly          bool
 		credentialFileOut string
 	)
 
@@ -89,6 +90,10 @@ func NewIssuePublicCredentialCmd() *cobra.Command {
 					fmt.Printf("error writing the credential to %v: %v", credentialFileOut, err)
 					return err
 				}
+				fmt.Sprintln("credential exported to", credentialFileOut)
+				if signOnly {
+					return nil
+				}
 			}
 			// create the message
 			msg := credential.NewMsgIssuePublicVerifiableCredentialRequest(
@@ -102,6 +107,7 @@ func NewIssuePublicCredentialCmd() *cobra.Command {
 	}
 	// add flags
 	cmd.Flags().StringVar(&credentialFileOut, "export", "", "export the signed credential to a json file")
+	cmd.Flags().BoolVar(&signOnly, "sign-only", false, "only sign the credential, do not broadcast (requires  --export)")
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
