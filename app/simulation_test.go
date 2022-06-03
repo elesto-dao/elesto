@@ -311,7 +311,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	})
 
 	// Run randomized simulations
-	_, simParams, simErr = simulation.SimulateFromSeed(
+	_, _, simErr = simulation.SimulateFromSeed(
 		t,
 		os.Stdout,
 		simApp2.GetBaseApp(),
