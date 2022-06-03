@@ -2,6 +2,8 @@ package cli
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,6 +15,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/noandrea/rl2020"
 	"github.com/spf13/cobra"
 
@@ -122,8 +125,10 @@ func NewMakeCredentialFromSchemaCmd() *cobra.Command {
 			var sbj = make(map[string]interface{})
 			cs := schema.Properties["credentialSubject"].(map[string]interface{})["properties"].(map[string]interface{})
 			for p, s := range cs {
-
-				desc := s.(map[string]interface{})["description"].(string)
+				var desc string
+				if v, ok := s.(map[string]interface{})["description"]; ok {
+					desc = v.(string)
+				}
 
 				v := askString(desc, "enter the value for", p)
 				if v != "" {
@@ -236,4 +241,51 @@ func askPositiveNumber(what string) (v int, err error) {
 	}
 	v = int(v64)
 	return
+}
+
+func NewAddressInfoCmd() *cobra.Command {
+	var credentialFileOut string
+	cmd := &cobra.Command{
+		Use:     "address-info name",
+		Short:   "print info about an address",
+		Example: "elestod query credential address-info validator",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			var (
+				info keyring.Info
+				path string
+			)
+
+			if info, err = clientCtx.Keyring.Key(args[0]); err != nil {
+				return err
+			}
+
+			if hdPath, err := info.GetPath(); err == nil {
+				path = hdPath.String()
+			}
+
+			v := fmt.Sprint(
+				fmt.Sprintf("Name       %v\n", info.GetName()),
+				fmt.Sprintf("Address    %v\n", info.GetAddress().String()),
+				fmt.Sprintf("PubKeyHex  %v\n", hex.EncodeToString(info.GetPubKey().Bytes())),
+				fmt.Sprintf("PubKeyLen  %v\n", len(info.GetPubKey().Bytes())),
+				fmt.Sprintf("PubKeyType %v\n", info.GetPubKey().Type()),
+				fmt.Sprintf("Type       %v\n", info.GetType().String()),
+				fmt.Sprintf("Path       %v\n", path),
+				fmt.Sprintf("PubKeyB64  %v\n", base64.StdEncoding.EncodeToString(info.GetPubKey().Bytes())),
+			)
+
+			return clientCtx.PrintString(v)
+		},
+	}
+
+	cmd.Flags().StringVar(&credentialFileOut, "export", "", "export the unsigned credential to a json file")
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }

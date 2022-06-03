@@ -41,7 +41,7 @@ func (k msgServer) PublishCredentialDefinition(
 
 	// resolve the publisher DID
 	if _, err := k.did.ResolveDid(ctx, did.DID(msg.CredentialDefinition.PublisherId)); err != nil {
-		err := sdkerrors.Wrapf(did.ErrDidDocumentFound, "the credential publisher DID cannot be resolved: %v", msg.CredentialDefinition.PublisherId)
+		err = sdkerrors.Wrapf(did.ErrDidDocumentFound, "the credential publisher DID %v cannot be resolved", msg.CredentialDefinition.PublisherId)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
