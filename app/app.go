@@ -94,6 +94,9 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/elesto-dao/elesto/docs"
+	"github.com/elesto-dao/elesto/x/credential"
+	credentialModuleKeeper "github.com/elesto-dao/elesto/x/credential/keeper"
+	credentialmodule "github.com/elesto-dao/elesto/x/credential/module"
 	"github.com/elesto-dao/elesto/x/did"
 	didmodulekeeper "github.com/elesto-dao/elesto/x/did/keeper"
 	didmodule "github.com/elesto-dao/elesto/x/did/module"
@@ -151,8 +154,9 @@ var (
 		vesting.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 
-		didmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
+		didmodule.AppModuleBasic{},
+		credentialmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -222,7 +226,8 @@ type App struct {
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
-	DidKeeper didmodulekeeper.Keeper
+	DidKeeper         didmodulekeeper.Keeper
+	CredentialsKeeper credentialModuleKeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 	transferModule transfer.AppModule
 
@@ -426,6 +431,15 @@ func New(
 	)
 	didModule := didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper)
 
+	app.CredentialsKeeper = *credentialModuleKeeper.NewKeeper(
+		appCodec,
+		keys[credential.StoreKey],
+		keys[credential.MemStoreKey],
+		app.DidKeeper,
+		app.AccountKeeper,
+	)
+	credentialModule := credentialmodule.NewAppModule(appCodec, app.CredentialsKeeper, app.AccountKeeper, app.BankKeeper, app.DidKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -467,6 +481,7 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		app.transferModule,
 		didModule,
+		credentialModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants), // always be last to make sure that it checks for all invariants and not only part of them
 	)
@@ -757,6 +772,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(did.ModuleName)
+	paramsKeeper.Subspace(credential.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

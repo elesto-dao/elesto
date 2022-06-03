@@ -1,0 +1,57 @@
+@startuml
+
+actor Consumer #white
+participant LightClientResolver #white
+database FullNode
+
+note over Consumer
+  Consumer of did document
+  e.g SSI agent
+end note
+
+note over LightClientResolver
+  Rpc client to query node
+  Light client to verify block headers
+end note
+
+note over FullNode
+  Elestod full node
+end note
+
+group Resolve DID Document
+
+Consumer -> LightClientResolver: DID Docment Resolve Request `/1.0/identifier/:did`
+
+activate LightClientResolver
+
+  LightClientResolver -> FullNode: GRPC request `QueryDidDocumentRequest{:did: did}`
+
+  activate LightClientResolver #Black
+    note right
+    Get DID document from node database
+    end note
+    activate FullNode
+      FullNode -> LightClientResolver: GRPC response `QueryDidDocumentResponse`
+    deactivate FullNode
+  deactivate LightClientResolver
+
+  LightClientResolver -> FullNode: ABCI query `ABCIQueryRequest`
+  activate LightClientResolver #Black
+    activate FullNode
+      note right
+      Get proofs from the tendermint database
+      end note
+      FullNode -> LightClientResolver: ABCI response `ABCIQueryResponse`
+    deactivate FullNode
+  deactivate LightClientResolver
+
+  LightClientResolver -> LightClientResolver: Verify proof
+  note left
+  Verify the proof in the ABCI query using light client protocol
+  end note
+  Consumer <- LightClientResolver: Validated JSON Formatted DID Document
+deactivate LightClientResolver
+
+end
+
+@enduml

@@ -36,7 +36,7 @@ func (k Keeper) UnmarshalDidDocument(value []byte) (interface{}, bool) {
 	return data, did.IsValidDIDDocument(&data)
 }
 
-// ResolveDid returns the did document if its a did;key or did;cosmos
+// ResolveDid returns the did document if its a did:key or did:cosmos
 // this function is used to resolve ephemeral dids
 func (k Keeper) ResolveDid(
 	ctx sdk.Context,
