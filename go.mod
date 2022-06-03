@@ -3,8 +3,8 @@ module github.com/elesto-dao/elesto
 go 1.17
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.4
 	github.com/AlecAivazis/survey/v2 v2.3.4
+	github.com/cosmos/cosmos-sdk v0.45.4
 	github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
@@ -19,6 +19,7 @@ require (
 	github.com/tendermint/starport v0.19.5
 	github.com/tendermint/tendermint v0.34.19
 	github.com/tendermint/tm-db v0.6.6
+	github.com/xeipuuv/gojsonschema v0.0.0-20180618132009-1d523034197f
 	google.golang.org/genproto v0.0.0-20220314164441-57ef72a4c106
 	google.golang.org/grpc v1.45.0
 	google.golang.org/protobuf v1.27.1
