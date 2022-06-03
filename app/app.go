@@ -428,6 +428,8 @@ func New(
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
 		stakingtypes.ModuleName,
+
+		// modules with empty beginblockers logic
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		govtypes.ModuleName,
