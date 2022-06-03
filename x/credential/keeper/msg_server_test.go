@@ -3,6 +3,7 @@ package keeper
 import (
 	_ "embed"
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/elesto-dao/elesto/x/credential"
 	"github.com/elesto-dao/elesto/x/did"
