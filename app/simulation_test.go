@@ -236,7 +236,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		true,
 		map[int64]bool{},
 		app.DefaultNodeHome,
-		0,
+		simapp.FlagPeriodValue,
 		encoding,
 		simapp.EmptyAppOptions{},
 		fauxMerkleModeOpt,
@@ -245,7 +245,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	require.True(t, ok, "can't use simapp")
 
 	// Run randomized simulations
-	_, simParams, simErr := simulation.SimulateFromSeed(
+	stopEarly, simParams, simErr := simulation.SimulateFromSeed(
 		t,
 		os.Stdout,
 		simApp1.GetBaseApp(),
@@ -266,9 +266,14 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		simapp.PrintStats(db)
 	}
 
+	if stopEarly {
+		fmt.Println("can't export or import a zero-validator genesis, exiting test...")
+		return
+	}
+
 	fmt.Printf("exporting genesis...\n")
 
-	exported, err := app1.ExportAppStateAndValidators(false, []string{})
+	exported, err := app1.ExportAppStateAndValidators(true, []string{})
 	require.NoError(t, err)
 
 	fmt.Printf("importing genesis...\n")
@@ -288,7 +293,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		true,
 		map[int64]bool{},
 		app.DefaultNodeHome,
-		1,
+		simapp.FlagPeriodValue,
 		encoding,
 		simapp.EmptyAppOptions{},
 		fauxMerkleModeOpt,
@@ -306,7 +311,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	})
 
 	// Run randomized simulations
-	_, simParams, simErr = simulation.SimulateFromSeed(
+	_, _, simErr = simulation.SimulateFromSeed(
 		t,
 		os.Stdout,
 		simApp2.GetBaseApp(),

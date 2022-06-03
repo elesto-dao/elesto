@@ -2,11 +2,12 @@ package cli_test
 
 import (
 	"fmt"
+	"runtime"
+	"testing"
+
 	"github.com/elesto-dao/elesto/x/credential"
 	"github.com/elesto-dao/elesto/x/credential/client/cli"
 	"github.com/elesto-dao/elesto/x/did"
-	"runtime"
-	"testing"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
