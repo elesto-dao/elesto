@@ -174,7 +174,7 @@ test-sim-after-import: runsim
 	# panic: calculated final stake for delegator elesto1qztthlfkwyaun8wq69kwqydwcgq5flzct6dla5 greater than current stake
 	# final stake:	1383041438.000000000000000000
 	# current stake:	1097257655.000000000000000000 [recovered]
-	$(BINDIR)/runsim -Jobs=1 -SimAppPkg=$(SIMAPP) -ExitOnFail 5 5 TestAppSimulationAfterImport
+	$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 5 TestAppSimulationAfterImport
 
 test-sim-multi-seed-long: runsim
 	@echo "Running long multi-seed application simulation. This may take awhile!"
