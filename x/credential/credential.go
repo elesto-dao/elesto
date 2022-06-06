@@ -150,7 +150,7 @@ func (wc *WrappedCredential) GetSubjectID() (s string, isDID bool) {
 	if !hasSubject {
 		return
 	}
-	return id, IsEmpty(id)
+	return id, did.IsValidDID(id)
 }
 
 // GetIssuerDID returns the DID of the issuer

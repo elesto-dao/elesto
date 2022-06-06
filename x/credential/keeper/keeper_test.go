@@ -40,7 +40,7 @@ type KeeperTestSuite struct {
 func (suite *KeeperTestSuite) SetupTest() {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount("elesto", "elestopub")
-	config.Seal()
+	//config.Seal()
 
 	keyCreden := sdk.NewKVStoreKey(credential.StoreKey)
 	memKeyCreden := sdk.NewKVStoreKey(credential.MemStoreKey)
@@ -107,16 +107,24 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 	// create the account for testing the credential signatures
 	suite.keyring = keyring.NewInMemory()
-	// this is the test account, see "testdata/README.md" for more info
-	m := "coil animal waste sound canvas weekend struggle skirt donor boil around bounce grant right silent year subway boost banana unlock powder riot spawn nerve"
-	// register the test account
-	i, err := suite.keyring.NewAccount("test", m, keyring.DefaultBIP39Passphrase, sdk.FullFundraiserPath, hd.Secp256k1)
-	if err != nil {
-		suite.Require().FailNow("cannot register test account")
+
+	rc := func(index int, mnemonic string) {
+		// register the test account
+		i, err := suite.keyring.NewAccount(
+			fmt.Sprint("test", index),
+			mnemonic,
+			keyring.DefaultBIP39Passphrase, sdk.FullFundraiserPath, hd.Secp256k1,
+		)
+		if err != nil {
+			suite.Require().FailNow("cannot register test account")
+		}
+		a := accountKeeper.NewAccountWithAddress(ctx, i.GetAddress())
+		a.SetPubKey(i.GetPubKey())
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccount(ctx, a))
 	}
-	a := accountKeeper.NewAccountWithAddress(ctx, i.GetAddress())
-	a.SetPubKey(i.GetPubKey())
-	accountKeeper.SetAccount(ctx, accountKeeper.NewAccount(ctx, a))
+	// register test accounts
+	rc(0, "coil animal waste sound canvas weekend struggle skirt donor boil around bounce grant right silent year subway boost banana unlock powder riot spawn nerve")
+	rc(1, "regret virtual damp hybrid armed powder motor open slim fall defy river goddess perfect invite orange assault reject involve quit salmon sunny abuse team")
 
 	suite.ctx, suite.keeper, suite.queryClient = ctx, *credentialKeeper, queryClient
 }
@@ -130,7 +138,11 @@ func (suite KeeperTestSuite) GetKeyAddress(uid string) sdk.Address {
 }
 
 func (suite KeeperTestSuite) GetTestAccount() sdk.Address {
-	return suite.GetKeyAddress("test")
+	return suite.GetTestAccountByIndex(0)
+}
+
+func (suite KeeperTestSuite) GetTestAccountByIndex(index int) sdk.Address {
+	return suite.GetKeyAddress(fmt.Sprint("test", index))
 }
 
 func (suite KeeperTestSuite) GetRandomAccount() sdk.Address {

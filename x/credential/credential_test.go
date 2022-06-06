@@ -152,3 +152,43 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 		})
 	}
 }
+
+func TestNewPublicVerifiableCredential(t *testing.T) {
+	type args struct {
+		id   string
+		opts []PublicVerifiableCredentialOption
+	}
+	tests := []struct {
+		name string
+		args args
+		want *PublicVerifiableCredential
+	}{
+		{
+			"PASS: base credential",
+			args{
+				id:   "did:example:1",
+				opts: []PublicVerifiableCredentialOption{},
+			},
+			&PublicVerifiableCredential{
+				Context: []string{
+					"https://www.w3.org/2018/credentials/v1",
+				},
+				Id: "did:example:1",
+				Type: []string{
+					"VerifiableCredential",
+				},
+				Issuer:            "",
+				IssuanceDate:      nil,
+				ExpirationDate:    nil,
+				CredentialStatus:  nil,
+				CredentialSubject: nil,
+				Proof:             nil,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, NewPublicVerifiableCredential(tt.args.id, tt.args.opts...), "NewPublicVerifiableCredential(%v, %v)", tt.args.id, tt.args.opts)
+		})
+	}
+}
