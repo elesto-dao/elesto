@@ -169,7 +169,7 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 			nil,
 		},
 		{
-			"FAIL: invalid signature",
+			"PASS: tx signer != credential issuer",
 			func() credential.MsgIssuePublicVerifiableCredentialRequest {
 
 				var (
@@ -209,7 +209,200 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 					Signer:                  suite.GetRandomAccount().String(),
 				}
 			},
-			fmt.Errorf("should fail for wrong signature"),
+			nil,
+		},
+		{
+			"FAIL: credential definition not found",
+			func() credential.MsgIssuePublicVerifiableCredentialRequest {
+
+				var (
+					wc  *credential.WrappedCredential
+					err error
+				)
+				// load the signed credential
+				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json"); err != nil {
+					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
+				}
+				// return the message
+				return credential.MsgIssuePublicVerifiableCredentialRequest{
+					CredentialDefinitionDid: "did:cosmos:elesto:cd-non-existing",
+					Credential:              wc.PublicVerifiableCredential,
+					Signer:                  suite.GetRandomAccount().String(),
+				}
+			},
+			fmt.Errorf("credential definition did:cosmos:elesto:cd-non-existing not found: credential definition not found"),
+		},
+		{
+			"FAIL: credential definition is not public",
+			func() credential.MsgIssuePublicVerifiableCredentialRequest {
+
+				var (
+					wc  *credential.WrappedCredential
+					err error
+				)
+				//
+
+				// publish the definition
+				pcdr := credential.MsgPublishCredentialDefinitionRequest{
+					CredentialDefinition: &credential.CredentialDefinition{
+						Id:           "did:cosmos:elesto:cd-12",
+						PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
+						Schema:       []byte(dummySchemaOk),
+						Vocab:        []byte(dummyVocabOk),
+						Name:         "CredentialDef12",
+						Description:  "",
+						IsPublic:     false,
+						SupersededBy: "",
+						IsActive:     true,
+					},
+					Signer: suite.GetTestAccount().String(),
+				}
+				//create the credential definition
+				if _, err := server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr); err != nil {
+					suite.Require().FailNowf("expected definition to be created, got:", "%v", err)
+				}
+
+				// load the signed credential
+				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json"); err != nil {
+					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
+				}
+				// return the message
+				return credential.MsgIssuePublicVerifiableCredentialRequest{
+					CredentialDefinitionDid: "did:cosmos:elesto:cd-12",
+					Credential:              wc.PublicVerifiableCredential,
+					Signer:                  suite.GetTestAccount().String(),
+				}
+			},
+			fmt.Errorf("the credential definition did:cosmos:elesto:cd-12 is defined as non-public: credential cannot be issued on-chain"),
+		},
+		{
+			"FAIL: credential definition is not active",
+			func() credential.MsgIssuePublicVerifiableCredentialRequest {
+
+				var (
+					wc  *credential.WrappedCredential
+					err error
+				)
+				//
+
+				// publish the definition
+				pcdr := credential.MsgPublishCredentialDefinitionRequest{
+					CredentialDefinition: &credential.CredentialDefinition{
+						Id:           "did:cosmos:elesto:cd-13",
+						PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
+						Schema:       []byte(dummySchemaOk),
+						Vocab:        []byte(dummyVocabOk),
+						Name:         "CredentialDef13",
+						Description:  "",
+						IsPublic:     true,
+						SupersededBy: "",
+						IsActive:     false,
+					},
+					Signer: suite.GetTestAccount().String(),
+				}
+				//create the credential definition
+				if _, err := server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr); err != nil {
+					suite.Require().FailNowf("expected definition to be created, got:", "%v", err)
+				}
+
+				// load the signed credential
+				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json"); err != nil {
+					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
+				}
+				// return the message
+				return credential.MsgIssuePublicVerifiableCredentialRequest{
+					CredentialDefinitionDid: "did:cosmos:elesto:cd-13",
+					Credential:              wc.PublicVerifiableCredential,
+					Signer:                  suite.GetTestAccount().String(),
+				}
+			},
+			fmt.Errorf("the credential definition did:cosmos:elesto:cd-13 issuance is suspended: credential cannot be issued on-chain"),
+		},
+		{
+			"FAIL: credential signature invalid",
+			func() credential.MsgIssuePublicVerifiableCredentialRequest {
+
+				var (
+					wc  *credential.WrappedCredential
+					err error
+				)
+				//
+
+				// publish the definition
+				pcdr := credential.MsgPublishCredentialDefinitionRequest{
+					CredentialDefinition: &credential.CredentialDefinition{
+						Id:           "did:cosmos:elesto:cd-14",
+						PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
+						Schema:       []byte(dummySchemaOk),
+						Vocab:        []byte(dummyVocabOk),
+						Name:         "CredentialDef14",
+						Description:  "",
+						IsPublic:     true,
+						SupersededBy: "",
+						IsActive:     true,
+					},
+					Signer: suite.GetTestAccount().String(),
+				}
+				//create the credential definition
+				if _, err := server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr); err != nil {
+					suite.Require().FailNowf("expected definition to be created, got:", "%v", err)
+				}
+
+				// load the signed credential
+				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.wrong.json"); err != nil {
+					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
+				}
+				// return the message
+				return credential.MsgIssuePublicVerifiableCredentialRequest{
+					CredentialDefinitionDid: "did:cosmos:elesto:cd-14",
+					Credential:              wc.PublicVerifiableCredential,
+					Signer:                  suite.GetTestAccount().String(),
+				}
+			},
+			fmt.Errorf("signature cannot be verified: credential proof validation error"),
+		},
+		{
+			"FAIL: credential proof missing",
+			func() credential.MsgIssuePublicVerifiableCredentialRequest {
+
+				var (
+					wc  *credential.WrappedCredential
+					err error
+				)
+				//
+
+				// publish the definition
+				pcdr := credential.MsgPublishCredentialDefinitionRequest{
+					CredentialDefinition: &credential.CredentialDefinition{
+						Id:           "did:cosmos:elesto:cd-15",
+						PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
+						Schema:       []byte(dummySchemaOk),
+						Vocab:        []byte(dummyVocabOk),
+						Name:         "CredentialDef15",
+						Description:  "",
+						IsPublic:     true,
+						SupersededBy: "",
+						IsActive:     true,
+					},
+					Signer: suite.GetTestAccount().String(),
+				}
+				//create the credential definition
+				if _, err := server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr); err != nil {
+					suite.Require().FailNowf("expected definition to be created, got:", "%v", err)
+				}
+
+				// load the signed credential
+				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.json"); err != nil {
+					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
+				}
+				// return the message
+				return credential.MsgIssuePublicVerifiableCredentialRequest{
+					CredentialDefinitionDid: "did:cosmos:elesto:cd-15",
+					Credential:              wc.PublicVerifiableCredential,
+					Signer:                  suite.GetTestAccount().String(),
+				}
+			},
+			fmt.Errorf("missing credential proof: credential proof validation error"),
 		},
 	}
 	for _, tc := range testCases {
