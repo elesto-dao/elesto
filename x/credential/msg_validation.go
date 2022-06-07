@@ -1,39 +1,52 @@
 package credential
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/elesto-dao/elesto/x/did"
 )
 
-func (msg MsgPublishCredentialDefinitionRequest) ValidateBasic() error {
-	if msg.CredentialDefinition == nil {
-		return fmt.Errorf("credential definition must be set")
+func (m MsgPublishCredentialDefinitionRequest) ValidateBasic() error {
+
+	if m.CredentialDefinition == nil {
+		return errors.New("credential definition must be set")
 	}
 
-	if !did.IsValidDID(msg.CredentialDefinition.Id) {
-		return fmt.Errorf("credential definition id must be a valid DID")
+	if !did.IsValidDID(m.CredentialDefinition.Id) {
+		return errors.New("credential definition id must be a valid DID")
 	}
 
-	if IsEmpty(msg.CredentialDefinition.Name) {
-		return fmt.Errorf("credential definition name must not be empty")
+	if IsEmpty(m.CredentialDefinition.Name) {
+		return errors.New("credential definition name must not be empty")
 	}
 
-	if !did.IsValidDID(msg.CredentialDefinition.PublisherId) {
-		return fmt.Errorf("publisher id must be a valid DID")
+	if !did.IsValidDID(m.CredentialDefinition.PublisherId) {
+		return errors.New("publisher id must be a valid DID")
 	}
 
-	if len(msg.CredentialDefinition.Schema) == 0 {
-		return fmt.Errorf("schema cannot be empty")
+	if len(m.CredentialDefinition.Schema) == 0 {
+		return errors.New("schema cannot be empty")
 	}
 
 	return nil
 }
 
-func (msg MsgUpdateCredentialDefinitionRequest) ValidateBasic() error {
+func (m MsgUpdateCredentialDefinitionRequest) ValidateBasic() error {
+	if !IsEmpty(m.SupersededBy) && !did.IsValidDID(m.SupersededBy) {
+		return errors.New("SupersededBy must be a valid DID")
+	}
 	return nil
 }
 
-func (MsgIssuePublicVerifiableCredentialRequest) ValidateBasic() error {
+func (m MsgIssuePublicVerifiableCredentialRequest) ValidateBasic() error {
+	if m.Credential == nil {
+		return errors.New("credential must be set")
+	}
+	if IsEmpty(m.CredentialDefinitionDid) {
+		return errors.New("credential definition DID must be set")
+	}
+	if !did.IsValidDID(m.CredentialDefinitionDid) {
+		return errors.New("credential definition id must be a valid DID")
+	}
 	return nil
 }
