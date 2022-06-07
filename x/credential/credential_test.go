@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	"time"
 )
 
 var (
@@ -185,10 +186,95 @@ func TestNewPublicVerifiableCredential(t *testing.T) {
 				Proof:             nil,
 			},
 		},
+		{
+			"PASS: base credential",
+			args{
+				id: "did:example:1",
+				opts: []PublicVerifiableCredentialOption{
+					WithType("AnotherTypeCredential"),
+					WithIssuerDID("did:example:issuer"),
+					WithIssuanceDate(time.Date(2022, 2, 24, 4, 10, 41, 0, time.UTC)),
+					WithExpirationDate(time.Date(2022, 12, 24, 4, 10, 41, 0, time.UTC)),
+					WithContext("https://another.context/1234"),
+				},
+			},
+			&PublicVerifiableCredential{
+				Context: []string{
+					"https://www.w3.org/2018/credentials/v1",
+					"https://another.context/1234",
+				},
+				Id: "did:example:1",
+				Type: []string{
+					"VerifiableCredential",
+					"AnotherTypeCredential",
+				},
+				Issuer:            "did:example:issuer",
+				IssuanceDate:      func() *time.Time { v := time.Date(2022, 2, 24, 4, 10, 0, 0, time.UTC); return &v }(),
+				ExpirationDate:    func() *time.Time { v := time.Date(2022, 12, 24, 4, 10, 0, 0, time.UTC); return &v }(),
+				CredentialStatus:  nil,
+				CredentialSubject: nil,
+				Proof:             nil,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equalf(t, tt.want, NewPublicVerifiableCredential(tt.args.id, tt.args.opts...), "NewPublicVerifiableCredential(%v, %v)", tt.args.id, tt.args.opts)
+		})
+	}
+}
+
+func TestNewWrappedPublicCredentialFromFile(t *testing.T) {
+	tests := []struct {
+		name           string
+		credentialFile string
+		wantWc         *WrappedCredential
+		wantErr        error
+	}{
+		{
+			"PASS: credential file is correct",
+			"keeper/testdata/dummy.credential.json",
+			&WrappedCredential{
+				PublicVerifiableCredential: &PublicVerifiableCredential{
+					Id: "https://test.xyz/credential/1",
+					Context: []string{
+						"https://www.w3.org/2018/credentials/v1",
+						"https://resolver.cc/context/did:cosmos:elesto:dummy",
+					},
+					Type: []string{
+						"VerifiableCredential",
+						"DummyCredential",
+					},
+					Issuer:            "did:cosmos:key:elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr",
+					IssuanceDate:      func() *time.Time { v := time.Date(2022, 6, 2, 14, 13, 0, 0, time.UTC); return &v }(),
+					CredentialSubject: []byte{123, 34, 97, 103, 101, 34, 58, 34, 52, 50, 34, 44, 34, 105, 100, 34, 58, 34, 100, 105, 100, 58, 99, 111, 115, 109, 111, 115, 58, 107, 101, 121, 58, 101, 108, 101, 115, 116, 111, 49, 55, 116, 56, 116, 51, 116, 54, 97, 54, 118, 112, 103, 107, 54, 57, 112, 101, 114, 102, 121, 113, 57, 51, 48, 53, 57, 51, 115, 97, 56, 100, 110, 102, 108, 57, 56, 109, 114, 34, 44, 34, 110, 97, 109, 101, 34, 58, 34, 65, 114, 116, 104, 117, 114, 32, 68, 101, 110, 116, 34, 125},
+				},
+				CredentialSubject: map[string]interface{}{
+					"age":  "42",
+					"id":   "did:cosmos:key:elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr",
+					"name": "Arthur Dent",
+				},
+			},
+			nil,
+		},
+		{
+			"FAIL: file not found",
+			"keeper/testdata/non-existing-file.json",
+			nil,
+			fmt.Errorf("open keeper/testdata/non-existing-file.json: no such file or directory"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotWc, err := NewWrappedPublicCredentialFromFile(tt.credentialFile)
+
+			if tt.wantErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.wantWc, gotWc)
+			} else {
+				assert.Error(t, err)
+				assert.Equal(t, tt.wantErr.Error(), err.Error())
+			}
 		})
 	}
 }
