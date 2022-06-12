@@ -49,9 +49,13 @@ func (k msgServer) PublishCredentialDefinition(
 	// persist the credential definition
 	k.SetCredentialDefinition(ctx, msg.CredentialDefinition)
 
-	k.Logger(ctx).Info("created CredentialDefinition", "definitionId", msg.CredentialDefinition.Id, "publisher", msg.CredentialDefinition.PublisherId)
+	// log the creation
+	k.Logger(ctx).Info("created CredentialDefinition", "definitionID", msg.CredentialDefinition.Id, "publisher", msg.CredentialDefinition.PublisherId, "signer", msg.Signer)
 
-	// TODO: events
+	// emit the event
+	if err := ctx.EventManager().EmitTypedEvents(credential.NewCredentialDefinitionPublishedEvent(msg.CredentialDefinition.Id, msg.CredentialDefinition.PublisherId)); err != nil {
+		k.Logger(ctx).Error("failed to emit CredentialDefinitionPublishedEvent", "definitionID", msg.CredentialDefinition.Id, "signer", msg.Signer, "err", err)
+	}
 
 	return &credential.MsgPublishCredentialDefinitionResponse{}, nil
 }
@@ -60,7 +64,32 @@ func (k msgServer) UpdateCredentialDefinition(
 	goCtx context.Context,
 	msg *credential.MsgUpdateCredentialDefinitionRequest,
 ) (*credential.MsgUpdateCredentialDefinitionResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	k.Logger(ctx).Info("request to update a CredentialDefinition", "credential Definition ID", msg.CredentialDefinitionID)
 
+	var (
+		cd    credential.CredentialDefinition
+		found bool
+	)
+
+	// check if the credential definition exists
+	if cd, found = k.GetCredentialDefinition(ctx, msg.CredentialDefinitionID); !found {
+		err := sdkerrors.Wrapf(credential.ErrCredentialDefinitionNotFound, "credential definition %v does not exists", msg.CredentialDefinitionID)
+		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+	// update the activation
+	cd.IsActive = msg.Active
+	// update the SupersededBy field
+	cd.SupersededBy = msg.SupersededBy
+
+	// update he data
+	k.SetCredentialDefinition(ctx, &cd)
+
+	// emit the event
+	if err := ctx.EventManager().EmitTypedEvents(credential.NewCredentialDefinitionUpdatedEvent(msg.CredentialDefinitionID)); err != nil {
+		k.Logger(ctx).Error("failed to emit CredentialDefinitionPublishedEvent", "definitionID", msg.CredentialDefinitionID, "signer", msg.Signer, "err", err)
+	}
 	return nil, fmt.Errorf("not implemented")
 }
 
@@ -79,20 +108,20 @@ func (k msgServer) IssuePublicVerifiableCredential(
 
 	// fetch the credential definition
 	var found bool
-	if cd, found = k.GetCredentialDefinition(ctx, msg.CredentialDefinitionDid); !found {
-		err = sdkerrors.Wrapf(credential.ErrCredentialDefinitionNotFound, "credential definition %s not found", msg.CredentialDefinitionDid)
+	if cd, found = k.GetCredentialDefinition(ctx, msg.CredentialDefinitionID); !found {
+		err = sdkerrors.Wrapf(credential.ErrCredentialDefinitionNotFound, "credential definition %s not found", msg.CredentialDefinitionID)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 	// verify that can be published
 	if !cd.IsPublic {
-		err = sdkerrors.Wrapf(credential.ErrCredentialNotIssuable, "the credential definition %s is defined as non-public", msg.CredentialDefinitionDid)
+		err = sdkerrors.Wrapf(credential.ErrCredentialNotIssuable, "the credential definition %s is defined as non-public", msg.CredentialDefinitionID)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 	// verify that is not suspended
 	if !cd.IsActive {
-		err = sdkerrors.Wrapf(credential.ErrCredentialNotIssuable, "the credential definition %s issuance is suspended", msg.CredentialDefinitionDid)
+		err = sdkerrors.Wrapf(credential.ErrCredentialNotIssuable, "the credential definition %s issuance is suspended", msg.CredentialDefinitionID)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
@@ -105,20 +134,20 @@ func (k msgServer) IssuePublicVerifiableCredential(
 	// verify the credential against the schema
 	schema, err := gojsonschema.NewSchema(gojsonschema.NewBytesLoader(cd.Schema))
 	if err != nil {
-		err = sdkerrors.Wrapf(credential.ErrCredentialDefinitionCorrupted, "the credential definition %s is corrupted: %v", msg.CredentialDefinitionDid, cd)
+		err = sdkerrors.Wrapf(credential.ErrCredentialDefinitionCorrupted, "the credential definition %s is corrupted: %v", msg.CredentialDefinitionID, cd)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 	crL := gojsonschema.NewBytesLoader(wc.GetBytes())
 	dataValidator, err := schema.Validate(crL)
 	if err != nil {
-		err = sdkerrors.Wrapf(credential.ErrInvalidCredential, "the credential doesn't match the schema: %v", msg.CredentialDefinitionDid)
+		err = sdkerrors.Wrapf(credential.ErrInvalidCredential, "the credential doesn't match the schema: %v", msg.CredentialDefinitionID)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 
 	if !dataValidator.Valid() {
-		err = sdkerrors.Wrapf(credential.ErrCredentialSchema, "schema: %s, errors: %v", msg.CredentialDefinitionDid, dataValidator.Errors())
+		err = sdkerrors.Wrapf(credential.ErrCredentialSchema, "schema: %s, errors: %v", msg.CredentialDefinitionID, dataValidator.Errors())
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
@@ -131,7 +160,11 @@ func (k msgServer) IssuePublicVerifiableCredential(
 	}
 	k.SetPublicCredential(ctx, msg.Credential)
 
-	// TODO fire events
+	// emit the event
+	if evtErr := ctx.EventManager().EmitTypedEvents(credential.NewPublicCredentialIssuedEvent(msg.CredentialDefinitionID, msg.Credential.Id, msg.Credential.Issuer)); evtErr != nil {
+		k.Logger(ctx).Error("failed to emit PublicCredentialIssuedEvent", "definitionID", msg.CredentialDefinitionID, "signer", msg.Signer, "credentialID", msg.Credential.Id, "err", err)
+	}
+
 	return &credential.MsgIssuePublicVerifiableCredentialResponse{}, err
 }
 
