@@ -42,10 +42,10 @@ func (m MsgIssuePublicVerifiableCredentialRequest) ValidateBasic() error {
 	if m.Credential == nil {
 		return errors.New("credential must be set")
 	}
-	if IsEmpty(m.CredentialDefinitionDid) {
+	if IsEmpty(m.CredentialDefinitionID) {
 		return errors.New("credential definition DID must be set")
 	}
-	if !did.IsValidDID(m.CredentialDefinitionDid) {
+	if !did.IsValidDID(m.CredentialDefinitionID) {
 		return errors.New("credential definition id must be a valid DID")
 	}
 	return nil

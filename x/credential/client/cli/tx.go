@@ -243,7 +243,7 @@ func NewUpdateRevocationListCmd() *cobra.Command {
 				return err
 			}
 			// check the credential type, it must be a revocation list
-			if !pwc.HasType(rl2020.TypeRevocationList2020) {
+			if !pwc.HasType(rl2020.TypeRevocationList2020Credential) {
 				err = fmt.Errorf("expecting credential type %v, found: %v", rl2020.TypeRevocationList2020, pwc.Type)
 				return err
 			}

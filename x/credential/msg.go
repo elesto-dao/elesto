@@ -96,9 +96,9 @@ func NewMsgIssuePublicVerifiableCredentialRequest(
 	signerAccount sdk.AccAddress,
 ) *MsgIssuePublicVerifiableCredentialRequest {
 	return &MsgIssuePublicVerifiableCredentialRequest{
-		Credential:              credential,
-		CredentialDefinitionDid: definitionDID.String(),
-		Signer:                  signerAccount.String(),
+		Credential:             credential,
+		CredentialDefinitionID: definitionDID.String(),
+		Signer:                 signerAccount.String(),
 	}
 }
 

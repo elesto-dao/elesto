@@ -161,9 +161,9 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 				}
 				// return the message
 				return credential.MsgIssuePublicVerifiableCredentialRequest{
-					CredentialDefinitionDid: "did:cosmos:elesto:cd-10",
-					Credential:              wc.PublicVerifiableCredential,
-					Signer:                  suite.GetTestAccount().String(),
+					CredentialDefinitionID: "did:cosmos:elesto:cd-10",
+					Credential:             wc.PublicVerifiableCredential,
+					Signer:                 suite.GetTestAccount().String(),
 				}
 			},
 			nil,
@@ -204,9 +204,9 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 				}
 				// return the message
 				return credential.MsgIssuePublicVerifiableCredentialRequest{
-					CredentialDefinitionDid: "did:cosmos:elesto:cd-11",
-					Credential:              wc.PublicVerifiableCredential,
-					Signer:                  suite.GetRandomAccount().String(),
+					CredentialDefinitionID: "did:cosmos:elesto:cd-11",
+					Credential:             wc.PublicVerifiableCredential,
+					Signer:                 suite.GetRandomAccount().String(),
 				}
 			},
 			nil,
@@ -225,9 +225,9 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 				}
 				// return the message
 				return credential.MsgIssuePublicVerifiableCredentialRequest{
-					CredentialDefinitionDid: "did:cosmos:elesto:cd-non-existing",
-					Credential:              wc.PublicVerifiableCredential,
-					Signer:                  suite.GetRandomAccount().String(),
+					CredentialDefinitionID: "did:cosmos:elesto:cd-non-existing",
+					Credential:             wc.PublicVerifiableCredential,
+					Signer:                 suite.GetRandomAccount().String(),
 				}
 			},
 			fmt.Errorf("credential definition did:cosmos:elesto:cd-non-existing not found: credential definition not found"),
@@ -268,9 +268,9 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 				}
 				// return the message
 				return credential.MsgIssuePublicVerifiableCredentialRequest{
-					CredentialDefinitionDid: "did:cosmos:elesto:cd-12",
-					Credential:              wc.PublicVerifiableCredential,
-					Signer:                  suite.GetTestAccount().String(),
+					CredentialDefinitionID: "did:cosmos:elesto:cd-12",
+					Credential:             wc.PublicVerifiableCredential,
+					Signer:                 suite.GetTestAccount().String(),
 				}
 			},
 			fmt.Errorf("the credential definition did:cosmos:elesto:cd-12 is defined as non-public: credential cannot be issued on-chain"),
@@ -311,9 +311,9 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 				}
 				// return the message
 				return credential.MsgIssuePublicVerifiableCredentialRequest{
-					CredentialDefinitionDid: "did:cosmos:elesto:cd-13",
-					Credential:              wc.PublicVerifiableCredential,
-					Signer:                  suite.GetTestAccount().String(),
+					CredentialDefinitionID: "did:cosmos:elesto:cd-13",
+					Credential:             wc.PublicVerifiableCredential,
+					Signer:                 suite.GetTestAccount().String(),
 				}
 			},
 			fmt.Errorf("the credential definition did:cosmos:elesto:cd-13 issuance is suspended: credential cannot be issued on-chain"),
@@ -354,9 +354,9 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 				}
 				// return the message
 				return credential.MsgIssuePublicVerifiableCredentialRequest{
-					CredentialDefinitionDid: "did:cosmos:elesto:cd-14",
-					Credential:              wc.PublicVerifiableCredential,
-					Signer:                  suite.GetTestAccount().String(),
+					CredentialDefinitionID: "did:cosmos:elesto:cd-14",
+					Credential:             wc.PublicVerifiableCredential,
+					Signer:                 suite.GetTestAccount().String(),
 				}
 			},
 			fmt.Errorf("signature cannot be verified: credential proof validation error"),
@@ -397,9 +397,9 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 				}
 				// return the message
 				return credential.MsgIssuePublicVerifiableCredentialRequest{
-					CredentialDefinitionDid: "did:cosmos:elesto:cd-15",
-					Credential:              wc.PublicVerifiableCredential,
-					Signer:                  suite.GetTestAccount().String(),
+					CredentialDefinitionID: "did:cosmos:elesto:cd-15",
+					Credential:             wc.PublicVerifiableCredential,
+					Signer:                 suite.GetTestAccount().String(),
 				}
 			},
 			fmt.Errorf("missing credential proof: credential proof validation error"),

@@ -1,25 +1,25 @@
 package credential
 
-func NewCredentialIssuerRegisteredEvent(issuerDID string) *CredentialIssuerRegisteredEvent {
-	return &CredentialIssuerRegisteredEvent{
-		IssuerId: issuerDID,
-	}
-}
-
-// NewCredentialDefinitionPublishedEvent constructs a new did_created sdk.Event
+// NewCredentialDefinitionPublishedEvent creates the definition is published
 func NewCredentialDefinitionPublishedEvent(credentialDefinitionDID, publisherDID string) *CredentialDefinitionPublishedEvent {
 	return &CredentialDefinitionPublishedEvent{
-		CredentialDefinitionId: credentialDefinitionDID,
-		PublisherId:            publisherDID,
+		CredentialDefinitionID: credentialDefinitionDID,
+		PublisherID:            publisherDID,
 	}
 }
 
-// NewPublicCredentialIssuedEvent constructs a new did_created sdk.Event
-func NewPublicCredentialIssuedEvent(credentialDefinitionDID, credentialID, issuerDID, holderDID string) *PublicCredentialIssuedEvent {
+// NewCredentialDefinitionUpdatedEvent creates a new event for when a credential definition is updated
+func NewCredentialDefinitionUpdatedEvent(credentialDefinitionDID string) *CredentialDefinitionUpdatedEvent {
+	return &CredentialDefinitionUpdatedEvent{
+		CredentialDefinitionID: credentialDefinitionDID,
+	}
+}
+
+// NewPublicCredentialIssuedEvent creates a new event for when a credential is issued on-chain
+func NewPublicCredentialIssuedEvent(credentialDefinitionDID, credentialID, issuerDID string) *PublicCredentialIssuedEvent {
 	return &PublicCredentialIssuedEvent{
-		CredentialDefinitionId: credentialDefinitionDID,
-		CredentialId:           credentialID,
-		IssuerId:               issuerDID,
-		HolderId:               holderDID,
+		CredentialDefinitionID: credentialDefinitionDID,
+		CredentialID:           credentialID,
+		IssuerID:               issuerDID,
 	}
 }
