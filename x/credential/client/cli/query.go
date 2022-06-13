@@ -26,6 +26,7 @@ func GetQueryCmd(_ string) *cobra.Command {
 
 	// this line is used by starport scaffolding # 1
 	cmd.AddCommand(
+		NewQueryCredentialDefinitionsCmd(),
 		NewQueryCredentialDefinitionCmd(),
 		NewQueryPublicCredentialCmd(),
 		NewQueryPublicCredentialsByIssuerCmd(),
@@ -33,6 +34,44 @@ func GetQueryCmd(_ string) *cobra.Command {
 		NewQueryPublicCredentialStatusCmd(),
 		NewMakeCredentialFromSchemaCmd(),
 	)
+
+	return cmd
+}
+
+func NewQueryCredentialDefinitionsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "credential-definitions",
+		Short:   "query a credential definitions",
+		Example: "elestod query credentials credential-definitions",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := credential.NewQueryClient(clientCtx)
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			params := &credential.QueryCredentialDefinitionsRequest{
+				Pagination: pageReq,
+			}
+
+			result, err := queryClient.CredentialDefinitions(
+				context.Background(),
+				params,
+			)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(result)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }

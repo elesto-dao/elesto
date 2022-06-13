@@ -46,7 +46,11 @@ func (k Keeper) CredentialDefinitions(
 	req *credential.QueryCredentialDefinitionsRequest,
 ) (*credential.QueryCredentialDefinitionsResponse, error) {
 
-	return nil, fmt.Errorf("not implemented")
+	ctx := sdk.UnwrapSDKContext(c)
+
+	cd := k.GetCredentialDefinitions(ctx, req)
+	return &credential.QueryCredentialDefinitionsResponse{Definitions: cd}, nil
+	// return nil, fmt.Errorf("not implemented")
 }
 
 func (k Keeper) PublicCredential(

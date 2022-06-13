@@ -2,8 +2,9 @@ package keeper
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/elesto-dao/elesto/x/credential"
 )
 
@@ -21,6 +22,26 @@ func (k Keeper) GetCredentialDefinition(ctx sdk.Context, key string) (credential
 		return data, ok
 	})
 	return val.(credential.CredentialDefinition), found
+}
+
+// GetAllCredentialDefinitions
+func (k Keeper) GetCredentialDefinitions(ctx sdk.Context, req *credential.QueryCredentialDefinitionsRequest) []*credential.CredentialDefinition {
+
+	// pagition tbd
+	var cds []*credential.CredentialDefinition
+
+	store := ctx.KVStore(k.storeKey)
+	cdStore := prefix.NewStore(store, credential.CredentialDefinitionKey)
+	query.Paginate(cdStore, req.Pagination, func(key []byte, value []byte) error {
+		var cd credential.CredentialDefinition
+		err := k.cdc.Unmarshal(value, &cd)
+		if err != nil {
+			panic(err)
+		}
+		cds = append(cds, &cd)
+		return nil
+	})
+	return cds
 }
 
 // SetPublicCredential persist a public verifiable credential to the store. The credential ID is used as key
