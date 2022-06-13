@@ -88,24 +88,3 @@ func (k Keeper) CollectAmount(ctx sdk.Context, address string, amount sdk.Coins)
 func (k Keeper) GetSupply(ctx sdk.Context, denom string) sdk.Coin {
 	return k.bankKeeper.GetSupply(ctx, denom)
 }
-
-// GetBlockInflation returns the last block time.
-func (k Keeper) GetBlockInflation(ctx sdk.Context) (amount sdk.Int) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.CurrentInflationKey)
-	if bz == nil {
-		return
-	}
-	amount, ok := sdk.NewIntFromString(string(bz))
-	if !ok {
-		panic("cannot read the block inflation amount")
-	}
-	return
-}
-
-// SetBlockInflation stores the last block time.
-func (k Keeper) SetBlockInflation(ctx sdk.Context, amount sdk.Int) {
-	store := ctx.KVStore(k.storeKey)
-	bz := []byte(amount.String())
-	store.Set(types.CurrentInflationKey, bz)
-}

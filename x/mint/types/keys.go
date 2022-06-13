@@ -1,8 +1,5 @@
 package types
 
-// CurrentInflationKey is the key to use for the keeper store.
-var CurrentInflationKey = []byte{0x90}
-
 const (
 	// module name
 	ModuleName = "mint"
