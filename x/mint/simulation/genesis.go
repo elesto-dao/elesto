@@ -14,8 +14,6 @@ import (
 // RandomizedGenState generates a random GenesisState for mint
 func RandomizedGenState(simState *module.SimulationState) {
 	mintGenesis := types.DefaultGenesisState()
-	mintGenesis.Params.BlocksPerYear = 10
-	mintGenesis.Params.MaxSupply = 100_000
 
 	bz, err := json.MarshalIndent(&mintGenesis, "", " ")
 	if err != nil {
