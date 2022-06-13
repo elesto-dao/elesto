@@ -22,7 +22,7 @@ func ValidateGenesis(data GenesisState) error {
 	if err := data.Params.Validate(); err != nil {
 		return fmt.Errorf("mint genesis validation failed, %w", err)
 	}
-	
+
 	// TODO(gsora): how do we validate CurrentInflation?
 
 	return nil

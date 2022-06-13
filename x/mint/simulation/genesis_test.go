@@ -45,7 +45,6 @@ func TestRandomizedGenState(t *testing.T) {
 	require.Equal(t, sdk.DefaultBondDenom, genState.Params.MintDenom)
 	require.Equal(t, types.DefaultParams().BlocksPerYear, genState.Params.BlocksPerYear)
 	require.Equal(t, types.DefaultParams().MaxSupply, genState.Params.MaxSupply)
-	require.Equal(t, types.DefaultParams().InflationRates, genState.Params.InflationRates)
 }
 
 // TestRandomizedGenState tests abnormal scenarios of applying RandomizedGenState.

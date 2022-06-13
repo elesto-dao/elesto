@@ -11,11 +11,11 @@ import (
 
 // Parameter store keys
 var (
-	KeyMintDenom      = []byte("MintDenom")
-	KeyMaxSupply      = []byte("MaxSupply")
-	KeyBlocksPerYear  = []byte("BlocksPerYear")
-	KeyTeamReward     = []byte("TeamReward")
-	KeyTeamAddress    = []byte("TeamAddress")
+	KeyMintDenom     = []byte("MintDenom")
+	KeyMaxSupply     = []byte("MaxSupply")
+	KeyBlocksPerYear = []byte("BlocksPerYear")
+	KeyTeamReward    = []byte("TeamReward")
+	KeyTeamAddress   = []byte("TeamAddress")
 )
 
 // ParamKeyTable for mint module.
@@ -26,7 +26,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams default mint module parameters
 func DefaultParams() Params {
 	return Params{
-		MintDenom: sdk.DefaultBondDenom,
+		MintDenom:     sdk.DefaultBondDenom,
 		BlocksPerYear: 6_308_000,
 		MaxSupply:     1_000_000_000_000_000,
 		TeamReward:    "0.1",

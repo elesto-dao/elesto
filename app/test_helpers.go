@@ -14,7 +14,7 @@ import (
 )
 
 // used here because we don't need app options in testing
-type emptyAppOption struct {}
+type emptyAppOption struct{}
 
 func (*emptyAppOption) Get(i string) interface{} {
 	return nil
@@ -24,17 +24,17 @@ func setup(withGenesis bool, invCheckPeriod uint) (*App, GenesisState) {
 	if config := sdk.GetConfig(); config.GetBech32AccountAddrPrefix() != AccountAddressPrefix {
 		cosmoscmd.SetPrefixes(AccountAddressPrefix)
 	}
-	
+
 	db := dbm.NewMemDB()
 	encCdc := cosmoscmd.MakeEncodingConfig(ModuleBasics)
 	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encCdc, &emptyAppOption{})
-	
+
 	cosmosApp := app.(*App)
-	
+
 	if withGenesis {
 		return cosmosApp, NewDefaultGenesisState(encCdc.Marshaler)
 	}
-	
+
 	return cosmosApp, GenesisState{}
 }
 
@@ -47,11 +47,11 @@ func Setup(isCheckTx bool) *App {
 		if err != nil {
 			panic(err)
 		}
-		
+
 		// Initialize the chain
 		app.InitChain(
 			abci.RequestInitChain{
-				Validators:      []abci.ValidatorUpdate{},
+				Validators: []abci.ValidatorUpdate{},
 				ConsensusParams: &abci.ConsensusParams{
 					Block: &abci.BlockParams{
 						MaxBytes: 200000,
@@ -68,7 +68,7 @@ func Setup(isCheckTx bool) *App {
 						},
 					},
 				},
-				AppStateBytes:   stateBytes,
+				AppStateBytes: stateBytes,
 			},
 		)
 	}
