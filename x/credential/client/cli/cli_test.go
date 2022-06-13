@@ -57,6 +57,8 @@ type IntegrationTestSuite struct {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 	cfg := network.DefaultConfig()
+	app.Setup(false)
+	cfg.GenesisState = app.NewDefaultGenesisState(cfg.Codec)
 	credential.RegisterInterfaces(cfg.InterfaceRegistry)
 	cfg.AppConstructor = NewAppConstructor(cosmoscmd.MakeEncodingConfig(app.ModuleBasics))
 	cfg.NumValidators = 2
