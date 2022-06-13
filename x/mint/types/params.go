@@ -12,7 +12,6 @@ import (
 // Parameter store keys
 var (
 	KeyMintDenom      = []byte("MintDenom")
-	KeyInflationRates = []byte("InflationRates")
 	KeyMaxSupply      = []byte("MaxSupply")
 	KeyBlocksPerYear  = []byte("BlocksPerYear")
 	KeyTeamReward     = []byte("TeamReward")
@@ -28,19 +27,6 @@ func ParamKeyTable() paramtypes.KeyTable {
 func DefaultParams() Params {
 	return Params{
 		MintDenom: sdk.DefaultBondDenom,
-		InflationRates: []string{
-			"0",
-			"1",
-			"0.5",
-			"0.25",
-			"0.125",
-			"0.0625",
-			"0.03125",
-			"0.02",
-			"0.02",
-			"0.02",
-			"0.02",
-		},
 		BlocksPerYear: 6_308_000,
 		MaxSupply:     1_000_000_000_000_000,
 		TeamReward:    "0.1",
@@ -57,9 +43,6 @@ func (p Params) Validate() error {
 		return err
 	}
 	if err := validateBlocksPerYear(p.BlocksPerYear); err != nil {
-		return err
-	}
-	if err := validateInflationRates(p.InflationRates); err != nil {
 		return err
 	}
 	if err := validateTeamReward(p.TeamReward); err != nil {
@@ -79,7 +62,6 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMintDenom, &p.MintDenom, validateMintDenom),
 		paramtypes.NewParamSetPair(KeyMaxSupply, &p.MaxSupply, validateMaxSupply),
 		paramtypes.NewParamSetPair(KeyBlocksPerYear, &p.BlocksPerYear, validateBlocksPerYear),
-		paramtypes.NewParamSetPair(KeyInflationRates, &p.InflationRates, validateInflationRates),
 		paramtypes.NewParamSetPair(KeyTeamAddress, &p.TeamAddress, validateTeamAddress),
 		paramtypes.NewParamSetPair(KeyTeamReward, &p.TeamReward, validateTeamReward),
 	}
@@ -96,27 +78,6 @@ func validateMintDenom(i interface{}) error {
 	}
 	if err := sdk.ValidateDenom(v); err != nil {
 		return err
-	}
-
-	return nil
-}
-
-func validateInflationRates(i interface{}) error {
-	v, ok := i.([]string)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-	if len(v) == 0 {
-		return fmt.Errorf("inflation rates must be provided")
-	}
-	for _, rs := range v {
-		r, err := sdk.NewDecFromStr(rs)
-		if err != nil {
-			return err
-		}
-		if r.LT(sdk.NewDec(0)) {
-			return fmt.Errorf("inflation must be a value greather than 0, got: %s", r)
-		}
 	}
 
 	return nil

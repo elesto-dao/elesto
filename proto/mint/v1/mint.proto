@@ -8,11 +8,6 @@ message Params {
   // mint_denom defines denomination of coin to be minted
   string mint_denom = 1;
 
-  // inflation rates for each year, for example:
-  // 1: first year, inflation 100%
-  // 0.50: second year, inflation 50%
-  repeated string inflation_rates = 3;
-
   // estimate number of blocks in a year
   int64 blocks_per_year = 4;
 

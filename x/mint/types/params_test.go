@@ -18,7 +18,7 @@ func TestParams(t *testing.T) {
 
 	defaultParams := types.DefaultParams()
 
-	paramsStr := `mint_denom:"stake" inflation_rates:"1" inflation_rates:"0.5" inflation_rates:"0.25" inflation_rates:"0.125" inflation_rates:"0.0625" inflation_rates:"0.03125" inflation_rates:"0.02" inflation_rates:"0.02" inflation_rates:"0.02" inflation_rates:"0.02" blocks_per_year:6308000 max_supply:1000000000000000 team_address:"elesto1ms2wrq8k04cug7ea6ekf60nfke6a8vu8pwm684" team_reward:"0.1" `
+	paramsStr := `mint_denom:"stake" blocks_per_year:6308000 max_supply:1000000000000000 team_address:"elesto1ms2wrq8k04cug7ea6ekf60nfke6a8vu8pwm684" team_reward:"0.1" `
 	require.Equal(t, paramsStr, defaultParams.String())
 }
 
@@ -50,27 +50,6 @@ func TestParamsValidate(t *testing.T) {
 				params.MintDenom = "a"
 			},
 			"invalid denom: a",
-		},
-		{
-			"nil inflation rates",
-			func(params *types.Params) {
-				params.InflationRates = nil
-			},
-			"inflation rates must be provided",
-		},
-		{
-			"inflation rates has element with less than 0 value value",
-			func(params *types.Params) {
-				params.InflationRates = []string{"-1"}
-			},
-			"inflation must be a value greather than 0, got: -1.000000000000000000",
-		},
-		{
-			"inflation rates has element with non-numerical value",
-			func(params *types.Params) {
-				params.InflationRates = []string{"random"}
-			},
-			"failed to set decimal string: random000000000000000000",
 		},
 		{
 			"max supply is 0",

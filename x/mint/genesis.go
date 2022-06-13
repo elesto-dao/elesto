@@ -20,9 +20,5 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, ak types.AccountKeeper, 
 // ExportGenesis returns a GenesisState for a given context and keeper.
 func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) *types.GenesisState {
 	params := keeper.GetParams(ctx)
-	// init to prevent nil slice, []types.InflationSchedule(nil)
-	if params.InflationRates == nil || len(params.InflationRates) == 0 {
-		params.InflationRates = make([]string, 0)
-	}
 	return types.NewGenesisState(params)
 }
