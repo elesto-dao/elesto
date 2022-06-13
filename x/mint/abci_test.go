@@ -36,28 +36,6 @@ func (suite *ModuleTestSuite) SetupTest() {
 	suite.keeper = suite.app.MintKeeper
 }
 
-func (s *ModuleTestSuite) TestInitGenesis() {
-	// default gent state case
-	genState := types.DefaultGenesisState()
-	mint.InitGenesis(s.ctx, s.app.MintKeeper, s.app.AccountKeeper, genState)
-	got := mint.ExportGenesis(s.ctx, s.app.MintKeeper)
-	s.Require().Equal(*genState, *got)
-}
-
-func (s *ModuleTestSuite) TestImportExportGenesis() {
-	k, ctx := s.keeper, s.ctx
-	genState := mint.ExportGenesis(ctx, k)
-	bz := s.app.AppCodec().MustMarshalJSON(genState)
-
-	var genState2 types.GenesisState
-	s.app.AppCodec().MustUnmarshalJSON(bz, &genState2)
-	mint.InitGenesis(ctx, s.app.MintKeeper, s.app.AccountKeeper, &genState2)
-
-	genState3 := mint.ExportGenesis(ctx, k)
-	s.Require().Equal(*genState, genState2)
-	s.Require().Equal(genState2, *genState3)
-}
-
 func (s *ModuleTestSuite) TestInflationRate() {
 	// This test simulates data taken from here:
 	// https://docs.google.com/spreadsheets/d/1sXwR-cYHS98in1aMzBabF7FNjqikbA3btnPMlFqgQ50/edit#gid=0
