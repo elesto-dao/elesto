@@ -125,12 +125,12 @@ func NewWrappedPublicCredentialFromFile(credentialFile string) (wc *WrappedCrede
 }
 
 // GetBytes returns the JSON encoded byte slice of the credential
-func (wc *WrappedCredential) GetBytes() []byte {
+func (wc *WrappedCredential) GetBytes() (d []byte, err error) {
 	dAtA, err := json.Marshal(wc)
 	if err != nil {
-		panic(err) //[(gogoproto.sizer) = true, (gogoproto.marshaler) = true,  (gogoproto.unmarshaler) = true];
+		return nil, err
 	}
-	return dAtA
+	return dAtA, nil
 }
 
 // Copy create a deep copy of the WrappedCredential
