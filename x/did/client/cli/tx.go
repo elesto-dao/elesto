@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptodid "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -44,8 +43,8 @@ func GetTxCmd() *cobra.Command {
 // deriveVMType derive the verification method type from a public key
 func deriveVMType(pubKey cryptodid.PubKey) (vmType did.VerificationMethodType, err error) {
 	switch pubKey.(type) {
-	case *ed25519.PubKey:
-		vmType = did.Ed25519VerificationKey2018
+	//case *ed25519.PubKey:
+	//	vmType = did.Ed25519VerificationKey2018
 	case *secp256k1.PubKey:
 		vmType = did.EcdsaSecp256k1VerificationKey2019
 	default:

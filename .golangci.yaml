@@ -31,7 +31,13 @@ linters-settings:
     lines: 100
     statements: 50
   gci:
-    local-prefixes: github.com/elesto-dao/elesto
+      #local-prefixes: github.com/elesto-dao/elesto
+    sections:
+      - standard # Captures all standard packages if they do not match another section.
+      - default # Contains all imports that could not be matched to another section type.
+        #- comment(your text here) # Prints the specified indented comment.
+        #- newLine # Prints an empty line
+      - prefix(github.com/elesto-dao/elesto) # Groups all imports with the specified Prefix.
   goimports:
     local-prefixes: github.com/elesto-dao/elesto
   goconst:
