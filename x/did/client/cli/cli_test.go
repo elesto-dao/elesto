@@ -746,7 +746,7 @@ func TestGetTxCmd(t *testing.T) {
 
 func TestGetQueryCmd(t *testing.T) {
 	expectedCommands := map[string]struct{}{
-		"did": struct{}{},
+		"did": {},
 	}
 
 	t.Run("PASS: Verify command are there ", func(t *testing.T) {
