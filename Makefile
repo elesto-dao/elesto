@@ -220,7 +220,7 @@ docs:
 	mkdocs serve
 
 openapi:
-	starport generate openapi
+	ignite generate openapi
 
 .PHONY: docs openapi
 
