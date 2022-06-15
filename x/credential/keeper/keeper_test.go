@@ -1,9 +1,13 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	ct "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocdc "github.com/cosmos/cosmos-sdk/crypto/codec"
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	server "github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,6 +22,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+	"math/rand"
 	"testing"
 )
 
@@ -28,10 +33,15 @@ type KeeperTestSuite struct {
 	ctx         sdk.Context
 	keeper      Keeper
 	queryClient credential.QueryClient
+	keyring     keyring.Keyring
 }
 
 // SetupTest creates a test suite to test the did
 func (suite *KeeperTestSuite) SetupTest() {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("elesto", "elestopub")
+	//config.Seal()
+
 	keyCreden := sdk.NewKVStoreKey(credential.StoreKey)
 	memKeyCreden := sdk.NewKVStoreKey(credential.MemStoreKey)
 	keyAcc := sdk.NewKVStoreKey(authtypes.StoreKey)
@@ -44,12 +54,19 @@ func (suite *KeeperTestSuite) SetupTest() {
 	ms := store.NewCommitMultiStore(db)
 	ms.MountStoreWithDB(keyCreden, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(memKeyCreden, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyDidDocument, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(memKeyDidDocument, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyAcc, sdk.StoreTypeIAVL, db)
 	_ = ms.LoadLatestVersion()
 
 	ctx := sdk.NewContext(ms, tmproto.Header{ChainID: "foochainid"}, true, server.ZeroLogWrapper{log.Logger})
 
 	interfaceRegistry := ct.NewInterfaceRegistry()
+	authtypes.RegisterInterfaces(interfaceRegistry)
+	cryptocdc.RegisterInterfaces(interfaceRegistry)
+
 	marshaler := codec.NewProtoCodec(interfaceRegistry)
+
 	maccPerms := map[string][]string{
 		authtypes.FeeCollectorName: nil,
 	}
@@ -88,7 +105,53 @@ func (suite *KeeperTestSuite) SetupTest() {
 	credential.RegisterQueryServer(queryHelper, credentialKeeper)
 	queryClient := credential.NewQueryClient(queryHelper)
 
+	// create the account for testing the credential signatures
+	suite.keyring = keyring.NewInMemory()
+
+	rc := func(index int, mnemonic string) {
+		// register the test account
+		i, err := suite.keyring.NewAccount(
+			fmt.Sprint("test", index),
+			mnemonic,
+			keyring.DefaultBIP39Passphrase, sdk.FullFundraiserPath, hd.Secp256k1,
+		)
+		if err != nil {
+			suite.Require().FailNow("cannot register test account")
+		}
+		a := accountKeeper.NewAccountWithAddress(ctx, i.GetAddress())
+		a.SetPubKey(i.GetPubKey())
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccount(ctx, a))
+	}
+	// register test accounts
+	rc(0, "coil animal waste sound canvas weekend struggle skirt donor boil around bounce grant right silent year subway boost banana unlock powder riot spawn nerve")
+	rc(1, "regret virtual damp hybrid armed powder motor open slim fall defy river goddess perfect invite orange assault reject involve quit salmon sunny abuse team")
+
 	suite.ctx, suite.keeper, suite.queryClient = ctx, *credentialKeeper, queryClient
+}
+
+func (suite KeeperTestSuite) GetKeyAddress(uid string) sdk.Address {
+	i, err := suite.keyring.Key(uid)
+	if err != nil {
+		suite.Require().FailNow("address for uid " + uid + " not found")
+	}
+	return i.GetAddress()
+}
+
+func (suite KeeperTestSuite) GetTestAccount() sdk.Address {
+	return suite.GetTestAccountByIndex(0)
+}
+
+func (suite KeeperTestSuite) GetTestAccountByIndex(index int) sdk.Address {
+	return suite.GetKeyAddress(fmt.Sprint("test", index))
+}
+
+func (suite KeeperTestSuite) GetRandomAccount() sdk.Address {
+	uid := fmt.Sprint("a", rand.Int())
+	i, _, err := suite.keyring.NewMnemonic(uid, keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
+	if err != nil {
+		suite.Require().FailNow("address for uid " + uid + " not found")
+	}
+	return i.GetAddress()
 }
 
 func TestKeeperTestSuite(t *testing.T) {

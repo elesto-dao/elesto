@@ -41,7 +41,7 @@ func (k msgServer) PublishCredentialDefinition(
 
 	// resolve the publisher DID
 	if _, err := k.did.ResolveDid(ctx, did.DID(msg.CredentialDefinition.PublisherId)); err != nil {
-		err := sdkerrors.Wrapf(did.ErrDidDocumentFound, "the credential publisher DID cannot be resolved: %v", msg.CredentialDefinition.PublisherId)
+		err = sdkerrors.Wrapf(did.ErrDidDocumentFound, "the credential publisher DID %v cannot be resolved", msg.CredentialDefinition.PublisherId)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
@@ -49,9 +49,13 @@ func (k msgServer) PublishCredentialDefinition(
 	// persist the credential definition
 	k.SetCredentialDefinition(ctx, msg.CredentialDefinition)
 
-	k.Logger(ctx).Info("created CredentialDefinition", "definitionId", msg.CredentialDefinition.Id, "publisher", msg.CredentialDefinition.PublisherId)
+	// log the creation
+	k.Logger(ctx).Info("created CredentialDefinition", "definitionID", msg.CredentialDefinition.Id, "publisher", msg.CredentialDefinition.PublisherId, "signer", msg.Signer)
 
-	// TODO: events
+	// emit the event
+	if err := ctx.EventManager().EmitTypedEvents(credential.NewCredentialDefinitionPublishedEvent(msg.CredentialDefinition.Id, msg.CredentialDefinition.PublisherId)); err != nil {
+		k.Logger(ctx).Error("failed to emit CredentialDefinitionPublishedEvent", "definitionID", msg.CredentialDefinition.Id, "signer", msg.Signer, "err", err)
+	}
 
 	return &credential.MsgPublishCredentialDefinitionResponse{}, nil
 }
@@ -60,7 +64,32 @@ func (k msgServer) UpdateCredentialDefinition(
 	goCtx context.Context,
 	msg *credential.MsgUpdateCredentialDefinitionRequest,
 ) (*credential.MsgUpdateCredentialDefinitionResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	k.Logger(ctx).Info("request to update a CredentialDefinition", "credential Definition ID", msg.CredentialDefinitionID)
 
+	var (
+		cd    credential.CredentialDefinition
+		found bool
+	)
+
+	// check if the credential definition exists
+	if cd, found = k.GetCredentialDefinition(ctx, msg.CredentialDefinitionID); !found {
+		err := sdkerrors.Wrapf(credential.ErrCredentialDefinitionNotFound, "credential definition %v does not exists", msg.CredentialDefinitionID)
+		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+	// update the activation
+	cd.IsActive = msg.Active
+	// update the SupersededBy field
+	cd.SupersededBy = msg.SupersededBy
+
+	// update he data
+	k.SetCredentialDefinition(ctx, &cd)
+
+	// emit the event
+	if err := ctx.EventManager().EmitTypedEvents(credential.NewCredentialDefinitionUpdatedEvent(msg.CredentialDefinitionID)); err != nil {
+		k.Logger(ctx).Error("failed to emit CredentialDefinitionPublishedEvent", "definitionID", msg.CredentialDefinitionID, "signer", msg.Signer, "err", err)
+	}
 	return nil, fmt.Errorf("not implemented")
 }
 
@@ -71,63 +100,71 @@ func (k msgServer) IssuePublicVerifiableCredential(
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	k.Logger(ctx).Info("request to issuer a PublicCredential", "credential Definition ID", msg.Credential.Id)
 
+	var (
+		err error
+		cd  credential.CredentialDefinition
+		wc  *credential.WrappedCredential
+	)
+
 	// fetch the credential definition
-	cd, found := k.GetCredentialDefinition(ctx, msg.CredentialDefinitionDid)
-	if !found {
-		err := sdkerrors.Wrapf(credential.ErrCredentialDefinitionFound, "a credential definition with did %s already exists", msg.CredentialDefinitionDid)
+	var found bool
+	if cd, found = k.GetCredentialDefinition(ctx, msg.CredentialDefinitionID); !found {
+		err = sdkerrors.Wrapf(credential.ErrCredentialDefinitionNotFound, "credential definition %s not found", msg.CredentialDefinitionID)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 	// verify that can be published
 	if !cd.IsPublic {
-		err := sdkerrors.Wrapf(credential.ErrCredentialIsNotPublic, "the credential definition %s cannot be issued on-chain", msg.CredentialDefinitionDid)
+		err = sdkerrors.Wrapf(credential.ErrCredentialNotIssuable, "the credential definition %s is defined as non-public", msg.CredentialDefinitionID)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 	// verify that is not suspended
 	if !cd.IsActive {
-		err := sdkerrors.Wrapf(credential.ErrCredentialIsNotActive, "the credential definition %s cannot be issued on-chain", msg.CredentialDefinitionDid)
+		err = sdkerrors.Wrapf(credential.ErrCredentialNotIssuable, "the credential definition %s issuance is suspended", msg.CredentialDefinitionID)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 	// Wrap the credential
-	wc, err := credential.NewWrappedCredential(msg.Credential)
-	if err != nil {
+	if wc, err = credential.NewWrappedCredential(msg.Credential); err != nil {
 		err = sdkerrors.Wrapf(credential.ErrInvalidCredential, "the credential %s is malformed: %v", msg.Credential, err)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 	// verify the credential against the schema
-	schema, err := gojsonschema.NewSchema(gojsonschema.NewStringLoader(cd.Schema))
+	schema, err := gojsonschema.NewSchema(gojsonschema.NewBytesLoader(cd.Schema))
 	if err != nil {
-		err = sdkerrors.Wrapf(credential.ErrCredentialDefinitionCorrupted, "the credential definition %s is corrupted: %v", msg.CredentialDefinitionDid, cd)
+		err = sdkerrors.Wrapf(credential.ErrCredentialDefinitionCorrupted, "the credential definition %s is corrupted: %v", msg.CredentialDefinitionID, cd)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 	crL := gojsonschema.NewBytesLoader(wc.GetBytes())
 	dataValidator, err := schema.Validate(crL)
 	if err != nil {
-		err = sdkerrors.Wrapf(credential.ErrInvalidCredential, "the credential doesn't match the schema: %v", msg.CredentialDefinitionDid)
+		err = sdkerrors.Wrapf(credential.ErrInvalidCredential, "the credential doesn't match the schema: %v", msg.CredentialDefinitionID)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 
 	if !dataValidator.Valid() {
-		err = sdkerrors.Wrapf(credential.ErrCredentialSchema, "schema: %s, errors: %v", msg.CredentialDefinitionDid, dataValidator.Errors())
+		err = sdkerrors.Wrapf(credential.ErrCredentialSchema, "schema: %s, errors: %v", msg.CredentialDefinitionID, dataValidator.Errors())
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 
 	// validate the proof
 	if err = ValidateProof(ctx, k.Keeper, wc, did.Authentication, did.AssertionMethod); err != nil {
-		err = sdkerrors.Wrapf(credential.ErrMessageSigner, "signature mismatch: %v", err)
+		err = sdkerrors.Wrapf(credential.ErrInvalidProof, "%v", err)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
-	//TODO the proof gets deleted
 	k.SetPublicCredential(ctx, msg.Credential)
 
-	// TODO fire events
+	// emit the event
+	if evtErr := ctx.EventManager().EmitTypedEvents(credential.NewPublicCredentialIssuedEvent(msg.CredentialDefinitionID, msg.Credential.Id, msg.Credential.Issuer)); evtErr != nil {
+		k.Logger(ctx).Error("failed to emit PublicCredentialIssuedEvent", "definitionID", msg.CredentialDefinitionID, "signer", msg.Signer, "credentialID", msg.Credential.Id, "err", err)
+	}
+
 	return &credential.MsgIssuePublicVerifiableCredentialResponse{}, err
 }
 
@@ -136,32 +173,21 @@ func ValidateProof(ctx sdk.Context, k Keeper, wc *credential.WrappedCredential, 
 	// resolve the issuer
 	doc, err := k.did.ResolveDid(ctx, wc.GetIssuerDID())
 	if err != nil {
-		return sdkerrors.Wrapf(
-			err, "issuer DID is not resolvable",
-		)
+		return fmt.Errorf("issuer DID not resolvable %w", err)
 	}
 
 	// see if the subject is a did
-	if id, hs := wc.GetSubjectID(); hs {
-		// if is a valid did, try to resolve
-		if did.IsValidDID(id) {
-			// resolve the subject
-			_, err = k.did.ResolveDid(ctx, did.DID(id))
-			if err != nil {
-				return sdkerrors.Wrapf(
-					err, "subject DID is not resolvable",
-				)
-			}
+	// TODO: fix this GetSubjectID
+	if id, isDID := wc.GetSubjectID(); isDID {
+		// resolve the subject
+		if _, err = k.did.ResolveDid(ctx, did.DID(id)); err != nil {
+			return fmt.Errorf("subject DID not resolvable %w", err)
 		}
 	}
 
 	// verify the signature
 	if wc.Proof == nil {
-		return sdkerrors.Wrapf(
-			credential.ErrMessageSigner,
-			"proof is nil %v",
-			err,
-		)
+		return fmt.Errorf("missing credential proof")
 	}
 	//check relationships
 	authorized := false
@@ -177,46 +203,28 @@ Outer:
 	}
 	// verify the relationships
 	if !authorized {
-		return sdkerrors.Wrapf(
-			credential.ErrMessageSigner,
-			"unauthorized, verification method ID not listed in any of the required relationships in the issuer did (want %v, got %v) ", verificationRelationships, methodRelationships,
-		)
+		return fmt.Errorf("unauthorized, verification method ID not listed in any of the required relationships in the issuer did (want %v, got %v) ", verificationRelationships, methodRelationships)
 	}
 	// get the address in the verification method
 	issuerAddress, err := doc.GetVerificationMethodBlockchainAddress(wc.Proof.VerificationMethod)
 	if err != nil {
-		return sdkerrors.Wrapf(
-			credential.ErrMessageSigner,
-			"the issuer address cannot be retrieved due to %v",
-			err,
-		)
+		return fmt.Errorf("the issuer address cannot be retrieved due to %w", err)
 	}
 
 	// verify that is the same of the vc
 	issuerAccount, err := sdk.AccAddressFromBech32(issuerAddress)
 	if err != nil {
-		return sdkerrors.Wrapf(
-			credential.ErrMessageSigner,
-			"failed to convert the issuer address to account %v: %v", issuerAddress,
-			err,
-		)
+		return fmt.Errorf("failed to convert the issuer address to account %v due to %w", issuerAddress, err)
 	}
 	// get the public key from the account
 	pk, err := k.account.GetPubKey(ctx, issuerAccount)
 	if err != nil || pk == nil {
-		return sdkerrors.Wrapf(
-			credential.ErrMessageSigner,
-			"issuer public key not found %v",
-			err,
-		)
+		return fmt.Errorf("issuer public key not found %w", err)
 	}
 	//
 	if err = wc.Validate(pk); err != nil {
-		return sdkerrors.Wrapf(
-			credential.ErrMessageSigner,
-			"verification error: %v",
-			err,
-		)
+		return err
+
 	}
 	return nil
 }

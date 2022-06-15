@@ -50,6 +50,7 @@ func NewIssuePublicCredentialCmd() *cobra.Command {
 
 	var (
 		command           = "issue-public-credential"
+		signOnly          bool
 		credentialFileOut string
 	)
 
@@ -89,6 +90,10 @@ func NewIssuePublicCredentialCmd() *cobra.Command {
 					fmt.Printf("error writing the credential to %v: %v", credentialFileOut, err)
 					return err
 				}
+				fmt.Sprintln("credential exported to", credentialFileOut)
+				if signOnly {
+					return nil
+				}
 			}
 			// create the message
 			msg := credential.NewMsgIssuePublicVerifiableCredentialRequest(
@@ -102,6 +107,7 @@ func NewIssuePublicCredentialCmd() *cobra.Command {
 	}
 	// add flags
 	cmd.Flags().StringVar(&credentialFileOut, "export", "", "export the signed credential to a json file")
+	cmd.Flags().BoolVar(&signOnly, "sign-only", false, "only sign the credential, do not broadcast (requires  --export)")
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
@@ -164,7 +170,7 @@ func NewCreateRevocationListCmd() *cobra.Command {
 					cID,
 					credential.WithIssuerDID(issuerDID),
 					credential.WithContext("https://w3id.org/vc-revocation-list-2020/v1"),
-					credential.WithType(rl2020.TypeRevocationList2020),
+					credential.WithType(fmt.Sprint(rl2020.TypeRevocationList2020, "Credential")),
 					credential.WithIssuanceDate(time.Now()),
 				),
 			); err != nil {
@@ -237,7 +243,7 @@ func NewUpdateRevocationListCmd() *cobra.Command {
 				return err
 			}
 			// check the credential type, it must be a revocation list
-			if !pwc.HasType(rl2020.TypeRevocationList2020) {
+			if !pwc.HasType(rl2020.TypeRevocationList2020Credential) {
 				err = fmt.Errorf("expecting credential type %v, found: %v", rl2020.TypeRevocationList2020, pwc.Type)
 				return err
 			}
@@ -358,7 +364,6 @@ func sign(
 	// TODO: this could be expensive review this signing method
 	// TODO: we can hash this an make this less expensive
 	data := wc.GetBytes()
-	fmt.Printf("%s", data)
 	signature, pubKey, err := keyring.SignByAddress(address, data)
 	if err != nil {
 		return err
