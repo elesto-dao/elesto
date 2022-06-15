@@ -45,7 +45,7 @@ func (s *ModuleTestSuite) TestInflationRate() {
 		tolerance int64
 	}
 
-	const defaultTolerance = int64(4) // https://xkcd.com/221/
+	const defaultTolerance = int64(128) // https://xkcd.com/221/
 
 	// Here we define the expected supply amount for each year.
 	// Amounts here are defined in *tokens*, not microtokens.
@@ -63,15 +63,15 @@ func (s *ModuleTestSuite) TestInflationRate() {
 		7:  {amount: 942989502, tolerance: defaultTolerance},
 		8:  {amount: 961849292, tolerance: defaultTolerance},
 		9:  {amount: 981086278, tolerance: defaultTolerance},
-		10: {amount: 1000000000, tolerance: 0},
+		10: {amount: 1000000000, tolerance: defaultTolerance},
 	}
 
 	blocksPerYear := 6_307_200
 
-	// We run the simulation for at least two times the amount of supply years to 
+	// We run the simulation for at least two times the amount of supply years to
 	// make sure past year 10, no more tokens are minted.
-	simulationYears := len(expectedEstimatedSupply)*2
-	
+	simulationYears := len(expectedEstimatedSupply) * 2
+
 	initialSupply := 200_000_000_000_000
 
 	ctx := s.ctx.WithBlockHeight(int64(0))
@@ -94,7 +94,7 @@ func (s *ModuleTestSuite) TestInflationRate() {
 		mint.BeginBlocker(ctx, s.keeper)
 
 		// Since running this simulation for each block would make this test take too much time,
-		// we mint the total amount of tokens minted in one year, minus 1 block since the `mint.BeginBlocker()` 
+		// we mint the total amount of tokens minted in one year, minus 1 block since the `mint.BeginBlocker()`
 		// call already mints once for us.
 		blockInflationAmount := mint.BlockInflationAmount[year]
 		mintAmount := sdk.NewInt(int64(blockInflationAmount) * int64(blocksPerYear-1))
@@ -118,7 +118,7 @@ func (s *ModuleTestSuite) TestInflationRate() {
 		// in the table above.
 		difference := math.Abs(float64(supplyInTokens - yearExpectedSupply.amount))
 		s.T().Log("difference:", difference, "tolerance:", yearExpectedSupply.tolerance, "expected:", yearExpectedSupply.amount, "got:", supplyInTokens)
-		
+
 		// Since we're dealing with absolute value, we can bypass checking negative amounts.
 		if difference > float64(yearExpectedSupply.tolerance) {
 			s.Require().Fail(

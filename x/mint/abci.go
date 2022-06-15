@@ -18,6 +18,14 @@ TODO: testnet upgrade
 */
 
 var (
+	// TODO: We need to target 'microtokens' here
+	// so inflation amount needs and extra six 0's
+	// TODO: This iteration will mint 5 tokens per block
+	// for the first two years
+	// then 3 tokens per block for the third year
+	// then 2 tokens per block for the fourth year
+	// then 1 token per block for the fifth year
+	// then 0 for every year after
 	BlockInflationAmount = map[int]int64{
 		1:  31709792,
 		2:  31709792,
@@ -31,11 +39,15 @@ var (
 		10: 2998751,
 	}
 
-	blocksPerYear = int64(6_307_200)
+	blocksPerYear = int64(6307200)
 )
 
 // BeginBlocker mints new tokens for the previous block.
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+	// NOTE: This function will run on every block,
+	// since the amount to mint per year will stay the same,
+	// can we run this once and save the amount to mint each
+	// block.
 	if ctx.BlockHeight() == 0 {
 		return
 	}
@@ -45,14 +57,18 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	params := k.GetParams(ctx)
 
 	// calculate inflation
-	inflationYear := int(math.Floor(float64(ctx.BlockHeight()) / float64(blocksPerYear)))
+	inflationYear := 1
+	if ctx.BlockHeight() > blocksPerYear {
+		inflationYear = int(math.Floor(float64(ctx.BlockHeight()) / float64(blocksPerYear)))
+	}
 
 	inflationAmount, ok := BlockInflationAmount[inflationYear]
 	if !ok {
 		return
 	}
 
-	mintedCoin := sdk.NewCoin(params.MintDenom, sdk.NewInt(inflationAmount))
+	// Calculate the amount to mint per block
+	mintedCoin := sdk.NewCoin(params.MintDenom, sdk.NewInt(int64(float64(inflationAmount)/float64(blocksPerYear))))
 	mintedCoins := sdk.NewCoins(mintedCoin)
 	if err := k.MintCoins(ctx, mintedCoins); err != nil {
 		panic(err)
