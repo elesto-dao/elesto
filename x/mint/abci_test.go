@@ -54,16 +54,16 @@ func (s *ModuleTestSuite) TestInflationRate() {
 	// Rationale on how the default tolerance has been determined is explained in the link above.
 	// Year 10 is a special case, because we want to produce a maximum amount of 1 billion tokens by then.
 	expectedEstimatedSupply := map[int]estimatedSupply{
-		1:  {amount: 400000000, tolerance: defaultTolerance},
-		2:  {amount: 600000000, tolerance: defaultTolerance},
-		3:  {amount: 750000000, tolerance: defaultTolerance},
-		4:  {amount: 843750000, tolerance: defaultTolerance},
-		5:  {amount: 896484375, tolerance: defaultTolerance},
-		6:  {amount: 924499512, tolerance: defaultTolerance},
-		7:  {amount: 942989502, tolerance: defaultTolerance},
-		8:  {amount: 961849292, tolerance: defaultTolerance},
-		9:  {amount: 981086278, tolerance: defaultTolerance},
-		10: {amount: 1000000000, tolerance: 0},
+		0:  {amount: 400000000, tolerance: defaultTolerance},
+		1:  {amount: 600000000, tolerance: defaultTolerance},
+		2:  {amount: 750000000, tolerance: defaultTolerance},
+		3:  {amount: 843750000, tolerance: defaultTolerance},
+		4:  {amount: 896484375, tolerance: defaultTolerance},
+		5:  {amount: 924499512, tolerance: defaultTolerance},
+		6:  {amount: 942989502, tolerance: defaultTolerance},
+		7:  {amount: 961849292, tolerance: defaultTolerance},
+		8:  {amount: 981086278, tolerance: defaultTolerance},
+		9: {amount: 1000000000, tolerance: 0},
 	}
 
 	blocksPerYear := 6_307_200
@@ -85,10 +85,13 @@ func (s *ModuleTestSuite) TestInflationRate() {
 
 	s.T().Log("circulating supply at block 0:", s.keeper.GetSupply(ctx, "stake").String())
 
-	for year := 1; year <= simulationYears; year++ {
-		blockHeight := year * blocksPerYear
+	for year := 0; year <= simulationYears; year++ {
+		// Adding 1 here because we're running the simulation on the first day of the following year.
+		blockHeight := (year * blocksPerYear) + 1
 
 		s.T().Log("simulating year", year, "block height", blockHeight)
+
+		
 		ctx := s.ctx.WithBlockHeight(int64(blockHeight))
 
 		mint.BeginBlocker(ctx, s.keeper)
@@ -107,8 +110,8 @@ func (s *ModuleTestSuite) TestInflationRate() {
 		supplyInTokens := supply.Amount.Quo(sdk.NewInt(1000000)).ToDec().RoundInt64()
 
 		estimatedYear := year
-		if year > 10 {
-			estimatedYear = 10 // past year 10, we expect always the same supply
+		if year > 9 {
+			estimatedYear = 9 // past year 10, we expect always the same supply
 		}
 
 		yearExpectedSupply, found := expectedEstimatedSupply[estimatedYear]
