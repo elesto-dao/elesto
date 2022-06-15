@@ -25,15 +25,15 @@ then
     echo "y" | elestod keys add alice
 
     echo "Adding genesis account"
-    elestod add-genesis-account $(elestod keys show validator -a) 1000000000stake
+    elestod add-genesis-account $(elestod keys show validator -a) 100000000stake
     # this is to have the accounts on chain
-    elestod add-genesis-account $(elestod keys show emti -a) 1000stake
-    elestod add-genesis-account $(elestod keys show arti -a) 1000stake
-    elestod add-genesis-account $(elestod keys show bob -a) 1000stake
-    elestod add-genesis-account $(elestod keys show alice -a) 1000stake
+    elestod add-genesis-account $(elestod keys show emti -a) 20000000stake
+    elestod add-genesis-account $(elestod keys show arti -a) 20000000stake
+    elestod add-genesis-account $(elestod keys show bob -a) 20000000stake
+    elestod add-genesis-account $(elestod keys show alice -a) 20000000stake
     ## add the regulator
-    elestod add-genesis-account $(elestod keys show regulator -a) 1000stake
-    elestod gentx validator 700000000stake --chain-id elesto
+    elestod add-genesis-account $(elestod keys show regulator -a) 20000000stake
+    elestod gentx validator 70000000stake --chain-id elesto
     elestod collect-gentxs
 fi
 

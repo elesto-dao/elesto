@@ -56,6 +56,8 @@ type IntegrationTestSuite struct {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 	cfg := network.DefaultConfig()
+	app.Setup(false)
+	cfg.GenesisState = app.NewDefaultGenesisState(cfg.Codec)
 	did.RegisterInterfaces(cfg.InterfaceRegistry)
 	cfg.AppConstructor = NewAppConstructor(cosmoscmd.MakeEncodingConfig(app.ModuleBasics))
 	cfg.NumValidators = 2
@@ -217,7 +219,7 @@ func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
 
 func (s *IntegrationTestSuite) TestNewAddControllerCmd() {
 	identifier1 := "123456789abcdefghijkd"
-	identifier2 := "cosmos1kslgpxklq75aj96cz3qwsczr95vdtrd3p0fslp"
+	identifier2 := "elesto1kslgpxklq75aj96cz3qwsczr95vdtrd3axw8ft"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -278,7 +280,7 @@ func (s *IntegrationTestSuite) TestNewAddControllerCmd() {
 
 func (s *IntegrationTestSuite) TestNewDeleteControllerCmd() {
 	identifier1 := "123456789abcdefghijkd"
-	identifier2 := "cosmos1kslgpxklq75aj96cz3qwsczr95vdtrd3p0fslp"
+	identifier2 := "elesto1kslgpxklq75aj96cz3qwsczr95vdtrd3axw8ft"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -722,15 +724,15 @@ func (s *IntegrationTestSuite) TestNewDeleteServiceCmd() {
 
 func TestGetTxCmd(t *testing.T) {
 	expectedCommands := map[string]struct{}{
-		"create-did":                    struct{}{},
-		"add-controller":                struct{}{},
-		"delete-controller":             struct{}{},
-		"add-service":                   struct{}{},
-		"delete-service":                struct{}{},
-		"add-verification-method":       struct{}{},
-		"set-verification-relationship": struct{}{},
-		"revoke-verification-method":    struct{}{},
-		"link-aries-agent":              struct{}{},
+		"create-did":                    {},
+		"add-controller":                {},
+		"delete-controller":             {},
+		"add-service":                   {},
+		"delete-service":                {},
+		"add-verification-method":       {},
+		"set-verification-relationship": {},
+		"revoke-verification-method":    {},
+		"link-aries-agent":              {},
 	}
 
 	t.Run("PASS: Verify command are there ", func(t *testing.T) {
@@ -744,7 +746,7 @@ func TestGetTxCmd(t *testing.T) {
 
 func TestGetQueryCmd(t *testing.T) {
 	expectedCommands := map[string]struct{}{
-		"did": struct{}{},
+		"did": {},
 	}
 
 	t.Run("PASS: Verify command are there ", func(t *testing.T) {

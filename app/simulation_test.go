@@ -241,6 +241,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		simapp.EmptyAppOptions{},
 		fauxMerkleModeOpt,
 	)
+
 	simApp1, ok := app1.(SimApp)
 	require.True(t, ok, "can't use simapp")
 

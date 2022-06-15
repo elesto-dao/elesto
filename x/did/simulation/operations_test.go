@@ -1,7 +1,6 @@
 package simulation_test
 
 import (
-	"encoding/json"
 	"math/rand"
 	"testing"
 	"time"
@@ -11,12 +10,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/suite"
-	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
+	"github.com/elesto-dao/elesto/app"
 	elestoapp "github.com/elesto-dao/elesto/app"
 	"github.com/elesto-dao/elesto/x/did"
 	"github.com/elesto-dao/elesto/x/did/simulation"
@@ -30,39 +27,9 @@ type SimTestSuite struct {
 }
 
 func (suite *SimTestSuite) SetupTest() {
-	checkTx := false
-
-	db := dbm.NewMemDB()
-	app := elestoapp.New(
-		log.NewNopLogger(),
-		db,
-		nil,
-		true,
-		make(map[int64]bool),
-		elestoapp.DefaultNodeHome,
-		0,
-		cosmoscmd.MakeEncodingConfig(elestoapp.ModuleBasics),
-		simapp.EmptyAppOptions{},
-	)
-	suite.app = app.(*elestoapp.App)
-	cdc := suite.app.AppCodec()
-	genesisState := elestoapp.ModuleBasics.DefaultGenesis(cdc)
-
-	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
-	if err != nil {
-		panic(err)
-	}
-
-	// Initialize the chain
-	app.InitChain(
-		abci.RequestInitChain{
-			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: simapp.DefaultConsensusParams,
-			AppStateBytes:   stateBytes,
-		},
-	)
-
-	suite.ctx = suite.app.GetBaseApp().NewContext(checkTx, tmproto.Header{})
+	elestoApp := app.Setup(false)
+	suite.app = elestoApp
+	suite.ctx = elestoApp.BaseApp.NewContext(false, tmproto.Header{})
 }
 
 func (suite *SimTestSuite) TestWeightedOperations() {
