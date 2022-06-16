@@ -49,16 +49,6 @@ func (k Keeper) Set(ctx sdk.Context,
 	store.Set(append(prefix, key...), marshal(i))
 }
 
-// Delete - deletes a value form the store
-func (k Keeper) Delete(
-	ctx sdk.Context,
-	key []byte,
-	prefix []byte,
-) {
-	store := ctx.KVStore(k.storeKey)
-	store.Delete(append(prefix, key...))
-}
-
 // Get gets an item from the store by bytes
 func (k Keeper) Get(
 	ctx sdk.Context,

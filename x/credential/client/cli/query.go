@@ -108,7 +108,7 @@ func NewQueryCredentialDefinitionCmd() *cobra.Command {
 			result, err := queryClient.CredentialDefinition(
 				context.Background(),
 				&credential.QueryCredentialDefinitionRequest{
-					Did: args[0],
+					Id: args[0],
 				},
 			)
 			if err != nil {

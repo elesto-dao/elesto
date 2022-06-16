@@ -127,7 +127,7 @@ func NewMakeCredentialFromSchemaCmd() *cobra.Command {
 			result, err := qc.CredentialDefinition(
 				context.Background(),
 				&credential.QueryCredentialDefinitionRequest{
-					Did: definitionDID.String(),
+					Id: definitionDID.String(),
 				},
 			)
 			if err != nil {
