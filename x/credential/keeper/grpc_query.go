@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
@@ -19,13 +18,13 @@ func (k Keeper) CredentialDefinition(
 	req *credential.QueryCredentialDefinitionRequest,
 ) (*credential.QueryCredentialDefinitionResponse, error) {
 
-	if !did.IsValidDID(req.Did) {
-		return nil, status.Error(codes.InvalidArgument, "did document id cannot be empty")
+	if credential.IsEmpty(req.Id) {
+		return nil, status.Error(codes.InvalidArgument, "credential definition id must not be empty")
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	cd, found := k.GetCredentialDefinition(ctx, req.Did)
+	cd, found := k.GetCredentialDefinition(ctx, req.Id)
 	if !found {
 		return nil, status.Error(codes.NotFound, "credential definition not found")
 	}
@@ -37,17 +36,21 @@ func (k Keeper) CredentialDefinitionsByPublisher(
 	c context.Context,
 	req *credential.QueryCredentialDefinitionsByPublisherRequest,
 ) (*credential.QueryCredentialDefinitionsByPublisherResponse, error) {
-
-	return nil, fmt.Errorf("not implemented")
+	if !did.IsValidDID(req.Did) {
+		return nil, status.Error(codes.InvalidArgument, "publisher DID must be a valid DID")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	cds := k.GetCredentialDefinitionsWithFilter(ctx, func(cd *credential.CredentialDefinition) bool {
+		return cd.PublisherId == req.Did
+	})
+	return &credential.QueryCredentialDefinitionsByPublisherResponse{Definitions: cds}, nil
 }
 
 func (k Keeper) CredentialDefinitions(
 	c context.Context,
 	req *credential.QueryCredentialDefinitionsRequest,
 ) (*credential.QueryCredentialDefinitionsResponse, error) {
-
 	ctx := sdk.UnwrapSDKContext(c)
-
 	cd, pr, err := k.GetCredentialDefinitions(ctx, req)
 	return &credential.QueryCredentialDefinitionsResponse{Definitions: cd, Pagination: pr}, err
 }
@@ -56,14 +59,11 @@ func (k Keeper) PublicCredential(
 	c context.Context,
 	req *credential.QueryPublicCredentialRequest,
 ) (*credential.QueryPublicCredentialResponse, error) {
-
 	ctx := sdk.UnwrapSDKContext(c)
-
 	pc, found := k.GetPublicCredential(ctx, req.Id)
 	if !found {
 		return nil, status.Error(codes.NotFound, "credential definition not found")
 	}
-
 	return &credential.QueryPublicCredentialResponse{Credential: &pc}, nil
 
 }

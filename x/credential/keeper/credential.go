@@ -65,6 +65,23 @@ func (k Keeper) Unmarshal(data []byte, val codec.ProtoMarshaler) bool {
 	return true
 }
 
+// GetCredentialDefinitionsWithFilter retrieve a list of credential definitions with filter
+func (k Keeper) GetCredentialDefinitionsWithFilter(ctx sdk.Context, filter func(credentialDefinition *credential.CredentialDefinition) bool) []*credential.CredentialDefinition {
+	var cds []*credential.CredentialDefinition
+
+	iterator := k.GetAll(ctx, credential.CredentialDefinitionKey)
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var cd credential.CredentialDefinition
+		k.cdc.MustUnmarshal(iterator.Value(), &cd)
+		if filter(&cd) {
+			cds = append(cds, &cd)
+		}
+	}
+	return cds
+}
+
 // GetPublicCredentialWithFilter retrieve a list of verifiable credentials
 // filtered by properties
 func (k Keeper) GetPublicCredentialWithFilter(ctx sdk.Context, filter func(verifiableCredential *credential.PublicVerifiableCredential) bool) []*credential.PublicVerifiableCredential {
@@ -75,10 +92,7 @@ func (k Keeper) GetPublicCredentialWithFilter(ctx sdk.Context, filter func(verif
 
 	for ; iterator.Valid(); iterator.Next() {
 		var pvc credential.PublicVerifiableCredential
-		err := k.cdc.Unmarshal(iterator.Value(), &pvc)
-		if err != nil {
-			panic(err)
-		}
+		k.cdc.MustUnmarshal(iterator.Value(), &pvc)
 		if filter(&pvc) {
 			pvcs = append(pvcs, &pvc)
 		}

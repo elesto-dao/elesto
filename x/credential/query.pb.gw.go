@@ -224,15 +224,15 @@ func request_Query_CredentialDefinition_0(ctx context.Context, marshaler runtime
 		_   = err
 	)
 
-	val, ok = pathParams["did"]
+	val, ok = pathParams["id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "did")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Did, err = runtime.String(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "did", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
 	msg, err := client.CredentialDefinition(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -251,15 +251,15 @@ func local_request_Query_CredentialDefinition_0(ctx context.Context, marshaler r
 		_   = err
 	)
 
-	val, ok = pathParams["did"]
+	val, ok = pathParams["id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "did")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Did, err = runtime.String(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "did", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
 	msg, err := server.CredentialDefinition(ctx, &protoReq)
@@ -717,11 +717,11 @@ var (
 
 	pattern_Query_PublicCredentialsByIssuer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"elesto", "credential", "issuer", "did"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_CredentialDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"elesto", "credential", "definitions", "did"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_CredentialDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"elesto", "credential", "definitions", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_CredentialDefinitions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"elesto", "credential", "definitions"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_CredentialDefinitionsByPublisher_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"elesto", "credential", "publisher", "did"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_CredentialDefinitionsByPublisher_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"elesto", "credential", "definitions", "publisher", "did"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

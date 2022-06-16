@@ -28,8 +28,13 @@ func (k msgServer) PublishCredentialDefinition(
 	goCtx context.Context,
 	msg *credential.MsgPublishCredentialDefinitionRequest,
 ) (*credential.MsgPublishCredentialDefinitionResponse, error) {
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	if msg.CredentialDefinition == nil {
+		err := sdkerrors.Wrapf(did.ErrInvalidInput, "credential definition not set")
+		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+
 	k.Logger(ctx).Info("request to register a CredentialDefinition", "credential Definition ID", msg.CredentialDefinition.Id)
 
 	// check if the credential definition exists
@@ -80,6 +85,13 @@ func (k msgServer) UpdateCredentialDefinition(
 	}
 	// update the activation
 	cd.IsActive = msg.Active
+	if !credential.IsEmpty(msg.SupersededBy) {
+		if _, found := k.GetCredentialDefinition(ctx, msg.SupersededBy); !found {
+			err := sdkerrors.Wrapf(credential.ErrCredentialDefinitionNotFound, "credential definition %s not found", msg.SupersededBy)
+			k.Logger(ctx).Error(err.Error())
+			return nil, err
+		}
+	}
 	// update the SupersededBy field
 	cd.SupersededBy = msg.SupersededBy
 
@@ -90,7 +102,7 @@ func (k msgServer) UpdateCredentialDefinition(
 	if err := ctx.EventManager().EmitTypedEvents(credential.NewCredentialDefinitionUpdatedEvent(msg.CredentialDefinitionID)); err != nil {
 		k.Logger(ctx).Error("failed to emit CredentialDefinitionPublishedEvent", "definitionID", msg.CredentialDefinitionID, "signer", msg.Signer, "err", err)
 	}
-	return nil, fmt.Errorf("not implemented")
+	return &credential.MsgUpdateCredentialDefinitionResponse{}, nil
 }
 
 func (k msgServer) IssuePublicVerifiableCredential(
@@ -98,7 +110,14 @@ func (k msgServer) IssuePublicVerifiableCredential(
 	msg *credential.MsgIssuePublicVerifiableCredentialRequest,
 ) (*credential.MsgIssuePublicVerifiableCredentialResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	k.Logger(ctx).Info("request to issuer a PublicCredential", "credential Definition ID", msg.Credential.Id)
+
+	if msg.Credential == nil {
+		err := sdkerrors.Wrapf(did.ErrInvalidInput, "credential not set")
+		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+
+	k.Logger(ctx).Info("request to issue a PublicCredential", "credential", msg.Credential.Id)
 
 	var (
 		err error
@@ -125,6 +144,7 @@ func (k msgServer) IssuePublicVerifiableCredential(
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
+	// Note: we allow to issue a public verifiable credential also if the definition has the SupersededBy field active
 	// Wrap the credential
 	if wc, err = credential.NewWrappedCredential(msg.Credential); err != nil {
 		err = sdkerrors.Wrapf(credential.ErrInvalidCredential, "the credential %s is malformed: %v", msg.Credential, err)
