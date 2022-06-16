@@ -125,12 +125,8 @@ func NewWrappedPublicCredentialFromFile(credentialFile string) (wc *WrappedCrede
 }
 
 // GetBytes returns the JSON encoded byte slice of the credential
-func (wc *WrappedCredential) GetBytes() []byte {
-	dAtA, err := json.Marshal(wc)
-	if err != nil {
-		panic(err) //[(gogoproto.sizer) = true, (gogoproto.marshaler) = true,  (gogoproto.unmarshaler) = true];
-	}
-	return dAtA
+func (wc *WrappedCredential) GetBytes() ([]byte, error) {
+	return json.Marshal(wc)
 }
 
 // Copy create a deep copy of the WrappedCredential
@@ -143,7 +139,7 @@ func (wc *WrappedCredential) Copy() WrappedCredential {
 
 func (wc *WrappedCredential) GetSubjectID() (s string, isDID bool) {
 	v, hasSubject := wc.CredentialSubject["id"]
-	if !hasSubject || IsEmpty(v.(string)) {
+	if !hasSubject {
 		return
 	}
 	id, hasSubject := v.(string)
@@ -177,15 +173,6 @@ func (wc *WrappedCredential) SetSubject(val interface{}) (err error) {
 	return json.Unmarshal(wc.PublicVerifiableCredential.CredentialSubject, &wc.CredentialSubject)
 }
 
-// GetBytes is a helper for serializing
-func (pvc PublicVerifiableCredential) GetBytes() []byte {
-	dAtA, err := pvc.Marshal()
-	if err != nil {
-		panic(err) //[(gogoproto.sizer) = true, (gogoproto.marshaler) = true,  (gogoproto.unmarshaler) = true];
-	}
-	return dAtA
-}
-
 // Validate validates a verifiable credential against a provided public key
 func (wc WrappedCredential) Validate(
 	pk cryptotypes.PubKey,
@@ -199,7 +186,11 @@ func (wc WrappedCredential) Validate(
 	wcCopy.Proof = nil
 	// TODO: this is an expensive operation, could lead to DDOS
 	// TODO: we can hash this and make this less expensive
-	if !pk.VerifySignature(wcCopy.GetBytes(), sig) {
+	wcData, err := wcCopy.GetBytes()
+	if err != nil {
+		return
+	}
+	if !pk.VerifySignature(wcData, sig) {
 		err = fmt.Errorf("signature cannot be verified")
 	}
 	return
@@ -212,8 +203,8 @@ func NewProof(
 	proofPurpose string,
 	verificationMethod string,
 	signature string,
-) Proof {
-	return Proof{
+) *Proof {
+	return &Proof{
 		Type:               proofType,
 		Created:            created,
 		ProofPurpose:       proofPurpose,

@@ -152,7 +152,12 @@ func NewQueryPublicCredentialCmd() *cobra.Command {
 			if printNative {
 				return clientCtx.PrintProto(wc.PublicVerifiableCredential)
 			}
-			return clientCtx.PrintBytes(wc.GetBytes())
+			wcB, err := wc.GetBytes()
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintBytes(wcB)
 		},
 	}
 	cmd.Flags().BoolVar(&printNative, "native", false, "if set the credential will be printed in the raw format, that is how it is stored on chain")

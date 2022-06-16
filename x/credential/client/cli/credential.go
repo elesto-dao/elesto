@@ -203,10 +203,16 @@ func NewMakeCredentialFromSchemaCmd() *cobra.Command {
 			id, _ := wc.GetSubjectID()
 			id = strings.TrimPrefix(id, "did:cosmos:elesto:")
 			outFile := strings.ToLower(fmt.Sprintf("credential.%s.%s.json", schema.Title, id))
-			if n := q("leave it empty not to save", "credential filename", outFile); !credential.IsEmpty(n) {
-				return os.WriteFile(n, wc.GetBytes(), 0600)
+
+			wcB, err := wc.GetBytes()
+			if err != nil {
+				return err
 			}
-			return clientCtx.PrintBytes(wc.GetBytes())
+
+			if n := q("leave it empty not to save", "credential filename", outFile); !credential.IsEmpty(n) {
+				return os.WriteFile(n, wcB, 0600)
+			}
+			return clientCtx.PrintBytes(wcB)
 		},
 	}
 

@@ -15,7 +15,6 @@ var (
 
 	ErrVerifiableCredentialNotFound = sdkerrors.Register(ModuleName, 2102, "vc not found")
 	ErrVerifiableCredentialFound    = sdkerrors.Register(ModuleName, 2103, "vc found")
-	ErrDidDocumentDoesNotExist      = sdkerrors.Register(ModuleName, 2104, "did does not exist in the store")
 	ErrVerifiableCredentialIssuer   = sdkerrors.Register(ModuleName, 2105, "provided verifiable credential and did public key do not match")
 	ErrInvalidProof                 = sdkerrors.Register(ModuleName, 2106, "credential proof validation error")
 	ErrCredentialNotIssuable        = sdkerrors.Register(ModuleName, 2107, "credential cannot be issued on-chain")
