@@ -23,25 +23,83 @@ import (
 	"github.com/elesto-dao/elesto/x/did"
 )
 
-type CredentialSchema struct {
-	Schema   string `json:"$schema"`
-	ID       string `json:"$id"`
-	Metadata struct {
-		Slug         string `json:"slug"`
-		Version      string `json:"version"`
-		Icon         string `json:"icon"`
-		Discoverable bool   `json:"discoverable"`
-		Uris         struct {
-			JSONLdContextPlus string `json:"jsonLdContextPlus"`
-			JSONLdContext     string `json:"jsonLdContext"`
-			JSONSchema        string `json:"jsonSchema"`
-		} `json:"uris"`
-	} `json:"$metadata"`
-	Title       string                 `json:"title"`
-	Description string                 `json:"description"`
-	Type        string                 `json:"type"`
-	Required    []string               `json:"required"`
-	Properties  map[string]interface{} `json:"properties"`
+func NewQueryCredentialStatusCmd() *cobra.Command {
+	var (
+		command = "credential-status"
+	)
+
+	cmd := &cobra.Command{
+		Use:     use(command, "credentialJSONFile"),
+		Short:   "verify the credential status of a credential",
+		Example: exQuery(command, "my-credential.json"),
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			var (
+				queryClient    = credential.NewQueryClient(clientCtx)
+				credentialFile = args[0]
+				wc             *credential.WrappedCredential
+				rs             revocationStatus
+			)
+
+			// read the credential from file
+			if wc, err = credential.NewWrappedPublicCredentialFromFile(credentialFile); err != nil {
+				println("error building credential definition", err)
+				return err
+			}
+			// check for revocation
+			if rs, err = checkRevocation(queryClient, wc); err != nil {
+				println("error processing credential revocation:", err)
+				return err
+			}
+			// print results
+			return clientCtx.PrintBytes(rs.GetBytes())
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func NewQueryPublicCredentialStatusCmd() *cobra.Command {
+	var (
+		command = "public-credential-status"
+	)
+	cmd := &cobra.Command{
+		Use:     use(command, "credentialID"),
+		Short:   "verify the credential status of a credential",
+		Example: exQuery(command, "https://exmaple.resolver/credential/1234"),
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			//
+			var (
+				queryClient  = credential.NewQueryClient(clientCtx)
+				credentialID = args[0]
+				wc           *credential.WrappedCredential
+				rs           revocationStatus
+			)
+			// retrieve the public credential
+			if wc, err = queryPublicCredential(queryClient, credentialID); err != nil {
+				fmt.Println(err)
+				return err
+			}
+			// check for revocation
+			if rs, err = checkRevocation(queryClient, wc); err != nil {
+				println("error processing credential revocation:", err)
+				return err
+			}
+			// print results
+			return clientCtx.PrintBytes(rs.GetBytes())
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 func NewMakeCredentialFromSchemaCmd() *cobra.Command {
@@ -156,6 +214,95 @@ func NewMakeCredentialFromSchemaCmd() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
+}
+
+//
+func queryPublicCredential(qc credential.QueryClient, credentialID string) (wc *credential.WrappedCredential, err error) {
+	// query the public credential
+	result, err := qc.PublicCredential(
+		context.Background(),
+		&credential.QueryPublicCredentialRequest{
+			Id: credentialID,
+		},
+	)
+	if err != nil {
+		err = fmt.Errorf("public credential %s not found: %w", credentialID, err)
+		return
+	}
+	wc, err = credential.NewWrappedCredential(result.Credential)
+	if err != nil {
+		err = fmt.Errorf("error processing credential %s: %w", credentialID, err)
+	}
+	return
+}
+
+type revocationStatus struct {
+	Revoked    bool
+	Credential *credential.WrappedCredential
+}
+
+func (rs revocationStatus) GetBytes() []byte {
+	bs, err := json.Marshal(rs)
+	if err != nil {
+		panic(err)
+	}
+	return bs
+}
+
+// checkRevocation perform a revocation list check for a credential
+func checkRevocation(qc credential.QueryClient, wc *credential.WrappedCredential) (rs revocationStatus, err error) {
+
+	// is there a credential status to use?
+	if wc.CredentialStatus == nil {
+		err = fmt.Errorf("missing credentialStatus definition from the credential, revocation cannot be checked")
+		return
+	}
+	// retrieve the revocation list
+	res, err := qc.PublicCredential(
+		context.Background(),
+		&credential.QueryPublicCredentialRequest{
+			Id: wc.CredentialStatus.RevocationListCredential,
+		},
+	)
+	if err != nil {
+		err = fmt.Errorf("revocation list credential %s not found: %w", wc.CredentialStatus.RevocationListCredential, err)
+		return
+	}
+	// check issuer
+	if res.Credential.Issuer != wc.Issuer {
+		err = fmt.Errorf("credential issuer mismatch, expected: %v, got %v", wc.Issuer, res.Credential.Issuer)
+		return
+	}
+	// load the revocation list
+	rl, err := rl2020.NewRevocationListFromJSON(res.Credential.CredentialSubject)
+	if err != nil {
+		err = fmt.Errorf("error parsing the credential revocation list: %w", err)
+		return
+	}
+	rs.Credential = wc
+	rs.Revoked, err = rl.IsRevoked(*wc.CredentialStatus)
+	return
+}
+
+type CredentialSchema struct {
+	Schema   string `json:"$schema"`
+	ID       string `json:"$id"`
+	Metadata struct {
+		Slug         string `json:"slug"`
+		Version      string `json:"version"`
+		Icon         string `json:"icon"`
+		Discoverable bool   `json:"discoverable"`
+		Uris         struct {
+			JSONLdContextPlus string `json:"jsonLdContextPlus"`
+			JSONLdContext     string `json:"jsonLdContext"`
+			JSONSchema        string `json:"jsonSchema"`
+		} `json:"uris"`
+	} `json:"$metadata"`
+	Title       string                 `json:"title"`
+	Description string                 `json:"description"`
+	Type        string                 `json:"type"`
+	Required    []string               `json:"required"`
+	Properties  map[string]interface{} `json:"properties"`
 }
 
 func revocationListCredentials(qc credential.QueryClient, issuerDID string) (pwcs []*credential.WrappedCredential, err error) {

@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/noandrea/rl2020"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 
 	"github.com/elesto-dao/elesto/x/credential"
@@ -26,6 +27,7 @@ func GetQueryCmd(_ string) *cobra.Command {
 
 	// this line is used by starport scaffolding # 1
 	cmd.AddCommand(
+		NewQueryCredentialDefinitionsCmd(),
 		NewQueryCredentialDefinitionCmd(),
 		NewQueryPublicCredentialCmd(),
 		NewQueryPublicCredentialsByIssuerCmd(),
@@ -37,11 +39,64 @@ func GetQueryCmd(_ string) *cobra.Command {
 	return cmd
 }
 
-func NewQueryCredentialDefinitionCmd() *cobra.Command {
+func exQuery(cmd ...string) string {
+	return fmt.Sprintln(version.AppName, "query", credential.ModuleName, strings.Join(cmd, " "))
+}
+func use(cmd string, params ...string) string {
+	return fmt.Sprintln(cmd, strings.Join(params, " "))
+}
+
+func NewQueryCredentialDefinitionsCmd() *cobra.Command {
+
+	var (
+		command = "credential-definitions"
+	)
+
 	cmd := &cobra.Command{
-		Use:     "credential-definition [did]",
+		Use:     use(command),
+		Short:   "query a credential definitions",
+		Example: exQuery(command, "credential-definitions"),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := credential.NewQueryClient(clientCtx)
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			params := &credential.QueryCredentialDefinitionsRequest{
+				Pagination: pageReq,
+			}
+
+			result, err := queryClient.CredentialDefinitions(
+				context.Background(),
+				params,
+			)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(result)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, command)
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewQueryCredentialDefinitionCmd() *cobra.Command {
+	var (
+		command = "credential-definition"
+	)
+	cmd := &cobra.Command{
+		Use:     use(command, "credentialDefinitionID"),
 		Short:   "query a credential definition by its id",
-		Example: "elestod query credentials credential-definition did:cosmos:elesto:cd-1",
+		Example: exQuery(command, "did:cosmos:elesto:cd-1"),
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -70,12 +125,15 @@ func NewQueryCredentialDefinitionCmd() *cobra.Command {
 }
 
 func NewQueryPublicCredentialCmd() *cobra.Command {
-	var printNative bool
+	var (
+		command     = "public-credential"
+		printNative bool
+	)
 
 	cmd := &cobra.Command{
-		Use:     "public-credential [ID]",
+		Use:     use(command, "credentialID"),
 		Short:   "fetch a public credential by id",
-		Example: "elestod query credentials public-credential example-credential-id",
+		Example: exQuery(command, "example-credential-id"),
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -103,12 +161,15 @@ func NewQueryPublicCredentialCmd() *cobra.Command {
 }
 
 func NewQueryPublicCredentialsByIssuerCmd() *cobra.Command {
-	var printNative bool
+	var (
+		command     = "public-credentials-by-issuer"
+		printNative bool
+	)
 
 	cmd := &cobra.Command{
-		Use:     "public-credentials-by-issuer issuerDID",
+		Use:     use(command, "issuerDID"),
 		Short:   "list public credentials issued by a issuer ",
-		Example: "elestod credentials query public-credentials-by-issuer did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8",
+		Example: exQuery(command, "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"),
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -153,144 +214,4 @@ func NewQueryPublicCredentialsByIssuerCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&printNative, "native", false, "if set the credential will be printed in the raw format, that is how it is stored on chain")
 	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
-}
-
-func NewQueryCredentialStatusCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "credential-status",
-		Short:   "verify the credential status of a credential",
-		Example: "elestod query credential credential-status credentialFile",
-		Args:    cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			var (
-				queryClient    = credential.NewQueryClient(clientCtx)
-				credentialFile = args[0]
-				wc             *credential.WrappedCredential
-				rs             revocationStatus
-			)
-
-			// read the credential from file
-			if wc, err = credential.NewWrappedPublicCredentialFromFile(credentialFile); err != nil {
-				println("error building credential definition", err)
-				return err
-			}
-			// check for revocation
-			if rs, err = checkRevocation(queryClient, wc); err != nil {
-				println("error processing credential revocation:", err)
-				return err
-			}
-			// print results
-			return clientCtx.PrintBytes(rs.GetBytes())
-		},
-	}
-	flags.AddQueryFlagsToCmd(cmd)
-	return cmd
-}
-
-func NewQueryPublicCredentialStatusCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "public-credential-status",
-		Short:   "verify the credential status of a credential",
-		Example: "elestod query credential public-credential-status credentialID",
-		Args:    cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			//
-			var (
-				queryClient  = credential.NewQueryClient(clientCtx)
-				credentialID = args[0]
-				wc           *credential.WrappedCredential
-				rs           revocationStatus
-			)
-			// retrieve the public credential
-			if wc, err = queryPublicCredential(queryClient, credentialID); err != nil {
-				fmt.Println(err)
-				return err
-			}
-			// check for revocation
-			if rs, err = checkRevocation(queryClient, wc); err != nil {
-				println("error processing credential revocation:", err)
-				return err
-			}
-			// print results
-			return clientCtx.PrintBytes(rs.GetBytes())
-		},
-	}
-	flags.AddQueryFlagsToCmd(cmd)
-	return cmd
-}
-
-//
-func queryPublicCredential(qc credential.QueryClient, credentialID string) (wc *credential.WrappedCredential, err error) {
-	// query the public credential
-	result, err := qc.PublicCredential(
-		context.Background(),
-		&credential.QueryPublicCredentialRequest{
-			Id: credentialID,
-		},
-	)
-	if err != nil {
-		err = fmt.Errorf("public credential %s not found: %w", credentialID, err)
-		return
-	}
-	wc, err = credential.NewWrappedCredential(result.Credential)
-	if err != nil {
-		err = fmt.Errorf("error processing credential %s: %w", credentialID, err)
-	}
-	return
-}
-
-type revocationStatus struct {
-	Revoked    bool
-	Credential *credential.WrappedCredential
-}
-
-func (rs revocationStatus) GetBytes() []byte {
-	bs, err := json.Marshal(rs)
-	if err != nil {
-		panic(err)
-	}
-	return bs
-}
-
-// checkRevocation perform a revocation list check for a credential
-func checkRevocation(qc credential.QueryClient, wc *credential.WrappedCredential) (rs revocationStatus, err error) {
-
-	// is there a credential status to use?
-	if wc.CredentialStatus == nil {
-		err = fmt.Errorf("missing credentialStatus definition from the credential, revocation cannot be checked")
-		return
-	}
-	// retrieve the revocation list
-	res, err := qc.PublicCredential(
-		context.Background(),
-		&credential.QueryPublicCredentialRequest{
-			Id: wc.CredentialStatus.RevocationListCredential,
-		},
-	)
-	if err != nil {
-		err = fmt.Errorf("revocation list credential %s not found: %w", wc.CredentialStatus.RevocationListCredential, err)
-		return
-	}
-	// check issuer
-	if res.Credential.Issuer != wc.Issuer {
-		err = fmt.Errorf("credential issuer mismatch, expected: %v, got %v", wc.Issuer, res.Credential.Issuer)
-		return
-	}
-	// load the revocation list
-	rl, err := rl2020.NewRevocationListFromJSON(res.Credential.CredentialSubject)
-	if err != nil {
-		err = fmt.Errorf("error parsing the credential revocation list: %w", err)
-		return
-	}
-	rs.Credential = wc
-	rs.Revoked, err = rl.IsRevoked(*wc.CredentialStatus)
-	return
 }

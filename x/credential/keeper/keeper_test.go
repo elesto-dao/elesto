@@ -2,6 +2,9 @@ package keeper
 
 import (
 	"fmt"
+	"math/rand"
+	"testing"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	ct "github.com/cosmos/cosmos-sdk/codec/types"
@@ -22,8 +25,6 @@ import (
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
-	"math/rand"
-	"testing"
 )
 
 // Keeper test suit enables the keeper package to be tested

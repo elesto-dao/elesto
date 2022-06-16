@@ -26,8 +26,9 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/elesto-dao/elesto/app"
 	dbm "github.com/tendermint/tm-db"
+
+	"github.com/elesto-dao/elesto/app"
 )
 
 // NewAppConstructor returns a new simapp AppConstructor
@@ -187,6 +188,7 @@ func TestGetTxCmd(t *testing.T) {
 func TestGetQueryCmd(t *testing.T) {
 	expectedCommands := map[string]struct{}{
 		"credential-definition":        {},
+		"credential-definitions":       {},
 		"public-credential":            {},
 		"public-credentials":           {},
 		"credential-status":            {},

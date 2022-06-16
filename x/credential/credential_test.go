@@ -281,7 +281,6 @@ func TestNewWrappedPublicCredentialFromFile(t *testing.T) {
 }
 
 func TestNewWrappedCredential(t *testing.T) {
-
 	tests := []struct {
 		name    string
 		credFn  func() (*WrappedCredential, *PublicVerifiableCredential)
