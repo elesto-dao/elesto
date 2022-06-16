@@ -86,7 +86,13 @@ func NewIssuePublicCredentialCmd() *cobra.Command {
 			}
 			// write to the output file
 			if !credential.IsEmpty(credentialFileOut) {
-				if err = os.WriteFile(credentialFileOut, pwc.GetBytes(), 0600); err != nil {
+				pwcB, err := pwc.GetBytes()
+				if err != nil {
+					fmt.Printf("error reading the credential bytes: %v", err)
+					return err
+				}
+
+				if err = os.WriteFile(credentialFileOut, pwcB, 0600); err != nil {
 					fmt.Printf("error writing the credential to %v: %v", credentialFileOut, err)
 					return err
 				}
@@ -363,13 +369,16 @@ func sign(
 	wc.Proof = nil
 	// TODO: this could be expensive review this signing method
 	// TODO: we can hash this an make this less expensive
-	data := wc.GetBytes()
+	data, err := wc.GetBytes()
+	if err != nil {
+		return fmt.Errorf("error serializing the credential: %w", err)
+	}
 	signature, pubKey, err := keyring.SignByAddress(address, data)
 	if err != nil {
 		return err
 	}
 
-	p := credential.NewProof(
+	wc.Proof = credential.NewProof(
 		pubKey.Type(),
 		tm.Format(time.RFC3339),
 		// TODO: define proof purposes
@@ -377,6 +386,5 @@ func sign(
 		verificationMethodID,
 		base64.StdEncoding.EncodeToString(signature),
 	)
-	wc.Proof = &p
 	return nil
 }

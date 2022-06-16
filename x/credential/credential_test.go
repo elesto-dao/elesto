@@ -2,13 +2,19 @@ package credential
 
 import (
 	_ "embed"
+	"encoding/base64"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/crypto/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/elesto-dao/elesto/x/did"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/elesto-dao/elesto/x/did"
 )
 
 var (
@@ -332,6 +338,225 @@ func TestNewWrappedCredential(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, wantWc, gotWc)
 			}
+		})
+	}
+}
+
+func TestWrappedCredential_HasType(t *testing.T) {
+
+	tests := []struct {
+		name           string
+		wcFn           func() *WrappedCredential
+		credentialType string
+		want           bool
+	}{
+		{
+			"PASS: has type SpecialCredential",
+			func() *WrappedCredential {
+				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("123", WithType("SpecialCredential")))
+				assert.NoError(t, err)
+				return wc
+			},
+			"SpecialCredential",
+			true,
+		},
+		{
+			"PASS: has type VerifiableCredential",
+			func() *WrappedCredential {
+				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("123", WithType("SpecialCredential")))
+				assert.NoError(t, err)
+				return wc
+			},
+			"VerifiableCredential",
+			true,
+		},
+		{
+			"FAIL: has type SpecialCredential",
+			func() *WrappedCredential {
+				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("123"))
+				assert.NoError(t, err)
+				return wc
+			},
+			"SpecialCredential",
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			wc := tt.wcFn()
+			assert.Equalf(t, tt.want, wc.HasType(tt.credentialType), "HasType(%v)", tt.credentialType)
+		})
+	}
+}
+
+func TestWrappedCredential_GetSubjectID(t *testing.T) {
+	tests := []struct {
+		name      string
+		wcFn      func() *WrappedCredential
+		wantS     string
+		wantIsDID bool
+	}{
+		{
+			"PASS: not a did",
+			func() *WrappedCredential {
+				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("https://example.credential/01", WithType("SpecialCredential")))
+				wc.SetSubject(map[string]any{"id": "https://something.something"})
+				assert.NoError(t, err)
+				return wc
+			},
+			"https://something.something",
+			false,
+		},
+		{
+			"PASS: did id",
+			func() *WrappedCredential {
+				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("https://example.credential/01", WithType("SpecialCredential")))
+				wc.SetSubject(map[string]any{"id": "did:cosmos:elesto:subject"})
+				assert.NoError(t, err)
+				return wc
+			},
+			"did:cosmos:elesto:subject",
+			true,
+		},
+		{
+			"PASS: id is not a string",
+			func() *WrappedCredential {
+				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("https://example.credential/01", WithType("SpecialCredential")))
+				wc.SetSubject(map[string]any{"id": 1})
+				assert.NoError(t, err)
+				return wc
+			},
+			"",
+			false,
+		},
+		{
+			"PASS: id is unsupported type",
+			func() *WrappedCredential {
+				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("https://example.credential/01", WithType("SpecialCredential")))
+				wc.SetSubject(map[string]any{"id": make(chan string)})
+				assert.NoError(t, err)
+				return wc
+			},
+			"",
+			false,
+		},
+		{
+			"PASS: id is missing",
+			func() *WrappedCredential {
+				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("https://example.credential/01", WithType("SpecialCredential")))
+				assert.NoError(t, err)
+				return wc
+			},
+			"",
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			wc := tt.wcFn()
+			gotS, gotIsDID := wc.GetSubjectID()
+			assert.Equalf(t, tt.wantS, gotS, "GetSubjectID()")
+			assert.Equalf(t, tt.wantIsDID, gotIsDID, "GetSubjectID()")
+		})
+	}
+}
+
+func TestWrappedCredential_GetBytes(t *testing.T) {
+
+	tests := []struct {
+		name    string
+		wcFn    func() *WrappedCredential
+		want    []byte
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			"PASS: can marshal",
+			func() *WrappedCredential {
+				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("https://example.credential/01", WithType("SpecialCredential")))
+				wc.SetSubject(map[string]any{"id": "https://something.something"})
+				assert.NoError(t, err)
+				return wc
+			},
+			[]byte{0x7b, 0x22, 0x40, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74, 0x22, 0x3a, 0x5b, 0x22, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x77, 0x33, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x32, 0x30, 0x31, 0x38, 0x2f, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x73, 0x2f, 0x76, 0x31, 0x22, 0x5d, 0x2c, 0x22, 0x69, 0x64, 0x22, 0x3a, 0x22, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x2f, 0x30, 0x31, 0x22, 0x2c, 0x22, 0x74, 0x79, 0x70, 0x65, 0x22, 0x3a, 0x5b, 0x22, 0x56, 0x65, 0x72, 0x69, 0x66, 0x69, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x22, 0x2c, 0x22, 0x53, 0x70, 0x65, 0x63, 0x69, 0x61, 0x6c, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x22, 0x5d, 0x2c, 0x22, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x53, 0x75, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x22, 0x3a, 0x7b, 0x22, 0x69, 0x64, 0x22, 0x3a, 0x22, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x73, 0x6f, 0x6d, 0x65, 0x74, 0x68, 0x69, 0x6e, 0x67, 0x2e, 0x73, 0x6f, 0x6d, 0x65, 0x74, 0x68, 0x69, 0x6e, 0x67, 0x22, 0x7d, 0x7d},
+			assert.NoError,
+		},
+		//{
+		//	// TODO: this should fail but it passes
+		//	"FAIL: marshal error",
+		//	func() *WrappedCredential {
+		//		wc, err := NewWrappedCredential(NewPublicVerifiableCredential("https://example.credential/01", WithType("SpecialCredential")))
+		//		// this should be not serializable
+		//		wc.SetSubject(map[string]any{"id": make(chan string)})
+		//		assert.NoError(t, err)
+		//		return wc
+		//	},
+		//	[]byte{},
+		//	assert.NoError,
+		//},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			wc := tt.wcFn()
+			got, err := wc.GetBytes()
+			if !tt.wantErr(t, err, fmt.Sprintf("GetBytes()")) {
+				return
+			}
+			assert.Equalf(t, tt.want, got, "GetBytes()")
+		})
+	}
+}
+
+func TestWrappedCredential_Validate(t *testing.T) {
+	type args struct {
+		pk types.PubKey
+	}
+	tests := []struct {
+		name      string
+		fixtureFn func() (*WrappedCredential, types.PubKey)
+		wantErr   assert.ErrorAssertionFunc
+	}{
+		{
+			"PASS: can marshal",
+			func() (*WrappedCredential, types.PubKey) {
+				// create the public key
+				kr := keyring.NewInMemory()
+				ki, err := kr.NewAccount(
+					"test1",
+					"coil animal waste sound canvas weekend struggle skirt donor boil around bounce grant right silent year subway boost banana unlock powder riot spawn nerve",
+					keyring.DefaultBIP39Passphrase, sdk.FullFundraiserPath, hd.Secp256k1,
+				)
+				assert.NoError(t, err)
+				// get the issuer
+				issuerDID := did.NewChainDID("test", ki.GetAddress().String())
+				// create the credential
+				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("https://example.credential/01", WithType("SpecialCredential"), WithIssuerDID(issuerDID)))
+				wc.SetSubject(map[string]any{"id": "https://something.something"})
+				// sign the credential
+				data, err := wc.GetBytes()
+				assert.NoError(t, err)
+				signature, pubKey, err := kr.SignByAddress(ki.GetAddress(), data)
+				assert.NoError(t, err)
+
+				// attach the proof
+				date := time.Date(2022, 02, 24, 0, 0, 0, 0, time.UTC)
+				wc.Proof = NewProof(
+					pubKey.Type(),
+					date.Format(time.RFC3339),
+					// TODO: define proof purposes
+					did.AssertionMethod,
+					issuerDID.NewVerificationMethodID(ki.GetAddress().String()),
+					base64.StdEncoding.EncodeToString(signature),
+				)
+				assert.NoError(t, err)
+				return wc, ki.GetPubKey()
+			},
+			assert.NoError,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			wc, pk := tt.fixtureFn()
+			tt.wantErr(t, wc.Validate(pk), fmt.Sprintf("Validate(%v)", pk))
 		})
 	}
 }

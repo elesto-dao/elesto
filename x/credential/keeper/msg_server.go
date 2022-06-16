@@ -158,7 +158,13 @@ func (k msgServer) IssuePublicVerifiableCredential(
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
-	crL := gojsonschema.NewBytesLoader(wc.GetBytes())
+	wcB, err := wc.GetBytes()
+	if err != nil {
+		err = sdkerrors.Wrapf(credential.ErrInvalidCredential, "the credential %s is corrupted: %v", wc.Id, err)
+		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+	crL := gojsonschema.NewBytesLoader(wcB)
 	dataValidator, err := schema.Validate(crL)
 	if err != nil {
 		err = sdkerrors.Wrapf(credential.ErrInvalidCredential, "the credential doesn't match the schema: %v", msg.CredentialDefinitionID)
