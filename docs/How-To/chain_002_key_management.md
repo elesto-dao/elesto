@@ -1,29 +1,34 @@
 ---
-title: Keys Management
+title: Manage Keys
 ---
 
-# Keys management
 
-This section covers how to manage keys for the Elesto network
+This section covers how to manage keys for the Elesto network.
 
 
 ## Basic Key Management
 
-Create, import, export and delete keys using the CLI keyring.
+Create, import, export, and delete keys using the Elesto CLI.
 
 ### Create a new key
 
-To generate a new key pair use the command:
+To generate a new key pair, run this command:
 
 ```
-elestod keys add <wallet_name>
+elestod keys add $KEY_NAME
 ```
+
+where:
+
+- `$KEY_NAME` is a human readable name for your key
 
 ??? Example "Example: generate Alice's key"
 
     ```shell
     ➜ elestod keys add alice
-    
+    ```
+
+    ```shell
     - name: alice
     type: local
     address: elesto1pp7tyzj80hrys3aae043lerkxkd0h3e8mf7khg
@@ -46,7 +51,7 @@ The key comes with a "mnemonic phrase", which is serialized into a human-readabl
 
 ## List your keys 
 
-Your wallet can host multiple keys, to list the keys available in your wallet use the command:
+Your wallet can host multiple keys. To list the keys available in your wallet, run this command:
 
 ```
 elestod keys list
@@ -55,7 +60,10 @@ elestod keys list
 ??? Example "Example: list keys"
 
     ```shell
-    ➜ elestod keys list 
+    ➜ elestod keys list
+    ```
+
+    ```shell
     - name: alice
     type: local
     address: elesto1pp7tyzj80hrys3aae043lerkxkd0h3e8mf7khg
@@ -70,13 +78,16 @@ elestod keys list
 To remove a key from your wallet use the command:
 
 ```
-elestod keys delete <key_name>
+elestod keys delete $KEY_NAME
 ```
 
 ??? Example "Example: delete Alice's keys"
     
     ```shell
     ➜ elestod keys delete alice
+    ```
+
+    ```shell
     Key reference will be deleted. Continue? [y/N]: y
     Key deleted forever (uh oh!)
     ```
@@ -85,7 +96,7 @@ elestod keys delete <key_name>
 ### Restore existing key by seed phrase
 
 ```
-elestod keys add <key_name> --recover
+elestod keys add $KEY_NAME --recover
 ```
 
 You can restore an existing key with the mnemonic.
@@ -94,6 +105,9 @@ You can restore an existing key with the mnemonic.
 
     ```shell
     ➜ elestod keys add alice --recover
+    ```
+
+    ```shell
     > Enter your bip39 mnemonic
     ## Enter your 24-word mnemonic here ##
 

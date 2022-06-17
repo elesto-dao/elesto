@@ -15,9 +15,9 @@ chainId: elesto-canary-1
 
 The Elesto testnet chain ID is **`{{ chainId }}`**
 
-## Initialize Elesto node
+## Initialize Your Elesto Node
 
-Choose a name for your node, for this guide we'll be using `{{ nodeName }}`. The command will create the node configurations:
+Initialize your node and create the node configurations. Choose a name fo your node. This guide uses `{{ nodeName }}`. 
 
 ```shell
 elestod init {{ nodeName }} --chain-id={{ chainId }}
@@ -29,7 +29,7 @@ Update the persistent peers list in the `config.toml`:
 sed -i 's/persistent_peers = ""/persistent_peers = "833d9eacfec93c3df2e721d8ce818011418752a0@35.232.91.19:26656"/g' ~/.elesto/config/config.toml
 ```
 
-The updated peers configuration should look like this:
+The updated peers configuration looks like this:
 
 ```shell
 # Comma separated list of seed nodes to connect to
@@ -60,7 +60,7 @@ mkdir -p ~/.elesto/cosmovisor/genesis/bin
 mkdir -p ~/.elesto/cosmovisor/upgrades
 ```
 
-Set-up the environment variables:
+Set up the Cosmovisor environment variables:
 
 ```shell
 echo "# Setup Cosmovisor" >> ~/.profile
@@ -72,38 +72,39 @@ echo "export DAEMON_RESTART_AFTER_UPGRADE=true" >> ~/.profile
 echo "export UNSAFE_SKIP_BACKUP=true" >> ~/.profile
 source ~/.profile
 ```
+<!-- TODO: explain UNSAFE_SKIP_BACKUP 
+If `UNSAFE_SKIP_BACKUP=true`,  (explain here).
+If `UNSAFE_SKIP_BACKUP=false` or omitted, (explain here)
+Each backup takes a decent amount of time. Public snapshots of old states are available.
 
-You may leave out `UNSAFE_SKIP_BACKUP=true`, however, the backup takes a decent amount of time, and public snapshots of old states are available.
-
+-->
 
 
 Download and replace the genesis file:
 
 ```shell
 cd ~/.elesto
-# TODO: when the repos are public
-# the correct url is https://github.com/elesto-dao/networks/raw/main/elesto-canary-1/genesis.tar.bz2
-curl -L -O https://filedn.eu/lDrGVxedryyQhhwkHmVd7sJ/genesis.tar.bz2 
+# TODO: the repo is currently private
+curl -L -O https://github.com/elesto-dao/networks/raw/main/elesto-canary-1/genesis.tar.bz2 
 tar -xjf genesis.tar.bz2 && rm genesis.tar.bz2
 ```
 
 
 
 
-Copy the current elestod binary into the cosmovisor/genesis folder:
+Copy the current `elestod` binary into the `cosmovisor/genesis` folder:
 
 ```shell
 cp ~/go/bin/elestod ~/.elesto/cosmovisor/genesis/bin
 ```
 
-To check your work, ensure the version of cosmovisor and elestod are the same:
+The cosmovisor and elestod versions must be the same. To verify the versions, run these commands:
 
 ```shell
 cosmovisor version
 elestod version
 ```
 
-These two command should both output 7.0.3
 
 Reset private validator file to genesis state:
 
@@ -111,9 +112,9 @@ Reset private validator file to genesis state:
 elestod unsafe-reset-all
 ```
 
-### Set-up Elesto Service
+### Allow Background Run and Auto Restart
 
-Set up a service to allow cosmovisor to run in the background as well as restart automatically if it runs into any problems:
+Set up an Elesto service to allow cosmovisor to run in the background and automatic restarts:
 
 ```shell
 cd ~
@@ -147,7 +148,7 @@ sudo systemctl daemon-reload
 sudo systemctl restart systemd-journald
 ```
 
-### Operate the Elesto service
+### Operate the Elesto Service
 
 Start the service:
 
@@ -168,16 +169,17 @@ journalctl -u cosmovisor -f
 ```
 
 
-### Sync the node 
+### Sync the Node
 
-After starting the junod daemon, the chain will begin to sync to the network. The time to sync to the network will vary depending on your setup, but could take a very long time. To query the status of your node:
+After starting the `elestod` daemon, the chain begins to sync to the network. The time to sync to the network varies, depending on your setup, but plan accordingly that the sync process could take a very long time. To query the status of your node:
 
 ```shell
 # Query via the RPC (default port: 26657)
 curl http://localhost:26657/status | jq .result.sync_info.catching_up
 ```
 
-If this command returns true then your node is still catching up. If it returns `false` then your node has caught up to the network current block and you are safe to proceed to upgrade to a validator node.
+- If this command returns true, then your node is still catching up. Continue to wait.
+- If this command returns `false`, then your node has caught up to the network's current block. You are safe to proceed with upgrading a validator node.
 
 > TODO: state-sync and backups
 
@@ -187,10 +189,9 @@ If this command returns true then your node is still catching up. If it returns 
 ## Upgrading to validator
 
 ??? Important "Keys and Balances" 
-    To became a validator you need an account with a positive balance. Follow the [keys management](../How-To/chain_002_key_management.md) to learn how to create an account and the [faucet](../How-To/chain_001_faucet.md) how-to to learn how to get tokens for the testnet. 
+    To become a validator, your account must have a positive balance. Follow the [keys management](../How-To/chain_002_key_management.md) to learn how to create an account and the [faucet](../How-To/chain_001_faucet.md) how-to to learn how to get tokens for the testnet. 
 
-
-To upgrade the node to a validator, you will need to submit a create-validator transaction:
+To upgrade the node to a be validator node, you must submit a `create-validator` transaction:
 
 ```shell
 elestod tx staking create-validator \
@@ -209,7 +210,7 @@ elestod tx staking create-validator \
 
 ??? Example "Example: Create validator for Alice"
 
-    The following is an example to broadcast the create-validator transaction from Alice wallet 
+    The following example shows a broadcast of the `create-validator` transaction from Alice's wallet:
 
     ```shell
     elestod tx staking create-validator \
@@ -227,7 +228,7 @@ elestod tx staking create-validator \
     ```
 
 
-For a more detailed explanation of the paramters values run the command 
+To see an explanation of the parameter values, use help. You can run this command: 
 
 ```shell
 elestod tx staking create-validator --help

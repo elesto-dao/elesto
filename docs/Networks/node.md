@@ -1,5 +1,5 @@
 ---
-title: Install Elesto node
+title:  Install an Elesto Node
 ---
 
 
@@ -14,9 +14,9 @@ The minimum recommended specs for running the Elesto node (`elestod`) is as foll
 ## Manual installation 
 
 !!! hint
-    We'll be using Ubuntu linux during on this guide, if you have chosen a different operating system, you will need to modify your commands to suit your operating system.
+    The example commands in this guide are for Ubuntu Linux. To run these commands on a different operating system, modify the commands as appropriate for your environment.
 
-### Install pre-requisites
+### Install prerequisites
 
 ```shell
 # update the local package list and install any available upgrades
@@ -54,9 +54,11 @@ git checkout v1.0.0-rc2
 make install 
 ```
 
-the binary will be installed in `~/go/bin/elestod`
+The `elestod` binary is installed in `~/go/bin/elestod`.
 
 ### Enable the host firewall [OPTIONAL]
+
+For servers that are directly exposed to the internet, it is recommended to install a firewall.
 
 ```shell
 ## allow ssh connection to the server
