@@ -5,10 +5,18 @@ theme:
   name: material
   features:
     - navigation.sections
+    - navigation.instant
+    - navigation.tracking
     - search.suggest
     - search.highlight
     - search.share
+  palette:
+    primary: black
+  font:
+    text: Asap #Dosis
+    code: Share Tech Mono
 plugins:
+  - macros
   - search
   - build_plantuml:
       diagram_root: "docs/assets/diagrams" # should reside under docs_dir
@@ -16,5 +24,7 @@ plugins:
       input_folder: "src"
       output_format: "svg"
       input_extensions: "puml" # comma separated list of extensions to parse, by default every file is parsed
-
-
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences

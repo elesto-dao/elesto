@@ -20,7 +20,7 @@ To build the project:
 - [`make`](https://www.gnu.org/software/make/) to use Makefile targets
 - `sha256sum` to calculate build checksums
 
-To run the [seed scripts](scripts/seeds/README.md):
+To run the [seed scripts](scripts/seeds):
 
 - OS: Linux or macOS
 - [jq](https://stedolan.github.io/jq/) JSON processor
@@ -72,6 +72,11 @@ To run the unit and integration tests, run the `make test` command from the proj
 To install the node client on your local machine, run the `make install` command from the project's root folder.
 
 > 💡 you can also use the default `go` command to build the project, check the content of the [Makefile](./Makefile) for reference
+
+## Running a local network
+
+To set-up a local network and generate some transactions, run the `make seed` command from the project's root folder. The command 
+will run the scripts available in the [seed scripts](scripts/seeds).
 
 ## Documentation Portal 
 
