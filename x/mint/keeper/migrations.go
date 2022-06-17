@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	v11 "github.com/elesto-dao/elesto/x/mint/migrations/v11"
+	testnetUpgrade2022061 "github.com/elesto-dao/elesto/x/mint/migrations/testnet-upgrade-2022-06-21"
 )
 
 // Migrator is a struct for handling in-place store migrations.
@@ -18,5 +18,5 @@ func NewMigrator(keeper Keeper) Migrator {
 
 // Migrate1to2 migrates from version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	return v11.MigrateParams(ctx, m.keeper)
+	return testnetUpgrade2022061.MigrateParams(ctx, m.keeper)
 }

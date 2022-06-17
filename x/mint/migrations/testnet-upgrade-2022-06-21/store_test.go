@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/elesto-dao/elesto/app"
-	v11 "github.com/elesto-dao/elesto/x/mint/migrations/v11"
+	testnetUpgrade2022061 "github.com/elesto-dao/elesto/x/mint/migrations/testnet-upgrade-2022-06-21"
 	"github.com/elesto-dao/elesto/x/mint/types"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -14,7 +14,7 @@ func TestMigrateParams(t *testing.T) {
 	app := app.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
-	v11.MigrateParams(ctx, app.MintKeeper)
+	testnetUpgrade2022061.MigrateParams(ctx, app.MintKeeper)
 
 	require.Equal(t, types.DefaultParams(), app.MintKeeper.GetParams(ctx))
 }

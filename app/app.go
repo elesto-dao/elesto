@@ -108,7 +108,7 @@ import (
 const (
 	AccountAddressPrefix = "elesto"
 	Name                 = "elesto"
-	upgradeName          = "v1.1" // Latest upgrade to be applied for the chain
+	upgradeName          = "testnet-upgrade-2022-06-21" // Latest upgrade to be applied for the chain
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
