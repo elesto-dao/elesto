@@ -90,9 +90,7 @@ locally the requirements are:
 Then, from the command line install the required packages
 
 ```sh
-pip install mkdocs 
-pip install mkdocs-material
-pip install mkdocs-build-plantuml-plugin
+pip install -r requirements.txt
 ```
 
 To build the documentation portal, execute the following command from the project root:
