@@ -17,10 +17,10 @@ import ( // this line is used by starport scaffolding # 1
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/elesto-dao/elesto/x/did"
-	"github.com/elesto-dao/elesto/x/did/client/cli"
-	"github.com/elesto-dao/elesto/x/did/keeper"
-	"github.com/elesto-dao/elesto/x/did/simulation"
+	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v2/x/did/client/cli"
+	"github.com/elesto-dao/elesto/v2/x/did/keeper"
+	"github.com/elesto-dao/elesto/v2/x/did/simulation"
 )
 
 var (

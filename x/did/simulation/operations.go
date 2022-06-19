@@ -11,8 +11,8 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/elesto-dao/elesto/x/did"
-	"github.com/elesto-dao/elesto/x/did/keeper"
+	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v2/x/did/keeper"
 )
 
 var (

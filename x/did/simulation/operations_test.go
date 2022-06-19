@@ -13,10 +13,10 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/elesto-dao/elesto/app"
-	elestoapp "github.com/elesto-dao/elesto/app"
-	"github.com/elesto-dao/elesto/x/did"
-	"github.com/elesto-dao/elesto/x/did/simulation"
+	"github.com/elesto-dao/elesto/v2/app"
+	elestoapp "github.com/elesto-dao/elesto/v2/app"
+	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v2/x/did/simulation"
 )
 
 type SimTestSuite struct {

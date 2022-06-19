@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/elesto-dao/elesto/x/mint/types"
+	"github.com/elesto-dao/elesto/v2/x/mint/types"
 )
 
 // GetQueryCmd returns the cli query commands for the mint module.

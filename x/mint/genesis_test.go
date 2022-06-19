@@ -3,12 +3,12 @@ package mint_test
 import (
 	"testing"
 
-	chain "github.com/elesto-dao/elesto/app"
+	chain "github.com/elesto-dao/elesto/v2/app"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/elesto-dao/elesto/x/mint"
-	"github.com/elesto-dao/elesto/x/mint/types"
+	"github.com/elesto-dao/elesto/v2/x/mint"
+	"github.com/elesto-dao/elesto/v2/x/mint/types"
 )
 
 func TestInitGenesis(t *testing.T) {

@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	didmod "github.com/elesto-dao/elesto/x/did"
+	didmod "github.com/elesto-dao/elesto/v2/x/did"
 )
 
 type msgServer struct {

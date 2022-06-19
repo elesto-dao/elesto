@@ -18,14 +18,14 @@ import (
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/elesto-dao/elesto/x/did"
-	"github.com/elesto-dao/elesto/x/did/client/cli"
+	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v2/x/did/client/cli"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/elesto-dao/elesto/app"
+	"github.com/elesto-dao/elesto/v2/app"
 	dbm "github.com/tendermint/tm-db"
 )
 

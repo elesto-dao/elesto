@@ -17,10 +17,10 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/elesto-dao/elesto/x/mint/client/cli"
-	"github.com/elesto-dao/elesto/x/mint/keeper"
-	"github.com/elesto-dao/elesto/x/mint/simulation"
-	"github.com/elesto-dao/elesto/x/mint/types"
+	"github.com/elesto-dao/elesto/v2/x/mint/client/cli"
+	"github.com/elesto-dao/elesto/v2/x/mint/keeper"
+	"github.com/elesto-dao/elesto/v2/x/mint/simulation"
+	"github.com/elesto-dao/elesto/v2/x/mint/types"
 )
 
 var (

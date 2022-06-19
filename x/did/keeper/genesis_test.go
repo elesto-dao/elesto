@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 
-	"github.com/elesto-dao/elesto/x/did"
+	"github.com/elesto-dao/elesto/v2/x/did"
 )
 
 // TestGenesisExport tests the genesis export functionality of the did module

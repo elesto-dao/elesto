@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"github.com/elesto-dao/elesto/x/credential"
+	"github.com/elesto-dao/elesto/v2/x/credential"
 )
 
 // SetCredentialDefinition persist a credential definition to the store. The credential definition ID is used as key.
