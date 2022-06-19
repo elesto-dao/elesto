@@ -8,12 +8,12 @@ import (
 
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/elesto-dao/elesto/app"
-	"github.com/elesto-dao/elesto/x/mint/types"
+	"github.com/elesto-dao/elesto/v2/app"
+	"github.com/elesto-dao/elesto/v2/x/mint/types"
 )
 
 func TestParams(t *testing.T) {
-	app.Setup(false);
+	app.Setup(false)
 	require.IsType(t, paramstypes.KeyTable{}, types.ParamKeyTable())
 
 	defaultParams := types.DefaultParams()
@@ -23,7 +23,7 @@ func TestParams(t *testing.T) {
 }
 
 func TestParamsValidate(t *testing.T) {
-	app.Setup(false);
+	app.Setup(false)
 
 	require.NoError(t, types.DefaultParams().Validate())
 

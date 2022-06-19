@@ -16,7 +16,7 @@ import (
 	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	"google.golang.org/grpc"
 
-	"github.com/elesto-dao/elesto/x/did"
+	"github.com/elesto-dao/elesto/v2/x/did"
 )
 
 // Test data for the sees to run

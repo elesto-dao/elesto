@@ -16,7 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
 
-	"github.com/elesto-dao/elesto/x/did"
+	"github.com/elesto-dao/elesto/v2/x/did"
 )
 
 // request send a json http request

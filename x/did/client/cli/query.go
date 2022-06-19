@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/elesto-dao/elesto/x/did"
+	"github.com/elesto-dao/elesto/v2/x/did"
 )
 
 // GetQueryCmd returns the cli query commands for this module

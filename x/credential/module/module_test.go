@@ -10,7 +10,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	elestoapp "github.com/elesto-dao/elesto/app"
+	elestoapp "github.com/elesto-dao/elesto/v2/app"
 )
 
 func TestCreateModuleInApp(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/elesto-dao/elesto/x/mint/types"
+	"github.com/elesto-dao/elesto/v2/x/mint/types"
 )
 
 var _ types.QueryServer = Keeper{}

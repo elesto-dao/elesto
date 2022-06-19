@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/elesto-dao/elesto/x/did"
+	"github.com/elesto-dao/elesto/v2/x/did"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/suite"
 

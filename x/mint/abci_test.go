@@ -8,11 +8,11 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	chain "github.com/elesto-dao/elesto/app"
+	chain "github.com/elesto-dao/elesto/v2/app"
 
-	"github.com/elesto-dao/elesto/x/mint"
-	"github.com/elesto-dao/elesto/x/mint/keeper"
-	"github.com/elesto-dao/elesto/x/mint/types"
+	"github.com/elesto-dao/elesto/v2/x/mint"
+	"github.com/elesto-dao/elesto/v2/x/mint/keeper"
+	"github.com/elesto-dao/elesto/v2/x/mint/types"
 )
 
 type ModuleTestSuite struct {
@@ -54,24 +54,24 @@ func (s *ModuleTestSuite) TestInflationRate() {
 	// Rationale on how the default tolerance has been determined is explained in the link above.
 	// Year 10 is a special case, because we want to produce a maximum amount of 1 billion tokens by then.
 	expectedEstimatedSupply := map[int]estimatedSupply{
-		0:  {amount: 400000000, tolerance: defaultTolerance},
-		1:  {amount: 600000000, tolerance: defaultTolerance},
-		2:  {amount: 750000000, tolerance: defaultTolerance},
-		3:  {amount: 843750000, tolerance: defaultTolerance},
-		4:  {amount: 896484375, tolerance: defaultTolerance},
-		5:  {amount: 924499512, tolerance: defaultTolerance},
-		6:  {amount: 942989502, tolerance: defaultTolerance},
-		7:  {amount: 961849292, tolerance: defaultTolerance},
-		8:  {amount: 981086278, tolerance: defaultTolerance},
+		0: {amount: 400000000, tolerance: defaultTolerance},
+		1: {amount: 600000000, tolerance: defaultTolerance},
+		2: {amount: 750000000, tolerance: defaultTolerance},
+		3: {amount: 843750000, tolerance: defaultTolerance},
+		4: {amount: 896484375, tolerance: defaultTolerance},
+		5: {amount: 924499512, tolerance: defaultTolerance},
+		6: {amount: 942989502, tolerance: defaultTolerance},
+		7: {amount: 961849292, tolerance: defaultTolerance},
+		8: {amount: 981086278, tolerance: defaultTolerance},
 		9: {amount: 1000000000, tolerance: 0},
 	}
 
 	blocksPerYear := 6_307_200
 
-	// We run the simulation for at least two times the amount of supply years to 
+	// We run the simulation for at least two times the amount of supply years to
 	// make sure past year 10, no more tokens are minted.
-	simulationYears := len(expectedEstimatedSupply)*2
-	
+	simulationYears := len(expectedEstimatedSupply) * 2
+
 	initialSupply := 200_000_000_000_000
 
 	ctx := s.ctx.WithBlockHeight(int64(0))
@@ -91,13 +91,12 @@ func (s *ModuleTestSuite) TestInflationRate() {
 
 		s.T().Log("simulating year", year, "block height", blockHeight)
 
-		
 		ctx := s.ctx.WithBlockHeight(int64(blockHeight))
 
 		mint.BeginBlocker(ctx, s.keeper)
 
 		// Since running this simulation for each block would make this test take too much time,
-		// we mint the total amount of tokens minted in one year, minus 1 block since the `mint.BeginBlocker()` 
+		// we mint the total amount of tokens minted in one year, minus 1 block since the `mint.BeginBlocker()`
 		// call already mints once for us.
 		blockInflationAmount := mint.BlockInflationAmount[year]
 		mintAmount := sdk.NewInt(int64(blockInflationAmount) * int64(blocksPerYear-1))
@@ -121,7 +120,7 @@ func (s *ModuleTestSuite) TestInflationRate() {
 		// in the table above.
 		difference := math.Abs(float64(supplyInTokens - yearExpectedSupply.amount))
 		s.T().Log("difference:", difference, "tolerance:", yearExpectedSupply.tolerance, "expected:", yearExpectedSupply.amount, "got:", supplyInTokens)
-		
+
 		// Since we're dealing with absolute value, we can bypass checking negative amounts.
 		if difference > float64(yearExpectedSupply.tolerance) {
 			s.Require().Fail(

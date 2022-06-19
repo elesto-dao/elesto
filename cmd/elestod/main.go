@@ -6,7 +6,7 @@ import (
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 
-	"github.com/elesto-dao/elesto/app"
+	"github.com/elesto-dao/elesto/v2/app"
 )
 
 func main() {

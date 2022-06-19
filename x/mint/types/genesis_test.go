@@ -3,14 +3,14 @@ package types_test
 import (
 	"testing"
 
-	"github.com/elesto-dao/elesto/app"
-	"github.com/elesto-dao/elesto/x/mint/types"
+	"github.com/elesto-dao/elesto/v2/app"
+	"github.com/elesto-dao/elesto/v2/x/mint/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
 	app.Setup(false)
-	
+
 	for _, tc := range []struct {
 		name        string
 		malleate    func(genState *types.GenesisState)
