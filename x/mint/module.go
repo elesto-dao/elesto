@@ -129,6 +129,10 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	if err := cfg.RegisterMigration(types.ModuleName, 1, migrator.Migrate1to2); err != nil {
 		panic(fmt.Errorf("cannot migrate x/mint store from version 1 to version 2, %w", err))
 	}
+
+	if err := cfg.RegisterMigration(types.ModuleName, 2, migrator.Migrate2to3); err != nil {
+		panic(fmt.Errorf("cannot migrate x/mint store from version 2 to version 3, %w", err))
+	}
 }
 
 // InitGenesis performs genesis initialization for the mint module. It returns
@@ -149,7 +153,7 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
-func (AppModule) ConsensusVersion() uint64 { return 2 }
+func (AppModule) ConsensusVersion() uint64 { return 3 }
 
 // BeginBlock returns the begin blocker for the mint module.
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
