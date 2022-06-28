@@ -76,14 +76,14 @@ func (s *ModuleTestSuite) TestInflationRate() {
 
 	ctx := s.ctx.WithBlockHeight(int64(0))
 
-	err := s.keeper.MintCoins(ctx, sdk.NewCoins(sdk.NewInt64Coin("stake", int64(initialSupply))))
+	err := s.keeper.MintCoins(ctx, sdk.NewCoins(sdk.NewInt64Coin("utsp", int64(initialSupply))))
 	s.Require().NoError(err)
 	s.Require().EqualValues(s.keeper.GetSupply(
 		s.ctx.WithBlockHeight(1),
-		"stake",
+		"utsp",
 	).Amount.Int64(), int64(initialSupply))
 
-	s.T().Log("circulating supply at block 0:", s.keeper.GetSupply(ctx, "stake").String())
+	s.T().Log("circulating supply at block 0:", s.keeper.GetSupply(ctx, "utsp").String())
 
 	for year := 0; year <= simulationYears; year++ {
 		// Adding 1 here because we're running the simulation on the first day of the following year.
@@ -100,10 +100,10 @@ func (s *ModuleTestSuite) TestInflationRate() {
 		// call already mints once for us.
 		blockInflationAmount := mint.BlockInflationAmount[year]
 		mintAmount := sdk.NewInt(int64(blockInflationAmount) * int64(blocksPerYear-1))
-		mintedCoin := sdk.NewCoin("stake", mintAmount)
+		mintedCoin := sdk.NewCoin("utsp", mintAmount)
 		mintedCoins := sdk.NewCoins(mintedCoin)
 		s.Require().NoError(s.keeper.MintCoins(ctx, mintedCoins))
-		supply := s.keeper.GetSupply(ctx, "stake")
+		supply := s.keeper.GetSupply(ctx, "utsp")
 		s.T().Log("inflation for year", year, ":", "supply", supply)
 
 		supplyInTokens := supply.Amount.Quo(sdk.NewInt(1000000)).ToDec().RoundInt64()

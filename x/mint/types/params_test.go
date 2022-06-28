@@ -18,7 +18,7 @@ func TestParams(t *testing.T) {
 
 	defaultParams := types.DefaultParams()
 
-	paramsStr := `mint_denom:"stake" blocks_per_year:6308000 max_supply:1000000000000000 team_address:"elesto1ms2wrq8k04cug7ea6ekf60nfke6a8vu8pwm684" team_reward:"0.1" `
+	paramsStr := `mint_denom:"utsp" blocks_per_year:6308000 max_supply:1000000000000000 team_address:"elesto1ms2wrq8k04cug7ea6ekf60nfke6a8vu8pwm684" team_reward:"0.1" `
 	require.Equal(t, paramsStr, defaultParams.String())
 }
 

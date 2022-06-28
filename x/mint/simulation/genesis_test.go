@@ -10,7 +10,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
@@ -42,7 +41,7 @@ func TestRandomizedGenState(t *testing.T) {
 	var genState types.GenesisState
 	simState.Cdc.MustUnmarshalJSON(simState.GenState[types.ModuleName], &genState)
 
-	require.Equal(t, sdk.DefaultBondDenom, genState.Params.MintDenom)
+	require.Equal(t, "utsp", genState.Params.MintDenom)
 	require.Equal(t, types.DefaultParams().BlocksPerYear, genState.Params.BlocksPerYear)
 	require.Equal(t, types.DefaultParams().MaxSupply, genState.Params.MaxSupply)
 }
