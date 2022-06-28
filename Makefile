@@ -121,7 +121,7 @@ build-linux:
 	GOOS=linux GOARCH=amd64 LEDGER_ENABLED=false $(MAKE) build
 
 $(BUILD_TARGETS): go.sum $(BUILDDIR)/
-	CGO_ENABLED=0 go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
+	CGO_ENABLED=0 go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./cmd/elestod
 
 $(BUILDDIR)/:
 	mkdir -p $(BUILDDIR)/
