@@ -69,16 +69,6 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 	return k.bankKeeper.MintCoins(ctx, types.ModuleName, newCoins)
 }
 
-// BurnCoins implements an alias call to the underlying bank keeper.
-func (k Keeper) BurnCoins(ctx sdk.Context, newCoins sdk.Coins) error {
-	if newCoins.Empty() {
-		// skip as no coins need to be burned
-		return nil
-	}
-
-	return k.bankKeeper.BurnCoins(ctx, types.ModuleName, newCoins)
-}
-
 // AddInflationToFeeCollector implements an alias call to the underlying supply keeper's
 // AddInflationToFeeCollector to be used in BeginBlocker.
 func (k Keeper) AddInflationToFeeCollector(ctx sdk.Context, fees sdk.Coins) error {
