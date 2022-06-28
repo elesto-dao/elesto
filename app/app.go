@@ -113,7 +113,7 @@ import (
 const (
 	AccountAddressPrefix = "elesto"
 	Name                 = "elesto"
-	upgradeName          = "testnet-upgrade-2022-06-21" // Latest upgrade to be applied for the chain
+	upgradeName          = "testnetUpgrade20220706" // Latest upgrade to be applied for the chain
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
@@ -172,7 +172,7 @@ var (
 	maccPerms = map[string][]string{
 		authtypes.FeeCollectorName:     nil,
 		distrtypes.ModuleName:          nil,
-		minttypes.ModuleName:           {authtypes.Minter},
+		minttypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
@@ -655,7 +655,12 @@ func New(
 	}
 
 	if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{}
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{
+				icahosttypes.StoreKey,
+				credential.StoreKey,
+			},
+		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
