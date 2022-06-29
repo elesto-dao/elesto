@@ -1,6 +1,7 @@
 package mint
 
 import (
+	"fmt"
 	"math"
 	"time"
 
@@ -58,11 +59,26 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		panic(err)
 	}
 
-	// TODO: 80/10/10 splitted between
-	// - 80: default fee collector account
-	// - 10: team account
-	// - 10: community pool
-	// send the minted coins to the fee collector account
+	// calculate 10% off mintedCoins
+	// this is handled in sdk.Ints already, some rounding error might persist.
+	tenPercentRawAmt := mintedCoin.Amount.MulRaw(10).QuoRaw(100)
+	tenPercentAmt := sdk.NewCoins(sdk.NewCoin(params.MintDenom, tenPercentRawAmt))
+
+	// mintedCoins now has devFundAmt less coins, two times
+	// one for the dev fund, one for the community pool
+	mintedCoins = mintedCoins.Sub(tenPercentAmt).Sub(tenPercentAmt)
+
+	// send them from mint moduleAccount to the dev fund address
+	if err := k.CollectAmount(ctx, params.TeamAddress, tenPercentAmt); err != nil {
+		panic(fmt.Errorf("cannot send coins to team account, %w", err))
+	}
+
+	// fund the community pool
+	if err := k.FundCommunityPool(ctx, tenPercentAmt); err != nil {
+		panic(fmt.Errorf("cannot fund community pool, %w", err))
+	}
+
+	// send the remaining minted coins to the fee collector account
 	if err := k.AddInflationToFeeCollector(ctx, mintedCoins); err != nil {
 		panic(err)
 	}
