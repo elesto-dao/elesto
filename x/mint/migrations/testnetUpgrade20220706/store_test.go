@@ -26,14 +26,6 @@ func (b *bogusMigrationKeeper) MintCoins(ctx sdk.Context, amt sdk.Coins) error {
 	return nil
 }
 
-func (b *bogusMigrationKeeper) BurnCoins(ctx sdk.Context, amt sdk.Coins) error {
-	if b.failBurn {
-		return fmt.Errorf("cannot burn")
-	}
-
-	return nil
-}
-
 func (b *bogusMigrationKeeper) GetSupply(ctx sdk.Context, denom string) sdk.Coin {
 	if b.failGetSupply {
 		c := sdk.Coin{}
