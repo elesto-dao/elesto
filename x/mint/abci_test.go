@@ -74,16 +74,21 @@ func (s *ModuleTestSuite) TestInflationRate() {
 
 	initialSupply := 200_000_000_000_000
 
+	params := s.app.MintKeeper.GetParams(s.ctx)
+
 	ctx := s.ctx.WithBlockHeight(int64(0))
 
-	err := s.keeper.MintCoins(ctx, sdk.NewCoins(sdk.NewInt64Coin("stake", int64(initialSupply))))
+	err := s.keeper.MintCoins(ctx, sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, int64(initialSupply))))
 	s.Require().NoError(err)
 	s.Require().EqualValues(s.keeper.GetSupply(
 		s.ctx.WithBlockHeight(1),
-		"stake",
+		params.MintDenom,
 	).Amount.Int64(), int64(initialSupply))
 
-	s.T().Log("circulating supply at block 0:", s.keeper.GetSupply(ctx, "stake").String())
+	s.T().Log("circulating supply at block 0:", s.keeper.GetSupply(ctx, params.MintDenom).String())
+
+	lastCommunityFundAmount := sdk.DecCoins{}
+	lastDevFundAmount := sdk.NewCoin(params.MintDenom, sdk.ZeroInt())
 
 	for year := 0; year <= simulationYears; year++ {
 		// Adding 1 here because we're running the simulation on the first day of the following year.
@@ -95,15 +100,55 @@ func (s *ModuleTestSuite) TestInflationRate() {
 
 		mint.BeginBlocker(ctx, s.keeper)
 
+		communityFundAmount := s.app.DistrKeeper.GetFeePoolCommunityCoins(s.ctx)
+		floatCommunityAmount, err := communityFundAmount.AmountOf(params.MintDenom).Float64()
+		s.NoError(err)
+
+		lastFloatCommunityAmount, err := lastCommunityFundAmount.AmountOf(params.MintDenom).Float64()
+		s.NoError(err)
+
+		taddr, err := sdk.AccAddressFromBech32(s.app.MintKeeper.GetParams(s.ctx).TeamAddress)
+		s.NoError(err)
+
+		teamBalance := s.app.BankKeeper.GetBalance(s.ctx, taddr, params.MintDenom)
+
+		s.T().Log("community pool amount", lastCommunityFundAmount.String())
+		s.T().Log("developer fund amount", lastDevFundAmount.String())
+
+		if year < 10 {
+			s.Greater(
+				floatCommunityAmount,
+				lastFloatCommunityAmount,
+			)
+
+			s.Greater(
+				teamBalance.Amount.Int64(),
+				lastDevFundAmount.Amount.Int64(),
+			)
+		} else {
+			s.EqualValues(
+				floatCommunityAmount,
+				lastFloatCommunityAmount,
+			)
+
+			s.EqualValues(
+				teamBalance.Amount.Int64(),
+				lastDevFundAmount.Amount.Int64(),
+			)
+		}
+
+		lastCommunityFundAmount = communityFundAmount
+		lastDevFundAmount = teamBalance
+
 		// Since running this simulation for each block would make this test take too much time,
 		// we mint the total amount of tokens minted in one year, minus 1 block since the `mint.BeginBlocker()`
 		// call already mints once for us.
 		blockInflationAmount := mint.BlockInflationAmount[year]
 		mintAmount := sdk.NewInt(int64(blockInflationAmount) * int64(blocksPerYear-1))
-		mintedCoin := sdk.NewCoin("stake", mintAmount)
+		mintedCoin := sdk.NewCoin(params.MintDenom, mintAmount)
 		mintedCoins := sdk.NewCoins(mintedCoin)
 		s.Require().NoError(s.keeper.MintCoins(ctx, mintedCoins))
-		supply := s.keeper.GetSupply(ctx, "stake")
+		supply := s.keeper.GetSupply(ctx, params.MintDenom)
 		s.T().Log("inflation for year", year, ":", "supply", supply)
 
 		supplyInTokens := supply.Amount.Quo(sdk.NewInt(1000000)).ToDec().RoundInt64()

@@ -14,13 +14,15 @@ type Keeper struct {
 	cdc              codec.BinaryCodec
 	storeKey         sdk.StoreKey
 	paramSpace       paramtypes.Subspace
+	accountKeeper    types.AccountKeeper
 	bankKeeper       types.BankKeeper
+	distrKeeper      types.DistributionKeeper
 	feeCollectorName string
 }
 
 // NewKeeper creates a new mint Keeper instance
 func NewKeeper(
-	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace, ak types.AccountKeeper, bk types.BankKeeper, feeCollectorName string,
+	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace, ak types.AccountKeeper, bk types.BankKeeper, dk types.DistributionKeeper, feeCollectorName string,
 ) Keeper {
 	// ensure mint module account is set
 	if addr := ak.GetModuleAddress(types.ModuleName); addr == nil {
@@ -38,6 +40,8 @@ func NewKeeper(
 		storeKey:         key,
 		paramSpace:       paramSpace,
 		bankKeeper:       bk,
+		distrKeeper:      dk,
+		accountKeeper:    ak,
 		feeCollectorName: feeCollectorName,
 	}
 }
@@ -87,4 +91,20 @@ func (k Keeper) CollectAmount(ctx sdk.Context, address string, amount sdk.Coins)
 // GetSupply returns the current supply on the chain for a denom
 func (k Keeper) GetSupply(ctx sdk.Context, denom string) sdk.Coin {
 	return k.bankKeeper.GetSupply(ctx, denom)
+}
+
+// FundCommunityPool funds the x/distribution community pool with amount coins, directly from
+// this module's ModuleAccount.
+func (k Keeper) FundCommunityPool(ctx sdk.Context, amount sdk.Coins) error {
+	if amount.Empty() {
+		// skip as no coins need to be minted
+		return nil
+	}
+
+	addr := k.accountKeeper.GetModuleAddress(types.ModuleName)
+	if addr == nil {
+		panic("the mint module account has not been set")
+	}
+
+	return k.distrKeeper.FundCommunityPool(ctx, amount, addr)
 }
