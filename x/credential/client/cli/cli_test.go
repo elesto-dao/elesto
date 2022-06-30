@@ -5,12 +5,11 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/credential/client/cli"
-	"github.com/elesto-dao/elesto/v2/x/did"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/elesto-dao/elesto/v2/x/credential"
+	"github.com/elesto-dao/elesto/v2/x/credential/client/cli"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
@@ -115,18 +114,18 @@ func (s *IntegrationTestSuite) TestGetCmdQueryCredentialDefinition() {
 		name      string
 		expectErr codes.Code
 		respType  proto.Message
-		malleate  func()
-		cdDID     string
+		fixture   func()
+		cdID      string
 	}{
 		{
-			name() + "_1",
+			"FAIL: empty credential definition id",
 			codes.InvalidArgument,
 			&credential.QueryCredentialDefinitionResponse{},
 			func() {},
 			"",
 		},
 		{
-			name() + "_2",
+			"PASS: found credential",
 			codes.OK,
 			&credential.QueryCredentialDefinitionResponse{},
 			func() {
@@ -138,16 +137,16 @@ func (s *IntegrationTestSuite) TestGetCmdQueryCredentialDefinition() {
 				)
 				publishCredentialDefinition(s, identifier, label, schemaFile, vocabFile, val)
 			},
-			did.NewChainDID(clientCtx.ChainID, "test-11234").String(),
+			"test-11234",
 		},
 	}
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			tc.malleate()
+			tc.fixture()
 			cmd := cli.NewQueryCredentialDefinitionCmd()
 			args := []string{
-				tc.cdDID,
+				tc.cdID,
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			}
 
@@ -158,9 +157,9 @@ func (s *IntegrationTestSuite) TestGetCmdQueryCredentialDefinition() {
 			} else {
 				s.Require().NoError(err)
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-				queryresponse := tc.respType.(*credential.QueryCredentialDefinitionResponse)
-				cd := queryresponse.Definition
-				s.Require().Equal(tc.cdDID, cd.Id)
+				qr := tc.respType.(*credential.QueryCredentialDefinitionResponse)
+				cd := qr.Definition
+				s.Require().Equal(tc.cdID, cd.Id)
 			}
 		})
 	}

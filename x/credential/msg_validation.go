@@ -12,12 +12,12 @@ func (m MsgPublishCredentialDefinitionRequest) ValidateBasic() error {
 		return errors.New("credential definition must be set")
 	}
 
-	if !did.IsValidDID(m.CredentialDefinition.Id) {
-		return errors.New("credential definition id must be a valid DID")
+	if IsEmpty(m.CredentialDefinition.Id) {
+		return errors.New("credential definition id must be set")
 	}
 
 	if IsEmpty(m.CredentialDefinition.Name) {
-		return errors.New("credential definition name must not be empty")
+		return errors.New("credential definition name must be set")
 	}
 
 	if !did.IsValidDID(m.CredentialDefinition.PublisherId) {

@@ -57,10 +57,10 @@ func TestMsgPublishCredentialDefinitionRequest_ValidateBasic(t *testing.T) {
 			errors.New("credential definition must be set"),
 		},
 		{
-			"FAIL: definition ID not a DID",
+			"FAIL: definition ID is empty",
 			fields{
 				&CredentialDefinition{
-					Id:           "not a did",
+					Id:           "",
 					PublisherId:  "did:cosmos:key:elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr",
 					Schema:       []byte(dummySchemaOk),
 					Vocab:        []byte(dummyVocabOk),
@@ -72,7 +72,7 @@ func TestMsgPublishCredentialDefinitionRequest_ValidateBasic(t *testing.T) {
 				},
 				"elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr",
 			},
-			errors.New("credential definition id must be a valid DID"),
+			errors.New("credential definition id must be set"),
 		},
 		{
 			"FAIL: name is empty",
@@ -90,7 +90,7 @@ func TestMsgPublishCredentialDefinitionRequest_ValidateBasic(t *testing.T) {
 				},
 				"elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr",
 			},
-			errors.New("credential definition name must not be empty"),
+			errors.New("credential definition name must be set"),
 		},
 		{
 			"FAIL: publisher id not a DID",
