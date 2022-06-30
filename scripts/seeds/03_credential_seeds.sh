@@ -4,7 +4,7 @@
 # Step #1 public credential definitions
 echo "Publish a credential definition for revocation-list (for a public credential)"
 elestod tx credential publish-credential-definition \
-  revocation-list-2020 \
+  https://exmaple.id/revocation-list-2020 \
   RevocationList2020 \
   credentials/revocationList2020.schema.json \
   credentials/revocationList2020.context.json \
@@ -15,11 +15,11 @@ elestod tx credential publish-credential-definition \
  --chain-id elesto -y --broadcast-mode block
 
  echo "Query credential definition"
- elestod query credential credential-definition did:cosmos:elesto:revocation-list-2020 --output json | jq
+ elestod query credential credential-definition https://exmaple.id/revocation-list-2020 --output json | jq
 
  echo "Publish a credential definition for an organization (public credential)"
  elestod tx credential publish-credential-definition \
-   organization \
+   https://exmaple.id/organization \
    Organization \
    credentials/organization.schema.json \
    credentials/organization.context.json \
@@ -29,11 +29,11 @@ elestod tx credential publish-credential-definition \
   --chain-id elesto -y --broadcast-mode block
 
  echo "Query credential definition"
- elestod query credential credential-definition did:cosmos:elesto:organization --output json | jq
+ elestod query credential credential-definition https://exmaple.id/organization --output json | jq
 
  echo "Publish a credential definition for an employee (private credential)"
  elestod tx credential publish-credential-definition \
-   organization-role \
+   https://exmaple.id/organization-role \
    OrganizationRole \
    credentials/organization-role.schema.json \
    credentials/organization-role.context.json \
@@ -42,7 +42,7 @@ elestod tx credential publish-credential-definition \
   --chain-id elesto -y --broadcast-mode block
 
 echo "Query credential definition"
-elestod query credential credential-definition did:cosmos:elesto:organization-role --output json | jq
+elestod query credential credential-definition https://exmaple.id/organization-role --output json | jq
 
 
 echo "Create business register DDO"
@@ -97,7 +97,7 @@ elestod query credential prepare-credential organization
 
 echo "Issue organization credential"
 elestod tx credential issue-public-credential \
- organization \
+ https://exmaple.id/organization \
  credential.organization.acme.json \
  --from regulator \
  --chain-id elesto -y --broadcast-mode block

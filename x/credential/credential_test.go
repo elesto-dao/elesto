@@ -32,7 +32,7 @@ var (
 
 func TestNewCredentialDefinitionFromFile(t *testing.T) {
 	type args struct {
-		did          did.DID
+		cdID         string
 		publisherDID did.DID
 		name         string
 		description  string
@@ -50,7 +50,7 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 		{
 			"PASS: can create CredentialDefinition",
 			args{
-				did.DID("did:cosmo:elesto:cd"),
+				"cd-1",
 				did.DID("did:cosmos:elesto:publisher"),
 				"Credential Definition 1",
 				"This is a sample credential",
@@ -60,7 +60,7 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 				"keeper/testdata/vocab.json",
 			},
 			&CredentialDefinition{
-				Id:           "did:cosmo:elesto:cd",
+				Id:           "cd-1",
 				PublisherId:  "did:cosmos:elesto:publisher",
 				Schema:       schemaOkCompact,
 				Vocab:        vocabOkCompact,
@@ -75,7 +75,7 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 		{
 			"FAIL: invalid schema file",
 			args{
-				did.DID("did:cosmo:elesto:cd"),
+				"cd-2",
 				did.DID("did:cosmos:elesto:publisher"),
 				"Credential Definition 1",
 				"This is a sample credential",
@@ -85,7 +85,7 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 				"keeper/testdata/vocab.json",
 			},
 			&CredentialDefinition{
-				Id:           "did:cosmo:elesto:cd",
+				Id:           "cd-2",
 				PublisherId:  "did:cosmos:elesto:publisher",
 				Schema:       schemaOkCompact,
 				Vocab:        vocabOkCompact,
@@ -99,7 +99,7 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 		{
 			"FAIL: invalid vocab file",
 			args{
-				did.DID("did:cosmo:elesto:cd"),
+				"cd-3",
 				did.DID("did:cosmos:elesto:publisher"),
 				"Credential Definition 1",
 				"This is a sample credential",
@@ -109,7 +109,7 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 				"keeper/testdata/vocab.invalid.json",
 			},
 			&CredentialDefinition{
-				Id:           "did:cosmo:elesto:cd",
+				Id:           "cd-3",
 				PublisherId:  "did:cosmos:elesto:publisher",
 				Schema:       schemaOkCompact,
 				Vocab:        vocabOkCompact,
@@ -123,7 +123,7 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 		{
 			"FAIL: schema file not found",
 			args{
-				did.DID("did:cosmo:elesto:cd"),
+				"cd-4",
 				did.DID("did:cosmos:elesto:publisher"),
 				"Credential Definition 1",
 				"This is a sample credential",
@@ -133,7 +133,7 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 				"keeper/testdata/vocab.json",
 			},
 			&CredentialDefinition{
-				Id:           "did:cosmo:elesto:cd",
+				Id:           "cd-4",
 				PublisherId:  "did:cosmos:elesto:publisher",
 				Schema:       schemaOkCompact,
 				Vocab:        vocabOkCompact,
@@ -149,7 +149,7 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w, _ := os.Getwd()
 			t.Logf("cwd is %s", w)
-			got, err := NewCredentialDefinitionFromFile(tt.args.did, tt.args.publisherDID, tt.args.name, tt.args.description, tt.args.isPublic, tt.args.isActive, tt.args.schemaFile, tt.args.vocabFile)
+			got, err := NewCredentialDefinitionFromFile(tt.args.cdID, tt.args.publisherDID, tt.args.name, tt.args.description, tt.args.isPublic, tt.args.isActive, tt.args.schemaFile, tt.args.vocabFile)
 			if tt.wantErr == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.want, got)

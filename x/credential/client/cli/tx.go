@@ -315,14 +315,12 @@ func NewPublishCredentialDefinitionCmd() *cobra.Command {
 		Args:    cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			cID, name, schemaFile, vocabFIle := args[0], args[1], args[2], args[3]
+			cdID, name, schemaFile, vocabFIle := args[0], args[1], args[2], args[3]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-			// did
-			definitionDID := did.NewChainDID(clientCtx.ChainID, cID)
 			// verification
 			signer := clientCtx.GetFromAddress()
 
@@ -332,7 +330,7 @@ func NewPublishCredentialDefinitionCmd() *cobra.Command {
 			}
 
 			// initialize the definition
-			def, err := credential.NewCredentialDefinitionFromFile(definitionDID, publisherDID, name, descr, isPublic, !inactive, schemaFile, vocabFIle)
+			def, err := credential.NewCredentialDefinitionFromFile(cdID, publisherDID, name, descr, isPublic, !inactive, schemaFile, vocabFIle)
 			if err != nil {
 				println("error building credential definition", err)
 				return err
