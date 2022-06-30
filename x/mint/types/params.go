@@ -26,7 +26,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 // DefaultParams default mint module parameters
 func DefaultParams() Params {
 	return Params{
-		MintDenom:     "utsp",
+		MintDenom:     sdk.DefaultBondDenom,
 		BlocksPerYear: 6_308_000,
 		MaxSupply:     1_000_000_000_000_000,
 		TeamReward:    "0.1",

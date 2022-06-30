@@ -13,8 +13,10 @@ type ExpectedKeeper interface {
 }
 
 func Migrate(ctx sdk.Context, keeper ExpectedKeeper) error {
-	// reset params, which now hardcodes the mint denom as "utsp"
-	keeper.SetParams(ctx, mintTypes.DefaultParams())
+	// reset params, and hardcode the mint denom as "utsp"
+	p := mintTypes.DefaultParams()
+	p.MintDenom = "utsp"
+	keeper.SetParams(ctx, p)
 
 	return nil
 }

@@ -64,8 +64,8 @@ func TestMigrate(t *testing.T) {
 
 	testnetUpgrade20220706.Migrate(ctx, app.MintKeeper)
 
-	require.Equal(t, mintTypes.DefaultParams(), app.MintKeeper.GetParams(ctx))
-	require.Equal(t, "utsp", mintTypes.DefaultParams().MintDenom)
+	require.Equal(t, "utsp", app.MintKeeper.GetParams(ctx).MintDenom)
+	require.Equal(t, "stake", mintTypes.DefaultParams().MintDenom)
 }
 
 
