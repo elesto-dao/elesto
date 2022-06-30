@@ -709,19 +709,19 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_PublicCredential_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"elesto", "credential", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_PublicCredential_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"elesto", "credentials", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_PublicCredentials_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"elesto", "credential"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_PublicCredentials_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"elesto", "credentials"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_PublicCredentialsByHolder_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"elesto", "credential", "holder", "did"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_PublicCredentialsByHolder_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"elesto", "credentials", "holder", "did"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_PublicCredentialsByIssuer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"elesto", "credential", "issuer", "did"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_PublicCredentialsByIssuer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"elesto", "credentials", "issuer", "did"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_CredentialDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"elesto", "credential", "definitions", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_CredentialDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"elesto", "credentials", "definitions", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_CredentialDefinitions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"elesto", "credential", "definitions"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_CredentialDefinitions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"elesto", "credentials", "definitions"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_CredentialDefinitionsByPublisher_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"elesto", "credential", "definitions", "publisher", "did"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_CredentialDefinitionsByPublisher_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"elesto", "credentials", "definitions", "publisher", "did"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
