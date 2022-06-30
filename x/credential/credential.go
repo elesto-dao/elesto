@@ -14,13 +14,13 @@ import (
 )
 
 // NewCredentialDefinitionFromFile create a credential definition by reading the data from a file
-func NewCredentialDefinitionFromFile(did, publisherDID did.DID,
+func NewCredentialDefinitionFromFile(id string, publisherDID did.DID,
 	name, description string,
 	isPublic, isActive bool,
 	schemaFile, vocabFile string) (*CredentialDefinition, error) {
 
 	def := &CredentialDefinition{
-		Id:          did.String(),
+		Id:          id,
 		PublisherId: publisherDID.String(),
 		Name:        name,
 		Description: description,
