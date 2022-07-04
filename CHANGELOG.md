@@ -2,9 +2,31 @@
 ## [Unreleased]
 
 
-<a name="v2.0.0-rc1"></a>
-## [v2.0.0-rc1] - 2022-06-15
+<a name="v2.0.0-rc2"></a>
+## [v2.0.0-rc2] - 2022-06-21
 ### Chore
+- update changelog for v2.0.0-rc1
+- **makefile:** build only the node binary for the build target
+
+### Docs
+- add how-to for network upgrades
+
+### Feat
+- **devnet:** adding script to spin up local devnet ([#160](https://github.com/elesto-dao/elesto/issues/160))
+
+### Fix
+- disable CGO for node builds
+- **mint:** fix pruning panic, add developer and community funding ([#161](https://github.com/elesto-dao/elesto/issues/161))
+- **proto:** fix proto go package for v2
+
+### Refactor
+- credential definition ids are not required to be DID
+
+
+<a name="v2.0.0-rc1"></a>
+## [v2.0.0-rc1] - 2022-06-21
+### Chore
+- update changelog for v2.0.0-rc1
 - go mod tidy
 - update golang-ci config ([#102](https://github.com/elesto-dao/elesto/issues/102))
 - **app:** ignore unused param in simulation call
@@ -67,7 +89,7 @@
 
 
 <a name="v1.0.0-rc1"></a>
-## [v1.0.0-rc1] - 2022-02-23
+## v1.0.0-rc1 - 2022-02-23
 ### Chore
 - remove update did state transition
 - remove update did state transition
@@ -110,10 +132,7 @@
 - increase test coverage
 
 
-<a name="latest"></a>
-## latest - 2022-01-28
-
-[Unreleased]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc1...HEAD
+[Unreleased]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc2...HEAD
+[v2.0.0-rc2]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc1...v2.0.0-rc2
 [v2.0.0-rc1]: https://github.com/elesto-dao/elesto/compare/v1.0.0-rc2...v2.0.0-rc1
 [v1.0.0-rc2]: https://github.com/elesto-dao/elesto/compare/v1.0.0-rc1...v1.0.0-rc2
-[v1.0.0-rc1]: https://github.com/elesto-dao/elesto/compare/latest...v1.0.0-rc1
