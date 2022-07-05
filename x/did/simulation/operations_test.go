@@ -13,7 +13,6 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/elesto-dao/elesto/v2/app"
 	elestoapp "github.com/elesto-dao/elesto/v2/app"
 	"github.com/elesto-dao/elesto/v2/x/did"
 	"github.com/elesto-dao/elesto/v2/x/did/simulation"
@@ -27,9 +26,17 @@ type SimTestSuite struct {
 }
 
 func (suite *SimTestSuite) SetupTest() {
-	elestoApp := app.Setup(false)
+	elestoApp := elestoapp.Setup(false)
 	suite.app = elestoApp
-	suite.ctx = elestoApp.BaseApp.NewContext(false, tmproto.Header{})
+	suite.ctx = elestoApp.BaseApp.NewContext(false, tmproto.Header{}).WithBlockTime(time.Now())
+
+	if err := elestoApp.MintKeeper.SetBootstrapDate(suite.ctx, true); err != nil {
+		panic(err)
+	}
+
+	if err := elestoApp.MintKeeper.SetBootstrapDateCanary(suite.ctx, true, true); err != nil {
+		panic(err)
+	}
 }
 
 func (suite *SimTestSuite) TestWeightedOperations() {
