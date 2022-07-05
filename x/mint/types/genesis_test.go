@@ -2,6 +2,7 @@ package types_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/elesto-dao/elesto/v2/app"
 	"github.com/elesto-dao/elesto/v2/x/mint/types"
@@ -10,6 +11,8 @@ import (
 
 func TestGenesisState_Validate(t *testing.T) {
 	app.Setup(false)
+	fakeDate, err := time.Now().MarshalText()
+	require.NoError(t, err)
 
 	for _, tc := range []struct {
 		name        string
@@ -30,9 +33,9 @@ func TestGenesisState_Validate(t *testing.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			genState := types.NewGenesisState(types.DefaultParams())
+			genState := types.NewGenesisState(types.DefaultParams(), string(fakeDate), true)
 			tc.malleate(genState)
-			err := types.ValidateGenesis(*genState)
+			err = types.ValidateGenesis(*genState)
 			if tc.expectedErr == "" {
 				require.NoError(t, err)
 			} else {

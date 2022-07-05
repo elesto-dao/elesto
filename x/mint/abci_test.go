@@ -3,6 +3,7 @@ package mint_test
 import (
 	"math"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -12,7 +13,6 @@ import (
 
 	"github.com/elesto-dao/elesto/v2/x/mint"
 	"github.com/elesto-dao/elesto/v2/x/mint/keeper"
-	"github.com/elesto-dao/elesto/v2/x/mint/types"
 )
 
 type ModuleTestSuite struct {
@@ -29,7 +29,7 @@ func TestModuleTestSuite(t *testing.T) {
 
 func (suite *ModuleTestSuite) SetupTest() {
 	app := chain.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{}).WithBlockTime(time.Now())
 
 	suite.app = app
 	suite.ctx = ctx
@@ -78,6 +78,10 @@ func (s *ModuleTestSuite) TestInflationRate() {
 
 	ctx := s.ctx.WithBlockHeight(int64(0))
 
+	mint.BeginBlocker(ctx, s.keeper)
+
+	s.Require().True(s.keeper.BootstrapDateCanarySet(ctx))
+
 	err := s.keeper.MintCoins(ctx, sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, int64(initialSupply))))
 	s.Require().NoError(err)
 	s.Require().EqualValues(s.keeper.GetSupply(
@@ -90,13 +94,15 @@ func (s *ModuleTestSuite) TestInflationRate() {
 	lastCommunityFundAmount := sdk.DecCoins{}
 	lastDevFundAmount := sdk.NewCoin(params.MintDenom, sdk.ZeroInt())
 
+	startTime := s.ctx.BlockTime()
+
 	for year := 0; year <= simulationYears; year++ {
 		// Adding 1 here because we're running the simulation on the first day of the following year.
 		blockHeight := (year * blocksPerYear) + 1
 
 		s.T().Log("simulating year", year, "block height", blockHeight)
 
-		ctx := s.ctx.WithBlockHeight(int64(blockHeight))
+		ctx := s.ctx.WithBlockHeight(int64(blockHeight)).WithBlockTime(startTime.AddDate(year, 0, 0))
 
 		mint.BeginBlocker(ctx, s.keeper)
 
@@ -179,12 +185,4 @@ func (s *ModuleTestSuite) TestInflationRate() {
 		}
 	}
 
-}
-
-func (s *ModuleTestSuite) TestDefaultGenesis() {
-	genState := *types.DefaultGenesisState()
-
-	mint.InitGenesis(s.ctx, s.app.MintKeeper, s.app.AccountKeeper, &genState)
-	got := mint.ExportGenesis(s.ctx, s.app.MintKeeper)
-	s.Require().Equal(genState, *got)
 }

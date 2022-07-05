@@ -46,7 +46,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			panic(fmt.Errorf("cannot set bootstrap date at beginblock time, %w", err))
 		}
 
-		if err := k.SetBootstrapDateCanary(ctx, true, false); err != nil {
+		if err := k.SetBootstrapDateCanary(ctx, true, true); err != nil {
 			panic(fmt.Errorf("cannot set bootstrap date canary at beginblock time, %w", err))
 		}
 

@@ -21,13 +21,15 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, ak types.AccountKeeper, 
 		panic(err)
 	}
 
-	var pt time.Time
-	if err := pt.UnmarshalText([]byte(data.BootstrapDate)); err != nil {
-		panic(err)
-	}
+	if keeper.BootstrapDateCanarySet(ctx) {
+		var pt time.Time
+		if err := pt.UnmarshalText([]byte(data.BootstrapDate)); err != nil {
+			panic(err)
+		}
 
-	if err := keeper.SetBootstrapDate(sdk.Context{}.WithBlockTime(pt), true); err != nil {
-		panic(err)
+		if err := keeper.SetBootstrapDate(ctx.WithBlockTime(pt), true); err != nil {
+			panic(err)
+		}
 	}
 	ak.GetModuleAccount(ctx, types.ModuleName)
 }
