@@ -2,7 +2,6 @@ package mint
 
 import (
 	"fmt"
-	"math"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -31,14 +30,34 @@ var (
 		8: 3050004,
 		9: 2998751,
 	}
-
-	blocksPerYear = int64(6_307_200)
 )
 
 // BeginBlocker mints new tokens for the previous block.
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
-	if ctx.BlockHeight() == 0 {
+	var bootstrapDate time.Time
+
+	switch ctx.BlockHeight() {
+	case 0: // first block, write down the block timestamp
+		if k.BootstrapDateCanarySet(ctx) {
+			return // don't set the bootstrap date if canary was already set
+		}
+
+		if err := k.SetBootstrapDate(ctx, false); err != nil {
+			panic(fmt.Errorf("cannot set bootstrap date at beginblock time, %w", err))
+		}
+
+		if err := k.SetBootstrapDateCanary(ctx, true, false); err != nil {
+			panic(fmt.Errorf("cannot set bootstrap date canary at beginblock time, %w", err))
+		}
+
 		return
+	default:
+		bd, err := k.BootstrapDate(ctx)
+		if err != nil {
+			panic(fmt.Errorf("cannot fetch bootstrap date, %w", err))
+		}
+
+		bootstrapDate = bd
 	}
 
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
@@ -46,7 +65,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	params := k.GetParams(ctx)
 
 	// calculate inflation
-	inflationYear := int(math.Floor(float64(ctx.BlockHeight()) / float64(blocksPerYear)))
+	inflationYear := ctx.BlockTime().Year() - bootstrapDate.Year()
 
 	inflationAmount, ok := BlockInflationAmount[inflationYear]
 	if !ok {

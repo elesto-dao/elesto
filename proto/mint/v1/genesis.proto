@@ -8,6 +8,12 @@ option go_package = "github.com/elesto-dao/elesto/v2/x/mint/types";
 
 // GenesisState defines the mint module's genesis state.
 message GenesisState {
+  // bootstrap_date marks down the date from which the mint module began the minting schedule.
+  string bootstrap_date = 1;
+
   // params defines all the parameters of the module.
   Params params = 2 [(gogoproto.nullable) = false];
+
+  // bootstrap_date_canary is a canary value for the bootstrap_date, used during from-zero-height imports.
+  bool bootstrap_date_canary = 3;
 }
