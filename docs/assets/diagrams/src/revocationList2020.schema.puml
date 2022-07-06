@@ -1,3 +1,4 @@
+@startjson
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://elesto.id/revocation-list2020/1.0/json-schema.json",
@@ -104,3 +105,4 @@
     }
   }
 }
+@endjson
