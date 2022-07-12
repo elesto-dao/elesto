@@ -16,7 +16,7 @@ Many credential types are used to store [personal identifiable information](http
 
 In this context, a credential is defined as a set of one or more claims made by an issuer and a [verifiable credential](https://www.w3.org/TR/2022/REC-vc-data-model-20220303/) (VC) as a tamper-evident credential that has authorship that can be cryptographically verified.
 
-This document specifies the support for VCs for private credentials and public credentials.
+This document specifies support for VCs for private credentials and public credentials and support for credential definitions.
 
 ## Context
 
