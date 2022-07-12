@@ -2,7 +2,7 @@
 title: Network upgrade
 ---
 
-This section covers how to execute a software upgrade for the Elesto network. For more information about government proposal refer to the [documentation](https://docs.cosmos.network/master/modules/gov/01_concepts.html).
+This section covers how to execute a software upgrade for the Elesto network. For more information about government proposals, refer to the [Cosmos SDK government module](https://docs.cosmos.network/master/modules/gov/01_concepts.html) documentation.
 
 
 
