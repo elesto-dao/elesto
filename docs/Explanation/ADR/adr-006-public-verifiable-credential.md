@@ -12,7 +12,7 @@ DRAFT
 
 Credentials are part of our daily interactions; driver's licenses are used to assert that we are capable of operating a motor vehicle, university degrees can be used to assert our level of education, and concert tickets are used to assert that we can attend an event.
 
-Many credential types are used to store [personal identifiable information](https://en.wikipedia.org/wiki/Personal_data) (PII) and therefore should be kept private. However, there are many cases where it is more practical to publish credentials. For example, business licenses are used to assert that a business is legitimate and has the authorization to operate.
+Many credential types are used to store [personal identifiable information](https://en.wikipedia.org/wiki/Personal_data) (PII) and therefore must be kept private. However, there are many cases where it is more practical to publish credentials. For example, business licenses are used to assert that a business is legitimate and has the authorization to operate.
 
 In this context, a credential is defined as a set of one or more claims made by an issuer and a [verifiable credential](https://www.w3.org/TR/2022/REC-vc-data-model-20220303/) (VC) as a tamper-evident credential that has authorship that can be cryptographically verified.
 
@@ -28,11 +28,11 @@ This ADR aims to define a foundation for the components required to realize the 
 
 ## Decision
 
-The Elesto implementation for VCs will follow the [Verificable Credentials Data Model W3C Recommendations](https://www.w3.org/TR/2022/REC-vc-data-model-20220303/) to maximize compatibility with third-party tools and projects.
+A new credential module for the Elesto implementation for VCs will follow the [Verificable Credentials Data Model W3C Recommendations](https://www.w3.org/TR/2022/REC-vc-data-model-20220303/) to maximize compatibility with third-party tools and projects.
 
-This ADR introduces two structures: 
+This ADR introduces two data structures for the Elesto chain:
 
-- Credential Definition (CD) 
+- Credential Definition (CD)
 - Public Verifiable Credential (PVC)
 
 ### Credential Definition (CD)
@@ -51,7 +51,7 @@ CDs are used to describe the model of a credential, that is, its structure, fiel
 
 A CD cannot be deleted from the state. 
 
-#### Credential Schema
+#### Credential Data Schema
 
 A credential [data schema](https://www.w3.org/TR/vc-data-model/#data-schemas) is a machine-readable definition of fields and data types of a credential. 
 
@@ -61,7 +61,6 @@ The credential module supports the `JsonSchemaValidator2018` JSON-LD type schema
 
 A credential [JSON-LD context](https://www.w3.org/TR/json-ld11/#the-context) is a semantic vocabulary for the credential field descriptions. The vocabulary, in JSON format, is stored as an uncompressed byte slice.
   
-
 ### Public Verifiable Credential (PVC)
 
 With PVCs, a VC is stored on-chain. 
@@ -74,7 +73,7 @@ To publish a VC on-chain, the sender must provide the credential definition that
 - The credential conforms to the schema
 - The proof of the credential can be positively verified
 
-The `supersededBy` is used only for communication purposes and does not influence the publication of a credential. 
+The `supersededBy` is used only for communication purposes and does not influence the publication of a credential.
   
 PVCs are intended for advertising information that is public domain and leverages the tamper-resistant capability of the blockchain. A PVC can be deleted from the state.
 
