@@ -193,7 +193,7 @@ elestod query upgrade plan
 
 ## Prepare the Binaries for Cosmovisor
 
-Once the government proposal for the upgrade has passed, it is time to install the binaries so Cosmovisor can perform the upgrade.
+After the government proposal for the upgrade has passed, it is time to install the binaries so Cosmovisor can perform the upgrade.
 
 !!! Warning
     Cosmovisor can automatically fetch binaries from the internet, but it is recommended to install the binaries manually to make sure the binaries are correct and they are working on your infrastructure.
