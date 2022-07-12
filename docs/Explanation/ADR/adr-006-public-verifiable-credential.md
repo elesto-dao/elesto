@@ -63,7 +63,7 @@ A credential [JSON-LD context](https://www.w3.org/TR/json-ld11/#the-context) is 
   
 ### Public Verifiable Credential (PVC)
 
-With PVCs, a VC is stored on-chain. 
+With PVCs, a VC is stored on-chain.
 
 To publish a VC on-chain, the sender must provide the credential definition that describes the credential. A credential is published only if:
 
