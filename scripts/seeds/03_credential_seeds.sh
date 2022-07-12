@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Step #1 public credential definitions
 echo "Publish a credential definition for revocation-list (for a public credential)"
 elestod tx credential publish-credential-definition \
