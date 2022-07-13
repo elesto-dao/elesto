@@ -12,26 +12,27 @@ DRAFT
 
 Credentials are part of our daily interactions; driver's licenses are used to assert that we are capable of operating a motor vehicle, university degrees can be used to assert our level of education, and concert tickets are used to assert that we can attend an event.
 
-It is often useful for a credential issuer of a [verfiable credential](https://www.w3.org/TR/2022/REC-vc-data-model-20220303/) to link to a location where a verifier can check to see if a credential has been revoked.
+It is helpful for a credential issuer of a [verifiable credential](https://www.w3.org/TR/2022/REC-vc-data-model-20220303/) (VC) to provide a location where a verifier can check to see if a credential has been revoked.
 
-This document specifies the support for revocation lists, based on the [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/) report.
+This document specifies support for a native implementation of revocation lists that are based on the W3C [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/) report. This report details a strong privacy-preserving, space-efficient, and high-performance mechanism for publishing the revocation status of VCs.
 
 ## Context
 
-The self-sovereign identity (SSI) approach to tackling the identity and privacy challenge has gained momentum in recent years. Coupled with distributed ledger technology (DLT) technology, the SSI approach has captured the attention of both the private and public sectors.
+The self-sovereign identity (SSI) approach to tackling the identity and privacy challenge has gained momentum in recent years. Coupled with distributed ledger technology (DLT) technology, the SSI approach has captured the attention of the private and public sectors.
 
-The SSI approach relies on two building blocks: decentralized identifiers (DID) and verifiable credentials (VCs). This architecture decision record (ADR) describes a method to leverage public verifiable credentials in a Cosmos SDK-based blockchain to provide support for revocation lists.
+The SSI approach relies on two building blocks: decentralized identifiers (DID) and VCs. This architecture decision record (ADR) describes a method to leverage public VCs in Cosmos SDK-based blockchains to provide support for revocation lists. 
 
 ## Decision
 
-We introduce a credential definition that can be used by a credential issuer to publish one or more revocation lists. Each revocation lists is encoded in a [public verifiable credential](adr-006-public-verifiable-credential.md#public-verifiable-credential-pvc).
+By leveraging public verifiable credentials (PVCs) and a credential definition schema, the Elesto node will offer native support for revocation lists.
 
-The credential issuer will be responsible to track the index of the credential that it issues. 
+This ADR introduces a credential definition for use by a credential issuer to publish one or more revocation lists. Each revocation list is encoded in a [public verifiable credential (PVC)](adr-006-public-verifiable-credential.md#public-verifiable-credential-pvc).
 
-The revocation list model is an implementation of the [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/) report.
+The credential issuer will be responsible for creating, maintaining, and tracking an index of the credentials that it issues.
 
+The revocation list model is an implementation of the W3C [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/) privacy-preserving, space-efficient, and high-performance mechanism for publishing the revocation status of VCs.
 
-The credential schema is the following:
+The credential definition is defined by this JSON-formatted schema:
 
 ```json
 {
@@ -112,7 +113,7 @@ The credential schema is the following:
         },
         "type": {
           "title": "Type",
-          "description": "value should be: RevocationList2020 ",
+          "description": "value must be: RevocationList2020 ",
           "type": "string"
         },
         "encodedList": {
@@ -144,7 +145,7 @@ The credential schema is the following:
 
 ### Example
 
-An example revocation list based on the above schema is:
+For example, a revocation list based on the credential definition schema looks like:
 
 ```json
 {
@@ -164,31 +165,29 @@ An example revocation list based on the above schema is:
 }
 ```
 
-that is explained by the following diagram:
+As shown in the following diagram:
 
 ![](../../assets/diagrams/out/revocationList2020.example.svg)
 
 ## Privacy Considerations
 
-Refer to the privacy consideration of the [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/) report.
+Refer to the privacy considerations of the W3C [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/#privacy-considerations) report.
 
 ## Security Considerations
 
-Refer to the security consideration of the [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/) report.
+Refer to the security considerations of the W3C [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/#security-considerations) report.
 
 ## Consequences
 
-By leveraging the public verifiable credentials, the Elesto node offers natively the support for revocation lists.
+By leveraging the public verifiable credentials, the Elesto node offers native support for revocation lists.
   
-### Backwards Compatibility
+### Backward Compatibility
 
-There are no concerns related to backward compatibility
+There are no concerns related to backward compatibility.
 
 ### Positive
 
-
-- The ADR implementation improves the compatibility with the SSI identity model.
-
+- The revocation list support and implementation improves the compatibility of the Elesto node with the SSI identity model.
 
 ### Negative
 
@@ -210,4 +209,5 @@ N/A
 
 ## References
 
-- [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/)
+- [W3C Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/) report
+- [W3C Recommendation Verifiable Credentials Data Model v1.1](https://www.w3.org/TR/2022/REC-vc-data-model-20220303/)

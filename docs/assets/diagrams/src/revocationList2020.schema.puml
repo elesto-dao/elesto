@@ -77,12 +77,12 @@
         },
         "type": {
           "title": "Type",
-          "description": "value should be: RevocationList2020 ",
+          "description": "value must be: RevocationList2020 ",
           "type": "string"
         },
         "encodedList": {
           "title": "encodedList",
-          "description": "base64 endcoded string of the zlib compressed bitstring",
+          "description": "base64 encoded string of the zlib compressed bitstring",
           "type": "string"
         }
       }
