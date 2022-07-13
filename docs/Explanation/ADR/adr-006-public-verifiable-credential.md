@@ -28,7 +28,7 @@ This ADR aims to define a foundation for the components required to realize the 
 
 ## Decision
 
-A new credential module for the Elesto implementation for VCs will follow the [Verificable Credentials Data Model W3C Recommendations](https://www.w3.org/TR/2022/REC-vc-data-model-20220303/) to maximize compatibility with third-party tools and projects.
+A new credential module for the Elesto implementation for VCs will follow the [Verifiable Credentials Data Model W3C Recommendations](https://www.w3.org/TR/2022/REC-vc-data-model-20220303/) to maximize compatibility with third-party tools and projects.
 
 This ADR introduces two data structures for the Elesto chain:
 
