@@ -14,7 +14,7 @@ Credentials are part of our daily interactions; driver's licenses are used to as
 
 It is helpful for a credential issuer of a [verifiable credential](https://www.w3.org/TR/2022/REC-vc-data-model-20220303/) (VC) to provide a location where a verifier can check to see if a credential has been revoked.
 
-This document specifies support for a native implementation of revocation lists that are based on the W3C [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/) report. This report details a strong privacy-preserving, space-efficient, and high-performance mechanism for publishing the revocation status of VCs.
+This document specifies support for a native implementation of revocation lists that are based on the W3C Credentials Community Group [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/) report. This report details a strong privacy-preserving, space-efficient, and high-performance mechanism for publishing the revocation status of VCs.
 
 ## Context
 
@@ -24,13 +24,13 @@ The SSI approach relies on two building blocks: decentralized identifiers (DID) 
 
 ## Decision
 
-By leveraging public verifiable credentials (PVCs) and a credential definition schema, the Elesto node will offer native support for revocation lists.
+By leveraging public verifiable credentials (PVCs) and a credential definition schema, the Elesto node will offer native support for revocation lists. Privacy and performance must be considered when designing, publishing, and processing revocation lists.
 
 This ADR introduces a [credential definition](adr-006-public-verifiable-credential.md#credential-definition-cd) for use by a credential issuer to publish one or more revocation lists. Each revocation list is encoded in a [public verifiable credential (PVC)](adr-006-public-verifiable-credential.md#public-verifiable-credential-pvc).
 
-The revocation list model is an implementation of the W3C [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/) privacy-preserving, space-efficient, and high-performance mechanism for publishing the revocation status of VCs.
+The revocation list model is an implementation of the W3C Credentials Community Group [Revocation List 2020](https://w3c-ccg.github.io/vc-status-rl-2020/) privacy-preserving, space-efficient, and high-performance mechanism for publishing the revocation status of VCs.
 
-In this model, the credential issuer assigns a different positive number to each credential that it issues: the number is the index in the revocation list encoded in the [public verifiable credential](adr-006-public-verifiable-credential.md#public-verifiable-credential-pvc).
+In this model, the credential issuer assigns an arbitrary positive number to each credential that it issues: the number is the index in the revocation list encoded in the [public verifiable credential](adr-006-public-verifiable-credential.md#public-verifiable-credential-pvc).
 
 The credential schema, included in the revocation list credential definition, is defined by this JSON-formatted schema:
 
@@ -181,7 +181,7 @@ Refer to the security considerations of the W3C [Revocation List 2020](https://w
   
 By leveraging the public verifiable credentials, the Elesto node offers native support for revocation lists. Revocation lists are stored as credentials in the node state, within the credential module keeper. 
 
-### Backwards Compatibility
+### Backward Compatibility
 
 There are no concerns related to backward compatibility.
 
