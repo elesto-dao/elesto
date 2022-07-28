@@ -76,7 +76,7 @@ func (s *ModuleTestSuite) TestInflationRate() {
 
 	params := s.app.MintKeeper.GetParams(s.ctx)
 
-	ctx := s.ctx.WithBlockHeight(int64(0))
+	ctx := s.ctx.WithBlockHeight(int64(1))
 
 	mint.BeginBlocker(ctx, s.keeper)
 
@@ -89,7 +89,7 @@ func (s *ModuleTestSuite) TestInflationRate() {
 		params.MintDenom,
 	).Amount.Int64(), int64(initialSupply))
 
-	s.T().Log("circulating supply at block 0:", s.keeper.GetSupply(ctx, params.MintDenom).String())
+	s.T().Log("circulating supply at block 1:", s.keeper.GetSupply(ctx, params.MintDenom).String())
 
 	lastCommunityFundAmount := sdk.DecCoins{}
 	lastDevFundAmount := sdk.NewCoin(params.MintDenom, sdk.ZeroInt())
@@ -98,7 +98,7 @@ func (s *ModuleTestSuite) TestInflationRate() {
 
 	for year := 0; year <= simulationYears; year++ {
 		// Adding 1 here because we're running the simulation on the first day of the following year.
-		blockHeight := (year * blocksPerYear) + 1
+		blockHeight := (year * blocksPerYear)
 
 		s.T().Log("simulating year", year, "block height", blockHeight)
 
