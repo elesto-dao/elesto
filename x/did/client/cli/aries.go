@@ -190,7 +190,7 @@ func NewLinkAriesAgentCmd() *cobra.Command {
 
 			// add service that links the aries agent that holds the private key
 			service := did.NewService(
-				fmt.Sprint(didID.String(), "#", agentID),
+				didID.NewServiceID(agentID),
 				"DIDCommMessaging",
 				serviceEndpoint,
 			)
