@@ -617,6 +617,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper),
 		app.transferModule,
+		NewICAHostSimModule(icaModule, appCodec),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
