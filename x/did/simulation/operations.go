@@ -263,7 +263,7 @@ func SimulateMsgUpdateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 			did.NewVerificationMethod(
 				vmID2,
 				didID,
-				did.NewBlockchainAccountID("elesto", accAddress2.String()),
+				did.NewBlockchainAccountID(ctx.ChainID(), accAddress2.String()),
 				vmType2,
 			),
 			[]string{did.KeyAgreement, did.AssertionMethod, did.Authentication},
@@ -282,8 +282,7 @@ func SimulateMsgUpdateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 
 		// update the did document
 		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
-		err := didDoc.AddControllers(controllerDidID.String())
-		if err != nil {
+		if err := didDoc.AddControllers(controllerDidID.String()); err != nil {
 			return simtypes.NoOpMsg(
 				did.ModuleName,
 				TypeMsgUpdateDidDocument,
@@ -291,14 +290,13 @@ func SimulateMsgUpdateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 			), nil, err
 		}
 
-		err = didDoc.AddVerifications(vm, vm2)
-		if err != nil {
+		if err := didDoc.AddVerifications(vm, vm2); err != nil {
 			return simtypes.NoOpMsg(did.ModuleName, TypeMsgUpdateDidDocument,
 				"did not found, could not add vm",
-			), nil, nil
+			), nil, err
 		}
-		err = didDoc.AddServices(service1, service2, service3)
-		if err != nil {
+
+		if err := didDoc.AddServices(service1, service2, service3); err != nil {
 			return simtypes.NoOpMsg(
 				did.ModuleName,
 				TypeMsgUpdateDidDocument,
