@@ -22,7 +22,7 @@ if [ "$(elestod keys list --output json --home /home/ | jq -r --arg INIT_FROM "$
   kubectl get secret ${INIT_FROM} --output json | jq -r '.data.MNEMONIC' | base64 -d | elestod keys add ${INIT_FROM} --home=/home/ --output json --recover
 fi
 
-# Create key if it does not exists
+# Create a key if it doesn't exist
 if [ "$(elestod keys list --output json --home /home/ | jq -r --arg MONIKER "${MONIKER}" '.[] | select(.name == $MONIKER).name')" != "${MONIKER}" ]; then
   echo "Create ${MONIKER} key"
   elestod keys add ${MONIKER} --home=/home/ --output json | jq -r '.mnemonic' > /home/config/${MONIKER}_mnemonic
@@ -43,7 +43,7 @@ if [ "$(elestod query bank balances ${TO_ADDRESS} --home=/home/ --chain-id=${CHA
   done
 fi
 
-# Create validator
+# Create the validator
 VALIDATOR_PUBKEY=$(elestod tendermint show-validator --home=/home/)
 if [ "$(elestod query staking validators --home=/home/ --chain-id=${CHAIN_ID} --limit 100 --node tcp://${INIT_FROM%-*}:26657 --output json | jq -r --argjson PUBKEY "${VALIDATOR_PUBKEY}" '.validators[] | select(.consensus_pubkey==$PUBKEY).tokens')" != "${AMOUNT}" ]; then
   echo "Create validator with ${AMOUNT}stake from${MONIKER} at address ${FROM_ADDRESS} with pubkey ${VALIDATOR_PUBKEY}"
