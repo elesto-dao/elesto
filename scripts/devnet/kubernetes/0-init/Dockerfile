@@ -1,4 +1,5 @@
-FROM us-central1-docker.pkg.dev/elesto/elesto/elestod:2.0.0-rc2-readiness AS elestod
+ARG ELESTOD_IMAGE_TAG
+FROM $ELESTOD_IMAGE_TAG AS elestod
 FROM rancher/kubectl:v1.23.7 AS kubectl
 FROM bash:latest
 COPY --from=kubectl /bin/kubectl /usr/local/bin/kubectl
