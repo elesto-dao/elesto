@@ -16,21 +16,21 @@ if [ "$(elestod keys list --output json --home /home/ | jq -r --arg MONIKER "${M
   elestod add-genesis-account $(elestod keys show ${MONIKER} --home=/home/ -a) ${GENESIS_AMOUNT}stake --home=/home/
 fi
 
-# Create regulator
+# Create regulator key
 if [ "$(elestod keys list --output json --home /home/ | jq -r '.[] | select(.name == "regulator").name')" != "regulator" ]; then
   echo "Create regulator key"
   echo ${REGULATOR_KEY} | elestod keys add regulator --home=/home/ --output json --recover
   elestod add-genesis-account $(elestod keys show regulator --home=/home/ -a) 20000000stake --home=/home/
 fi
 
-# Create emti (e-money token issuer)
+# Create e-money token issuer (EMTI) key
 if [ "$(elestod keys list --output json --home /home/ | jq -r '.[] | select(.name == "emti").name')" != "emti" ]; then
   echo "Create emti key"
   echo ${EMTI_KEY} | elestod keys add emti --home=/home/ --output json --recover
   elestod add-genesis-account $(elestod keys show emti --home=/home/ -a) 20000000stake --home=/home/
 fi
 
-# Create arti (asset-referenced token issuer)
+# Create asset-referenced issuer (ARTI) token
 if [ "$(elestod keys list --output json --home /home/ | jq -r '.[] | select(.name == "arti").name')" != "arti" ]; then
   echo "Create arti key"
   echo ${ARTI_KEY} | elestod keys add arti --home=/home/ --output json --recover
@@ -48,7 +48,7 @@ fi
 jq '.app_state["staking"]["params"]["unbonding_time"] = "240s"' /home/config/genesis.json > /home/config/genesis.json.tmp  && mv /home/config/genesis.json.tmp /home/config/genesis.json
 jq '.app_state["gov"]["voting_params"]["voting_period"] = "60s"' /home/config/genesis.json > /home/config/genesis.json.tmp  && mv /home/config/genesis.json.tmp /home/config/genesis.json
 
-# Create/Update genesis configmap
+# Create or update genesis configmap
 echo "Update configmap and secret"
 kubectl create configmap ${MONIKER%-*} --dry-run=client --output=yaml --from-file /home/config/genesis.json | kubectl apply --force=true --filename=-
 kubectl create secret generic ${MONIKER} --dry-run=client --output=yaml --from-file MNEMONIC=/home/config/${MONIKER}_mnemonic | kubectl apply --force=true --filename=-
