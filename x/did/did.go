@@ -138,7 +138,12 @@ func (did DID) String() string {
 
 // NewVerificationMethodID compose a verification method id from an account address
 func (did DID) NewVerificationMethodID(vmID string) string {
-	return fmt.Sprint(did, "#", vmID)
+	return fmt.Sprint(did, "#", strings.TrimSpace(vmID))
+}
+
+// NewServiceID compose a new service id URI from the did and the provided id
+func (did DID) NewServiceID(serviceID string) string {
+	return fmt.Sprint(did, "#", strings.TrimSpace(serviceID))
 }
 
 // IsValidDID validate the input string according to the
