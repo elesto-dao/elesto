@@ -1,0 +1,30 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: genesis
+  namespace: local
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: genesis
+    app.kubernetes.io/component: node
+    app.kubernetes.io/part-of: elesto
+  ports:
+    - port: 1317
+      name: api
+      targetPort: api
+    - port: 9090
+      name: grpc
+      targetPort: grpc
+    - port: 26656
+      name: p2p
+      targetPort: p2p
+    - port: 26657
+      name: rpc
+      targetPort: rpc
+    - port: 26660
+      name: telemetry
+      targetPort: telemetry
+
