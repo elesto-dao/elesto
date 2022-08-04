@@ -1,0 +1,114 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: seed
+  namespace: local
+  labels:
+    app.kubernetes.io/name: seed
+    app.kubernetes.io/component: node
+    app.kubernetes.io/part-of: elesto
+spec:
+  serviceName: seed
+  replicas: 1
+  selector:
+     matchLabels:
+       app.kubernetes.io/name: seed
+       app.kubernetes.io/component: node
+       app.kubernetes.io/part-of: elesto
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: seed
+        app.kubernetes.io/component: node
+        app.kubernetes.io/part-of: elesto
+    spec:
+      initContainers:
+        - name: init-seed
+          image: elestod-init:local
+          command:
+            - init-seed.sh
+          env:
+            - name: CHAIN_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MONIKER
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          #securityContext: # TODO not working
+          #  runAsUser: 20000
+          #  runAsGroup: 20000
+          #  runAsNonRoot: true
+          volumeMounts:
+            - name: node-home
+              mountPath: /home/
+      containers:
+        - name: application
+          image: us-central1-docker.pkg.dev/elesto/elesto/elestod:2.0.0-rc2-snapshots
+          args: [
+            "start",
+            "--db_backend", "memdb",
+            "--grpc.enable", "false",
+            "--grpc-web.enable", "false",
+            "--moniker", "$(MONIKER)",
+            "--home", "/home/",
+            "--pruning", "everything",
+            "--rpc.laddr", "tcp://0.0.0.0:26657",
+            "--p2p.seed_mode", "true",
+          ]
+          env:
+            - name: MONIKER
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELESTOD_INSTRUMENTATION_PROMETHEUS
+              value: "true"
+            - name: ELESTOD_TX_INDEX_INDEXER
+              value: "null"
+          envFrom:
+            - prefix: ELESTOD_
+              configMapRef:
+                name: seeds-env
+          resources: { }
+          ports:
+            - name: api
+              containerPort: 1317
+            - name: grpc
+              containerPort: 9090
+            - name: grpc-web
+              containerPort: 9091
+            - name: abci
+              containerPort: 26658
+            - name: rpc
+              containerPort: 26657
+            - name: p2p
+              containerPort: 26656
+            - name: telemetry
+              containerPort: 26660
+            - name: pprof
+              containerPort: 6060
+          livenessProbe:
+            httpGet:
+              port: rpc
+              path: /health
+          readinessProbe:
+            exec:
+              command:
+                - /tendermint-readiness
+          volumeMounts:
+            - name: node-home
+              mountPath: /home/
+            - name: genesis
+              mountPath: /home/config/genesis.json
+              subPath: genesis.json
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      serviceAccountName: blockchain-node
+      volumes:
+        - name: genesis
+          configMap:
+            name: genesis
+        - name: node-home
+          emptyDir: { }
