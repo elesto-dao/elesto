@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - k3d-devnet
 
 jobs:
   release:

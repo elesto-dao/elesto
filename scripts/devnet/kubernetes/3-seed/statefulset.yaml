@@ -25,7 +25,7 @@ spec:
     spec:
       initContainers:
         - name: init-seed
-          image: elestod-init:local
+          image: ghcr.io/elesto-dao/elesto-init:22.217-1659728311-910d4da
           command:
             - init-seed.sh
           env:
@@ -46,7 +46,7 @@ spec:
               mountPath: /home/
       containers:
         - name: application
-          image: us-central1-docker.pkg.dev/elesto/elesto/elestod:2.0.0-rc2-snapshots
+          image: ghcr.io/elesto-dao/elesto:22.217-1659728311-910d4da
           args: [
             "start",
             "--db_backend", "memdb",
