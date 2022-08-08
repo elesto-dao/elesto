@@ -49,8 +49,14 @@ spec:
           image: ghcr.io/elesto-dao/elesto:22.217-1659728311-910d4da
           args: [
             "start",
+            "--db_backend", "goleveldb",
+            "--grpc.enable", "false",
+            "--grpc-web.enable", "false",
             "--moniker", "$(MONIKER)",
-            "--home", "/home/"
+            "--home", "/home/",
+            "--log_level", "info",
+            "--pruning", "everything",
+            "--rpc.laddr", "tcp://0.0.0.0:26657"
           ]
           env:
             - name: MONIKER
