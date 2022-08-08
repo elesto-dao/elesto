@@ -1,7 +1,10 @@
 package cli_test
 
 import (
+	_ "embed"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/elesto-dao/elesto/v2/x/did"
 	"runtime"
 	"testing"
 
@@ -28,6 +31,13 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/elesto-dao/elesto/v2/app"
+)
+
+var (
+	//go:embed testdata/schema.json
+	testSchema string
+	//go:embed testdata/vocab.json
+	testVocab string
 )
 
 // NewAppConstructor returns a new simapp AppConstructor
@@ -203,6 +213,130 @@ func TestGetQueryCmd(t *testing.T) {
 			}
 		}
 	})
+}
+
+func (s *IntegrationTestSuite) TestNewPublishCredentialDefinitionCmd() {
+	val1 := s.network.Validators[0]
+	val2 := s.network.Validators[1]
+
+	testCases := []struct {
+		name      string
+		expectErr codes.Code
+		respType  proto.Message
+		args      []string
+		ctx       client.Context
+	}{
+		{
+			"PASS: valid data provided",
+			codes.OK,
+			&sdk.TxResponse{},
+			[]string{
+				did.NewChainDID(s.cfg.ChainID, "validdid").String(),
+				"ValidDefName",
+				"testdata/schema.json",
+				"testdata/vocab.json",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val1.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			val1.ClientCtx,
+		},
+		{
+			"PASS: update creddef name",
+			codes.OK,
+			&sdk.TxResponse{},
+			[]string{
+				did.NewChainDID(s.cfg.ChainID, "validdid").String(),
+				"ValidDefName2",
+				"testdata/schema.json",
+				"testdata/vocab.json",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val1.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			val1.ClientCtx,
+		},
+		{
+			"FAIL: credDef with given ID is already published",
+			codes.Unknown,
+			&sdk.TxResponse{},
+			[]string{
+				did.NewChainDID(s.cfg.ChainID, "validdid").String(),
+				"ValidDefName",
+				"testdata/schema.json",
+				"testdata/vocab.json",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val2.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			val2.ClientCtx,
+		},
+		{
+			"FAIL: bad file path",
+			codes.Unknown,
+			&sdk.TxResponse{},
+			[]string{
+				did.NewChainDID(s.cfg.ChainID, "validdid").String(),
+				"ValidDefName",
+				"testdata/bad/schema.json",
+				"testdata/bad/vocab.json",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val1.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			val1.ClientCtx,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := cli.NewPublishCredentialDefinitionCmd()
+			out, err := clitestutil.ExecTestCLICmd(tc.ctx, cmd, tc.args)
+			if tc.expectErr != codes.OK {
+				s.Require().Error(err)
+				s.Equal(tc.expectErr, status.Code(err))
+			} else {
+				s.Require().NoError(err)
+				s.Require().NoError(tc.ctx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+
+				// check whether the credential def was published
+				credDefID := tc.args[0] // first arg is the cred def id
+				cmd = cli.NewQueryCredentialDefinitionCmd()
+				queryArgs := []string{
+					credDefID,
+					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+				}
+				out, err = clitestutil.ExecTestCLICmd(tc.ctx, cmd, queryArgs)
+
+				s.Require().NoError(err)
+				res := &credential.QueryCredentialDefinitionResponse{}
+				s.Require().NoError(tc.ctx.Codec.UnmarshalJSON(out.Bytes(), res))
+				s.Require().JSONEq(testVocab, string(res.Definition.Vocab))
+				s.Require().JSONEq(testSchema, string(res.Definition.Schema))
+			}
+		})
+	}
+
 }
 
 func TestIntegrationTestSuite(t *testing.T) {
