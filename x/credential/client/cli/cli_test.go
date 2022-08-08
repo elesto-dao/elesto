@@ -2,10 +2,15 @@ package cli_test
 
 import (
 	_ "embed"
+	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/elesto-dao/elesto/v2/x/did"
+	didcli "github.com/elesto-dao/elesto/v2/x/did/client/cli"
+
+	"io/ioutil"
 	"runtime"
+	"strconv"
 	"testing"
 
 	"google.golang.org/grpc/codes"
@@ -93,11 +98,12 @@ func name(others ...string) string {
 	return fmt.Sprintln(f.Name(), others)
 }
 
-func publishCredentialDefinition(s *IntegrationTestSuite, identifier, name, schemaFile, vocabFile string, val *network.Validator) {
+func publishCredentialDefinition(s *IntegrationTestSuite, identifier, name, schemaFile, vocabFile string, isPublic bool, val *network.Validator) {
 
 	clientCtx := val.ClientCtx
 	args := []string{
 		identifier, name, schemaFile, vocabFile,
+		fmt.Sprintf("--%s=%s", "public", strconv.FormatBool(isPublic)),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
@@ -109,6 +115,27 @@ func publishCredentialDefinition(s *IntegrationTestSuite, identifier, name, sche
 	}
 
 	cmd := cli.NewPublishCredentialDefinitionCmd()
+	out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
+	s.Require().NoError(err)
+	response := &sdk.TxResponse{}
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response), out.String())
+}
+
+func createDidDocument(s *IntegrationTestSuite, identifier string, val *network.Validator) {
+	clientCtx := val.ClientCtx
+	args := []string{
+		identifier,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf(
+			"--%s=%s",
+			flags.FlagFees,
+			sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+		),
+	}
+
+	cmd := didcli.NewCreateDidDocumentCmd()
 	out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
 	s.Require().NoError(err)
 	response := &sdk.TxResponse{}
@@ -145,7 +172,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryCredentialDefinition() {
 					schemaFile = "testdata/schema.json"
 					vocabFile  = "testdata/vocab.json"
 				)
-				publishCredentialDefinition(s, identifier, label, schemaFile, vocabFile, val)
+				publishCredentialDefinition(s, identifier, label, schemaFile, vocabFile, false, val)
 			},
 			"test-11234",
 		},
@@ -235,6 +262,7 @@ func (s *IntegrationTestSuite) TestNewPublishCredentialDefinitionCmd() {
 				"ValidDefName",
 				"testdata/schema.json",
 				"testdata/vocab.json",
+				"--expiration=123",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val1.Address.String()),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
@@ -247,7 +275,7 @@ func (s *IntegrationTestSuite) TestNewPublishCredentialDefinitionCmd() {
 			val1.ClientCtx,
 		},
 		{
-			"PASS: update creddef name",
+			"PASS: update creddef name, visibility and active status",
 			codes.OK,
 			&sdk.TxResponse{},
 			[]string{
@@ -255,6 +283,8 @@ func (s *IntegrationTestSuite) TestNewPublishCredentialDefinitionCmd() {
 				"ValidDefName2",
 				"testdata/schema.json",
 				"testdata/vocab.json",
+				"--public=true",
+				"--inactive=true",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val1.Address.String()),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
@@ -333,6 +363,114 @@ func (s *IntegrationTestSuite) TestNewPublishCredentialDefinitionCmd() {
 				s.Require().NoError(tc.ctx.Codec.UnmarshalJSON(out.Bytes(), res))
 				s.Require().JSONEq(testVocab, string(res.Definition.Vocab))
 				s.Require().JSONEq(testSchema, string(res.Definition.Schema))
+			}
+		})
+	}
+
+}
+
+func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
+	val := s.network.Validators[0]
+	credDefID := did.NewChainDID(s.cfg.ChainID, "testDef").String()
+	testCredFile := fmt.Sprintf("testdata/credential-%s.json", s.cfg.ChainID)
+
+	// it is shared by all test cases
+	publishCredentialDefinition(s,
+		credDefID,
+		"testDefName",
+		"testdata/schema.json",
+		"testdata/vocab.json",
+		true,
+		val,
+	)
+	createDidDocument(s, "issuer", val)
+
+	// copy the credential to a new file, with updated issuer DID with current chainID
+	credentialBytes, err := ioutil.ReadFile("testdata/credential.json")
+	s.Require().NoError(err)
+	var credentialJSON map[string]interface{}
+	err = json.Unmarshal(credentialBytes, &credentialJSON)
+	s.Require().NoError(err)
+	credentialJSON["issuer"] = did.NewChainDID(s.cfg.ChainID, "issuer")
+
+	updatedCredentialBytes, err := json.Marshal(credentialJSON)
+	s.Require().NoError(err)
+
+	err = ioutil.WriteFile(testCredFile, updatedCredentialBytes, 0600)
+	s.Require().NoError(err)
+
+	testCases := []struct {
+		name      string
+		expectErr codes.Code
+		respType  proto.Message
+		args      []string
+		credID    string
+		ctx       client.Context
+	}{
+		{
+			"PASS: valid credential is provided",
+			codes.OK,
+			&sdk.TxResponse{},
+			[]string{
+				"testDef",
+				testCredFile,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			"https://example.com/credentials/status/3",
+			val.ClientCtx,
+		},
+
+		{
+			"FAIL: non-existent file",
+			codes.Unknown,
+			&sdk.TxResponse{},
+			[]string{
+				"testDef",
+				"testdata/bad/credential.json",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			"https://example.com/credentials/status/3",
+			val.ClientCtx,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := cli.NewIssuePublicCredentialCmd()
+			out, err := clitestutil.ExecTestCLICmd(tc.ctx, cmd, tc.args)
+			if tc.expectErr != codes.OK {
+				s.Require().Error(err)
+				s.Equal(tc.expectErr, status.Code(err))
+			} else {
+				s.Require().NoError(err)
+				s.Require().NoError(tc.ctx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+
+				// check whether the credential was published
+				cmd = cli.NewQueryPublicCredentialCmd()
+				queryArgs := []string{
+					tc.credID,
+					fmt.Sprintf("--native=true"),
+					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+				}
+				out, err = clitestutil.ExecTestCLICmd(tc.ctx, cmd, queryArgs)
+
+				s.Require().NoError(err)
+				res := &credential.PublicVerifiableCredential{}
+				s.Require().NoError(tc.ctx.Codec.UnmarshalJSON(out.Bytes(), res))
 			}
 		})
 	}
