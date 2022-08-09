@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 
-	"io/ioutil"
+	"os"
 	"runtime"
 	"strconv"
 	"testing"
@@ -385,7 +385,7 @@ func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
 	createDidDocument(s, "issuer", val)
 
 	// copy the credential to a new file, with updated issuer DID with current chainID
-	credentialBytes, err := ioutil.ReadFile("testdata/credential.json")
+	credentialBytes, err := os.ReadFile("testdata/credential.json")
 	s.Require().NoError(err)
 	var credentialJSON map[string]interface{}
 	err = json.Unmarshal(credentialBytes, &credentialJSON)
@@ -395,7 +395,7 @@ func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
 	updatedCredentialBytes, err := json.Marshal(credentialJSON)
 	s.Require().NoError(err)
 
-	err = ioutil.WriteFile(testCredFile, updatedCredentialBytes, 0600)
+	err = os.WriteFile(testCredFile, updatedCredentialBytes, 0600)
 	s.Require().NoError(err)
 
 	testCases := []struct {
