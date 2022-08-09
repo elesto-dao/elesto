@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/elesto-dao/elesto/v2/x/did"
-	didcli "github.com/elesto-dao/elesto/v2/x/did/client/cli"
 
 	"io/ioutil"
 	"runtime"
@@ -15,9 +13,6 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/credential/client/cli"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
@@ -36,6 +31,10 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/elesto-dao/elesto/v2/app"
+	"github.com/elesto-dao/elesto/v2/x/credential"
+	"github.com/elesto-dao/elesto/v2/x/credential/client/cli"
+	"github.com/elesto-dao/elesto/v2/x/did"
+	didcli "github.com/elesto-dao/elesto/v2/x/did/client/cli"
 )
 
 var (
