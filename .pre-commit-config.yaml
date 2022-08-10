@@ -1,11 +1,11 @@
 repos:
 - repo: https://github.com/golangci/golangci-lint
-  rev: v1.45.2
+  rev: v1.48.0
   hooks:
     - id: golangci-lint
 # commit msg check
 - repo: https://github.com/compilerla/conventional-pre-commit
-  rev: v1.0.0
+  rev: v2.0.0
   hooks:
     - id: conventional-pre-commit
       stages: [commit-msg]
