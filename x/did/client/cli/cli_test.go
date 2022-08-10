@@ -1,6 +1,7 @@
 package cli_test
 
 import (
+	"crypto/rand"
 	"fmt"
 	"runtime"
 	"strings"
@@ -9,7 +10,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/coinbase/kryptology/pkg/core/curves/native/bls12381"
 	"github.com/gogo/protobuf/proto"
+	"github.com/multiformats/go-multibase"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
@@ -370,10 +374,61 @@ func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
+	generateG1 := func(compressed bool) string {
+		var err error
+		g1 := &bls12381.G1{}
+		g1, err = g1.Random(rand.Reader)
+		if err != nil {
+			panic(err)
+		}
+
+		var ret []byte
+		if compressed {
+			rawRet := g1.ToCompressed()
+			ret = rawRet[:]
+		} else {
+			rawRet := g1.ToUncompressed()
+			ret = rawRet[:]
+		}
+
+		retStr, err := multibase.Encode(multibase.Base58BTC, ret)
+		if err != nil {
+			panic(err)
+		}
+
+		return retStr
+	}
+
+	generateG2 := func(compressed bool) string {
+		var err error
+		g2 := &bls12381.G2{}
+		g2, err = g2.Random(rand.Reader)
+		if err != nil {
+			panic(err)
+		}
+
+		var ret []byte
+		if compressed {
+			rawRet := g2.ToCompressed()
+			ret = rawRet[:]
+		} else {
+			rawRet := g2.ToUncompressed()
+			ret = rawRet[:]
+		}
+
+		retStr, err := multibase.Encode(multibase.Base58BTC, ret)
+		if err != nil {
+			panic(err)
+		}
+
+		return retStr
+	}
+
 	testCases := []struct {
 		name      string
 		args      []string
 		expectErr codes.Code
+		cliErr    require.ErrorAssertionFunc
 		respType  proto.Message
 		malleate  func()
 	}{
@@ -385,6 +440,7 @@ func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+				"--verification-method-type=EcdsaSecp256k1VerificationKey2019",
 				fmt.Sprintf(
 					"--%s=%s",
 					flags.FlagFees,
@@ -392,9 +448,91 @@ func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
 				),
 			},
 			codes.OK,
+			require.NoError,
 			&sdk.TxResponse{},
 			func() { addNewDidDoc(s, identifier, val) },
 		},
+		{
+			name(),
+			[]string{
+				identifier,
+				generateG1(true),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+				"--verification-method-type=Bls12381G1Key2020",
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			codes.OK,
+			require.NoError,
+			&sdk.TxResponse{},
+			func() { addNewDidDoc(s, identifier, val) },
+		},
+		{
+			name(),
+			[]string{
+				identifier,
+				generateG1(false),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+				"--verification-method-type=Bls12381G1Key2020",
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			codes.OK,
+			require.NoError,
+			&sdk.TxResponse{},
+			func() { addNewDidDoc(s, identifier, val) },
+		},
+		{
+			name(),
+			[]string{
+				identifier,
+				generateG2(true),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+				"--verification-method-type=Bls12381G2Key2020",
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			codes.OK,
+			require.NoError,
+			&sdk.TxResponse{},
+			func() { addNewDidDoc(s, identifier, val) },
+		},
+		{
+			name(),
+			[]string{
+				identifier,
+				generateG2(false),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+				"--verification-method-type=Bls12381G2Key2020",
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			codes.OK,
+			require.NoError,
+			&sdk.TxResponse{},
+			func() { addNewDidDoc(s, identifier, val) },
+		},
+
 	}
 
 	for _, tc := range testCases {
@@ -408,30 +546,42 @@ func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
 				netError := s.network.WaitForNextBlock()
 				s.Require().NoError(netError)
 			}
-			s.Require().NoError(err)
+			tc.cliErr(s.T(), err)
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-
-			//check for update
-			cmd = cli.GetCmdQueryIdentifer()
-			argsTemp := []string{
-				"did:cosmos:" + clientCtx.ChainID + ":" + identifier,
-				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
-			}
-			out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
-			s.Require().NoError(err)
-			response := &did.QueryDidDocumentResponse{}
-			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
-			authentications := response.GetDidDocument().Authentication
-			verificationmethods := response.GetDidDocument().VerificationMethod
-			s.Require().Equal(2, len(authentications))
-			s.Require().Equal(2, len(verificationmethods))
-			for i := 0; i < 2; i++ {
-				s.Require().Equal(authentications[i], verificationmethods[i].Id)
-			}
-
-			verificationmethod := verificationmethods[1]
-			s.Require().Equal("F02126107837346bdbea51a56e230df6a3a4c2f687dcae04e36c4aacfa697299eac", verificationmethod.GetPublicKeyMultibase())
 		})
+	}
+
+	//check for update
+	cmd := cli.GetCmdQueryIdentifer()
+	argsTemp := []string{
+		"did:cosmos:" + clientCtx.ChainID + ":" + identifier,
+		fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+	}
+	out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, argsTemp)
+	s.Require().NoError(err)
+	response := &did.QueryDidDocumentResponse{}
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response))
+	authentications := response.GetDidDocument().Authentication
+	verificationmethods := response.GetDidDocument().VerificationMethod
+	expectedMethodsAmount := len(testCases) + 1 // there's a method in the did already
+	s.Require().Equal(expectedMethodsAmount, len(authentications))
+	s.Require().Equal(expectedMethodsAmount, len(verificationmethods))
+	for i := 0; i < expectedMethodsAmount; i++ {
+		s.Require().Equal(authentications[i], verificationmethods[i].Id)
+	}
+
+	// verify BLS keys
+	for i := 2; i < expectedMethodsAmount; i++ {
+		rawKey := testCases[i-1].args[1] // get the second argument from the i-nth test case
+
+		_, rawBytes, err := multibase.Decode(rawKey)
+		if err != nil {
+			panic(err)
+		}
+
+		hexMb := did.NewPublicKeyMultibase(rawBytes).PublicKeyMultibase
+
+		s.Equal(hexMb, verificationmethods[i].GetPublicKeyMultibase())
 	}
 }
 

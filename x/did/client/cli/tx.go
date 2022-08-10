@@ -1,14 +1,18 @@
 package cli
 
 import (
+	"crypto/sha256"
 	"fmt"
+	"strings"
 
+	"github.com/coinbase/kryptology/pkg/core/curves/native/bls12381"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptodid "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/multiformats/go-multibase"
 	"github.com/spf13/cobra"
 
 	"github.com/elesto-dao/elesto/v2/x/did"
@@ -114,51 +118,166 @@ func NewCreateDidDocumentCmd() *cobra.Command {
 	return cmd
 }
 
+func validateVerificationType(value string) (did.VerificationMethodType, error) {
+	valid := map[string]did.VerificationMethodType{
+		"Bls12381G1Key2020":                 did.Bls12381G1Key2020,
+		"Bls12381G2Key2020":                 did.Bls12381G2Key2020,
+		"EcdsaSecp256k1VerificationKey2019": did.EcdsaSecp256k1VerificationKey2019,
+	}
+
+	if val, found := valid[value]; found {
+		return val, nil
+	}
+	availableTypes := []string{}
+
+	for k := range valid {
+		availableTypes = append(availableTypes, k)
+	}
+
+	return "", fmt.Errorf("invalid or missing verification type, allowed types: %s", strings.Join(availableTypes, ", "))
+}
+
 // NewAddVerificationCmd defines the command to add a verification method to a given did
 func NewAddVerificationCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "add-verification-method [id] [pubkey]",
+		Use:     "add-verification-method [id] [type] [pubkey] --verification-type [verification-type]",
 		Short:   "add an verification method to a decentralized did (did) document",
-		Example: `tx did add-verification-method emti $(elestod keys show emti -p) --from validator --chain-id elesto`,
+		Example: `tx did add-verification-method emti $(elestod keys show emti -p) --from validator --chain-id elesto --verification-type EcdsaSecp256k1VerificationKey2019`,
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
+
+			rawVerificationType, _ := cmd.Flags().GetString("verification-method-type")
+			verificationType, err := validateVerificationType(rawVerificationType)
+			if err != nil {
+				return err
+			}
+
+			var msg sdk.Msg
+			var verification *did.Verification
+
+			id := args[0]
+			rawPubKey := args[1]
+
 			// signer address
 			signer := clientCtx.GetFromAddress()
-			// public key
-			var pk cryptodid.PubKey
-			err = clientCtx.Codec.UnmarshalInterfaceJSON([]byte(args[1]), &pk)
-			if err != nil {
-				return err
-			}
-			// derive the public key type
-			vmType, err := deriveVMType(pk)
-			if err != nil {
-				return err
-			}
 			// document did
-			didID := did.NewChainDID(clientCtx.ChainID, args[0])
-			// verification method id
-			vmID := didID.NewVerificationMethodID(sdk.MustBech32ifyAddressBytes(
-				sdk.GetConfig().GetBech32AccountAddrPrefix(),
-				pk.Address().Bytes(),
-			))
+			didID := did.NewChainDID(clientCtx.ChainID, id)
 
-			verification := did.NewVerification(
-				did.NewVerificationMethod(
-					vmID,
-					didID,
-					did.NewPublicKeyMultibase(pk.Bytes()),
-					vmType,
-				),
-				[]string{did.Authentication},
-				nil,
-			)
+			blsVerificationBuilder := func(pkBytes []byte) (*did.Verification, error) {
+				pkHash := sha256.Sum256(pkBytes)
+				var pkHashStr string
+				pkHashStr, err = multibase.Encode(multibase.Base58BTC, pkHash[:])
+				if err != nil {
+					return nil, fmt.Errorf("cannot encode pubkey hash to string, %w", err)
+				}
+
+				// verification method id
+				vmID := didID.NewVerificationMethodID(pkHashStr)
+
+				return did.NewVerification(
+					did.NewVerificationMethod(
+						vmID,
+						didID,
+						did.NewPublicKeyMultibase(pkBytes),
+						verificationType,
+					),
+					[]string{did.Authentication},
+					nil,
+				), nil
+			}
+
+			switch verificationType {
+			case did.CosmosAccountAddress, did.Ed25519VerificationKey2018, did.X25519KeyAgreementKey2019:
+				return fmt.Errorf("verification type type %s not supported", verificationType)
+			case did.EcdsaSecp256k1VerificationKey2019:
+				var pk cryptodid.PubKey
+				err = clientCtx.Codec.UnmarshalInterfaceJSON([]byte(rawPubKey), &pk)
+				if err != nil {
+					return err
+				}
+
+				// verification method id
+				vmID := didID.NewVerificationMethodID(sdk.MustBech32ifyAddressBytes(
+					sdk.GetConfig().GetBech32AccountAddrPrefix(),
+					pk.Address().Bytes(),
+				))
+
+				verification = did.NewVerification(
+					did.NewVerificationMethod(
+						vmID,
+						didID,
+						did.NewPublicKeyMultibase(pk.Bytes()),
+						verificationType,
+					),
+					[]string{did.Authentication},
+					nil,
+				)
+
+			case did.Bls12381G1Key2020:
+				// rawPubKey must be multibase
+				_, pkBytes, err := multibase.Decode(rawPubKey)
+				if err != nil {
+					return fmt.Errorf("public key format error, %w", err)
+				}
+
+				// verify that passed data is actually a G1 coordinate
+				g1 := bls12381.G1{}
+				switch len(pkBytes) {
+				case bls12381.FieldBytes: // compressed
+					pkBytesPtr := (*[bls12381.FieldBytes]byte)(pkBytes)
+					if _, err = g1.FromCompressed(pkBytesPtr); err != nil {
+						return fmt.Errorf("malformed bls12381 key, %w", err)
+					}
+
+				case bls12381.WideFieldBytes:
+					pkBytesPtr := (*[bls12381.WideFieldBytes]byte)(pkBytes)
+					if _, err = g1.FromUncompressed(pkBytesPtr); err != nil {
+						return fmt.Errorf("malformed bls12381 key, %w", err)
+					}
+
+				}
+
+				verification, err = blsVerificationBuilder(pkBytes)
+				if err != nil {
+					return err
+				}
+
+			case did.Bls12381G2Key2020:
+				// rawPubKey must be multibase
+				_, pkBytes, err := multibase.Decode(rawPubKey)
+				if err != nil {
+					return fmt.Errorf("public key format error, %w", err)
+				}
+
+				// verify that passed data is actually a G1 coordinate
+				g2 := bls12381.G2{}
+				switch len(pkBytes) {
+				case bls12381.WideFieldBytes: // compressed
+					pkBytesPtr := (*[bls12381.WideFieldBytes]byte)(pkBytes)
+					if _, err = g2.FromCompressed(pkBytesPtr); err != nil {
+						return fmt.Errorf("malformed bls12381 key, %w", err)
+					}
+
+				case bls12381.DoubleWideFieldBytes:
+					pkBytesPtr := (*[bls12381.DoubleWideFieldBytes]byte)(pkBytes)
+					if _, err = g2.FromUncompressed(pkBytesPtr); err != nil {
+						return fmt.Errorf("malformed bls12381 key, %w", err)
+					}
+
+				}
+
+				verification, err = blsVerificationBuilder(pkBytes)
+				if err != nil {
+					return err
+				}
+			}
+
 			// add verification
-			msg := did.NewMsgAddVerification(
+			msg = did.NewMsgAddVerification(
 				didID.String(),
 				verification,
 				signer.String(),
@@ -171,6 +290,8 @@ func NewAddVerificationCmd() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
+
+	cmd.PersistentFlags().String("verification-method-type", "", "verification method type")
 
 	flags.AddTxFlagsToCmd(cmd)
 
