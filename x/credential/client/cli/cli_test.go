@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"github.com/noandrea/rl2020"
 
 	"github.com/cosmos/cosmos-sdk/client"
 
@@ -426,7 +427,6 @@ func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
 			"https://example.com/credentials/status/3",
 			val.ClientCtx,
 		},
-
 		{
 			"FAIL: non-existent file",
 			codes.Unknown,
@@ -475,6 +475,138 @@ func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
 		})
 	}
 
+}
+
+func (s *IntegrationTestSuite) TestNewCreateRevocationListCmd() {
+	val := s.network.Validators[0]
+	defaultCredDefID := "revocation-list-2020"
+	customCredDefID := "revocation-list-2020-custom"
+
+	// shared by all test cases
+	didID := "revoc-issuer"
+	createDidDocument(s, didID, val)
+
+	testCases := []struct {
+		name      string
+		expectErr codes.Code
+		respType  proto.Message
+		args      []string
+		fixture   func()
+		ctx       client.Context
+	}{
+		{
+			"PASS: using default flags",
+			codes.OK,
+			&sdk.TxResponse{},
+			[]string{
+				"https://elesto.id/rl2020-1",
+				fmt.Sprintf("--issuer=%s", did.NewChainDID(s.cfg.ChainID, didID)),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			func() {
+				// default definition
+				publishCredentialDefinition(s,
+					did.NewChainDID(s.cfg.ChainID, defaultCredDefID).String(),
+					"RevocationList2020",
+					"testdata/schema.json",
+					"testdata/vocab.json",
+					true,
+					val,
+				)
+			},
+			val.ClientCtx,
+		},
+		{
+			"PASS: custom flags provided",
+			codes.OK,
+			&sdk.TxResponse{},
+			[]string{
+				"https://elesto.id/rl2020-2",
+				fmt.Sprintf("--issuer=%s", did.NewChainDID(s.cfg.ChainID, didID)),
+				fmt.Sprintf("--size=%d", 32),
+				fmt.Sprintf("--definition-id=%s", customCredDefID),
+				fmt.Sprintf("--revoke=%s", "1"),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			func() {
+				// custom definition
+				publishCredentialDefinition(s,
+					did.NewChainDID(s.cfg.ChainID, customCredDefID).String(),
+					"RevocationList2020CustomDef",
+					"testdata/schema.json",
+					"testdata/vocab.json",
+					true,
+					val,
+				)
+			},
+			val.ClientCtx,
+		},
+		{
+			"FAIL: duplicate credential",
+			codes.Unknown,
+			&sdk.TxResponse{},
+			[]string{
+				"https://elesto.id/rl2020-1",
+				fmt.Sprintf("--issuer=%s", did.NewChainDID(s.cfg.ChainID, didID)),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			func() {
+			},
+			val.ClientCtx,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			tc.fixture()
+			cmd := cli.NewCreateRevocationListCmd()
+			out, err := clitestutil.ExecTestCLICmd(tc.ctx, cmd, tc.args)
+			if tc.expectErr != codes.OK {
+				s.Require().Error(err)
+				s.Equal(tc.expectErr, status.Code(err))
+			} else {
+				s.Require().NoError(err)
+				s.Require().NoError(tc.ctx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+
+				// check whether the credential was published
+				credID := tc.args[0] // the first arg should be the cred ID
+				cmd = cli.NewQueryPublicCredentialCmd()
+				queryArgs := []string{
+					credID,
+					fmt.Sprintf("--native=true"),
+					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+				}
+				out, err = clitestutil.ExecTestCLICmd(tc.ctx, cmd, queryArgs)
+
+				s.Require().NoError(err)
+				res := &credential.PublicVerifiableCredential{}
+				s.Require().NoError(tc.ctx.Codec.UnmarshalJSON(out.Bytes(), res))
+				s.Require().Len(res.Type, 2)
+				s.Require().Equal(rl2020.TypeRevocationList2020Credential, res.Type[1])
+			}
+		})
+	}
 }
 
 func TestIntegrationTestSuite(t *testing.T) {
