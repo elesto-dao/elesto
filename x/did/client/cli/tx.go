@@ -91,7 +91,7 @@ func NewCreateDidDocumentCmd() *cobra.Command {
 					vmType,
 				),
 				[]string{did.Authentication},
-				nil,
+				[]string{"https://w3id.org/security/suites/secp256k1-2019/v1"},
 			)
 			// create the message
 			msg := did.NewMsgCreateDidDocument(
@@ -155,7 +155,7 @@ func NewAddVerificationCmd() *cobra.Command {
 					vmType,
 				),
 				[]string{did.Authentication},
-				nil,
+				[]string{"https://w3id.org/security/suites/secp256k1-2019/v1"},
 			)
 			// add verification
 			msg := did.NewMsgAddVerification(
