@@ -537,7 +537,7 @@ func TestNewDidDocument(t *testing.T) {
 						"did:cosmos:elesto:subject#key-1",
 						EcdsaSecp256k1VerificationKey2019.String(),
 						"did:cosmos:elesto:subject",
-						&VerificationMethod_PublicKeyMultibase{"F03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
+						&VerificationMethod_PublicKeyMultibase{"F03DFD0A469806D66A23C7C948F55C129467D6D0974A222EF6E24A538FA6882F3D7"},
 					},
 					{
 						"did:cosmos:elesto:subject#key-2",
@@ -899,13 +899,13 @@ func TestDidDocument_AddVerifications(t *testing.T) {
 						"did:cosmos:elesto:subject#key-1",
 						EcdsaSecp256k1VerificationKey2019.String(),
 						"did:cosmos:elesto:subject",
-						&VerificationMethod_PublicKeyMultibase{"F03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
+						&VerificationMethod_PublicKeyMultibase{"F03DFD0A469806D66A23C7C948F55C129467D6D0974A222EF6E24A538FA6882F3D7"},
 					},
 					{
 						"did:cosmos:elesto:subject#key-2",
 						EcdsaSecp256k1VerificationKey2019.String(),
 						"did:cosmos:elesto:subject",
-						&VerificationMethod_PublicKeyMultibase{"F03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
+						&VerificationMethod_PublicKeyMultibase{"F03DFD0A469806D66A23C7C948F55C129467D6D0974A222EF6E24A538FA6882F3D7"},
 					},
 				},
 				Service:              nil,
@@ -1167,7 +1167,7 @@ func TestDidDocument_RevokeVerification(t *testing.T) {
 						"did:cosmos:elesto:subject#key-1",
 						EcdsaSecp256k1VerificationKey2019.String(),
 						"did:cosmos:elesto:subject",
-						&VerificationMethod_PublicKeyMultibase{"F03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
+						&VerificationMethod_PublicKeyMultibase{"F03DFD0A469806D66A23C7C948F55C129467D6D0974A222EF6E24A538FA6882F3D7"},
 					},
 				},
 				Service:        nil,
@@ -1186,7 +1186,7 @@ func TestDidDocument_RevokeVerification(t *testing.T) {
 									"did:cosmos:elesto:subject#key-1",
 									EcdsaSecp256k1VerificationKey2019.String(),
 									"did:cosmos:elesto:subject",
-									&VerificationMethod_PublicKeyMultibase{"F03dfd0a469806d66a23c7c948f55c129467d6d0974a222ef6e24a538fa6882f3d7"},
+									&VerificationMethod_PublicKeyMultibase{"F03DFD0A469806D66A23C7C948F55C129467D6D0974A222EF6E24A538FA6882F3D7"},
 								},
 								[]string{
 									Authentication,
@@ -2115,6 +2115,7 @@ func TestDidDocument_HasPublicKey(t *testing.T) {
 				c := simapp.MakeTestEncodingConfig().Marshaler
 				err := c.UnmarshalInterfaceJSON([]byte(`{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"Aslf+LuFzmGmRuXiWHwdK0YD9OETgCyEbg8PIyi97Uf1"}`), &pk)
 				assert.NoError(t, err)
+
 				return pk
 
 			},

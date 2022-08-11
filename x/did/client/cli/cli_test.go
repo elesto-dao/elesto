@@ -430,7 +430,7 @@ func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
 			}
 
 			verificationmethod := verificationmethods[1]
-			s.Require().Equal("F02126107837346bdbea51a56e230df6a3a4c2f687dcae04e36c4aacfa697299eac", verificationmethod.GetPublicKeyMultibase())
+			s.Require().Equal("F02126107837346BDBEA51A56E230DF6A3A4C2F687DCAE04E36C4AACFA697299EAC", verificationmethod.GetPublicKeyMultibase())
 		})
 	}
 }
