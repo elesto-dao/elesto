@@ -70,7 +70,7 @@ func NewBlockchainAccountIDFromString(baID string) *VerificationMethod_Blockchai
 // https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03#appendix-B.1
 func NewPublicKeyMultibase(pubKey []byte) *VerificationMethod_PublicKeyMultibase {
 	return &VerificationMethod_PublicKeyMultibase{
-		PublicKeyMultibase: fmt.Sprint("F", hex.EncodeToString(pubKey)),
+		PublicKeyMultibase: fmt.Sprint("F", strings.ToUpper(hex.EncodeToString(pubKey))),
 	}
 }
 
