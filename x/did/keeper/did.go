@@ -68,9 +68,7 @@ func (k Keeper) GetAllDidDocumentsWithCondition(
 
 	for ; iterator.Valid(); iterator.Next() {
 		didDoc, _ := k.UnmarshalDidDocument(iterator.Value())
-		didTyped := didDoc.(did.DidDocument)
-
-		if didSelector(&didTyped) {
+		if didTyped, ok := didDoc.(did.DidDocument); ok && didSelector(&didTyped) {
 			didDocs = append(didDocs, &didTyped)
 		}
 	}
