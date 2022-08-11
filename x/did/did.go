@@ -182,9 +182,31 @@ func IsValidDIDDocument(didDoc *DidDocument) bool {
 		}
 	}
 
+	//check that in the relationships there are only listed vm ids
+	// list all the vmIds from relationships
+	relVMIDs := map[string]struct{}{}
+	for _, rK := range supportedRelationships {
+		for _, vmID := range *didDoc.getRelationships(rK) {
+			relVMIDs[vmID] = struct{}{}
+		}
+	}
+	// verify all the vm
 	for _, element := range didDoc.VerificationMethod {
 		vm, _ := element.VerificationMaterial.(Validable)
 		if vErr := vm.Validate(); vErr != nil {
+			return false
+		}
+		// remove the vmId for the list of vmIds from relationships
+		delete(relVMIDs, element.Id)
+	}
+	// if there are items left in the list of vmIds from relationships
+	// then there are invalid relationships vmIds
+	if len(relVMIDs) > 0 {
+		return false
+	}
+
+	for _, s := range didDoc.Service {
+		if err := ValidateService(s); err != nil {
 			return false
 		}
 	}
