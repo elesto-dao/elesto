@@ -143,6 +143,29 @@ func createDidDocument(s *IntegrationTestSuite, identifier string, val *network.
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response), out.String())
 }
 
+func createRevocationList(s *IntegrationTestSuite, rlID, issuerDidID, credDefID string, val *network.Validator) {
+	clientCtx := val.ClientCtx
+	args := []string{
+		rlID,
+		fmt.Sprintf("--issuer=%s", did.NewChainDID(s.cfg.ChainID, issuerDidID)),
+		fmt.Sprintf("--definition-id=%s", credDefID),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf(
+			"--%s=%s",
+			flags.FlagFees,
+			sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+		),
+	}
+
+	cmd := cli.NewCreateRevocationListCmd()
+	out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
+	s.Require().NoError(err)
+	response := &sdk.TxResponse{}
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response), out.String())
+}
+
 func (s *IntegrationTestSuite) TestGetCmdQueryCredentialDefinition() {
 
 	val := s.network.Validators[0]
@@ -604,6 +627,142 @@ func (s *IntegrationTestSuite) TestNewCreateRevocationListCmd() {
 				s.Require().NoError(tc.ctx.Codec.UnmarshalJSON(out.Bytes(), res))
 				s.Require().Len(res.Type, 2)
 				s.Require().Equal(rl2020.TypeRevocationList2020Credential, res.Type[1])
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestNewUpdateRevocationListCmd() {
+	val := s.network.Validators[0]
+
+	// shared by all test cases
+	didID := "revoc-issuer-updater"
+	createDidDocument(s, didID, val)
+	credDefID := "revocation-list-2020-def"
+	publishCredentialDefinition(s,
+		did.NewChainDID(s.cfg.ChainID, credDefID).String(),
+		"RevocationList2020Def",
+		"testdata/schema.json",
+		"testdata/vocab.json",
+		true,
+		val,
+	)
+	rlID := "https://elesto.id/rl2020-test"
+	createRevocationList(s, rlID, didID, credDefID, val)
+
+	testCases := []struct {
+		name             string
+		expectErr        codes.Code
+		respType         proto.Message
+		args             []string
+		expectRevoked    []int
+		expectNonRevoked []int
+		ctx              client.Context
+	}{
+		{
+			"PASS: revoke credential at index 1",
+			codes.OK,
+			&sdk.TxResponse{},
+			[]string{
+				rlID,
+				fmt.Sprintf("--revoke=%d", 1),
+				fmt.Sprintf("--definition-id=%s", credDefID),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			[]int{1},
+			[]int{},
+			val.ClientCtx,
+		},
+		{
+			"PASS: reset credential at index 1",
+			codes.OK,
+			&sdk.TxResponse{},
+			[]string{
+				rlID,
+				fmt.Sprintf("--reset=%d", 1),
+				fmt.Sprintf("--definition-id=%s", credDefID),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			[]int{},
+			[]int{1},
+			val.ClientCtx,
+		},
+		{
+			"FAIL: nonexistent credential",
+			codes.Unknown,
+			&sdk.TxResponse{},
+			[]string{
+				rlID + "non-existing",
+				fmt.Sprintf("--reset=%d", 1),
+				fmt.Sprintf("--definition-id=%s", credDefID),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			[]int{},
+			[]int{1},
+			val.ClientCtx,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := cli.NewUpdateRevocationListCmd()
+			out, err := clitestutil.ExecTestCLICmd(tc.ctx, cmd, tc.args)
+			if tc.expectErr != codes.OK {
+				s.Require().Error(err)
+				s.Equal(tc.expectErr, status.Code(err))
+			} else {
+				s.Require().NoError(err)
+				s.Require().NoError(tc.ctx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+
+				// check whether the credential was published
+				rlID := tc.args[0] // the first arg should be the cred ID
+				cmd = cli.NewQueryPublicCredentialCmd()
+				queryArgs := []string{
+					rlID,
+					fmt.Sprintf("--native=true"),
+					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+				}
+				out, err = clitestutil.ExecTestCLICmd(tc.ctx, cmd, queryArgs)
+				s.Require().NoError(err)
+
+				pubCred := &credential.PublicVerifiableCredential{}
+				s.Require().NoError(tc.ctx.Codec.UnmarshalJSON(out.Bytes(), pubCred))
+
+				revList, err := rl2020.NewRevocationListFromJSON(pubCred.CredentialSubject)
+				s.Require().NoError(err)
+
+				for _, idx := range tc.expectRevoked {
+					isRevoked, err := revList.IsRevoked(rl2020.NewCredentialStatus(rlID, idx))
+					s.Require().NoError(err)
+					s.Require().True(isRevoked)
+				}
+
+				for _, idx := range tc.expectNonRevoked {
+					isRevoked, err := revList.IsRevoked(rl2020.NewCredentialStatus(rlID, idx))
+					s.Require().NoError(err)
+					s.Require().False(isRevoked)
+				}
 			}
 		})
 	}
