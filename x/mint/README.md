@@ -1,7 +1,6 @@
 # Mint module
 
 The mint module takes on the task of handling the creation and destruction of tokens based on the current status of the circulating supply.
-The minting mechanism allows for a flexible inflation rate determined by market demand targeting a particular bonded-stake ratio and effects a balance between market liquidity and staked supply.
 
 By default, the Cosmos SDK mint module allows for an infinite supply. To meet a different set of requirements, this custom mint module specifies a fixed total token supply and a custom minting schedule.
 
