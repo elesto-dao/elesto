@@ -1,96 +1,46 @@
-# Technical Setup
+# Technical setup for the docs portal
 
-To ensure you have a successful experience working with our Elesto content, Tendermint recommends this technical setup.
+For a successful experience working with the docs, ensure your local technical setup meets these requirements.
 
-## GitHub Integration
+## Codebase
 
-Click the GitHub icon in the sidebar for GitHub integration and follow the prompts.
+Fork or clone the <https://github.com/elesto-dao/elesto-docs/> repository.
 
-Clone the repos you work in
+Internal users have different permissions. If you're not sure if you have access, fork the repo.
 
-- Fork or clone the https://github.com/elesto-dao/elesto/ repository.
+## Software requirements
 
-Internal Tendermint users have different permissions, if you're not sure, fork the repo.
+Ensure your local environment meets these software requirements.
 
-## Software requirement
+## Setting up your local environment
 
-To build the project:
+<!-- do docs need pre-commit hooks? -->
 
-- [Golang](https://golang.org/dl/) v1.16 or higher
-- [`make`](https://www.gnu.org/software/make/) to use Makefile targets
-- `sha256sum` to calculate build checksums
-
-To run the [seed scripts](scripts/seeds):
-
-- OS: Linux or macOS
-- [jq](https://stedolan.github.io/jq/) JSON processor
-
-For git pre-commit hooks:
-
-- Python v3.8 or higher
-- [pre-commit](https://pre-commit.com/#install) git pre-commit hooks framework
-- [golangci-lint](https://github.com/golangci/golangci-lint) linter for Go
-
-### Swagger
-
-To generate the Swagger UI for the node REST endpoints:
-
-- [`swagger-combine`](https://www.npmjs.com/package/swagger-combine)
-
-## Development environment setup
-
-Install the configured pre-commit hooks by running these commands from the project's root folder:
+To install the configured pre-commit hooks, run these commands from the project's root folder:
 
 ```sh
-$ pre-commit install
-$ pre-commit install --hook-type commit-msg
+pre-commit install
+pre-commit install --hook-type commit-msg
 ```
 
-## Building
+## Updating docs
 
-To build the Elesto node and command line client, run the `make build` command from the project's root folder. The
-output of the build will be generated in the `build` folder.
+Thank you for making relevant documentation updates. We appreciate your help preserving and maintaining accurate and trusted technical content. All code updates are considered complete only after accompanying documentation is submitted.
 
-For cross-builds use the standard `GOOS` and `GOARCH` env vars. i.e. to build for windows:
+## Building docs
 
-```
-GOOS=windows GOARCH=amd64 make build
-```
+The documentation portal is generated using the [mkdocs](https://www.mkdocs.org/) static site generator. Documentation source files are written in Markdown and configured with a single [mkdocs.yml]() configuration file.
 
-> 💡 You can also use the default `go` command to build the project. For reference, see the contents of the [Makefile](./Makefile).
+To build or run the documentation portal locally, the requirements are:
 
-> ⚠️ on Windows, the `sha256sum` command is not present so although the `make build` command builds successfully, it fails to compute the checksum and does not copy the other resources to the build folder.
-
-## Testing
-
-To run the unit and integration tests, run the `make test` command from the project's root folder.
-
-> 💡 you can also use the default `go` command to build the project, check the content of the [Makefile](./Makefile) for reference
-
-## Installation
-
-To install the node client on your local machine, run the `make install` command from the project's root folder.
-
-> 💡 you can also use the default `go` command to build the project, check the content of the [Makefile](./Makefile) for reference
-
-## Running a local network
-
-To set-up a local network and generate some transactions, run the `make seed` command from the project's root folder. The command 
-will run the scripts available in the [seed scripts](scripts/seeds).
-
-## Documentation Portal 
-
-All code updates are not complete until accompanying documentation is submitted. 
-
-The documentation portal is generated using [mkdocs](https://www.mkdocs.org/), to build or run the documentation portal
-locally the requirements are:
-
+- pip3
 - Python v3.8 or higher
 
-Then, from the command line install the required packages
+To install the required packages, run these commands at the command line:
 
 ```sh
-pip install -r requirements.txt
+pip3 install mkdocs
+pip3 install -r requirements.txt
 ```
 
 To build the documentation portal, execute the following command from the project root:
@@ -101,10 +51,14 @@ mkdocs build
 
 The documentation portal is built in the `site` directory.
 
-To run the documentation portal, execute the following command from the project root:
+To run the documentation portal, run the following command from the project root directory:
 
 ```sh
 mkdocs serve
 ```
 
-The portal will be served on 'http://127.0.0.1:8000/'
+In a web browser, the docs portal is served on 'http://127.0.0.1:8000/'.
+
+## GitHub integration
+
+In the Visual Studio Code sidebar, click the GitHub icon and follow the prompts.
