@@ -109,7 +109,7 @@ import (
 	minttypes "github.com/elesto-dao/elesto/v2/x/mint/types"
 )
 
-/// Global vars that define account prefix and name of chain
+// Global vars that define account prefix and name of chain
 const (
 	AccountAddressPrefix = "elesto"
 	Name                 = "elesto"
