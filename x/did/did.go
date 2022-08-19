@@ -327,7 +327,7 @@ func WithVerifications(verifications ...*Verification) DocumentOption {
 	}
 }
 
-//WithServices add optional services
+// WithServices add optional services
 func WithServices(services ...*Service) DocumentOption {
 	return func(did *DidDocument) error {
 		return did.AddServices(services...)
