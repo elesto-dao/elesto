@@ -66,7 +66,7 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 }
 
 // SetBootstrapDateCanary sets the bootstrap date canary boolean to true.
-// If overwrite is true, regardless of whether or not the canary was already set, it will be set again.
+// If overwrite is true, the date is set again even when it was already set.
 func (k Keeper) SetBootstrapDateCanary(ctx sdk.Context, value bool, overwrite bool) error {
 	store := ctx.KVStore(k.storeKey)
 	if store.Has(types.BootstrapDateCanaryKey) && !overwrite {
