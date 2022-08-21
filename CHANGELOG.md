@@ -2,9 +2,46 @@
 ## [Unreleased]
 
 
-<a name="v2.0.0-rc2"></a>
-## [v2.0.0-rc2] - 2022-06-21
+<a name="v3.0.0-rc1"></a>
+## [v3.0.0-rc1] - 2022-08-20
 ### Chore
+- prepare codebase for Oak audit
+- grammatical improvements
+- **credential:** goimport -local
+- **credential:** replace ioutils with os
+- **credential:** sort imports
+
+### Docs
+- add Mint and Inflation ADR
+- update docs about network upgrade
+- **ADR:** add verifiable credential ADR 006 ([#179](https://github.com/elesto-dao/elesto/issues/179))
+
+### Feat
+- add stale github action
+- use ghcr.io container image for kubernetes devnet
+- add github action release for containers
+- add k3d local devnet scripts
+- add dockerfile
+- **docs:** create mint module readme
+- **mint:** chain reset-resistant mint schedule ([#180](https://github.com/elesto-dao/elesto/issues/180))
+
+### Fix
+- expose tendermint rpc endpoint on 0.0.0.0 for liveness probe
+- link aries command generates invalid service ids ([#195](https://github.com/elesto-dao/elesto/issues/195))
+- linter error
+- **simulations:** allow simulations to pass even if Interchain Accounts ([#202](https://github.com/elesto-dao/elesto/issues/202))
+
+### Test
+- **credential:** add test for update-revocation-list
+- **credential:** add test for create-revocation-list
+- **credential:** add test for issue-public-credential
+- **credential:** add test for publish-credential-definition
+
+
+<a name="v2.0.0-rc2"></a>
+## [v2.0.0-rc2] - 2022-07-04
+### Chore
+- update changelog for v2.0.0-rc2
 - update changelog for v2.0.0-rc1
 - **makefile:** build only the node binary for the build target
 
@@ -132,7 +169,8 @@
 - increase test coverage
 
 
-[Unreleased]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc2...HEAD
+[Unreleased]: https://github.com/elesto-dao/elesto/compare/v3.0.0-rc1...HEAD
+[v3.0.0-rc1]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc2...v3.0.0-rc1
 [v2.0.0-rc2]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc1...v2.0.0-rc2
 [v2.0.0-rc1]: https://github.com/elesto-dao/elesto/compare/v1.0.0-rc2...v2.0.0-rc1
 [v1.0.0-rc2]: https://github.com/elesto-dao/elesto/compare/v1.0.0-rc1...v1.0.0-rc2
