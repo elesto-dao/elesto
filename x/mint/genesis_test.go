@@ -2,6 +2,7 @@ package mint_test
 
 import (
 	"testing"
+	"time"
 
 	chain "github.com/elesto-dao/elesto/v2/app"
 	"github.com/stretchr/testify/require"
@@ -11,15 +12,20 @@ import (
 	"github.com/elesto-dao/elesto/v2/x/mint/types"
 )
 
-func TestInitGenesis(t *testing.T) {
-	app := chain.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+func (s *ModuleTestSuite) TestDefaultInitGenesis() {
+	genState := *types.DefaultGenesisState()
 
-	// default gent state case
-	genState := types.DefaultGenesisState()
-	mint.InitGenesis(ctx, app.MintKeeper, app.AccountKeeper, genState)
-	got := mint.ExportGenesis(ctx, app.MintKeeper)
-	require.Equal(t, *genState, *got)
+	mint.InitGenesis(s.ctx, s.app.MintKeeper, s.app.AccountKeeper, &genState)
+	// assign some values to the bootstrap date
+
+	ctx := s.ctx.WithBlockTime(time.Now())
+	
+	s.Require().NoError(s.app.MintKeeper.SetBootstrapDateCanary(s.ctx, true, true))
+	s.Require().NoError(s.app.MintKeeper.SetBootstrapDate(ctx, true))
+	got := *mint.ExportGenesis(s.ctx, s.app.MintKeeper)
+	s.Require().Equal(genState.Params, got.Params)
+	s.Require().NotEmpty(got.BootstrapDate)
+	s.Require().True(got.BootstrapDateCanary)
 }
 
 func TestInitInvalidGenesis(t *testing.T) {
@@ -37,7 +43,10 @@ func TestInitInvalidGenesis(t *testing.T) {
 
 func TestImportExportGenesis(t *testing.T) {
 	app := chain.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{}).WithBlockHeight(12).WithBlockTime(time.Now())
+
+	require.NoError(t, app.MintKeeper.SetBootstrapDateCanary(ctx, true, true))
+	require.NoError(t, app.MintKeeper.SetBootstrapDate(ctx, true))
 
 	genState := mint.ExportGenesis(ctx, app.MintKeeper)
 	bz := app.AppCodec().MustMarshalJSON(genState)
