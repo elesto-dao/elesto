@@ -12,11 +12,9 @@ import (
 )
 
 /**
-initialize the network with a new account
-that has 200_000_000 tokens as strategic reserve
-TODO: testnet upgrade
+This is the block inflation amount per year.
+The motivation for the value can be found in the ADR-008
 */
-
 var (
 	BlockInflationAmount = map[int]int64{
 		0: 31709792,

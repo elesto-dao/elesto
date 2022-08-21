@@ -273,7 +273,7 @@ ifndef APP_VERSION
 	$(error APP_VERSION is not set, please specifiy the version you want to tag)
 endif
 	git tag $(APP_VERSION)
-	git-chglog --output CHANGELOG.md
+	git-chglog --output CHANGELOG.md --sort semver
 	git tag $(APP_VERSION) --delete
 	git add CHANGELOG.md && git commit -m "chore: update changelog for $(APP_VERSION)"
 	@echo release complete
