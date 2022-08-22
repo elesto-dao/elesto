@@ -26,16 +26,14 @@ func setup(withGenesis bool, invCheckPeriod uint) (*App, GenesisState) {
 	}
 
 	db := dbm.NewMemDB()
-	encCdc := cosmoscmd.MakeEncodingConfig(ModuleBasics)
+	encCdc := MakeEncodingConfig(ModuleBasics)
 	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encCdc, &emptyAppOption{})
 
-	cosmosApp := app.(*App)
-
 	if withGenesis {
-		return cosmosApp, NewDefaultGenesisState(encCdc.Marshaler)
+		return app, NewDefaultGenesisState(encCdc.Marshaler)
 	}
 
-	return cosmosApp, GenesisState{}
+	return app, GenesisState{}
 }
 
 // Setup initializes a new App. A Nop logger is set in App.
