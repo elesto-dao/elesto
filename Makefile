@@ -140,8 +140,6 @@ clean:
 
 go.sum: go.mod
 	echo "Ensure dependencies have not been modified ..." >&2
-	go mod verify
-	go mod tidy
 
 runsim:
 	@echo "Installing runsim..."
@@ -170,10 +168,6 @@ test-sim-custom-fast:
 
 test-sim-after-import: runsim
 	@echo "Running application simulation-after-import. This may take several minutes..."
-	# TODO: this fails on invariant checks, fix with upgrade of cosmos-sdk
-	# panic: calculated final stake for delegator elesto1qztthlfkwyaun8wq69kwqydwcgq5flzct6dla5 greater than current stake
-	# final stake:	1383041438.000000000000000000
-	# current stake:	1097257655.000000000000000000 [recovered]
 	$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 5 TestAppSimulationAfterImport
 
 test-sim-multi-seed-long: runsim
