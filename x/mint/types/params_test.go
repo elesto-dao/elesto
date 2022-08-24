@@ -70,7 +70,7 @@ func TestParamsValidate(t *testing.T) {
 			func(params *types.Params) {
 				params.TeamReward = "not valid"
 			},
-			"failed to set decimal string: not valid000000000000000000",
+			"failed to set decimal string with base 10: not valid000000000000000000",
 		},
 		{
 			"team reward is less than 0",

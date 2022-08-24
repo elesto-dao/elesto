@@ -6,15 +6,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
-	simapp "github.com/elesto-dao/elesto/v2/app"
+	elestoapp "github.com/elesto-dao/elesto/v2/app"
 	"github.com/elesto-dao/elesto/v2/cmd/elestod/cmd"
 )
 
 func main() {
 	rootCmd, _ := cmd.NewRootCmd()
 
-	if err := svrcmd.Execute(rootCmd, simapp.DefaultNodeHome); err != nil {
-		switch e := err.(type) {
+	if err := svrcmd.Execute(rootCmd, elestoapp.DefaultNodeHome); err != nil {
+		switch e := err.(type) { // nolint
 		case server.ErrorCode:
 			os.Exit(e.Code)
 

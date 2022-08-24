@@ -5,7 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
@@ -22,7 +21,7 @@ func TestCreateModuleInApp(t *testing.T) {
 		make(map[int64]bool),
 		elestoapp.DefaultNodeHome,
 		0,
-		cosmoscmd.MakeEncodingConfig(elestoapp.ModuleBasics),
+		elestoapp.MakeEncodingConfig(elestoapp.ModuleBasics),
 		simapp.EmptyAppOptions{},
 	)
 
@@ -33,5 +32,5 @@ func TestCreateModuleInApp(t *testing.T) {
 		},
 	)
 
-	require.NotNil(t, app.(*elestoapp.App).DidKeeper)
+	require.NotNil(t, app.DidKeeper)
 }
