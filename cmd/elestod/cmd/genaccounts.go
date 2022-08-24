@@ -6,8 +6,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/spf13/cobra"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -18,6 +16,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	"github.com/spf13/cobra"
 )
 
 const (
@@ -50,8 +49,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 				inBuf := bufio.NewReader(cmd.InOrStdin())
 				keyringBackend, _ := cmd.Flags().GetString(flags.FlagKeyringBackend)
 				if keyringBackend != "" && clientCtx.Keyring == nil {
-					var err error
-					kr, err = keyring.New(sdk.KeyringServiceName(), keyringBackend, clientCtx.HomeDir, inBuf)
+					_, err = keyring.New(sdk.KeyringServiceName(), keyringBackend, clientCtx.HomeDir, inBuf)
 					if err != nil {
 						return err
 					}
@@ -59,9 +57,9 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 					kr = clientCtx.Keyring
 				}
 
-				info, err := kr.Key(args[0])
-				if err != nil {
-					return fmt.Errorf("failed to get address from Keyring: %w", err)
+				info, keyErr := kr.Key(args[0])
+				if keyErr != nil {
+					return fmt.Errorf("failed to get address from Keyring: %w", keyErr)
 				}
 				addr = info.GetAddress()
 			}
@@ -108,7 +106,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 				genAccount = baseAccount
 			}
 
-			if err := genAccount.Validate(); err != nil {
+			if genAccountValidateErr := genAccount.Validate(); genAccountValidateErr != nil {
 				return fmt.Errorf("failed to validate new genesis account: %w", err)
 			}
 

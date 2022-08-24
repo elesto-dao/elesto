@@ -200,15 +200,14 @@ func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
 	sdr[did.StoreKey] = simulation.NewDecodeStore(am.cdc)
 }
 
-// WeightedOperations returns the all the gov module operations with their respective weights.
-func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
-	//return simulation.WeightedOperations(
-	//	simState,
-	//	am.keeper,
-	//	am.bk,
-	//	am.ak,
-	//)
-	return nil
+// WeightedOperations returns the all the did module operations with their respective weights.
+func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
+	return simulation.WeightedOperations(
+		simState,
+		am.keeper,
+		am.bk,
+		am.ak,
+	)
 }
 
 // ----------------------------------------------------------------------------

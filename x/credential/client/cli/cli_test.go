@@ -18,7 +18,6 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
-	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -47,7 +46,7 @@ var (
 )
 
 // NewAppConstructor returns a new simapp AppConstructor
-func NewAppConstructor(encodingCfg cosmoscmd.EncodingConfig) network.AppConstructor {
+func NewAppConstructor(encodingCfg app.EncodingConfig) network.AppConstructor {
 	return func(val network.Validator) servertypes.Application {
 		return app.New(
 			val.Ctx.Logger,
@@ -76,7 +75,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	app.Setup(false)
 	cfg.GenesisState = app.NewDefaultGenesisState(cfg.Codec)
 	credential.RegisterInterfaces(cfg.InterfaceRegistry)
-	cfg.AppConstructor = NewAppConstructor(cosmoscmd.MakeEncodingConfig(app.ModuleBasics))
+	cfg.AppConstructor = NewAppConstructor(app.MakeEncodingConfig(app.ModuleBasics))
 	cfg.NumValidators = 2
 	s.cfg = cfg
 	s.network = network.New(s.T(), cfg)
