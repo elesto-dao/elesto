@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptodid "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 
 	"github.com/elesto-dao/elesto/v2/x/did"
@@ -57,17 +58,18 @@ func deriveVMType(pubKey cryptodid.PubKey) (vmType did.VerificationMethodType, e
 // that signed the transaction
 func NewCreateDidDocumentCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "create-did [id]",
+		Use:     "create-did",
 		Short:   "create a decentralized did (did) document",
 		Example: `tx did create-did regulator --from regulator --chain-id elesto`,
-		Args:    cobra.ExactArgs(1),
+		Args:    cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
+			id := uuid.New().String()
 			// did
-			didID := did.NewChainDID(clientCtx.ChainID, args[0])
+			didID := did.NewChainDID(clientCtx.ChainID, id)
 			// verification
 			signer := clientCtx.GetFromAddress()
 			// pubkey
