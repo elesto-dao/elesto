@@ -11,10 +11,8 @@ import (
 	"github.com/elesto-dao/elesto/v2/x/mint/types"
 )
 
-/**
-This is the block inflation amount per year.
-The motivation for the value can be found in the ADR-008
-*/
+// BlockInflationAmount This is the block inflation amount per year.
+// The motivation for the value can be found in the ADR-008
 var (
 	BlockInflationAmount = map[int]int64{
 		0: 31709792,
