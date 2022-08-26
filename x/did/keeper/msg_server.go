@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/google/uuid"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -29,6 +31,12 @@ func (k msgServer) CreateDidDocument(
 ) (*didmod.MsgCreateDidDocumentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	k.Logger(ctx).Info("request to create a did document", "target did", msg.Id)
+
+	// check the last part of the DID is a valid UUID
+	if !isValidUUID(didmod.DID(msg.Id)) {
+		err := sdkerrors.Wrapf(didmod.ErrInvalidInput, "%s is not a valid UUID format")
+		return nil, err
+	}
 
 	// check that the did is not already taken
 	found := k.Keeper.HasDidDocument(ctx, []byte(msg.Id))
@@ -294,4 +302,13 @@ func executeOnDidWithRelationships(
 	}
 	k.Logger(ctx).Info("request to update did document success", "did", updatedDidDoc.Id)
 	return
+}
+
+// checks if the provided DID has a UUID-conformant namespace-identifier
+
+func isValidUUID(did didmod.DID) bool {
+	// gets the namespace identifier
+	namespaceId := did[len(did)-38:]
+	_, err := uuid.Parse(string(namespaceId))
+	return err == nil
 }
