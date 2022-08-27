@@ -62,7 +62,7 @@ func (k Keeper) PublicCredential(
 	ctx := sdk.UnwrapSDKContext(c)
 	pc, found := k.GetPublicCredential(ctx, req.Id)
 	if !found {
-		return nil, status.Error(codes.NotFound, "credential definition not found")
+		return nil, status.Error(codes.NotFound, "public verifiable credential not found")
 	}
 	return &credential.QueryPublicCredentialResponse{Credential: &pc}, nil
 

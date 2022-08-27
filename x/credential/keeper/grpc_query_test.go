@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
@@ -282,11 +283,11 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredential() {
 			nil,
 		},
 		{
-			"PASS: can get the credential",
+			"FAIL: credential not found",
 			func() (*credential.QueryPublicCredentialRequest, *credential.QueryPublicCredentialResponse) {
 				return &credential.QueryPublicCredentialRequest{Id: "https://does.not.exists"}, &credential.QueryPublicCredentialResponse{Credential: nil}
 			},
-			errors.New("rpc error: code = NotFound desc = credential definition not found"),
+			errors.New("rpc error: code = NotFound desc = public verifiable credential not found"),
 		},
 	}
 	for _, tc := range testCases {

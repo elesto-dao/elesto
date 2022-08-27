@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+
 	"github.com/noandrea/rl2020"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -394,7 +395,7 @@ func (s *IntegrationTestSuite) TestNewPublishCredentialDefinitionCmd() {
 
 func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
 	val := s.network.Validators[0]
-	credDefID := did.NewChainDID(s.cfg.ChainID, "testDef").String()
+	credDefID := "http://example.id/credential/x"
 	testCredFile := fmt.Sprintf("testdata/credential-%s.json", s.cfg.ChainID)
 
 	// it is shared by all test cases
@@ -435,7 +436,7 @@ func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
 			codes.OK,
 			&sdk.TxResponse{},
 			[]string{
-				"testDef",
+				credDefID,
 				testCredFile,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -454,7 +455,7 @@ func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
 			codes.Unknown,
 			&sdk.TxResponse{},
 			[]string{
-				"testDef",
+				credDefID,
 				"testdata/bad/credential.json",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -501,8 +502,6 @@ func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
 
 func (s *IntegrationTestSuite) TestNewCreateRevocationListCmd() {
 	val := s.network.Validators[0]
-	defaultCredDefID := "revocation-list-2020"
-	customCredDefID := "revocation-list-2020-custom"
 
 	// shared by all test cases
 	didID := "revoc-issuer"
@@ -535,7 +534,7 @@ func (s *IntegrationTestSuite) TestNewCreateRevocationListCmd() {
 			func() {
 				// default definition
 				publishCredentialDefinition(s,
-					did.NewChainDID(s.cfg.ChainID, defaultCredDefID).String(),
+					"https://w3id.org/vc-revocation-list-2020/v1",
 					"RevocationList2020",
 					"testdata/schema.json",
 					"testdata/vocab.json",
@@ -553,7 +552,7 @@ func (s *IntegrationTestSuite) TestNewCreateRevocationListCmd() {
 				"https://elesto.id/rl2020-2",
 				fmt.Sprintf("--issuer=%s", did.NewChainDID(s.cfg.ChainID, didID)),
 				fmt.Sprintf("--size=%d", 32),
-				fmt.Sprintf("--definition-id=%s", customCredDefID),
+				fmt.Sprintf("--definition-id=%s", "https://w3id.org/vc-revocation-list-2020/bespoke"),
 				fmt.Sprintf("--revoke=%s", "1"),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -567,7 +566,7 @@ func (s *IntegrationTestSuite) TestNewCreateRevocationListCmd() {
 			func() {
 				// custom definition
 				publishCredentialDefinition(s,
-					did.NewChainDID(s.cfg.ChainID, customCredDefID).String(),
+					"https://w3id.org/vc-revocation-list-2020/bespoke",
 					"RevocationList2020CustomDef",
 					"testdata/schema.json",
 					"testdata/vocab.json",
@@ -637,9 +636,9 @@ func (s *IntegrationTestSuite) TestNewUpdateRevocationListCmd() {
 	// shared by all test cases
 	didID := "revoc-issuer-updater"
 	createDidDocument(s, didID, val)
-	credDefID := "revocation-list-2020-def"
+	credDefID := "https://w3id.org/vc-revocation-list-2020/v1"
 	publishCredentialDefinition(s,
-		did.NewChainDID(s.cfg.ChainID, credDefID).String(),
+		credDefID,
 		"RevocationList2020Def",
 		"testdata/schema.json",
 		"testdata/vocab.json",
