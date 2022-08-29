@@ -36,6 +36,7 @@ func GetTxCmd() *cobra.Command {
 		NewIssuePublicCredentialCmd(),
 		NewCreateRevocationListCmd(),
 		NewUpdateRevocationListCmd(),
+		NewSignCredentialCmd(),
 	)
 
 	return cmd

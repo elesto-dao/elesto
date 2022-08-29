@@ -34,6 +34,7 @@ func GetQueryCmd(_ string) *cobra.Command {
 		NewQueryCredentialStatusCmd(),
 		NewQueryPublicCredentialStatusCmd(),
 		NewMakeCredentialFromSchemaCmd(),
+		NewVerifyCredentialCmd(),
 	)
 
 	return cmd

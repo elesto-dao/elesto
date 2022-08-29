@@ -16,8 +16,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/noandrea/rl2020"
 	"github.com/spf13/cobra"
+	"github.com/xeipuuv/gojsonschema"
 
 	"github.com/elesto-dao/elesto/v2/x/credential"
 	"github.com/elesto-dao/elesto/v2/x/did"
@@ -121,7 +123,7 @@ func NewMakeCredentialFromSchemaCmd() *cobra.Command {
 				wc           *credential.WrappedCredential          // wrapped credential
 				rlcs         []*credential.WrappedCredential        // the revocation list credentials
 				vc           *credential.PublicVerifiableCredential // verifiable credential
-				definitionID = args[0]
+				definitionID = strings.TrimSpace(args[0])
 			)
 
 			result, err := qc.CredentialDefinition(
@@ -217,6 +219,192 @@ func NewMakeCredentialFromSchemaCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&credentialFileOut, "export", "", "export the unsigned credential to a json file")
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewSignCredentialCmd() *cobra.Command {
+	var (
+		command           = "sign-credential"
+		credentialFileOut string
+	)
+	cmd := &cobra.Command{
+		Use:     use(command, "unsigned_credential_file"),
+		Short:   "sign a credential file",
+		Example: exTx(command, "credential.json"),
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			var (
+				credentialFile = args[0]
+				signer         = clientCtx.GetFromAddress()
+				pwc            *credential.WrappedCredential
+			)
+			if credential.IsEmpty(credentialFileOut) {
+				credentialFileOut = fmt.Sprint(strings.TrimSuffix(credentialFile, ".json"), ".signed.json")
+			}
+			// initialize the definition
+			if pwc, err = credential.NewWrappedPublicCredentialFromFile(credentialFile); err != nil {
+				println("error building credential definition", err)
+				return err
+			}
+			// get the issuer did
+			vmID := pwc.GetIssuerDID().NewVerificationMethodID(signer.String())
+			if err = sign(pwc, clientCtx.Keyring, signer, vmID); err != nil {
+				println("error signing the credential:", err)
+				return err
+			}
+			// write to the output file
+			pwcB, err := pwc.GetBytes()
+			if err != nil {
+				fmt.Printf("error reading the credential bytes: %v", err)
+				return err
+			}
+			if err = os.WriteFile(credentialFileOut, pwcB, 0600); err != nil {
+				fmt.Printf("error writing the credential to %v: %v", credentialFileOut, err)
+				return err
+			}
+			fmt.Println("credential exported to", credentialFileOut)
+			return nil
+		},
+	}
+	cmd.Flags().StringVar(&credentialFileOut, "export", "", "name of the output signed credential file (default based on the input file)")
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func NewVerifyCredentialCmd() *cobra.Command {
+	var (
+		command = "verify-credential"
+	)
+	cmd := &cobra.Command{
+		Use:     use(command, "credentialDefinitionID", "signedCredentialFile"),
+		Short:   "verify a credential signature and schema",
+		Example: exQuery(command, "did:cosmos:elesto:cd-1", "credential.signed.json"),
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			var ( // Credendital QueryClient
+				cqc = credential.NewQueryClient(clientCtx)
+				// DID QueryClient
+				dqc            = did.NewQueryClient(clientCtx)
+				cdID           = args[0]
+				credentialFile = args[1]
+				pwc            *credential.WrappedCredential
+			)
+
+			println("fetching credential definition")
+			cdReply, err := cqc.CredentialDefinition(
+				context.Background(),
+				&credential.QueryCredentialDefinitionRequest{
+					Id: cdID,
+				},
+			)
+			if err != nil {
+				println("credential definition with id", cdID, " not found")
+				return nil
+			}
+			println("loading the credential file:", credentialFile)
+			// load the credential
+			if pwc, err = credential.NewWrappedPublicCredentialFromFile(credentialFile); err != nil {
+				println("error building credential definition:", err)
+				return nil
+			}
+			// =================================
+			// STEP 1
+			// first verify the schema
+			// =================================
+			// verify the credential against the schema
+			println("unpacking the credential schema from the definition")
+			schema, err := gojsonschema.NewSchema(gojsonschema.NewBytesLoader(cdReply.Definition.Schema))
+			if err != nil {
+				println("failed to load the credential schema:", err)
+				return nil
+			}
+			println("validating the credential against the schema")
+			wcB, _ := pwc.GetBytes()
+			dataValidator, err := schema.Validate(gojsonschema.NewBytesLoader(wcB))
+			if err != nil {
+				println("failed to validate the credential:", err)
+				return nil
+			}
+			if !dataValidator.Valid() {
+				println("the credential doesn't match the schema in definition:", cdID)
+				for _, verr := range dataValidator.Errors() {
+					println("error:", verr.String())
+				}
+				return nil
+			}
+			// =================================
+			// STEP 2
+			// first verify that the subject esists if it's a did
+			// =================================
+			println("verifying the subject ID")
+			if subject, isDid := pwc.GetSubjectID(); isDid {
+				println("subject id is a DID, resolving the document")
+				if _, err := dqc.DidDocument(context.Background(), &did.QueryDidDocumentRequest{
+					Id: subject,
+				}); err != nil {
+					println("subject did document,", subject, ", cannot be resolved:", err)
+					return nil
+				}
+			}
+			// =================================
+			// STEP 2
+			// issuer and signature
+			// =================================
+			println("resolving the issuer DID document")
+			didReply, err := dqc.DidDocument(context.Background(), &did.QueryDidDocumentRequest{
+				Id: pwc.Issuer,
+			})
+			if err != nil {
+				println("issuer did document,", pwc.Issuer, ", cannot be resolved", err)
+				return nil
+			}
+			println("extracting the signature")
+			// verifiy the signature
+			if pwc.Proof == nil {
+				err := fmt.Errorf("missing credential proof")
+				println("credential cannot be verified:", err)
+				return nil
+			}
+			println("verifying the signature against the issuer DID document authentication keys")
+			for _, aVmID := range didReply.DidDocument.Authentication {
+				for _, vm := range didReply.DidDocument.VerificationMethod {
+					if vm.Id != aVmID {
+						continue
+					}
+					// TODO this works only for keys encoding as multibase
+					pkb, err := hex.DecodeString(vm.GetPublicKeyMultibase()[1:])
+					if err != nil {
+						println("public key", vm.Id, "decoding error", err)
+						continue
+					}
+					pk := &secp256k1.PubKey{
+						Key: pkb,
+					}
+					if err := pwc.Validate(pk); err != nil {
+						println("signature verification error for verification method", vm.Id, err)
+						continue
+					} else {
+						println("credential signature is valid")
+						return nil
+					}
+				}
+			}
+			println("issuer public key not found for the authentication relationship")
+			return nil
+		},
+	}
+
 	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
