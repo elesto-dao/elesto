@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	"github.com/google/uuid"
 
 	"github.com/elesto-dao/elesto/v2/x/did"
 	"github.com/elesto-dao/elesto/v2/x/did/keeper"
@@ -176,7 +177,8 @@ func SimulateMsgCreateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		didOwner, _ := simtypes.RandomAcc(r, accs)
 		ownerAddress := didOwner.Address.String()
-		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		id := uuid.New()
+		didID := did.NewChainDID(ctx.ChainID(), id.String())
 		vmID := didID.NewVerificationMethodID(ownerAddress)
 		vmType := did.EcdsaSecp256k1VerificationKey2019
 		vm := did.NewVerification(

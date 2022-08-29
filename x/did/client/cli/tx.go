@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -58,18 +59,21 @@ func deriveVMType(pubKey cryptodid.PubKey) (vmType did.VerificationMethodType, e
 // that signed the transaction
 func NewCreateDidDocumentCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "create-did",
+		Use:     "create-did [id]",
 		Short:   "create a decentralized did (did) document",
 		Example: `tx did create-did regulator --from regulator --chain-id elesto`,
-		Args:    cobra.ExactArgs(0),
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-			id := uuid.New().String()
+			// check if args[0] is a valid UUID
+			if !isValidUUID(args[0]) {
+				return fmt.Errorf("the identifier needs to be a valid UUID, %s is not a valid UUID", args[0])
+			}
 			// did
-			didID := did.NewChainDID(clientCtx.ChainID, id)
+			didID := did.NewChainDID(clientCtx.ChainID, args[0])
 			// verification
 			signer := clientCtx.GetFromAddress()
 			// pubkey
@@ -424,4 +428,9 @@ func NewSetVerificationRelationshipCmd() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
+}
+
+func isValidUUID(identifier string) bool {
+	_, err := uuid.Parse(strings.TrimSpace(identifier))
+	return err == nil
 }

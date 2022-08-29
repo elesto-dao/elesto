@@ -109,7 +109,7 @@ func addNewDidDoc(s *IntegrationTestSuite, identifier string, val *network.Valid
 }
 
 func (s *IntegrationTestSuite) TestGetCmdQueryDidDocument() {
-	identifier := "123456789abcdefghijkb"
+	identifier := "44dfc971-b3a0-48ee-a6d3-e758c5c86a06"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -159,7 +159,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDidDocument() {
 }
 
 func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
-	identifier := "123456789abcdefghijkc"
+	identifier := "76f3a6c4-e048-4009-bb01-e0668a91ad2"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -218,7 +218,7 @@ func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewAddControllerCmd() {
-	identifier1 := "123456789abcdefghijkd"
+	identifier1 := "76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 	identifier2 := "elesto1kslgpxklq75aj96cz3qwsczr95vdtrd3axw8ft"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
@@ -279,7 +279,7 @@ func (s *IntegrationTestSuite) TestNewAddControllerCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewDeleteControllerCmd() {
-	identifier1 := "123456789abcdefghijkd"
+	identifier1 := "76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 	identifier2 := "elesto1kslgpxklq75aj96cz3qwsczr95vdtrd3axw8ft"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
@@ -366,7 +366,7 @@ func (s *IntegrationTestSuite) TestNewDeleteControllerCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
-	identifier := "123456789abcdefghijke"
+	identifier := "76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -436,7 +436,7 @@ func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewSetVerificationRelationshipsCmd() {
-	identifier := "123456789abcdefghijkf"
+	identifier := "76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -510,7 +510,7 @@ func (s *IntegrationTestSuite) TestNewSetVerificationRelationshipsCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewRevokeVerificationCmd() {
-	identifier := "123456789abcdefghijkg"
+	identifier := "76f3a6c4-e048-4009-bb01-e0668a91ad21"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -582,7 +582,7 @@ func (s *IntegrationTestSuite) TestNewRevokeVerificationCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewAddServiceCmd() {
-	identifier := "123456789abcdefghijkh"
+	identifier := "76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -647,7 +647,7 @@ func (s *IntegrationTestSuite) TestNewAddServiceCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewDeleteServiceCmd() {
-	identifier := "123456789abcdefghijki"
+	identifier := "76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
