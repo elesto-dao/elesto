@@ -66,7 +66,7 @@ func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {
 			func() {
 				did := "did:cosmos:elesto:juno1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
 				req = *didmod.NewMsgCreateDidDocument(did, nil, nil, "subject")
-				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format cannot be created %s", did)
+				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did:cosmos:elesto:juno1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8 is not a valid UUID format")
 			},
 		},
 	}

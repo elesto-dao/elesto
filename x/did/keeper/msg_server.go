@@ -12,6 +12,8 @@ import (
 	didmod "github.com/elesto-dao/elesto/v2/x/did"
 )
 
+const uuid4Length int = 36
+
 type msgServer struct {
 	Keeper
 }
@@ -31,12 +33,6 @@ func (k msgServer) CreateDidDocument(
 ) (*didmod.MsgCreateDidDocumentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	k.Logger(ctx).Info("request to create a did document", "target did", msg.Id)
-
-	// check the last part of the DID is a valid UUID
-	if !isValidUUID(didmod.DID(msg.Id)) {
-		err := sdkerrors.Wrapf(didmod.ErrInvalidInput, "%s is not a valid UUID format", msg.Id)
-		return nil, err
-	}
 
 	// check that the did is not already taken
 	found := k.Keeper.HasDidDocument(ctx, []byte(msg.Id))
@@ -61,6 +57,12 @@ func (k msgServer) CreateDidDocument(
 	)
 	if err != nil {
 		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+
+	// check the last part of the DID is a valid UUID
+	if !isValidUUID(didmod.DID(msg.Id)) {
+		err := sdkerrors.Wrapf(didmod.ErrInvalidInput, "%s is not a valid UUID format", msg.Id)
 		return nil, err
 	}
 
@@ -306,11 +308,11 @@ func executeOnDidWithRelationships(
 
 // checks if the provided DID has a UUID-conformant namespace-identifier
 func isValidUUID(did didmod.DID) bool {
-	if len(did) < 36 {
+	if len(did) < uuid4Length {
 		return false
 	}
 	// gets the namespace identifier
-	namespaceId := did[len(did)-36:]
+	namespaceId := did[len(did)-uuid4Length:]
 	_, err := uuid.Parse(string(namespaceId))
 	return err == nil
 }
