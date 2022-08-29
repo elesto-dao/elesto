@@ -77,6 +77,10 @@ The `supersededBy` is used only for communication purposes and does not influenc
   
 PVCs are intended for advertising information that is public domain and leverages the tamper-resistant capability of the blockchain. A PVC can be deleted from the state.
 
+The validation sequence is described in the following diagram:
+
+![](../../assets/diagrams/out/credentials_validate_proof.svg)
+
 ## Privacy Considerations
 
 There is a risk that a credential definition allows publication of PII since the failsafe mechanism provided by the `isPublic` field can be misused by the credential publisher.   
