@@ -2,6 +2,7 @@ package did
 
 import (
 	"fmt"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/cosmos/cosmos-sdk/crypto/types"
@@ -95,8 +96,9 @@ func TestIsValidDID(t *testing.T) {
 		input string
 		want  bool
 	}{
-		{"did:cosmos:cash:subject", true},
-		{"did:cosmos:key:cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75", true},
+		{"did:cosmos:elesto:00000000-0000-0000-0000-000000000000", true},
+		{"did:cosmos:cash:subject", false},
+		{"did:cosmos:key:cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75", false},
 		{"did:cosmos:key:cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75#key-1", false},
 		{"did:subject", false},
 		{"DID:cosmos:elesto:subject", false},
@@ -271,7 +273,7 @@ func TestValidateVerification(t *testing.T) {
 			v: NewVerification(
 				NewVerificationMethod(
 					"not:a:did",
-					"did:cosmos:elesto:subject",
+					"did:cosmos:elesto:00000000-0000-0000-0000-000000000000",
 					NewPublicKeyMultibase([]byte{3, 223, 208, 164, 105, 128, 109, 102, 162, 60, 124, 148, 143, 85, 193, 41, 70, 125, 109, 9, 116, 162, 34, 239, 110, 36, 165, 56, 250, 104, 130, 243, 215}),
 					EcdsaSecp256k1VerificationKey2019,
 				),

@@ -34,7 +34,7 @@ func (k msgServer) CreateDidDocument(
 
 	// check the last part of the DID is a valid UUID
 	if !isValidUUID(didmod.DID(msg.Id)) {
-		err := sdkerrors.Wrapf(didmod.ErrInvalidInput, "%s is not a valid UUID format")
+		err := sdkerrors.Wrapf(didmod.ErrInvalidInput, "%s is not a valid UUID format", msg.Id)
 		return nil, err
 	}
 
@@ -305,10 +305,12 @@ func executeOnDidWithRelationships(
 }
 
 // checks if the provided DID has a UUID-conformant namespace-identifier
-
 func isValidUUID(did didmod.DID) bool {
+	if len(did) < 36 {
+		return false
+	}
 	// gets the namespace identifier
-	namespaceId := did[len(did)-38:]
+	namespaceId := did[len(did)-36:]
 	_, err := uuid.Parse(string(namespaceId))
 	return err == nil
 }
