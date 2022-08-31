@@ -4,10 +4,9 @@ import (
 	"context"
 	"strings"
 
-	"github.com/google/uuid"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/google/uuid"
 
 	didmod "github.com/elesto-dao/elesto/v2/x/did"
 )
@@ -312,7 +311,7 @@ func isValidUUID(did didmod.DID) bool {
 		return false
 	}
 	// gets the namespace identifier
-	namespaceId := did[len(did)-uuid4Length:]
-	_, err := uuid.Parse(string(namespaceId))
+	namespaceID := did[len(did)-uuid4Length:]
+	_, err := uuid.Parse(string(namespaceID))
 	return err == nil
 }
