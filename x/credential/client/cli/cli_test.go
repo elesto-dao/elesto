@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -407,7 +408,8 @@ func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
 		true,
 		val,
 	)
-	createDidDocument(s, "issuer", val)
+	issuerDidID := uuid.New().String()
+	createDidDocument(s, issuerDidID, val)
 
 	// copy the credential to a new file, with updated issuer DID with current chainID
 	credentialBytes, err := os.ReadFile("testdata/credential.json")
@@ -415,7 +417,7 @@ func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
 	var credentialJSON map[string]interface{}
 	err = json.Unmarshal(credentialBytes, &credentialJSON)
 	s.Require().NoError(err)
-	credentialJSON["issuer"] = did.NewChainDID(s.cfg.ChainID, "issuer")
+	credentialJSON["issuer"] = did.NewChainDID(s.cfg.ChainID, issuerDidID)
 
 	updatedCredentialBytes, err := json.Marshal(credentialJSON)
 	s.Require().NoError(err)
@@ -504,7 +506,7 @@ func (s *IntegrationTestSuite) TestNewCreateRevocationListCmd() {
 	val := s.network.Validators[0]
 
 	// shared by all test cases
-	didID := "revoc-issuer"
+	didID := uuid.New().String()
 	createDidDocument(s, didID, val)
 
 	testCases := []struct {
@@ -634,7 +636,7 @@ func (s *IntegrationTestSuite) TestNewUpdateRevocationListCmd() {
 	val := s.network.Validators[0]
 
 	// shared by all test cases
-	didID := "revoc-issuer-updater"
+	didID := uuid.New().String()
 	createDidDocument(s, didID, val)
 	credDefID := "https://w3id.org/vc-revocation-list-2020/v1"
 	publishCredentialDefinition(s,
