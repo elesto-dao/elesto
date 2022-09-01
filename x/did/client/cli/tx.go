@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -9,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptodid "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 
 	"github.com/elesto-dao/elesto/v2/x/did"
@@ -65,6 +67,10 @@ func NewCreateDidDocumentCmd() *cobra.Command {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
+			}
+			// check if args[0] is a valid UUID
+			if !isValidUUID(args[0]) {
+				return fmt.Errorf("the identifier needs to be a valid UUID, %s is not a valid UUID", args[0])
 			}
 			// did
 			didID := did.NewChainDID(clientCtx.ChainID, args[0])
@@ -422,4 +428,9 @@ func NewSetVerificationRelationshipCmd() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
+}
+
+func isValidUUID(identifier string) bool {
+	_, err := uuid.Parse(strings.TrimSpace(identifier))
+	return err == nil
 }

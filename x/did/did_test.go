@@ -2,6 +2,7 @@ package did
 
 import (
 	"fmt"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/cosmos/cosmos-sdk/crypto/types"
@@ -95,6 +96,7 @@ func TestIsValidDID(t *testing.T) {
 		input string
 		want  bool
 	}{
+		{"did:cosmos:elesto:00000000-0000-0000-0000-000000000000", true},
 		{"did:cosmos:cash:subject", true},
 		{"did:cosmos:key:cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75", true},
 		{"did:cosmos:key:cosmos1uam3kpjdx3wksx46lzq6y628wwyzv0guuren75#key-1", false},
