@@ -146,6 +146,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig elestoapp.EncodingConfig
 		cli.MigrateGenesisCmd(),
 		cli.GenTxCmd(elestoapp.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, elestoapp.DefaultNodeHome),
 		cli.ValidateGenesisCmd(elestoapp.ModuleBasics),
+		PrepareGenesisCmd(elestoapp.DefaultNodeHome, elestoapp.ModuleBasics),
 		AddGenesisAccountCmd(elestoapp.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),

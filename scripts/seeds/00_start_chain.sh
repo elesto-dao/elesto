@@ -17,23 +17,30 @@ then
 
     echo "Initialising chain"
     elestod init --chain-id=elesto elesto
+
+    echo "Preparing genesis"
+    elestod prepare-genesis testnet elesto
+
+    echo "Adding local keys"
     echo "y" | elestod keys add validator
     echo "y" | elestod keys add regulator
-    echo "y" | elestod keys add emti # e-money token issuer
-    echo "y" | elestod keys add arti # asset-referenced token issuer
+    echo "y" | elestod keys add emti 
+    echo "y" | elestod keys add arti 
     echo "video adult rule exhaust tube crater lunch route clap pudding poet pencil razor pluck veteran hill stock thunder sense riot fox oppose glare bar" | elestod keys add bob --recover --keyring-backend test
     echo "y" | elestod keys add alice
 
-    echo "Adding genesis account"
-    elestod add-genesis-account $(elestod keys show validator -a) 40000000000000stake
-    # this is to have the accounts on chain
-    elestod add-genesis-account $(elestod keys show emti -a) 40000000000000stake
-    elestod add-genesis-account $(elestod keys show arti -a) 40000000000000stake
-    elestod add-genesis-account $(elestod keys show bob -a) 20000000000000stake
-    elestod add-genesis-account $(elestod keys show alice -a) 20000000000000stake
-    ## add the regulator
-    elestod add-genesis-account $(elestod keys show regulator -a) 40000000000000stake
-    elestod gentx validator 30000000000000stake --chain-id elesto
+    echo "Adding genesis accounts"
+    elestod add-genesis-account $(elestod keys show validator -a) 6000000000000uelesto
+    elestod add-genesis-account $(elestod keys show emti -a) 5000000000000uelesto
+    elestod add-genesis-account $(elestod keys show arti -a) 5000000000000uelesto
+    elestod add-genesis-account $(elestod keys show bob -a --keyring-backend test) 1000000000000uelesto
+    elestod add-genesis-account $(elestod keys show alice -a) 1000000000000uelesto
+    elestod add-genesis-account $(elestod keys show regulator -a) 2000000000000uelesto
+
+    echo "Creating validator genesis transaction"
+    elestod gentx validator 5000000000000uelesto --chain-id elesto
+
+    echo "Adding validator genesis transaction to genesis file"
     elestod collect-gentxs
 
     # the community tax in the distribution must be disabled, since the community tax is
