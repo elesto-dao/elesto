@@ -1,7 +1,6 @@
 package mint_test
 
 import (
-	"math"
 	"testing"
 	"time"
 
@@ -9,6 +8,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	chain "github.com/elesto-dao/elesto/v2/app"
 
 	"github.com/elesto-dao/elesto/v2/x/mint"
@@ -37,152 +37,50 @@ func (suite *ModuleTestSuite) SetupTest() {
 }
 
 func (s *ModuleTestSuite) TestInflationRate() {
-	// This test simulates data taken from here:
-	// https://docs.google.com/spreadsheets/d/1sXwR-cYHS98in1aMzBabF7FNjqikbA3btnPMlFqgQ50/edit#gid=0
 
-	type estimatedSupply struct {
-		amount    int64
-		tolerance int64
+	// Here we define the expected supply amount for each epoch.
+	// Amounts here are defined in uTokens
+
+	expectedSupplies := map[int]int64{
+		1:          200_000_000_000_000,
+		6_307_200:  400_000_000_102_400,
+		12_614_400: 600_000_000_102_400,
+		18_921_600: 750_000_000_076_800,
+		25_228_800: 843_750_000_048_000,
+		31_536_000: 896_484_373_056_000,
+		37_843_200: 924_499_513_051_200,
+		44_150_400: 942_989_503_715_550,
+		50_457_600: 961_849_291_393_125,
+		56_764_800: 981_086_277_220_987,
+		63_072_000: 1_000_000_000_139_230,
+		69_379_200: 1_000_000_000_139_230,
+		75_686_400: 1_000_000_000_139_230,
+		81_993_600: 1_000_000_000_139_230,
 	}
 
-	const defaultTolerance = int64(4) // https://xkcd.com/221/
-
-	// Here we define the expected supply amount for each year.
-	// Amounts here are defined in *tokens*, not microtokens.
-	// We assume `defaultTolerance` amount of tokens as tolerance value between what's computed by the
-	// chain and what's expected from the simulation Google Sheet linked at the beginning of this test.
-	// Rationale on how the default tolerance has been determined is explained in the link above.
-	// Year 10 is a special case, because we want to produce a maximum amount of 1 billion tokens by then.
-	expectedEstimatedSupply := map[int]estimatedSupply{
-		0: {amount: 400000000, tolerance: defaultTolerance},
-		1: {amount: 600000000, tolerance: defaultTolerance},
-		2: {amount: 750000000, tolerance: defaultTolerance},
-		3: {amount: 843750000, tolerance: defaultTolerance},
-		4: {amount: 896484375, tolerance: defaultTolerance},
-		5: {amount: 924499512, tolerance: defaultTolerance},
-		6: {amount: 942989502, tolerance: defaultTolerance},
-		7: {amount: 961849292, tolerance: defaultTolerance},
-		8: {amount: 981086278, tolerance: defaultTolerance},
-		9: {amount: 1000000000, tolerance: 0},
-	}
-
-	blocksPerYear := 6_307_200
-
-	// We run the simulation for at least two times the amount of supply years to
-	// make sure past year 10, no more tokens are minted.
-	simulationYears := len(expectedEstimatedSupply) * 2
-
+	// mint the initial supply
 	initialSupply := 200_000_000_000_000
 
 	params := s.app.MintKeeper.GetParams(s.ctx)
 
+	// let's set the context at block height 1 to init the chain
 	ctx := s.ctx.WithBlockHeight(int64(1))
-
-	mint.BeginBlocker(ctx, s.keeper)
-
-	s.Require().True(s.keeper.BootstrapDateCanarySet(ctx))
-
 	err := s.keeper.MintCoins(ctx, sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, int64(initialSupply))))
 	s.Require().NoError(err)
-	s.Require().EqualValues(s.keeper.GetSupply(
-		s.ctx.WithBlockHeight(1),
-		params.MintDenom,
-	).Amount.Int64(), int64(initialSupply))
 
-	s.T().Log("circulating supply at block 1:", s.keeper.GetSupply(ctx, params.MintDenom).String())
+	for block := 0; block <= 6_307_200; block++ {
 
-	lastCommunityFundAmount := sdk.DecCoins{}
-	lastDevFundAmount := sdk.NewCoin(params.MintDenom, sdk.ZeroInt())
-
-	startTime := s.ctx.BlockTime()
-
-	for year := 0; year <= simulationYears; year++ {
-		// Adding 1 here because we're running the simulation on the first day of the following year.
-		blockHeight := (year * blocksPerYear)
-
-		s.T().Log("simulating year", year, "block height", blockHeight)
-
-		ctx := s.ctx.WithBlockHeight(int64(blockHeight)).WithBlockTime(startTime.AddDate(year, 0, 0))
-
+		ctx := s.ctx.WithBlockHeight(int64(block))
 		mint.BeginBlocker(ctx, s.keeper)
 
-		communityFundAmount := s.app.DistrKeeper.GetFeePoolCommunityCoins(s.ctx)
-		floatCommunityAmount, err := communityFundAmount.AmountOf(params.MintDenom).Float64()
-		s.NoError(err)
-
-		lastFloatCommunityAmount, err := lastCommunityFundAmount.AmountOf(params.MintDenom).Float64()
-		s.NoError(err)
-
-		taddr, err := sdk.AccAddressFromBech32(s.app.MintKeeper.GetParams(s.ctx).TeamAddress)
-		s.NoError(err)
-
-		teamBalance := s.app.BankKeeper.GetBalance(s.ctx, taddr, params.MintDenom)
-
-		s.T().Log("community pool amount", lastCommunityFundAmount.String())
-		s.T().Log("developer fund amount", lastDevFundAmount.String())
-
-		if year < 10 {
-			s.Greater(
-				floatCommunityAmount,
-				lastFloatCommunityAmount,
-			)
-
-			s.Greater(
-				teamBalance.Amount.Int64(),
-				lastDevFundAmount.Amount.Int64(),
-			)
-		} else {
-			s.EqualValues(
-				floatCommunityAmount,
-				lastFloatCommunityAmount,
-			)
-
-			s.EqualValues(
-				teamBalance.Amount.Int64(),
-				lastDevFundAmount.Amount.Int64(),
-			)
+		if expectedSupply, ok := expectedSupplies[block]; ok {
+			s.T().Log("reached block", block)
+			s.Require().EqualValues(s.keeper.GetSupply(
+				s.ctx.WithBlockHeight(int64(block)),
+				params.MintDenom,
+			).Amount.Int64(), expectedSupply)
 		}
 
-		lastCommunityFundAmount = communityFundAmount
-		lastDevFundAmount = teamBalance
-
-		// Since running this simulation for each block would make this test take too much time,
-		// we mint the total amount of tokens minted in one year, minus 1 block since the `mint.BeginBlocker()`
-		// call already mints once for us.
-		blockInflationAmount := mint.BlockInflationAmount[year]
-		mintAmount := sdk.NewInt(int64(blockInflationAmount) * int64(blocksPerYear-1))
-		mintedCoin := sdk.NewCoin(params.MintDenom, mintAmount)
-		mintedCoins := sdk.NewCoins(mintedCoin)
-		s.Require().NoError(s.keeper.MintCoins(ctx, mintedCoins))
-		supply := s.keeper.GetSupply(ctx, params.MintDenom)
-		s.T().Log("inflation for year", year, ":", "supply", supply)
-
-		supplyInTokens := supply.Amount.Quo(sdk.NewInt(1000000)).ToDec().RoundInt64()
-
-		estimatedYear := year
-		if year > 9 {
-			estimatedYear = 9 // past year 10, we expect always the same supply
-		}
-
-		yearExpectedSupply, found := expectedEstimatedSupply[estimatedYear]
-		s.Require().True(found, "did not found expected supply for year %v", year)
-
-		// Calculate the absolute difference between supply actually generated and supply expected
-		// in the table above.
-		difference := math.Abs(float64(supplyInTokens - yearExpectedSupply.amount))
-		s.T().Log("difference:", difference, "tolerance:", yearExpectedSupply.tolerance, "expected:", yearExpectedSupply.amount, "got:", supplyInTokens)
-
-		// Since we're dealing with absolute value, we can bypass checking negative amounts.
-		if difference > float64(yearExpectedSupply.tolerance) {
-			s.Require().Fail(
-				"too big difference between expected and obtained supply",
-				"difference between expected supply %d and obtained supply %d is not within acceptable range: %f, original supply %v",
-				yearExpectedSupply.amount,
-				supplyInTokens,
-				difference,
-				supply.String(),
-			)
-		}
 	}
 
 }

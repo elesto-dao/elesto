@@ -42,8 +42,6 @@ func TestRandomizedGenState(t *testing.T) {
 	simState.Cdc.MustUnmarshalJSON(simState.GenState[types.ModuleName], &genState)
 
 	require.Equal(t, "stake", genState.Params.MintDenom)
-	require.Equal(t, types.DefaultParams().BlocksPerYear, genState.Params.BlocksPerYear)
-	require.Equal(t, types.DefaultParams().MaxSupply, genState.Params.MaxSupply)
 }
 
 // TestRandomizedGenState tests abnormal scenarios of applying RandomizedGenState.

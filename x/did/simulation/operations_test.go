@@ -30,13 +30,6 @@ func (suite *SimTestSuite) SetupTest() {
 	suite.app = elestoApp
 	suite.ctx = elestoApp.BaseApp.NewContext(false, tmproto.Header{}).WithBlockTime(time.Now())
 
-	if err := elestoApp.MintKeeper.SetBootstrapDate(suite.ctx, true); err != nil {
-		panic(err)
-	}
-
-	if err := elestoApp.MintKeeper.SetBootstrapDateCanary(suite.ctx, true, true); err != nil {
-		panic(err)
-	}
 }
 
 func (suite *SimTestSuite) TestWeightedOperations() {

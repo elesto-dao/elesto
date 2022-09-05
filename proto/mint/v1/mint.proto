@@ -8,16 +8,7 @@ message Params {
   // mint_denom defines denomination of coin to be minted
   string mint_denom = 1;
 
-  // estimate number of blocks in a year
-  int64 blocks_per_year = 4;
-
-  // total max supply
-  int64 max_supply = 5;
-
   // team address
   string team_address = 6;
-
-  // team fee
-  string team_reward = 7;
 }
 
