@@ -11,96 +11,94 @@ import (
 	"github.com/elesto-dao/elesto/v2/x/mint/types"
 )
 
-// BlockInflationAmount This is the block inflation amount per year.
-// The motivation for the value can be found in the ADR-008
+// BlockMintAmounts is used to define the amounts that are involved in the mint schedule
+type BlockMintAmounts struct {
+	// This is the block inflation, how much tokens should be minted for a block
+	Inflation int64
+	// CommunityTax is the rewards amount to be sent to the community pool (per block)
+	CommunityTax int64
+	// TeamReward is the rewards amount to be sent to the team acconut (per block)
+	TeamReward int64
+}
+
+const (
+	// BlocksPerEpoch number of blocks in an Epoch, an epoch is
+	// roughly an year assuming a block production rate of 1 block every 5s
+	BlocksPerEpoch int64 = 6_307_200
+)
+
 var (
-	BlockInflationAmount = map[int]int64{
-		0: 31709792,
-		1: 31709792,
-		2: 23782344,
-		3: 14863965,
-		4: 8360980,
-		5: 4441771,
-		6: 2931569,
-		7: 2990200,
-		8: 3050004,
-		9: 2998751,
+	// BlockInflationAmount are the amounts to be minted/distributed for each block
+	// in an epoch.
+	// The format of the BlockInflationAmount is <Epoch Number>: <BlockMintAmonuts>
+	BlockInflationAmount = map[int64]BlockMintAmounts{
+		0: {Inflation: 31_709_792, CommunityTax: 3_170_979, TeamReward: 3_170_979},
+		1: {Inflation: 31_709_792, CommunityTax: 3_170_979, TeamReward: 3_170_979},
+		2: {Inflation: 23_782_344, CommunityTax: 2_378_234, TeamReward: 2_378_234},
+		3: {Inflation: 14_863_965, CommunityTax: 1_486_396, TeamReward: 1_486_396},
+		4: {Inflation: 8_360_980, CommunityTax: 836_098, TeamReward: 836_098},
+		5: {Inflation: 4_441_771, CommunityTax: 444_177, TeamReward: 444_177},
+		6: {Inflation: 2_931_569, CommunityTax: 293_156, TeamReward: 293_156},
+		7: {Inflation: 2_990_200, CommunityTax: 299_020, TeamReward: 299_020},
+		8: {Inflation: 3_050_004, CommunityTax: 305_000, TeamReward: 305_000},
+		9: {Inflation: 2_998_751, CommunityTax: 299_875, TeamReward: 299_875},
 	}
 )
 
 // BeginBlocker mints new tokens for the previous block.
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
-	var bootstrapDate time.Time
-
-	switch ctx.BlockHeight() {
-	case 1: // first block, write down the block timestamp
-		if k.BootstrapDateCanarySet(ctx) {
-			return // don't set the bootstrap date if canary was already set
-		}
-
-		if err := k.SetBootstrapDate(ctx, false); err != nil {
-			panic(fmt.Errorf("cannot set bootstrap date at beginblock time, %w", err))
-		}
-
-		if err := k.SetBootstrapDateCanary(ctx, true, true); err != nil {
-			panic(fmt.Errorf("cannot set bootstrap date canary at beginblock time, %w", err))
-		}
-	default:
-		bd, err := k.BootstrapDate(ctx)
-		if err != nil {
-			panic(fmt.Errorf("cannot fetch bootstrap date, %w", err))
-		}
-
-		bootstrapDate = bd
+	if ctx.BlockHeight() <= 1 {
+		// at block height 1 we have the initial supply, minting starts at block 2
+		// TODO: start minting at block 2 probably breaks the expected supply by the end of the epoch
+		return
 	}
-
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
+	// read the module parameters
 	params := k.GetParams(ctx)
 
-	// calculate inflation
-	inflationYear := ctx.BlockTime().Year() - bootstrapDate.Year()
+	// get the current inflation epoch
+	inflationEpoch := ctx.BlockHeight() / BlocksPerEpoch
 
-	inflationAmount, ok := BlockInflationAmount[inflationYear]
-	if !ok {
+	// fetch the set of amounts from the inflationEpoch table
+	// if there is no such epoch, then no mint is taking places
+	amounts, exists := BlockInflationAmount[inflationEpoch]
+	if !exists {
 		return
 	}
 
-	mintedCoin := sdk.NewCoin(params.MintDenom, sdk.NewInt(inflationAmount))
-	mintedCoins := sdk.NewCoins(mintedCoin)
-	if err := k.MintCoins(ctx, mintedCoins); err != nil {
+	// the coins to be minted are the block inflation - rewards
+	coinsToMint := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, amounts.Inflation))
+	if err := k.MintCoins(ctx, coinsToMint); err != nil {
 		panic(err)
 	}
 
-	// calculate 10% off mintedCoins
-	// this is handled in sdk.Ints already, some rounding error might persist.
-	tenPercentRawAmt := mintedCoin.Amount.MulRaw(10).QuoRaw(100)
-	tenPercentAmt := sdk.NewCoins(sdk.NewCoin(params.MintDenom, tenPercentRawAmt))
-
-	// mintedCoins now has devFundAmt less coins, two times
-	// one for the dev fund, one for the community pool
-	mintedCoins = mintedCoins.Sub(tenPercentAmt).Sub(tenPercentAmt)
-
 	// send them from mint moduleAccount to the dev fund address
-	if err := k.CollectAmount(ctx, params.TeamAddress, tenPercentAmt); err != nil {
-		panic(fmt.Errorf("cannot send coins to team account, %w", err))
+	teamRewardCoins := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, amounts.TeamReward))
+	if err := k.CollectAmount(ctx, params.TeamAddress, teamRewardCoins); err != nil {
+		panic(fmt.Errorf("cannot fund team account, %w", err))
 	}
 
 	// fund the community pool
-	if err := k.FundCommunityPool(ctx, tenPercentAmt); err != nil {
+	CommunityTaxCoins := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, amounts.CommunityTax))
+	if err := k.FundCommunityPool(ctx, CommunityTaxCoins); err != nil {
 		panic(fmt.Errorf("cannot fund community pool, %w", err))
 	}
 
 	// send the remaining minted coins to the fee collector account
-	if err := k.AddInflationToFeeCollector(ctx, mintedCoins); err != nil {
-		panic(err)
+	validatorFees := amounts.Inflation - (amounts.CommunityTax + amounts.TeamReward)
+	validatorFeesCoins := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, validatorFees))
+	if err := k.AddInflationToFeeCollector(ctx, validatorFeesCoins); err != nil {
+		panic(fmt.Errorf("cannot distribute block inflation: %w", err))
 	}
 
-	if mintedCoin.Amount.IsInt64() {
-		defer telemetry.ModuleSetGauge(types.ModuleName, float32(mintedCoin.Amount.Int64()), "minted_tokens")
+	// telemetry
+	if coinsToMint.AmountOf(params.MintDenom).IsInt64() {
+		defer telemetry.ModuleSetGauge(types.ModuleName, float32(coinsToMint.AmountOf(params.MintDenom).Int64()), "minted_tokens")
 	}
+	// fire the event
 	if err := ctx.EventManager().EmitTypedEvent(&types.MintEvent{
-		Amount: mintedCoin.Amount.String(),
+		Amount: coinsToMint.AmountOf(params.MintDenom).String(),
 	}); err != nil {
 		panic(err)
 	}
