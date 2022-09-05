@@ -8,8 +8,8 @@ import (
 	fmt "fmt"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
+	_ "github.com/gogo/protobuf/types"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
-	_ "google.golang.org/protobuf/types/known/structpb"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
@@ -34,25 +34,26 @@ type CredentialDefinition struct {
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// the did of the publisher of the credential
 	PublisherId string `protobuf:"bytes,2,opt,name=publisherId,proto3" json:"publisherId,omitempty"`
-	// The credential json-ld schema.
-	// The schema can be big and verbose (and expensive), but should not be compressed since
-	// it is used by the msg_server to verify public credentials and. if zipped, will open
+	// The credential data schema.
+	// The schema can be large, verbose, and expensive, but must not be compressed since
+	// it is used by the msg_server to verify public credentials and if zipped, will open
 	// the node to a zip bomb attack vector
 	Schema []byte `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
-	// the credential vocabulary
-	// The vocabulary can be big and verbose (and expensive), but should not be compressed since
-	// it is used by the msg_server to verify public credentials and. if zipped, will open
+	// the credential json-ld vocabulary
+	// The vocabulary can be large, verbose, and expensive, but must not be compressed since
+	// it is used by the msg_server to verify public credentials and if zipped, will open
 	// the node to a zip bomb attack vector
 	Vocab []byte `protobuf:"bytes,4,opt,name=vocab,proto3" json:"vocab,omitempty"`
-	// the human readable name of the credential, should be included
+	// the human readable name of the credential, must be included
 	// in the type of the issued credential
 	Name string `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
 	// the description of the credential, such as it's purpose
 	Description string `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
 	// wherever the credential is intended for public use (on-chain) or not (off-chain)
-	// if the value is false then the module will forbid the issuance of the credential on chain
+	// if the value is true, then the module can issue a credential
+	// if the value is false, then the module will forbid the issuance of the credential
 	IsPublic bool `protobuf:"varint,7,opt,name=isPublic,proto3" json:"isPublic,omitempty"`
-	// did of the credential should not be used anymore in favour of something else
+	// DID of the credential is replaced by something else
 	SupersededBy string `protobuf:"bytes,8,opt,name=supersededBy,proto3" json:"supersededBy,omitempty"`
 	// the credential can be de-activated
 	IsActive bool `protobuf:"varint,9,opt,name=isActive,proto3" json:"isActive,omitempty"`
@@ -153,8 +154,8 @@ func (m *PublicVerifiableCredential) XXX_DiscardUnknown() {
 var xxx_messageInfo_PublicVerifiableCredential proto.InternalMessageInfo
 
 // The Proof message represents a cryptographic proof that the
-// credential has not been tampered with or changed without the issuersi
-// knowledge. This can be used to verify the verifiable credential.
+// credential has not been tampered with or changed without the issuers
+// knowledge. This message can be used to verify the verifiable credential.
 type Proof struct {
 	Type               string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
 	Created            string `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
@@ -196,7 +197,7 @@ func (m *Proof) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Proof proto.InternalMessageInfo
 
-// CredentialStatus implement support for biststring based revocation lists
+// CredentialStatus implement support for bitstring-based revocation lists
 // as described here: https://w3c-ccg.github.io/vc-status-rl-2020/#revocationlist2020status
 type CredentialStatus struct {
 	Id                       string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`

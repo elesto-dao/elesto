@@ -5,18 +5,16 @@ import (
 )
 
 // NewGenesisState creates a new GenesisState object
-func NewGenesisState(params Params, bootstrapDate string, bootstrapDateCanary bool) *GenesisState {
+func NewGenesisState(params Params) *GenesisState {
 	return &GenesisState{
-		BootstrapDate:       bootstrapDate,
-		BootstrapDateCanary: bootstrapDateCanary,
-		Params:              params,
+		Params: params,
 	}
 }
 
 // DefaultGenesisState creates a default GenesisState object
 func DefaultGenesisState() *GenesisState {
 	// default genesis state has empty bootstrap date
-	return NewGenesisState(DefaultParams(), "", false)
+	return NewGenesisState(DefaultParams())
 }
 
 // ValidateGenesis validates the provided genesis state to ensure the
