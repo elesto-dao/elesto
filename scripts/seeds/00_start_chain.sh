@@ -35,6 +35,12 @@ then
     elestod add-genesis-account $(elestod keys show regulator -a) 40000000000000stake
     elestod gentx validator 30000000000000stake --chain-id elesto
     elestod collect-gentxs
+
+    # the community tax in the distribution must be disabled, since the community tax is
+    # already distributed by the mint module
+    echo "$( jq '.app_state.distribution.params.community_tax = "0.1"' ~/.elesto/config/genesis.json )" > ~/.elesto/config/genesis.json
+
+    echo
 fi
 
 

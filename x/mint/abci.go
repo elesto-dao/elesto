@@ -11,16 +11,6 @@ import (
 	"github.com/elesto-dao/elesto/v2/x/mint/types"
 )
 
-// BlockMintAmounts is used to define the amounts that are involved in the mint schedule
-type BlockMintAmounts struct {
-	// This is the block inflation, how much tokens should be minted for a block
-	Inflation int64
-	// CommunityTax is the rewards amount to be sent to the community pool (per block)
-	CommunityTax int64
-	// TeamReward is the rewards amount to be sent to the team acconut (per block)
-	TeamReward int64
-}
-
 const (
 	// BlocksPerEpoch number of blocks in an Epoch, an epoch is
 	// roughly an year assuming a block production rate of 1 block every 5s
@@ -31,25 +21,25 @@ var (
 	// BlockInflationAmount are the amounts to be minted/distributed for each block
 	// in an epoch.
 	// The format of the BlockInflationAmount is <Epoch Number>: <BlockMintAmonuts>
-	BlockInflationAmount = map[int64]BlockMintAmounts{
-		0: {Inflation: 31_709_792, CommunityTax: 3_170_979, TeamReward: 3_170_979},
-		1: {Inflation: 31_709_792, CommunityTax: 3_170_979, TeamReward: 3_170_979},
-		2: {Inflation: 23_782_344, CommunityTax: 2_378_234, TeamReward: 2_378_234},
-		3: {Inflation: 14_863_965, CommunityTax: 1_486_396, TeamReward: 1_486_396},
-		4: {Inflation: 8_360_980, CommunityTax: 836_098, TeamReward: 836_098},
-		5: {Inflation: 4_441_771, CommunityTax: 444_177, TeamReward: 444_177},
-		6: {Inflation: 2_931_569, CommunityTax: 293_156, TeamReward: 293_156},
-		7: {Inflation: 2_990_200, CommunityTax: 299_020, TeamReward: 299_020},
-		8: {Inflation: 3_050_004, CommunityTax: 305_000, TeamReward: 305_000},
-		9: {Inflation: 2_998_751, CommunityTax: 299_875, TeamReward: 299_875},
+	BlockInflationAmount = map[int64]int64{
+		0: 31_709_792,
+		1: 31_709_792,
+		2: 23_782_344,
+		3: 14_863_965,
+		4: 8_360_980,
+		5: 4_441_771,
+		6: 2_931_569,
+		7: 2_990_200,
+		8: 3_050_004,
+		9: 2_998_751,
 	}
 )
 
 // BeginBlocker mints new tokens for the previous block.
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
-	if ctx.BlockHeight() <= 1 {
-		// at block height 1 we have the initial supply, minting starts at block 2
-		// TODO: start minting at block 2 probably breaks the expected supply by the end of the epoch
+	if ctx.BlockHeight() < 1 {
+		// the inflation is already calculated for block 1. The inflation of the block 1 esist in the time
+		// between block 0 (chain start) and block 1.
 		return
 	}
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
@@ -60,35 +50,21 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	// get the current inflation epoch
 	inflationEpoch := ctx.BlockHeight() / BlocksPerEpoch
 
-	// fetch the set of amounts from the inflationEpoch table
+	// fetch inflation from the inflationEpoch table
 	// if there is no such epoch, then no mint is taking places
-	amounts, exists := BlockInflationAmount[inflationEpoch]
+	blockInflationAmount, exists := BlockInflationAmount[inflationEpoch]
 	if !exists {
 		return
 	}
 
 	// the coins to be minted are the block inflation - rewards
-	coinsToMint := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, amounts.Inflation))
+	coinsToMint := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, blockInflationAmount))
 	if err := k.MintCoins(ctx, coinsToMint); err != nil {
 		panic(err)
 	}
 
-	// send them from mint moduleAccount to the dev fund address
-	teamRewardCoins := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, amounts.TeamReward))
-	if err := k.CollectAmount(ctx, params.TeamAddress, teamRewardCoins); err != nil {
-		panic(fmt.Errorf("cannot fund team account, %w", err))
-	}
-
-	// fund the community pool
-	CommunityTaxCoins := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, amounts.CommunityTax))
-	if err := k.FundCommunityPool(ctx, CommunityTaxCoins); err != nil {
-		panic(fmt.Errorf("cannot fund community pool, %w", err))
-	}
-
-	// send the remaining minted coins to the fee collector account
-	validatorFees := amounts.Inflation - (amounts.CommunityTax + amounts.TeamReward)
-	validatorFeesCoins := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, validatorFees))
-	if err := k.AddInflationToFeeCollector(ctx, validatorFeesCoins); err != nil {
+	// send the minted coins to the fee collector account
+	if err := k.AddInflationToFeeCollector(ctx, coinsToMint); err != nil {
 		panic(fmt.Errorf("cannot distribute block inflation: %w", err))
 	}
 
