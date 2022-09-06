@@ -1,5 +1,5 @@
 ---
-ADR 004: Light Client Resolver
+ADR 004: Light client resolver
 ---
 
 # ADR 004: Light Client resolver
@@ -14,9 +14,9 @@ PROPOSED - Not Implemented
 
 ## Abstract
 
-DID resolution is the process of obtaining a DID document for a given DID. This is one of four required operations that can be performed on any DID ("Read"; the other ones being "Create", "Update", and "Deactivate"). The details of these operations differ depending on the DID method. Building on top of DID resolution, DID URL dereferencing is the process of retrieving a representation of a resource for a given DID URL. Software and/or hardware that is able to execute these processes is called a DID resolver.
+DID resolution is the process of obtaining a DID document for a given DID and performs a Read operation. Read is one of four required operations (Read, Create, Update, and Deactivate) that can be performed on any DID. The details of these operations differ depending on the DID method. Building on top of DID resolution, DID URL dereferencing is the process of retrieving a representation of a resource for a given DID URL. The software, hardware, or both software and hardware that is able to execute these processes is called a DID resolver.
 
-Resolvers are off-chain services that query blockchain data, these are widly used for getting DID (Decentralized identifier) Documents from a VDR (Verifiable Data Registry). We need a resolver for the Elesto network that suppliments the VDR application and provides the same guarantees about data security.
+Resolvers are off-chain services that query blockchain data and are widely used for getting DID (Decentralized Identifier) documents from a VDR (Verifiable Data Registry). We need a resolver for the Elesto network that supplements the VDR application and provides the same guarantees about data security.
 
 ## Context
 
@@ -36,11 +36,13 @@ resolveRepresentation ( did, resolutionOptions )
 
 The resolve function returns the DID document in its abstract form (a map). The resolveRepresentation function returns a byte stream of the DID Document formatted in the corresponding representation.
 
-### Resovler implementation
-The resolvers will use a GRPC client based on the cosmos-sdk protobuffer implementation. This will connect to a full elesto node to get data.
+### Resolver implementation
 
-### Light Client
-To enable the resolver to have the same guarantees about it's data as querying the blockchain directly we leverage a light client protocol.
+The resolvers will use a gRPC client based on the Cosmos SDK protobuffer implementation to connect to a full Elesto node to get data.
+
+### Light client
+
+To enable the resolver to have the same guarantees about its data as querying the blockchain directly, we leverage a light client protocol.
 
 Light clients are assumed to be initialized once from a trusted source with a trusted header and validator set. The light client protocol allows a client to then securely update its trusted state by requesting and verifying a minimal set of data from a network of full nodes (at least one of which is correct).
 
@@ -56,7 +58,7 @@ For [ephemeral DIDs](../ADR/adr-003-did.md), the resolver will generate the reso
 
 ### Endpoints
 
-Two endpoints will be exposed both will have the same functionality but will transform the did document slightly, the aries endpoint is specifically used by [aries-framework-go agents](https://github.com/hyperledger/aries-framework-go).
+Two endpoints will be exposed with have the same functionality but will transform the DID document slightly, the Aries endpoint is specifically used by [aries-framework-go agents](https://github.com/hyperledger/aries-framework-go).
 
 - `/1.0/identifier`
 - `/1.0/identifier/aries`
@@ -84,11 +86,13 @@ The scope of this work is two fold:
 1. We will create a resolver, this resolver will query data and compute proofs that data is correct.
 2. Then we will integrate the resolver into the DIF universal resolver.
 
-### Resovler implementation
-The resovler will package a cosmos-sdk GRPC client and a tendermint light client into a golang binary.
+### Resolver implementation
+
+The resolver will package a Cosmos SDK gRPC client and a Tendermint light client into a golang binary.
 
 ### DIF universal resolver driver implementation
-The universal resolver driver will be a docker image that can be packaged into the DIF universal resovler.
+
+The universal resolver driver will be a Docker image that can be packaged into the DIF universal resovler.
 
 ## Consequences
 
@@ -100,7 +104,7 @@ N/A
 
 ### Positive
 
-- Solves the issue with data security between resolver serivce and consuming applications defined in [#13](https://github.com/w3c-ccg/did-resolution/issues/13)
+- Solves the issue with data security between resolver serivce and consuming applications defined in [Issue #13](https://github.com/w3c-ccg/did-resolution/issues/13).
 
 ### Negative
 
@@ -108,7 +112,7 @@ N/A
 
 ### Neutral
 
-- Utilizing tendermint core advanced features
+- Utilizing Tendermint core advanced features
 
 ## Further Discussions
 
@@ -117,7 +121,7 @@ N/A
 
 ## Test Cases
 
-- [w3c did test suite](https://github.com/elesto-dao/did-test-suite)
+- [W3C DID test suite](https://github.com/elesto-dao/did-test-suite)
 
 ## References
 
