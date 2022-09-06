@@ -2,7 +2,6 @@
 title: About Architecture Decision Records (ADRs)
 ---
 
-
 # Architecture Decision Records (ADRs)
 
 This section includes all high-level architecture decisions for the Elesto protocol.
@@ -45,18 +44,18 @@ See [ADR Creation Process](PROCESS.md).
 
 When writing ADRs, follow the best practices that apply to writing [RFCs](https://www.ietf.org/standards/rfcs/).
 
-Keywords are used to signify the requirements in the specification and are often capitalized: 
+Keywords are used to signify the requirements in the specification and are often capitalized:
 
-- "MUST"
-- "MUST NOT"
-- "REQUIRED"
-- "SHALL"
-- "SHALL NOT"
-- "SHOULD"
-- "SHOULD NOT"
-- "RECOMMENDED"
-- "MAY"
-- "OPTIONAL"
+- MUST
+- MUST NOT
+- REQUIRED
+- SHALL
+- SHALL NOT
+- SHOULD
+- SHOULD NOT
+- RECOMMENDED
+- MAY
+- OPTIONAL
 
 Keywords are to be interpreted as described in [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
@@ -64,6 +63,12 @@ Keywords are to be interpreted as described in [RFC 2119](https://datatracker.ie
 
 ### Accepted
 
-- [ADR 001](adr-001-docs-structure.md)
+- [ADR 001: Documentation structure](adr-001-docs-structure.md)
+- [ADR 002: Decentralized Identifiers (DIDs)](adr-002-did.md)
 ### Proposed
 
+- [ADR 004: Light client resolver](adr-004-light-client-resolver.md)
+- [ADR 005: IBC-enabled DIDs](adr-005-ibc-enabled-dids.md)
+- [ADR 006: Verifiable credentials](adr-006-public-verifiable-credential.md)
+- [ADR 007: Revocation lists](adr-007-revocation-lists.md)
+- [ADR 008: Inflation](adr-008-inflation.md)
