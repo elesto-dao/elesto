@@ -13,7 +13,7 @@ title: ADR Template
 {DRAFT | PROPOSED} Not Implemented
 
 > For details on ADR workflow, see the [PROCESS](./PROCESS.md#adr-status) page.
-> Use DRAFT if the ADR is in a draft stage (draft PR) or PROPOSED if it's in review.
+> Use DRAFT if the ADR is in a draft stage (draft PR) or PROPOSED if the ADR in review.
 
 ## Abstract
 

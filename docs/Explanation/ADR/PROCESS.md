@@ -1,14 +1,14 @@
 # ADR Creation Process
 
-1. Copy the `adr-template.md` file. Use the following filename pattern: `adr-next_number-title.md`
+1. Copy the [adr-template.md](adr-template.md) file and use the following filename pattern: `adr-next_number-title.md` for the new ADR document.
 
-2. Create a draft Pull Request to get early feedback.
+1. Create a draft Pull Request to get early feedback.
 
-3. Make sure the context and a solution are clear and well documented.
+1. Make sure the context and a solution are clear and well documented.
 
-4. Add an entry to a list in the [README](./README.md) file.
+1. Add an entry to a list in the [README](./README.md) file.
 
-5. Create a Pull Request to propose a new ADR.
+1. Create a Pull Request to propose a new ADR.
 
 ## ADR life cycle
 

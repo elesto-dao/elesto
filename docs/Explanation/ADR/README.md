@@ -60,3 +60,10 @@ Keywords are used to signify the requirements in the specification and are often
 
 Keywords are to be interpreted as described in [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
+## ADR Table of Contents
+
+### Accepted
+
+- [ADR 001](adr-001-docs-structure.md)
+### Proposed
+
