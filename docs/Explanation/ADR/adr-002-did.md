@@ -1,4 +1,4 @@
-# ADR 002: DID
+# ADR 002: Decentralized Identifiers (DIDs)
 
 ## Changelog
 
@@ -13,7 +13,7 @@ LAST CALL 2022-02-28
 
 ## Abstract
 
-[Decentralized identifiers](https://www.w3.org/TR/did-core/) (DIDs) are a type of identifier that enables verifiable, decentralized digital identity. A DID refer to any subject (for example, a person, organization, thing, data model, abstract entity, and so on) as determined by the controller of the DID.
+[Decentralized Identifiers](https://www.w3.org/TR/did-core/) (DIDs) are a type of identifier that enables verifiable, decentralized digital identity. A DID refer to any subject (for example, a person, organization, thing, data model, abstract entity, and so on) as determined by the controller of the DID.
 
 This document specifies the DID method for a Cosmos SDK-based implementation of the W3C recommendation, its properties, operations, and an explanation of the process to resolve DIDs to the resources that they represent. 
 
@@ -33,7 +33,7 @@ The Elesto platform is based on the following principles:
 
 The self-sovereign identity (SSI) approach to tackling the identity and privacy challenge has been gaining momentum in recent years. Coupled with distributed ledger technology (DLT) technology, the SSI approach has been capturing the attention of both the private and public sectors. 
 
-The SSI approach relies on two building blocks: decentralized identifiers (DID) and verifiable credentials (VC). This architecture decision record (ADR) describes the DID implementation in a Cosmos SDK-based blockchain.
+The SSI approach relies on two building blocks: Decentralized Identifiers (DIDs) and verifiable credentials (VCs). This architecture decision record (ADR) describes the DID implementation in a Cosmos SDK-based blockchain.
 
 The goal of this ADR is to define a foundation for the necessary components to realize the Elesto objectives while ensuring the implementation of the DID is fully compliant with the W3C specifications. **Successive iterations will address API ergonomics and standard compatibility issues.** 
 
