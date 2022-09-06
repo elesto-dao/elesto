@@ -1,4 +1,8 @@
-# ADR 002: Documentation Structure
+---
+title: ADR 001: Documentation structure
+---
+
+# ADR 001: Documentation structure
 
 ## Status
 
@@ -40,26 +44,26 @@ The goals of well-structured and well-written documentation include:
 - Consistency: Each type of documentation is written in a consistent style
 - Scoped: Documentation is scoped to a specific use case; for example, a tutorial can provide links but does not include technical content that describes why the software works, a tutorial teaches how to use it
 
-Additional Documentation non-functional use cases include:
+Additional documentation non-functional use cases include:
 
-- Technical content SHOULD BE as close to the code as reasonably practicable and strive to use the docs as code workflow
+- Technical content SHOULD BE as close to the code as reasonably practicable and strive to use the docs-as-code workflow
 - Technical content SHOULD BE generated from code as much as possible
-- Technical content SHOULD USE a consistent format 
+- Technical content SHOULD USE a consistent format
 - Technical content SHOULD BE useable from within the repository
-- Technical content COULD HAVE an automatic process that converts the content to a website based on [Read The Docs](https://readthedocs.com/), [Gitbook](https://www.gitbook.com/), or other suitable hosting systems
+- Technical content SHOULD HAVE an automatic process that converts the content to a website based on [Read The Docs](https://readthedocs.com/), [GitBook](https://www.gitbook.com/), or other suitable hosting systems
 
 ## Decision
 
 To address the use cases outlined in the context, this ADR proposes the following decisions:
 
-- Use GitHub as primary content management [https://github.com/elesto-dao/elesto](https://github.com/elesto-dao/elesto)
+- Use GitHub as the primary content management [https://github.com/elesto-dao/elesto](https://github.com/elesto-dao/elesto)
 - Use Markdown and LaTeX to deliver research publications
 
 Given that GitHub will form the content management system, we propose the following structure:
 
 ### Structure
 
-The documentation structure shall use as much as possible a content structure similar to the [Divio user cases](https://documentation.divio.com/introduction/).
+The documentation structure uses as much as possible a content structure similar to the [Divio user cases](https://documentation.divio.com/introduction/).
 
 |                       | Tutorials                       | How-to guides                        | Reference               | Explanation                        |
 | --------------------- | ------------------------------- | ------------------------------------ | ----------------------- | ---------------------------------- |
@@ -115,31 +119,31 @@ The specific implementation for Elesto SHOULD BE as per the following tree struc
         ├── Tutorial_2/
 ```
 
-#### Root level documents
+#### Root-level documents
 
-The following files are required at the repo root level:
+The following files are required at the root level of the project codebase repository:
 
-- **README.md** - General repo overview to introduce the product and orientate the user. All README files must follow the best practices outlined in the [GitHub README](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-readmes) guidelines.
+- **README.md** - General project overview to introduce the product and orientate the user. All README files must follow the best practices outlined in the [GitHub README](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-readmes) guidelines.
 - **TECHNICAL-SETUP.md** - Specific steps on getting started with the repo, can be a link to a tutorial or include the specific action-oriented steps
-    - Links to specific tooling setup requirements for development tools, linters, and so on
-    - Dependencies such as [pre-commit](https://pre-commit.com/) package manager
-    - Building the code
-    - Running tests
+  - Links to specific tooling setup requirements for development tools, linters, and so on
+  - Dependencies such as [pre-commit](https://pre-commit.com/) package manager
+  - Building the code
+  - Running tests
 - **CONTRIBUTING.md** - Details on how new users can contribute to the project. In specific:
-    - Committing changes
-    - Commit message formats (see [Commit Comments](#commit-comments)
-    - Raising PRs
-    - Code of Conduct
+  - Committing changes
+  - Commit message formats (see [Commit Comments](#commit-comments)
+  - Raising PRs
+  - Code of Conduct
 - **CODEOWNERS** - Although not part of the documentation itself, a [CODEOWNERS file](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-code-owners) defines the code maintainers who are responsible for code in a repository and perform quality assurance on comments, PRs, and issues.
 
 #### Modules
 
-In line with Cosmos SDK convention (TODO: needs reference), each module contains its relevant documentation:
+To conform to the Cosmos SDK convention, each module contains its relevant documentation:
 
-- **Module specifications** - A document that outlines state transitions `x/module-name/docs/`
-- **Module-level README.md** e.g. x/module-name/README.md
+- **Module specifications** - A document that outlines state transitions `x/module-name/docs/`. For the Cosmos SDK documentation convention, see [Updating Documentation](https://github.com/cosmos/cosmos-sdk/blob/main/CONTRIBUTING.md#updating-documentation).
+- **Module-level README.md** - An `x/module-name/README.md` document that is classed as reference documentation. Content in module-level README files is descriptive but explanatory.
 
-README files are classed as reference documentation. Content in module-level README files is descriptive but explanatory. Explanations should be part of issues, Pull Requests, and docs/explanation/architecture.
+Explanations are part of issues, pull requests, and docs, explanation, and architecture.
 
 #### docs/
 
@@ -153,24 +157,24 @@ The `docs` folder shall include the following files and folders:
 Reference documentation includes several different forms:
 
 - **README.md** - This document outlines the purpose of the reference documentation as per the use-case documentation strategy and methodology. In addition, the README also links to documentation that is created from the code itself, specifically:
-    - Code Documentation in the form of Go Docs
-    - Swagger API documentation
+  - Code documentation in the form of Go Docs
+  - Swagger API documentation
 - **GLOSSARY.md** - Review and maintenance must be regularly and consistently applied. These form the terms of reference for users and ensure that discussion and design are based on consistent terms of reference. This file will be similar to [Cosmos Network Glossary](https://v1.cosmos.network/glossary) and can reference this.
-- **MODULES.md** - A markdown document that has references to module-relevant documentation
+- **MODULES.md** - A markdown document that has references to module-relevant documentation.
 
 ##### docs/Reference/use-cases
 
-The `use-cases` folder describes Elesto use cases. Ideally, use cases are written in behavior-driven development (BDD) format. Use case content should be dry and avoid explanations covered in the explanation documentation.
+The `use-cases` folder describes Elesto use cases. Ideally, use cases are written in behavior-driven development (BDD) format. Use case content is dry and avoids explanations that are covered in the explanation documentation.
 
 ##### docs/Reference/architecture
 
-The `architecture` folder contains architecture diagrams such as component, activity, and sequence diagrams as relevant. Specifically, these assets should be in a format suitable for version management and easy to update. Therefore, these diagrams should be in SVG or DOT format and not image formats (JPEG, PNG, and so on).
+The `architecture` folder contains architecture diagrams such as component, activity, and sequence diagrams as relevant. Specifically, these assets are in a format suitable for version management and easy to update. Therefore, these diagrams are created in Scalable Vector Graphics (SVG) or DOT format. Do not create diagrams in non-editable image formats (JPEG, PNG, and so on).
 
 #### docs/Explanation
 
-The `Explanation` folder contains content that provides context for readers and is discursive. See the [Divio Explanation page](https://documentation.divio.com/explanation/#) for more detail.
+The `Explanation` folder contains content that provides context for readers and is discursive. See the [Divio Explanation page](https://documentation.divio.com/explanation/#).
 
-- **docs/explanation/README.md** - This file orients the reader and explains the content. 
+- **docs/explanation/README.md** - This file orients the reader and explains the content.
 
 ##### docs/Explanation/ADR
 
@@ -183,16 +187,16 @@ The `ADR` folder tracks decisions regarding design and architecture (such as thi
 
 ##### docs/Explanation/articles
 
-The `articles` folder contains a sub-folder for each published article. Published articles this COULD REFER to blog posts. The folder should be named such that it describes the article's purpose. Each sub-folder SHALL CONTAIN all the content relevant to the article (for example, images, bibliographies, and so on). These articles can be converted into PDF format using Pandoc. 
+The `articles` folder contains a sub-folder for each published article. Published articles that COULD REFER to blog posts. Name the folder so it describes the article's purpose. Each sub-folder SHALL CONTAIN all the content relevant to the article (for example, images, bibliographies, and so on). These articles can be converted into PDF format using Pandoc.
 
 To convert articles to PDF using Pandoc:
 
 - There SHOULD BE a makefile with targets for calling Pandoc. Note: the process for building PDF files is not part of the commit or release processes but ad-hoc
-- There SHOULD BE a LaTeX template file that can create PDF files with a consistent look and feel. WITH SUITABLE MODIFICATIONS, this COULD BE the [Eisvogel template](https://github.com/Wandmalfarbe/pandoc-latex-template).
+- There SHOULD BE a LaTeX template file that can create PDF files with a consistent look and feel. WITH SUITABLE MODIFICATIONS, this COULD BE the [Eisvogel template](https://github.com/Wandmalfarbe/pandoc-latex-template)
 - The makefile and template should be independent of the article
-- There SHOULD BE a README.md that describes how to use the makefile and template and build articles
+- There SHOULD BE a README file that describes how to use the makefile and template and build articles
 
-> **Note:** Explanations can come in other forms, particularly issue discussion and Pull Requests.
+> **Note:** Explanations can come in other forms, particularly issue discussion and pull requests.
 
 #### docs/Tutorials
 
@@ -204,21 +208,20 @@ As indicated in the overview, tutorials SHALL BE documents that target beginners
 
 #### docs/How-To
 
-In contrast to tutorials, [how-to guides](https://documentation.divio.com/how-to-guides/) are a series of actionable steps to help an experienced reader solve a specific problem. These how-to guides SHALL USE templates similar to the tutorials - see above.
+In contrast to tutorials, [how-to guides](https://documentation.divio.com/how-to-guides/) are a series of actionable steps to help an experienced reader solve a specific problem. These how-to guides SHALL USE templates similar to the tutorials.
 
 ### Templates
 
-The documentation SHOULD USE Markdown templates to develop structured technical content like module messages follow templates in the Cosmos SDK. 
+The documentation SHOULD USE Markdown templates to develop structured technical content, like module messages follow templates in the Cosmos SDK.
 
 - [The good docs project](https://github.com/thegooddocsproject)
 - [Readme editor](https://readme.so/editor)
 
-
-#### Code Comments
+#### Code comments
 
 PR review comments also form part of the documentation. Comments SHALL FOLLOW recommendation as per [Conventional Comments](https://conventionalcomments.org/)
 
-```
+```sh
 <label> [decoration]: <subject>
 
 [discussion]
@@ -226,15 +229,15 @@ PR review comments also form part of the documentation. Comments SHALL FOLLOW re
 
 where `label = (praise|nitpick|suggestion|issue|question|thought|chore)`
 
-#### Commit Comments
+#### Commit comments
 
-Commits comments will also follow a similar format as laid out following the standard defined by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary). This commit convention SHOULD BE enforced as part of [pre-commit](https://pre-commit.com/) checks.
+Commits comments also follow a similar format as laid out following the standard defined by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary). This commit convention SHOULD BE enforced as part of [pre-commit](https://pre-commit.com/) checks.
 
 ## Consequences
 
-This section describes the resulting context after applying the decision. 
+This section describes the resulting context after applying the decision.
 
-### Backwards Compatibility
+### Backward compatibility
 
 After this ADR is implemented, existing documentation will be migrated from existing sources that include:
 
@@ -247,21 +250,19 @@ After this ADR is implemented, existing documentation will be migrated from exis
 
 As a result of this documentation strategy:
 
-- Content development and maintenance will follow best practices that ensure content is easy to navigate and read
-- Content will be in a consistent format
-- Commits, Issues, and Pull Requests in the repo will follow best practices
-- CHANGELOG and release documentation will benefit from better commit messages, reducing developer effort
+- Content development and maintenance follows best practices that ensure content is easy to navigate and read
+- Content is in a consistent format
+- Commits, issues, and pull requests in the repo follow best practices
+- CHANGELOG and release documentation benefit from better commit messages that reduce developer effort
 
 ### Negative
 
 - There may be more effort required
 - Moving modules into new repos may cause inconsistencies in the repo
 
-## Further Discussions
+## Further discussions
 
-While an ADR is in the DRAFT or PROPOSED stage, this section should summarize issues to be solved in future iterations (usually referencing comments from a pull-request discussion).
-
-Later, this section can optionally list ideas or improvements the author or reviewers found during the analysis of this ADR.
+N/A
 
 ## References
 
