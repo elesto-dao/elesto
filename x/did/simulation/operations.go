@@ -56,10 +56,13 @@ const (
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
+func init() {
+	ownersAndIds = make(map[string][]string)
+}
+
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func WeightedOperations(simState module.SimulationState, didKeeper keeper.Keeper, bk did.BankKeeper, ak did.AccountKeeper) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
-	ownersAndIds = make(map[string][]string)
 
 	var weightMsgCreateDidDocument int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateDidDocument, &weightMsgCreateDidDocument, nil,
@@ -181,7 +184,7 @@ func SimulateMsgCreateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		didOwner, _ := simtypes.RandomAcc(r, accs)
 		ownerAddress := didOwner.Address.String()
-		id := returnRandomUUID(r, ownerAddress)
+		id := genRandomUUID(r, ownerAddress)
 		didID := did.NewChainDID(ctx.ChainID(), id)
 		vmID := didID.NewVerificationMethodID(ownerAddress)
 		vmType := did.EcdsaSecp256k1VerificationKey2019
@@ -247,7 +250,9 @@ func SimulateMsgUpdateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 		// build vm 1
 		vmKey, _ := simtypes.RandomAcc(r, accs)
 		keyAddress := vmKey.Address.String()
-		didvmkeyID := did.NewChainDID(ctx.ChainID(), keyAddress)
+
+		didvmID := returnRandomUUID(r, keyAddress)
+		didvmkeyID := did.NewChainDID(ctx.ChainID(), didvmID)
 		vmkeyID := didvmkeyID.NewVerificationMethodID(keyAddress)
 		vmkeyType := did.EcdsaSecp256k1VerificationKey2019
 		vm := did.NewVerification(
@@ -366,7 +371,8 @@ func SimulateMsgAddVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Accou
 		id := returnRandomUUID(r, ownerAddress)
 		didID := did.NewChainDID(ctx.ChainID(), id)
 
-		didvmkeyID := did.NewChainDID(ctx.ChainID(), keyAddress)
+		vmID := returnRandomUUID(r, keyAddress)
+		didvmkeyID := did.NewChainDID(ctx.ChainID(), vmID)
 		vmkeyID := didvmkeyID.NewVerificationMethodID(keyAddress)
 		vmkeyType := did.EcdsaSecp256k1VerificationKey2019
 
@@ -765,7 +771,8 @@ func SimulateMsgDeleteController(k keeper.Keeper, bk did.BankKeeper, ak did.Acco
 	}
 }
 
-func returnRandomUUID(r *rand.Rand, acc string) string {
+// stores owners and ids for msg create did
+func genRandomUUID(r *rand.Rand, acc string) string {
 	if _, found := ownersAndIds[acc]; !found {
 		id := uuid.New().String()
 		ownersAndIds[acc] = append(ownersAndIds[acc], id)
@@ -777,6 +784,20 @@ func returnRandomUUID(r *rand.Rand, acc string) string {
 		id := uuid.New().String()
 		ownersAndIds[acc] = append(ownersAndIds[acc], id)
 		return id
+	}
+
+	return ownersAndIds[acc][idx]
+}
+
+// return random uuid or uuid from store based on acc
+func returnRandomUUID(r *rand.Rand, acc string) string {
+	if _, found := ownersAndIds[acc]; !found {
+		return uuid.New().String()
+	}
+
+	idx := r.Intn(2 * len(ownersAndIds[acc]))
+	if idx >= len(ownersAndIds[acc]) {
+		return uuid.New().String()
 	}
 
 	return ownersAndIds[acc][idx]
