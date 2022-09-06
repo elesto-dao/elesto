@@ -1,4 +1,8 @@
-# ADR 006: Verifiable Credentials
+---
+title: ADR 006: Verifiable credentials
+---
+
+# ADR 006: Verifiable credentials
 
 ## Changelog
 
@@ -32,10 +36,10 @@ A new credential module for the Elesto implementation for VCs will follow the [V
 
 This ADR introduces two data structures for the Elesto chain:
 
-- Credential Definition (CD)
-- Public Verifiable Credential (PVC)
+- Credential definition (CDs)
+- Public verifiable credentials (PVCs)
 
-### Credential Definition (CD)
+### Credential definitions (CDs)
 
 CDs are used to describe the model of a credential, that is, its structure, fields, properties, and behavior. CDs consist of the following fields:
 
@@ -51,7 +55,7 @@ CDs are used to describe the model of a credential, that is, its structure, fiel
 
 A CD cannot be deleted from the state. 
 
-#### Credential Data Schema
+#### Credential data schema
 
 A credential [data schema](https://www.w3.org/TR/vc-data-model/#data-schemas) is a machine-readable definition of fields and data types of a credential. 
 
@@ -61,7 +65,7 @@ The credential module supports the `JsonSchemaValidator2018` JSON-LD type schema
 
 A credential [JSON-LD context](https://www.w3.org/TR/json-ld11/#the-context) is a semantic vocabulary for the credential field descriptions. The vocabulary, in JSON format, is stored as an uncompressed byte slice.
   
-### Public Verifiable Credential (PVC)
+### Public verifiable credentials (PVCs)
 
 With PVCs, a VC is stored on-chain.
 
@@ -77,11 +81,11 @@ The `supersededBy` is used only for communication purposes and does not influenc
   
 PVCs are intended for advertising information that is public domain and leverages the tamper-resistant capability of the blockchain. A PVC can be deleted from the state.
 
-## Privacy Considerations
+## Privacy considerations
 
 There is a risk that a credential definition allows publication of PII since the failsafe mechanism provided by the `isPublic` field can be misused by the credential publisher.   
 
-## Security Considerations
+## Security considerations
 
 The credential schema and the vocabulary must be stored uncompressed. Compression will make the node vulnerable to a [zip bomb](https://en.wikipedia.org/wiki/Zip_bomb) attack. 
 
@@ -89,7 +93,7 @@ The credential schema and the vocabulary must be stored uncompressed. Compressio
 
 The Elesto chain will provide support for credential schemas and vocabularies. At the same time, support for PVCs provides a strong foundation for a network of trust.
   
-### Backward Compatibility
+### Backward compatibility
 
 The credential module is a new module so backward compatibility is not a concern.
 
@@ -106,13 +110,11 @@ N/A
 
 N/A
 
-## Further Discussions
+## Further discussions
 
-While an ADR is in the DRAFT or PROPOSED stage, this section summarizes issues to be solved in future iterations. The issues summarized here can reference comments from a pull request discussion.
+N/A
 
-Later, this section can optionally list ideas or improvements the author or reviewers found during the analysis of this ADR.
-
-## Test Cases [optional]
+## Test cases [optional]
 
 N/A
 

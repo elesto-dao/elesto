@@ -1,5 +1,5 @@
 ---
-title: IBC-enabled DIDs
+title: ADR 004: IBC-enabled DIDs
 ---
 
 # ADR 005: IBC-enabled DIDs
@@ -173,4 +173,4 @@ Right now the Elesto DID protocol does not have any form of extra fee payment fo
 ## References
 
 - [Elesto DID specification](./adr-003-did.md)
-- [Interchain Account specification](https://github.com/cosmos/ibc/blob/master/spec/app/ics-027-interchain-accounts/README.md)
+- [Interchain accounts specification](https://github.com/cosmos/ibc/blob/master/spec/app/ics-027-interchain-accounts/README.md)

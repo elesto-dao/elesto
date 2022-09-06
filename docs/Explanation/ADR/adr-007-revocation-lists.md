@@ -1,4 +1,7 @@
-# ADR 007: Revocation Lists
+---
+title: ADR 007: Revocation lists
+---
+# ADR 007: Revocation lists
 
 ## Changelog
 

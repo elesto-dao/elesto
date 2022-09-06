@@ -1,5 +1,5 @@
 ---
-ADR 004: Light client resolver
+Title: ADR 004: Light client resolver
 ---
 
 # ADR 004: Light Client resolver
