@@ -3,6 +3,8 @@
 ## Changelog
 
 - 2022-08-20: Initial draft
+- 2022-08-30: Draft 2 (inflation rewards allocation, minor grammar edits)
+- 2022-09-06: Draft 3 - replace years with epochs
 
 ## Status
 
@@ -10,7 +12,7 @@ DRAFT
 
 ## Abstract
 
-Inflation is the process by which a currency like the dollar or Euro loses value over time, causing the price of goods to rise. Elesto, like other cryptocurrencies, is designed to experience predictable and low rates of inflation. This document details the inflation model for the Elesto chain.
+Inflation is the process by which a currency like the dollar or euro loses value over time, causing the price of goods to rise. Elesto, like other cryptocurrencies, is designed to experience predictable and low rates of inflation. This document details the inflation model for the Elesto chain.
 
 
 ## Context
@@ -19,17 +21,19 @@ Inflation is the process by which a currency like the dollar or Euro loses value
 
 ## Decision
 
-Elesto inflation is inspired by Bitcoin inflation model. The way Bitcoin is designed is that its supply is limited and known, and the creation of new bitcoin will taper off over time in a predictable way. (There will only ever be 21 million bitcoin, and every four years the amount of bitcoin that is mined is reduced by half.) 
+Elesto inflation is inspired by Bitcoin inflation model. The Bitcoin supply is limited and known, and the creation of new bitcoin will taper off over time in a predictable way. (There will only ever be 21 million bitcoin, and every four years the amount of bitcoin that is mined is reduced by half.) 
 
-The Elesto initial supply is to be **200,000,000** (two hundred millions) tokens and will reach its maximum value at **1,000,000,000** (one billion) in a period of **10 years** 
+The Elesto initial supply is to be **200,000,000** (two hundred million) tokens and will reach its maximum value at **1,000,000,000** (one billion) in a period of **10 epochs** (roughly 10 years).
 
-Assuming a block rate of 1 block every 5 seconds a year is calculated to be **6,307,200** blocks. Using this information the Elesto inflation is expressed in the followwing table:
+The rewards per block are further split into three categories: 10% to the community pool, 10% to the development team, and 80% to the staking rewards.
+
+We introduce the concept of epoch: an epoch is **6,307,200** blocks. The number of blocks of an eopch is calculated as the number of blocks in a calendar year assuming a block rate of 1 block every 5 seconds.
 
 !!! Note
     The actual token configuration uses the `u` (micro) unit to express decimal, therefore the actual value for supply must be multplied for `10^6`
 
 
-| Year n.    | Year inflation % | Year inflation supply amount  | Total supply estimate (EOY) | Block inflation amount | **Total supply actual amount (EOY)** |
+| Epoch n.  [1]  | Current epoch inflation [2] | Epoch inflation supply amount [3]  | Total supply estimate (EOY) [4] | Block inflation amount [5] | **Total supply actual amount (EOY)** [6] |
 | ---------- | ---------------- | --------------------- | --------------------------- | --------------- | ------------------------- |
 | 1          | 1                | **200,000,000**,000,000   | **400,000,000**,000,000         | **31**,709,792      | **400,000,000**,102,400       |
 | 2          | 0.5              | **200,000,000**,000,000   | **600,000,000**,000,000         | **31**,709,792      | **600,000,000**,102,400       |
@@ -42,51 +46,51 @@ Assuming a block rate of 1 block every 5 seconds a year is calculated to be **6,
 | 9          | 0.0200           | **19,236,985**,839,844    | **981,086,277**,832,031         | **3**,050,004       | **981,086,277**,220,988       |
 | 10         | 0.019278348      | **18,913,722**,682,071    | **1,000,000,000**,514,100       | **2**,998,751       | **1,000,000,000**,139,230     |
 
-Where the columns are:
+where the columns are:
 
-#### 1. Year n.
+#### 1. Epoch n.
 
-The year from the chain starts, 1 is during the first year, 2 the second year, and so on. 
+The epoch from the chain starts, 1 is during the first epoch, 2 the second epoch, and so on. 
 
-#### 2. Year inflation % 
+#### 2. Current epoch inflation % 
 
-The year inflation is a percentage over the current supply that should be minted for the next year. The percentage is between 0-1. The last year percentage (0.019278348) is an adjustment over 0.2 to reach the desired value of 1 billion. 
+The current epoch inflation is a percentage over the current supply that should be minted for the next epoch. The percentage is between 0-1. The last epoch percentage (0.019278348) is an adjustment over 0.2 to reach the desired value of 1 billion. 
 
-#### 3. Year inflation supply amount
+#### 3. Epoch inflation supply amount
 
-The year supply inflatio is the teorethical amount that will be minted by the end of the current year. It is calculated with the formula:
+The epoch supply inflation is the theoretical amount that will be minted by the end of the current epoch. It is calculated with the formula:
 
 ```
-Year supply inflation amount = FLOOR(Current year inflation[2] * total supply at beginning of the year)
+Epoch supply inflation amount = FLOOR(Current epoch inflation [2] * Total supply at beginning of the epoch)
 ```
 
-For the first year the total supply at beginning of the year is the initial supply of two hundred millions.
+For the first epoch, the total supply at beginning of the epoch is the initial supply of two hundred million (200,000,000).
 
 #### 4. Total supply estimate (EOY) 
 
-The total supply estimate is the total supply at the end of the current year, it is cumulated sum of each year supply.
+The total supply estimate is the total supply at the end of the current epoch. It is the cumulated sum of each epoch supply.
 
 #### 5. Block inflation amount
 
-The block inflation is the amount to be minted on each block to reach the expected **Year inflation supply**. It is calcualted with the formula: 
+The block inflation is the amount to be minted on each block to reach the expected **Epoch inflation supply**. It is calcualted with the formula: 
 
 ```
-Bblock inflation amount = ROUND(Year supply inflation amount [3] / Blocks per year)
+Block inflation amount = ROUND(Epoch inflation supply amount [3] / Blocks per epoch)
 ```
 
 
 
 #### 6. Total supply actual amount (EOY)
 
-Due to roundin errors the Total supply estimate [4] it is slightly different from the actual supply, this column is the actual supply that will be obeserved on chain and is calcualted using the formula:
+Due to rounding errors, the "Total supply estimate (EOY) [4]" is slightly different from the "Total supply actual amount (EOY) [6]." This column is the actual supply that will be obeserved on chain and is calcualted using the formula:
 
 ```
-Total supply actual = Blocks inflation amount * Blocks per year
+Total supply actual amount = Block inflation amount [5] * Blocks per epoch
 ```
 
 
 
-The value for block inflation per year is hard coded in the node code in the mint module [ABCI](../../x/mint/abci.go#L21). 
+The value for block inflation per epoch is hard coded in the node code in the mint module [ABCI](../../x/mint/abci.go#L21). 
 
 
 
@@ -100,17 +104,17 @@ The value for block inflation per year is hard coded in the node code in the min
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
       "description": "Supply change over time.",
       "data": {"values": [
-          {"year": "1", "block": 6307200, "supply": 200000000},
-          {"year": "2", "block": 12614400, "supply": 600000000},
-          {"year": "3", "block": 18921600, "supply": 750000000},
-          {"year": "4", "block": 25228800, "supply": 843750000},
-          {"year": "5", "block": 31536000, "supply": 896484373},
-          {"year": "6", "block": 37843200, "supply": 924499513},
-          {"year": "7", "block": 44150400, "supply": 942989503},
-          {"year": "8", "block": 50457600, "supply": 961849291},
-          {"year": "9", "block": 56764800, "supply": 981086277},
-          {"year": "10", "block": 63072000, "supply": 1000000000},
-          {"year": "11", "block": 63072000, "supply": 1000000000}
+          {"epoch": "1", "block": 6307200, "supply": 200000000},
+          {"epoch": "2", "block": 12614400, "supply": 600000000},
+          {"epoch": "3", "block": 18921600, "supply": 750000000},
+          {"epoch": "4", "block": 25228800, "supply": 843750000},
+          {"epoch": "5", "block": 31536000, "supply": 896484373},
+          {"epoch": "6", "block": 37843200, "supply": 924499513},
+          {"epoch": "7", "block": 44150400, "supply": 942989503},
+          {"epoch": "8", "block": 50457600, "supply": 961849291},
+          {"epoch": "9", "block": 56764800, "supply": 981086277},
+          {"epoch": "10", "block": 63072000, "supply": 1000000000},
+          {"epoch": "11", "block": 63072000, "supply": 1000000000}
 
         ]
       },
@@ -121,7 +125,7 @@ The value for block inflation per year is hard coded in the node code in the min
       },
       "encoding": {
         "z": {"field": "block", "type": "quantitative"},
-        "x": {"field": "year", "type": "quantitative"},
+        "x": {"field": "epoch", "type": "quantitative"},
         "y": {"field": "supply", "type": "quantitative"}
       }
     }
@@ -171,4 +175,4 @@ N/A
 
 ## References
 
-[Bitcoin Withepaper](https://bitcoin.org/bitcoin.pdf)
+[Bitcoin Whitepaper](https://bitcoin.org/bitcoin.pdf)
