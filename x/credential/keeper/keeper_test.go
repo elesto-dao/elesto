@@ -60,7 +60,9 @@ func (suite *KeeperTestSuite) SetupTest() {
 	ms.MountStoreWithDB(keyAcc, sdk.StoreTypeIAVL, db)
 	_ = ms.LoadLatestVersion()
 
-	ctx := sdk.NewContext(ms, tmproto.Header{ChainID: "foochainid"}, true, server.ZeroLogWrapper{log.Logger})
+	ctx := sdk.NewContext(ms, tmproto.Header{ChainID: "foochainid"}, true,
+		server.ZeroLogWrapper{Logger: log.Logger},
+	)
 
 	interfaceRegistry := ct.NewInterfaceRegistry()
 	authtypes.RegisterInterfaces(interfaceRegistry)

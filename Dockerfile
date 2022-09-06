@@ -3,7 +3,7 @@ WORKDIR /workspace
 COPY . .
 RUN LEDGER_ENABLED=false make build
 
-FROM scratch
+FROM ghcr.io/glebiller/tendermint-readiness:0.1.0
 COPY --from=build /workspace/build/elestod /elestod
 
 ENTRYPOINT ["/elestod"]

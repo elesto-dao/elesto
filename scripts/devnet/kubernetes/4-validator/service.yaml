@@ -1,0 +1,23 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: validators
+  namespace: local
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: validator
+    app.kubernetes.io/component: node
+    app.kubernetes.io/part-of: elesto
+  ports:
+    - port: 26656
+      name: p2p
+      targetPort: p2p
+    - port: 26657
+      name: rpc
+      targetPort: rpc
+    - port: 26660
+      name: telemetry
+      targetPort: telemetry
