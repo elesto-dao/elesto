@@ -1,3 +1,7 @@
+---
+title: ADR 002:  Decentralized Identifiers (DIDs)
+---
+
 # ADR 002: Decentralized Identifiers (DIDs)
 
 ## Changelog
