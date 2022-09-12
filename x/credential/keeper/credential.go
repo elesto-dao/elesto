@@ -11,13 +11,13 @@ import (
 
 // SetCredentialDefinition persist a credential definition to the store. The credential definition ID is used as key.
 func (k Keeper) SetCredentialDefinition(ctx sdk.Context, def *credential.CredentialDefinition) {
-	k.Set(ctx, []byte(def.Id), credential.CredentialDefinitionKey, def, k.cdc.MustMarshal)
+	k.Set(ctx, credential.CredentialDefinitionKey, []byte(def.Id), def, k.cdc.MustMarshal)
 }
 
 // GetCredentialDefinition retrieve a credential definition by its key.
 // The boolean return will be false if the credential definition is not found
 func (k Keeper) GetCredentialDefinition(ctx sdk.Context, key string) (credential.CredentialDefinition, bool) {
-	val, found := k.Get(ctx, []byte(key), credential.CredentialDefinitionKey, func(value []byte) (interface{}, bool) {
+	val, found := k.Get(ctx, credential.CredentialDefinitionKey, []byte(key), func(value []byte) (interface{}, bool) {
 		var data credential.CredentialDefinition
 		ok := k.Unmarshal(value, &data)
 		return data, ok
@@ -40,13 +40,13 @@ func (k Keeper) GetCredentialDefinitions(ctx sdk.Context, req *credential.QueryC
 
 // SetPublicCredential persist a public verifiable credential to the store. The credential ID is used as key
 func (k Keeper) SetPublicCredential(ctx sdk.Context, pc *credential.PublicVerifiableCredential) {
-	k.Set(ctx, []byte(pc.Id), credential.PublicCredentialKey, pc, k.cdc.MustMarshal)
+	k.Set(ctx, credential.PublicCredentialKey, []byte(pc.Id), pc, k.cdc.MustMarshal)
 }
 
 // GetPublicCredential retrieve a public verifiable credential by its key.
 // The boolean return will be false if the credential is not found
 func (k Keeper) GetPublicCredential(ctx sdk.Context, key string) (credential.PublicVerifiableCredential, bool) {
-	val, found := k.Get(ctx, []byte(key), credential.PublicCredentialKey, func(value []byte) (interface{}, bool) {
+	val, found := k.Get(ctx, credential.PublicCredentialKey, []byte(key), func(value []byte) (interface{}, bool) {
 		var data credential.PublicVerifiableCredential
 		ok := k.Unmarshal(value, &data)
 		return data, ok
@@ -66,36 +66,34 @@ func (k Keeper) Unmarshal(data []byte, val codec.ProtoMarshaler) bool {
 }
 
 // GetCredentialDefinitionsWithFilter retrieve a list of credential definitions with filter
-func (k Keeper) GetCredentialDefinitionsWithFilter(ctx sdk.Context, filter func(credentialDefinition *credential.CredentialDefinition) bool) []*credential.CredentialDefinition {
-	var cds []*credential.CredentialDefinition
+func (k Keeper) GetCredentialDefinitionsWithFilter(ctx sdk.Context, paginate *query.PageRequest, filter func(credentialDefinition *credential.CredentialDefinition) bool) (cds []*credential.CredentialDefinition, pageRes *query.PageResponse, err error) {
+	store := ctx.KVStore(k.storeKey)
+	cdStore := prefix.NewStore(store, credential.CredentialDefinitionKey)
 
-	iterator := k.GetAll(ctx, credential.CredentialDefinitionKey)
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
+	pageRes, err = query.Paginate(cdStore, paginate, func(key []byte, value []byte) error {
 		var cd credential.CredentialDefinition
-		k.cdc.MustUnmarshal(iterator.Value(), &cd)
+		k.cdc.MustUnmarshal(value, &cd)
 		if filter(&cd) {
 			cds = append(cds, &cd)
 		}
-	}
-	return cds
+		return nil
+	})
+	return
 }
 
 // GetPublicCredentialWithFilter retrieve a list of verifiable credentials
 // filtered by properties
-func (k Keeper) GetPublicCredentialWithFilter(ctx sdk.Context, filter func(verifiableCredential *credential.PublicVerifiableCredential) bool) []*credential.PublicVerifiableCredential {
-	var pvcs []*credential.PublicVerifiableCredential
+func (k Keeper) GetPublicCredentialWithFilter(ctx sdk.Context, pagination *query.PageRequest, filter func(verifiableCredential *credential.PublicVerifiableCredential) bool) (pvcs []*credential.PublicVerifiableCredential, pageRes *query.PageResponse, err error) {
+	store := ctx.KVStore(k.storeKey)
+	pcStore := prefix.NewStore(store, credential.PublicCredentialKey)
 
-	iterator := k.GetAll(ctx, credential.PublicCredentialKey)
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
+	pageRes, err = query.Paginate(pcStore, pagination, func(key []byte, value []byte) error {
 		var pvc credential.PublicVerifiableCredential
-		k.cdc.MustUnmarshal(iterator.Value(), &pvc)
+		k.cdc.MustUnmarshal(value, &pvc)
 		if filter(&pvc) {
 			pvcs = append(pvcs, &pvc)
 		}
-	}
-	return pvcs
+		return nil
+	})
+	return
 }

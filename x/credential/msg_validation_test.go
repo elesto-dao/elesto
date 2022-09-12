@@ -239,7 +239,7 @@ func TestMsgIssuePublicVerifiableCredentialRequest_ValidateBasic(t *testing.T) {
 			nil,
 		},
 		{
-			"FAIL: empty CredentialDefinitionID",
+			"FAIL: invalid CredentialDefinitionID",
 			fields{
 				Credential: &PublicVerifiableCredential{
 					Id: "https://test.xyz/credential/1",

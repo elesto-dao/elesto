@@ -1,19 +1,21 @@
-package keeper
+package keeper_test
 
 import (
 	"context"
 	"errors"
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/elesto-dao/elesto/v2/x/credential"
+	"github.com/elesto-dao/elesto/v2/x/credential/keeper"
 	"github.com/elesto-dao/elesto/v2/x/did"
 )
 
 func (suite *KeeperTestSuite) TestKeeper_CredentialDefinition() {
 	queryClient := suite.queryClient
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 
 	testCases := []struct {
 		msg     string
@@ -78,7 +80,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinition() {
 
 func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitionsByPublisher() {
 	queryClient := suite.queryClient
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 
 	testCases := []struct {
 		msg     string
@@ -130,6 +132,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitionsByPublisher() {
 						Definitions: []*credential.CredentialDefinition{
 							pcdr.CredentialDefinition,
 						},
+						Pagination: &query.PageResponse{Total: 2},
 					}
 			},
 			nil,
@@ -137,7 +140,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitionsByPublisher() {
 		{
 			"FAIL: credential definition not found",
 			func() (*credential.QueryCredentialDefinitionsByPublisherRequest, *credential.QueryCredentialDefinitionsByPublisherResponse) {
-				return &credential.QueryCredentialDefinitionsByPublisherRequest{Did: "did:cosmos:elesto:cd-not-found"}, &credential.QueryCredentialDefinitionsByPublisherResponse{Definitions: nil}
+				return &credential.QueryCredentialDefinitionsByPublisherRequest{Did: "did:cosmos:elesto:cd-not-found"}, &credential.QueryCredentialDefinitionsByPublisherResponse{Definitions: nil, Pagination: &query.PageResponse{Total: 0}}
 			},
 			nil,
 		},
@@ -166,7 +169,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitionsByPublisher() {
 
 func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitions() {
 	queryClient := suite.queryClient
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 
 	testCases := []struct {
 		msg     string
@@ -230,7 +233,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitions() {
 
 func (suite *KeeperTestSuite) TestKeeper_PublicCredential() {
 	queryClient := suite.queryClient
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 
 	testCases := []struct {
 		msg     string
@@ -306,7 +309,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredential() {
 
 func (suite *KeeperTestSuite) TestKeeper_PublicCredentials() {
 	queryClient := suite.queryClient
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 	_ = server
 
 	testCases := []struct {
@@ -317,7 +320,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentials() {
 		{
 			"PASS: no credentials",
 			func() (*credential.QueryPublicCredentialsRequest, *credential.QueryPublicCredentialsResponse) {
-				return &credential.QueryPublicCredentialsRequest{}, &credential.QueryPublicCredentialsResponse{Credential: nil}
+				return &credential.QueryPublicCredentialsRequest{}, &credential.QueryPublicCredentialsResponse{Credential: nil, Pagination: &query.PageResponse{}}
 			},
 			nil,
 		},
@@ -361,7 +364,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentials() {
 				})
 				suite.Require().NoError(err)
 
-				return &credential.QueryPublicCredentialsRequest{}, &credential.QueryPublicCredentialsResponse{Credential: []*credential.PublicVerifiableCredential{wc.PublicVerifiableCredential}}
+				return &credential.QueryPublicCredentialsRequest{}, &credential.QueryPublicCredentialsResponse{Credential: []*credential.PublicVerifiableCredential{wc.PublicVerifiableCredential}, Pagination: &query.PageResponse{Total: 1}}
 			},
 			nil,
 		},

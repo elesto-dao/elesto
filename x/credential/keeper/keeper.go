@@ -40,8 +40,8 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 // Set sets a value in the db with a prefixed key
 func (k Keeper) Set(ctx sdk.Context,
-	key []byte,
 	prefix []byte,
+	key []byte,
 	i codec.ProtoMarshaler,
 	marshal MarshalFn,
 ) {
@@ -52,8 +52,8 @@ func (k Keeper) Set(ctx sdk.Context,
 // Get gets an item from the store by bytes
 func (k Keeper) Get(
 	ctx sdk.Context,
-	key []byte,
 	prefix []byte,
+	key []byte,
 	unmarshal UnmarshalFn,
 ) (i interface{}, found bool) {
 	store := ctx.KVStore(k.storeKey)
