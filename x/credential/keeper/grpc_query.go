@@ -40,10 +40,10 @@ func (k Keeper) CredentialDefinitionsByPublisher(
 		return nil, status.Error(codes.InvalidArgument, "publisher DID must be a valid DID")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
-	cds := k.GetCredentialDefinitionsWithFilter(ctx, func(cd *credential.CredentialDefinition) bool {
+	cds, pr, err := k.GetCredentialDefinitionsWithFilter(ctx, req.Pagination, func(cd *credential.CredentialDefinition) bool {
 		return cd.PublisherId == req.Did
 	})
-	return &credential.QueryCredentialDefinitionsByPublisherResponse{Definitions: cds}, nil
+	return &credential.QueryCredentialDefinitionsByPublisherResponse{Definitions: cds, Pagination: pr}, err
 }
 
 func (k Keeper) CredentialDefinitions(
@@ -74,7 +74,7 @@ func (k Keeper) PublicCredentialsByHolder(
 ) (*credential.QueryPublicCredentialsByHolderResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	pvcs := k.GetPublicCredentialWithFilter(ctx, func(vc *credential.PublicVerifiableCredential) bool {
+	pvcs, pr, err := k.GetPublicCredentialWithFilter(ctx, req.Pagination, func(vc *credential.PublicVerifiableCredential) bool {
 		wc, err := credential.NewWrappedCredential(vc)
 		if err != nil {
 			return false
@@ -86,7 +86,7 @@ func (k Keeper) PublicCredentialsByHolder(
 		return subjectID == req.Did
 	})
 
-	return &credential.QueryPublicCredentialsByHolderResponse{Credential: pvcs}, nil
+	return &credential.QueryPublicCredentialsByHolderResponse{Credential: pvcs, Pagination: pr}, err
 }
 
 func (k Keeper) PublicCredentialsByIssuer(
@@ -94,10 +94,10 @@ func (k Keeper) PublicCredentialsByIssuer(
 	req *credential.QueryPublicCredentialsByIssuerRequest,
 ) (*credential.QueryPublicCredentialsByIssuerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	pvcs := k.GetPublicCredentialWithFilter(ctx, func(vc *credential.PublicVerifiableCredential) bool {
+	pvcs, pr, err := k.GetPublicCredentialWithFilter(ctx, req.Pagination, func(vc *credential.PublicVerifiableCredential) bool {
 		return vc.Issuer == req.Did
 	})
-	return &credential.QueryPublicCredentialsByIssuerResponse{Credential: pvcs}, nil
+	return &credential.QueryPublicCredentialsByIssuerResponse{Credential: pvcs, Pagination: pr}, err
 }
 
 func (k Keeper) PublicCredentials(
@@ -105,8 +105,9 @@ func (k Keeper) PublicCredentials(
 	req *credential.QueryPublicCredentialsRequest,
 ) (*credential.QueryPublicCredentialsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	pvcs := k.GetPublicCredentialWithFilter(ctx, func(vc *credential.PublicVerifiableCredential) bool {
+	pvcs, pr, err := k.GetPublicCredentialWithFilter(ctx, req.Pagination, func(vc *credential.PublicVerifiableCredential) bool {
 		return true
 	})
-	return &credential.QueryPublicCredentialsResponse{Credential: pvcs}, nil
+
+	return &credential.QueryPublicCredentialsResponse{Credential: pvcs, Pagination: pr}, err
 }
