@@ -140,7 +140,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitionsByPublisher() {
 		{
 			"FAIL: credential definition not found",
 			func() (*credential.QueryCredentialDefinitionsByPublisherRequest, *credential.QueryCredentialDefinitionsByPublisherResponse) {
-				return &credential.QueryCredentialDefinitionsByPublisherRequest{Did: "did:cosmos:elesto:cd-not-found"}, &credential.QueryCredentialDefinitionsByPublisherResponse{Definitions: nil, Pagination: &query.PageResponse{Total: 0}}
+				return &credential.QueryCredentialDefinitionsByPublisherRequest{Did: "did:cosmos:elesto:cd-not-found"}, &credential.QueryCredentialDefinitionsByPublisherResponse{Definitions: nil, Pagination: &query.PageResponse{Total: 2}}
 			},
 			nil,
 		},
