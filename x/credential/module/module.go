@@ -150,8 +150,8 @@ func (AppModule) InitGenesis(
 }
 
 // ExportGenesis returns the capability module's exported genesis state as raw JSON bytes.
-func (AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	return nil
+func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
+	return cdc.MustMarshalJSON(keeper.ExportGenesis(ctx, am.keeper))
 }
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the capability module.
