@@ -2,9 +2,38 @@
 ## [Unreleased]
 
 
-<a name="v3.0.0-rc1"></a>
-## [v3.0.0-rc1] - 2022-08-20
+<a name="v3.0.0-rc2"></a>
+## [v3.0.0-rc2] - 2022-09-14
 ### Chore
+- rename module version to v3
+- remove link-aries command from did cli
+- updating the seeds
+- update changelog for v3.0.0-rc1
+- **cosmoscmd:** remove cosmoscmd from node
+- **update:** updgrade to v0.45.7 & fix tests
+
+### Docs
+- amend ADR [#8](https://github.com/elesto-dao/elesto/issues/8), introduce epoch concept
+
+### Feat
+- remove team rewards and community tax from mint
+- add stricter validation of did document
+- **did:** inhibiting the creation vanity DIDs ([#220](https://github.com/elesto-dao/elesto/issues/220))
+- **docs:** use template for code of conduct
+
+### Fix
+- rollback implementation to epoch base inflation
+- conflict between /credentials/{id} and /credentials/definitions
+- credential definition id should not be DID
+- **did:** simulation modifications
+- **docs:** remove CoC from contributing because now isolated in CoC file
+- **docs:** update ADR description
+
+
+<a name="v3.0.0-rc1"></a>
+## [v3.0.0-rc1] - 2022-08-22
+### Chore
+- update changelog for v3.0.0-rc1
 - prepare codebase for Oak audit
 - grammatical improvements
 - **credential:** goimport -local
@@ -169,7 +198,8 @@
 - increase test coverage
 
 
-[Unreleased]: https://github.com/elesto-dao/elesto/compare/v3.0.0-rc1...HEAD
+[Unreleased]: https://github.com/elesto-dao/elesto/compare/v3.0.0-rc2...HEAD
+[v3.0.0-rc2]: https://github.com/elesto-dao/elesto/compare/v3.0.0-rc1...v3.0.0-rc2
 [v3.0.0-rc1]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc2...v3.0.0-rc1
 [v2.0.0-rc2]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc1...v2.0.0-rc2
 [v2.0.0-rc1]: https://github.com/elesto-dao/elesto/compare/v1.0.0-rc2...v2.0.0-rc1
