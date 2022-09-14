@@ -7,7 +7,7 @@ import "did/v1/did.proto";
 import "gogoproto/gogo.proto";
 // this line is used by starport scaffolding # 1
 
-option go_package = "github.com/elesto-dao/elesto/v2/x/did";
+option go_package = "github.com/elesto-dao/elesto/v3/x/did";
 
 // this line is used by starport scaffolding # 1
 

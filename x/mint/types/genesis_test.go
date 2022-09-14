@@ -3,8 +3,8 @@ package types_test
 import (
 	"testing"
 
-	"github.com/elesto-dao/elesto/v2/app"
-	"github.com/elesto-dao/elesto/v2/x/mint/types"
+	"github.com/elesto-dao/elesto/v3/app"
+	"github.com/elesto-dao/elesto/v3/x/mint/types"
 	"github.com/stretchr/testify/require"
 )
 
