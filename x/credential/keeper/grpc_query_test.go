@@ -248,7 +248,6 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredential() {
 					wc  *credential.WrappedCredential
 					err error
 				)
-				//
 
 				// publish the definition
 				pcdr := credential.MsgPublishCredentialDefinitionRequest{
@@ -285,7 +284,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredential() {
 			nil,
 		},
 		{
-			"PASS: can get the credential",
+			"FAIL: credential not found",
 			func() (*credential.QueryPublicCredentialRequest, *credential.QueryPublicCredentialResponse) {
 				return &credential.QueryPublicCredentialRequest{Id: "https://does.not.exists"}, &credential.QueryPublicCredentialResponse{Credential: nil}
 			},
@@ -332,7 +331,6 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentials() {
 					wc  *credential.WrappedCredential
 					err error
 				)
-				//
 
 				// publish the definition
 				pcdr := credential.MsgPublishCredentialDefinitionRequest{
@@ -373,6 +371,158 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentials() {
 		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
 			req, expectedResp := tc.reqFn()
 			gotResp, err := queryClient.PublicCredentials(context.Background(), req)
+			if tc.wantErr == nil {
+				suite.Require().NoError(err)
+				suite.Require().Equal(expectedResp, gotResp)
+			} else {
+				suite.Require().Error(err)
+				suite.Require().Equal(tc.wantErr.Error(), err.Error())
+			}
+		})
+	}
+}
+
+func (suite *KeeperTestSuite) TestKeeper_PublicCredentialsByHolder() {
+	queryClient := suite.queryClient
+	server := keeper.NewMsgServerImpl(suite.keeper)
+	_ = server
+
+	testCases := []struct {
+		msg     string
+		reqFn   func() (*credential.QueryPublicCredentialsByHolderRequest, *credential.QueryPublicCredentialsByHolderResponse)
+		wantErr error
+	}{
+		{
+			"PASS: no credentials",
+			func() (*credential.QueryPublicCredentialsByHolderRequest, *credential.QueryPublicCredentialsByHolderResponse) {
+				return &credential.QueryPublicCredentialsByHolderRequest{Did: did.NewKeyDID(suite.GetTestAccount().String()).String()}, &credential.QueryPublicCredentialsByHolderResponse{Credential: nil, Pagination: &query.PageResponse{}}
+			},
+			nil,
+		},
+		{
+			"PASS: can get the credential",
+			func() (*credential.QueryPublicCredentialsByHolderRequest, *credential.QueryPublicCredentialsByHolderResponse) {
+				var (
+					id  = "001"
+					wc  *credential.WrappedCredential
+					err error
+				)
+
+				// publish the definition
+				pcdr := credential.MsgPublishCredentialDefinitionRequest{
+					CredentialDefinition: &credential.CredentialDefinition{
+						Id:           "did:cosmos:elesto:ipcq-" + id,
+						PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
+						Schema:       []byte(dummySchemaOk),
+						Vocab:        []byte(dummyVocabOk),
+						Name:         "CredentialDef" + id,
+						Description:  "",
+						IsPublic:     true,
+						SupersededBy: "",
+						IsActive:     true,
+					},
+					Signer: suite.GetTestAccount().String(),
+				}
+				//create the credential definition
+				_, err = server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr)
+				suite.Require().NoError(err)
+				// load the signed credential
+				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json"); err != nil {
+					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
+				}
+				// publish the credential
+				_, err = server.IssuePublicVerifiableCredential(sdk.WrapSDKContext(suite.ctx), &credential.MsgIssuePublicVerifiableCredentialRequest{
+					CredentialDefinitionID: "did:cosmos:elesto:ipcq-" + id,
+					Credential:             wc.PublicVerifiableCredential,
+					Signer:                 suite.GetTestAccount().String(),
+				})
+				suite.Require().NoError(err)
+
+				return &credential.QueryPublicCredentialsByHolderRequest{Did: did.NewKeyDID(suite.GetTestAccount().String()).String()}, &credential.QueryPublicCredentialsByHolderResponse{Credential: []*credential.PublicVerifiableCredential{wc.PublicVerifiableCredential}, Pagination: &query.PageResponse{Total: 1}}
+			},
+			nil,
+		},
+	}
+	for _, tc := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
+			req, expectedResp := tc.reqFn()
+			gotResp, err := queryClient.PublicCredentialsByHolder(context.Background(), req)
+			if tc.wantErr == nil {
+				suite.Require().NoError(err)
+				suite.Require().Equal(expectedResp, gotResp)
+			} else {
+				suite.Require().Error(err)
+				suite.Require().Equal(tc.wantErr.Error(), err.Error())
+			}
+		})
+	}
+}
+
+func (suite *KeeperTestSuite) TestKeeper_PublicCredentialsByIssuer() {
+	queryClient := suite.queryClient
+	server := keeper.NewMsgServerImpl(suite.keeper)
+	_ = server
+
+	testCases := []struct {
+		msg     string
+		reqFn   func() (*credential.QueryPublicCredentialsByIssuerRequest, *credential.QueryPublicCredentialsByIssuerResponse)
+		wantErr error
+	}{
+		{
+			"PASS: no credentials",
+			func() (*credential.QueryPublicCredentialsByIssuerRequest, *credential.QueryPublicCredentialsByIssuerResponse) {
+				return &credential.QueryPublicCredentialsByIssuerRequest{Did: did.NewKeyDID(suite.GetTestAccount().String()).String()}, &credential.QueryPublicCredentialsByIssuerResponse{Credential: nil, Pagination: &query.PageResponse{}}
+			},
+			nil,
+		},
+		{
+			"PASS: can get the credential",
+			func() (*credential.QueryPublicCredentialsByIssuerRequest, *credential.QueryPublicCredentialsByIssuerResponse) {
+				var (
+					id  = "001"
+					wc  *credential.WrappedCredential
+					err error
+				)
+
+				// publish the definition
+				pcdr := credential.MsgPublishCredentialDefinitionRequest{
+					CredentialDefinition: &credential.CredentialDefinition{
+						Id:           "did:cosmos:elesto:ipcq-" + id,
+						PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
+						Schema:       []byte(dummySchemaOk),
+						Vocab:        []byte(dummyVocabOk),
+						Name:         "CredentialDef" + id,
+						Description:  "",
+						IsPublic:     true,
+						SupersededBy: "",
+						IsActive:     true,
+					},
+					Signer: suite.GetTestAccount().String(),
+				}
+				//create the credential definition
+				_, err = server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr)
+				suite.Require().NoError(err)
+				// load the signed credential
+				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json"); err != nil {
+					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
+				}
+				// publish the credential
+				_, err = server.IssuePublicVerifiableCredential(sdk.WrapSDKContext(suite.ctx), &credential.MsgIssuePublicVerifiableCredentialRequest{
+					CredentialDefinitionID: "did:cosmos:elesto:ipcq-" + id,
+					Credential:             wc.PublicVerifiableCredential,
+					Signer:                 suite.GetTestAccount().String(),
+				})
+				suite.Require().NoError(err)
+
+				return &credential.QueryPublicCredentialsByIssuerRequest{Did: did.NewKeyDID(suite.GetTestAccount().String()).String()}, &credential.QueryPublicCredentialsByIssuerResponse{Credential: []*credential.PublicVerifiableCredential{wc.PublicVerifiableCredential}, Pagination: &query.PageResponse{Total: 1}}
+			},
+			nil,
+		},
+	}
+	for _, tc := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
+			req, expectedResp := tc.reqFn()
+			gotResp, err := queryClient.PublicCredentialsByIssuer(context.Background(), req)
 			if tc.wantErr == nil {
 				suite.Require().NoError(err)
 				suite.Require().Equal(expectedResp, gotResp)

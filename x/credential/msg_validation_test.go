@@ -177,7 +177,7 @@ func TestMsgUpdateCredentialDefinitionRequest_ValidateBasic(t *testing.T) {
 			nil,
 		},
 		{
-			"PASS: SupersededBy is not valid DID ",
+			"FAIL: SupersededBy is not valid DID ",
 			fields{
 				Active:       true,
 				SupersededBy: "not a did",
@@ -261,7 +261,7 @@ func TestMsgIssuePublicVerifiableCredentialRequest_ValidateBasic(t *testing.T) {
 			errors.New("credential definition DID must be set"),
 		},
 		{
-			"FAIL: empty CredentialDefinitionID",
+			"FAIL: invalid CredentialDefinitionID",
 			fields{
 				Credential: &PublicVerifiableCredential{
 					Id: "https://test.xyz/credential/1",
