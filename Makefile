@@ -254,7 +254,7 @@ test-ci:
 ###############################################################################
 
 changelog:
-	git-chglog --output CHANGELOG.md
+	git-chglog --output CHANGELOG.md --sort semver
 
 _get-release-version:
 ifneq ($(shell git branch --show-current | head -c 9), release/v)
