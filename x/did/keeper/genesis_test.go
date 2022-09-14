@@ -8,11 +8,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 // NOTE: we recreate the encoding config here as we cannot import
-//	 "github.com/elesto-dao/elesto/v2/app" into this test
+//	 "github.com/elesto-dao/elesto/v3/app" into this test
 
 // EncodingConfig specifies the concrete encoding types to use for a given
 // This is provided for compatibility between protobuf and amino implementations.

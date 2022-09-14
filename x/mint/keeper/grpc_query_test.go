@@ -10,8 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	chain "github.com/elesto-dao/elesto/v2/app"
-	"github.com/elesto-dao/elesto/v2/x/mint/types"
+	chain "github.com/elesto-dao/elesto/v3/app"
+	"github.com/elesto-dao/elesto/v3/x/mint/types"
 )
 
 type MintTestSuite struct {

@@ -30,7 +30,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	elestoapp "github.com/elesto-dao/elesto/v2/app"
+	elestoapp "github.com/elesto-dao/elesto/v3/app"
 )
 
 // NewRootCmd creates a new root command for elestod. It is called once in the
