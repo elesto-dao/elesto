@@ -18,18 +18,6 @@ const (
 // signerAccount = "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
 )
 
-type test struct {
-	msgs []sdk.Msg
-}
-
-func (a test) GetMsgs() []sdk.Msg {
-	return a.msgs
-}
-
-func (a test) ValidateBasic() error {
-	return nil
-}
-
 var (
 	//go:embed testdata/dummy.schema.json
 	dummySchemaOk string

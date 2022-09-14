@@ -42,6 +42,7 @@ func NewCredentialDefinitionFromFile(id string, publisherDID did.DID,
 	return def, nil
 }
 
+// NewPublicVerifiableCredential creates a new Public Verifiable Credential
 func NewPublicVerifiableCredential(id string, opts ...PublicVerifiableCredentialOption) *PublicVerifiableCredential {
 	pvc := &PublicVerifiableCredential{
 		Context: []string{"https://www.w3.org/2018/credentials/v1"},

@@ -24,6 +24,7 @@ func NewMsgServerImpl(keeper Keeper) credential.MsgServer {
 
 var _ credential.MsgServer = msgServer{}
 
+// PublishCredentialDefinition credential for publishing new credential definition
 func (k msgServer) PublishCredentialDefinition(
 	goCtx context.Context,
 	msg *credential.MsgPublishCredentialDefinitionRequest,
@@ -65,6 +66,7 @@ func (k msgServer) PublishCredentialDefinition(
 	return &credential.MsgPublishCredentialDefinitionResponse{}, nil
 }
 
+// UpdateCredentialDefinition updates an existing credential definition
 func (k msgServer) UpdateCredentialDefinition(
 	goCtx context.Context,
 	msg *credential.MsgUpdateCredentialDefinitionRequest,
@@ -105,6 +107,7 @@ func (k msgServer) UpdateCredentialDefinition(
 	return &credential.MsgUpdateCredentialDefinitionResponse{}, nil
 }
 
+// IssuePublicVerifiableCredential issues a new public verifiable credential
 func (k msgServer) IssuePublicVerifiableCredential(
 	goCtx context.Context,
 	msg *credential.MsgIssuePublicVerifiableCredentialRequest,

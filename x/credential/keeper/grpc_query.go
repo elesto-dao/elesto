@@ -13,6 +13,7 @@ import (
 
 var _ credential.QueryServer = Keeper{}
 
+// CredentialDefinition returns credential definition for an id
 func (k Keeper) CredentialDefinition(
 	c context.Context,
 	req *credential.QueryCredentialDefinitionRequest,
@@ -32,6 +33,7 @@ func (k Keeper) CredentialDefinition(
 	return &credential.QueryCredentialDefinitionResponse{Definition: &cd}, nil
 }
 
+// CredentialDefinitionsByPublisher returns credential definitions for a particular publisher id
 func (k Keeper) CredentialDefinitionsByPublisher(
 	c context.Context,
 	req *credential.QueryCredentialDefinitionsByPublisherRequest,
@@ -46,6 +48,7 @@ func (k Keeper) CredentialDefinitionsByPublisher(
 	return &credential.QueryCredentialDefinitionsByPublisherResponse{Definitions: cds, Pagination: pr}, err
 }
 
+// CredentialDefinitions returns all credential definitions
 func (k Keeper) CredentialDefinitions(
 	c context.Context,
 	req *credential.QueryCredentialDefinitionsRequest,
@@ -55,6 +58,7 @@ func (k Keeper) CredentialDefinitions(
 	return &credential.QueryCredentialDefinitionsResponse{Definitions: cd, Pagination: pr}, err
 }
 
+// PublicCredential returns public credential for a particular id
 func (k Keeper) PublicCredential(
 	c context.Context,
 	req *credential.QueryPublicCredentialRequest,
@@ -68,6 +72,7 @@ func (k Keeper) PublicCredential(
 
 }
 
+// PublicCredentialsByHolder returns public credentials for particular holder
 func (k Keeper) PublicCredentialsByHolder(
 	c context.Context,
 	req *credential.QueryPublicCredentialsByHolderRequest,
@@ -89,6 +94,7 @@ func (k Keeper) PublicCredentialsByHolder(
 	return &credential.QueryPublicCredentialsByHolderResponse{Credential: pvcs, Pagination: pr}, err
 }
 
+// PublicCredentialsByIssuer returns public credentials for a particular issuer
 func (k Keeper) PublicCredentialsByIssuer(
 	c context.Context,
 	req *credential.QueryPublicCredentialsByIssuerRequest,
@@ -100,6 +106,7 @@ func (k Keeper) PublicCredentialsByIssuer(
 	return &credential.QueryPublicCredentialsByIssuerResponse{Credential: pvcs, Pagination: pr}, err
 }
 
+// PublicCredentials returns all public credentials
 func (k Keeper) PublicCredentials(
 	c context.Context,
 	req *credential.QueryPublicCredentialsRequest,
