@@ -13,9 +13,9 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	elestoapp "github.com/elesto-dao/elesto/v2/app"
-	"github.com/elesto-dao/elesto/v2/x/did"
-	"github.com/elesto-dao/elesto/v2/x/did/simulation"
+	elestoapp "github.com/elesto-dao/elesto/v3/app"
+	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v3/x/did/simulation"
 )
 
 type SimTestSuite struct {

@@ -3,8 +3,8 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/elesto-dao/elesto/v2/x/mint/migrations/testnetUpgrade20220621"
-	"github.com/elesto-dao/elesto/v2/x/mint/migrations/testnetUpgrade20220706"
+	"github.com/elesto-dao/elesto/v3/x/mint/migrations/testnetUpgrade20220621"
+	"github.com/elesto-dao/elesto/v3/x/mint/migrations/testnetUpgrade20220706"
 )
 
 // Migrator is a struct for handling in-place store migrations.

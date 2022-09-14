@@ -17,8 +17,8 @@ import (
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/elesto-dao/elesto/v2/x/did"
-	"github.com/elesto-dao/elesto/v2/x/did/client/cli"
+	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v3/x/did/client/cli"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -26,7 +26,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/elesto-dao/elesto/v2/app"
+	"github.com/elesto-dao/elesto/v3/app"
 )
 
 // NewAppConstructor returns a new simapp AppConstructor
