@@ -34,7 +34,6 @@ func GetTxCmd() *cobra.Command {
 		NewAddVerificationCmd(),
 		NewSetVerificationRelationshipCmd(),
 		NewRevokeVerificationCmd(),
-		NewLinkAriesAgentCmd(),
 	)
 
 	return cmd
