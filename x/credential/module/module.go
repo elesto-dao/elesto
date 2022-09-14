@@ -5,8 +5,6 @@ import ( // this line is used by starport scaffolding # 1
 	"encoding/json"
 	"math/rand"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -18,6 +16,7 @@ import ( // this line is used by starport scaffolding # 1
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/elesto-dao/elesto/v2/x/credential"
 	"github.com/elesto-dao/elesto/v2/x/credential/client/cli"
 	"github.com/elesto-dao/elesto/v2/x/credential/keeper"
 )

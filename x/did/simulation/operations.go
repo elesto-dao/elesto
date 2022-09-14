@@ -295,7 +295,7 @@ func SimulateMsgUpdateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 		if err != nil {
 			return simtypes.NoOpMsg(did.ModuleName, TypeMsgUpdateDidDocument,
 				"did not found, could not add vm",
-			), nil, nil
+			), nil, err
 		}
 		err = didDoc.AddServices(service1, service2, service3)
 		if err != nil {
