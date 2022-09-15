@@ -57,6 +57,8 @@ PublishCredentialDefinition(
 
 /* Resolved Credential Definition */
 {
+    
+    
 }
 
 ```

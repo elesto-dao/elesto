@@ -2,7 +2,7 @@
 
 TODO
 
-In this section we describe the processing of the staking messages and the corresponding updates to the state. All created/modified state objects specified by each message are defined within the [state](./02_state_transitions.md) section.
+In this section we describe the processing of the messsages and the corresponding updates to the state. All created/modified state objects specified by each message are defined within the [state](./02_state_transitions.md) section.
 
 
 
@@ -16,3 +16,11 @@ A `MsgPublishCredentialDefinition` is used to publish a credential definition on
 #### Source
 
 https://github.com/elesto-dao/elesto/blob/v1.0.0/proto/credential/tx.proto#L45
+
+### MsgUpdateCredentialDefinition
+
+#### Source 
+
+### MsgIssuePublicVerifiableCredential
+
+#### Source

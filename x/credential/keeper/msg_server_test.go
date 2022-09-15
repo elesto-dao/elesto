@@ -643,7 +643,7 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 					Signer:                 suite.GetTestAccount().String(),
 				}
 			},
-			fmt.Errorf("schema: did:cosmos:elesto:cd-17, errors: [@context: @context is required type: type is required issuer: issuer is required issuanceDate: issuanceDate is required id: id is required]: the credential doesn't match the definition schema"),
+			fmt.Errorf("schema: did:cosmos:elesto:cd-17, errors: [(root): @context is required (root): type is required (root): issuer is required (root): issuanceDate is required credentialSubject: id is required]: the credential doesn't match the definition schema"),
 		},
 	}
 	for _, tc := range testCases {

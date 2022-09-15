@@ -10,12 +10,12 @@ import (
 
 func InitGenesis(ctx sdk.Context, k Keeper, data *credential.GenesisState) {
 	//TODO: validate data in genesis
-	for _, cd := range data.CredentialDefinitions {
-		k.SetCredentialDefinition(ctx, &cd)
+	for i := range data.CredentialDefinitions {
+		k.SetCredentialDefinition(ctx, &data.CredentialDefinitions[i])
 	}
 
-	for _, pvc := range data.PublicVerifiableCredentials {
-		k.SetPublicCredential(ctx, &pvc)
+	for i := range data.PublicVerifiableCredentials {
+		k.SetPublicCredential(ctx, &data.PublicVerifiableCredentials[i])
 	}
 }
 
