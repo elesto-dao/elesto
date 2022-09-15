@@ -97,7 +97,7 @@ func (k msgServer) UpdateCredentialDefinition(
 	// update the SupersededBy field
 	cd.SupersededBy = msg.SupersededBy
 
-	// update he data
+	// update the data
 	k.SetCredentialDefinition(ctx, &cd)
 
 	// emit the event
