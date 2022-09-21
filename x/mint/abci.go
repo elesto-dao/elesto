@@ -18,20 +18,20 @@ const (
 )
 
 var (
-	// BlockInflationAmount are the amounts to be minted/distributed for each block
+	// BlockInflationDistribution are the amounts to be minted and distributed for each block
 	// in an epoch.
-	// The format of the BlockInflationAmount is <Epoch Number>: <BlockMintAmonuts>
-	BlockInflationAmount = map[int64]int64{
-		0: 31_709_792,
-		1: 31_709_792,
-		2: 23_782_344,
-		3: 14_863_965,
-		4: 8_360_980,
-		5: 4_441_771,
-		6: 2_931_569,
-		7: 2_990_200,
-		8: 3_050_004,
-		9: 2_998_751,
+	// The format of the BlockInflationDistribution is <Epoch Number>: <BlockInflation, TeamRewards, CommunityTax>
+	BlockInflationDistribution = map[int64]types.InflationDistribution{
+		0: {31_709_792, 1, 1},
+		1: {31_709_792, 1, 1},
+		2: {23_782_344, 1, 1},
+		3: {14_863_965, 1, 1},
+		4: {8_360_980, 1, 1},
+		5: {4_441_771, 1, 1},
+		6: {2_931_569, 1, 1},
+		7: {2_990_200, 1, 1},
+		8: {3_050_004, 1, 1},
+		9: {2_998_751, 1, 1},
 	}
 )
 
@@ -52,13 +52,13 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	// fetch inflation from the inflationEpoch table
 	// if there is no such epoch, then no mint is taking places
-	blockInflationAmount, exists := BlockInflationAmount[inflationEpoch]
+	inflationDistribution, exists := BlockInflationDistribution[inflationEpoch]
 	if !exists {
 		return
 	}
 
 	// the coins to be minted are the block inflation - rewards
-	coinsToMint := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, blockInflationAmount))
+	coinsToMint := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, inflationDistribution.BlockInflation))
 	if err := k.MintCoins(ctx, coinsToMint); err != nil {
 		panic(err)
 	}
