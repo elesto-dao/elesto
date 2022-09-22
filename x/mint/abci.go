@@ -60,20 +60,20 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 }
 
 func distributeInflation(ctx sdk.Context, k keeper.Keeper, inflationDistribution types.InflationDistribution, params types.Params) {
-	//// distribute team rewards
-	//teamRewards := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, inflationDistribution.TeamRewards))
-	//if err := k.SendTeamRewards(ctx, teamRewards); err != nil {
-	//	panic(fmt.Errorf("cannot distribute block inflation to dev team address: %w", err))
-	//}
-	//
-	//// distribute community tax
-	//communityTax := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, inflationDistribution.CommunityTax))
-	//if err := k.AddInflationToCommunityTax(ctx, communityTax); err != nil {
-	//	panic(fmt.Errorf("cannot distribute block inflation to community pool: %w", err))
-	//}
+	// distribute team rewards
+	teamRewards := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, inflationDistribution.TeamRewards))
+	if err := k.SendTeamRewards(ctx, teamRewards); err != nil {
+		panic(fmt.Errorf("cannot distribute block inflation to dev team address: %w", err))
+	}
+
+	// distribute community tax
+	communityTax := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, inflationDistribution.CommunityTax))
+	if err := k.AddInflationToCommunityTax(ctx, communityTax); err != nil {
+		panic(fmt.Errorf("cannot distribute block inflation to community pool: %w", err))
+	}
 
 	// distribute staking rewards - send the minted coins to the fee collector account
-	stakingRewards := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, inflationDistribution.BlockInflation))
+	stakingRewards := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, inflationDistribution.StakingRewards))
 	if err := k.AddInflationToFeeCollector(ctx, stakingRewards); err != nil {
 		panic(fmt.Errorf("cannot distribute block inflation to fee collector account: %w", err))
 	}

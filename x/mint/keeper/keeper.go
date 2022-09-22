@@ -16,12 +16,13 @@ type Keeper struct {
 	paramSpace       paramtypes.Subspace
 	accountKeeper    types.AccountKeeper
 	bankKeeper       types.BankKeeper
+	distrKeeper      types.DistributionKeeper
 	feeCollectorName string
 }
 
 // NewKeeper creates a new mint Keeper instance
 func NewKeeper(
-	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace, ak types.AccountKeeper, bk types.BankKeeper, feeCollectorName string,
+	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace, ak types.AccountKeeper, bk types.BankKeeper, dk types.DistributionKeeper, feeCollectorName string,
 ) Keeper {
 	// ensure mint module account is set
 	if addr := ak.GetModuleAddress(types.ModuleName); addr == nil {
@@ -40,6 +41,7 @@ func NewKeeper(
 		paramSpace:       paramSpace,
 		bankKeeper:       bk,
 		accountKeeper:    ak,
+		distrKeeper:      dk,
 		feeCollectorName: feeCollectorName,
 	}
 }
@@ -75,6 +77,20 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 // AddInflationToFeeCollector to be used in BeginBlocker.
 func (k Keeper) AddInflationToFeeCollector(ctx sdk.Context, fees sdk.Coins) error {
 	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, fees)
+}
+
+func (k Keeper) AddInflationToCommunityTax(ctx sdk.Context, amount sdk.Coins) error {
+	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
+	return k.distrKeeper.FundCommunityPool(ctx, amount, moduleAddr)
+}
+
+func (k Keeper) SendTeamRewards(ctx sdk.Context, amount sdk.Coins) error {
+	teamAddrParam := k.GetParams(ctx).TeamAddress
+	teamAddr, err := sdk.AccAddressFromBech32(teamAddrParam)
+	if err != nil {
+		return nil
+	}
+	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, teamAddr, amount)
 }
 
 // GetSupply returns the current supply on the chain for a denom
