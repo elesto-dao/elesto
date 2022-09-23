@@ -108,22 +108,16 @@ func (s *ModuleTestSuite) TestInflationAmount() {
 	s.Assert().EqualValues(s.keeper.GetSupply(ctx, params.MintDenom).Amount.Int64(), 200_000_158_548_960)
 
 	// run tests for every epoch
-	runEpochTest(6_307_200, 1)  // 1st epoch
-	runEpochTest(12_614_400, 2) // 2nd epoch
-	runEpochTest(18_921_600, 3) // 3rd epoch
-	runEpochTest(25_228_800, 4) // 4th epoch
-	runEpochTest(31_536_000, 5) // 5th epoch
-	runEpochTest(37_843_200, 6) // 6th epoch
-	runEpochTest(44_150_400, 7) // 7th epoch
-	runEpochTest(50_457_600, 8) // 8th epoch
-	runEpochTest(56_764_800, 9) // 9th epoch
-
-	// 10th epoch and ensure no new mints after
-	runDistributionTest(63_071_998, types.BlockInflationDistribution[9])
-	runDistributionTest(63_071_999, types.BlockInflationDistribution[9])
-	runDistributionTest(63_072_000, types.InflationDistribution{}) // new epoch
-	runDistributionTest(63_072_001, types.InflationDistribution{})
-	runDistributionTest(63_072_002, types.InflationDistribution{})
+	runEpochTest(6_307_200, 1)   // 1st epoch
+	runEpochTest(12_614_400, 2)  // 2nd epoch
+	runEpochTest(18_921_600, 3)  // 3rd epoch
+	runEpochTest(25_228_800, 4)  // 4th epoch
+	runEpochTest(31_536_000, 5)  // 5th epoch
+	runEpochTest(37_843_200, 6)  // 6th epoch
+	runEpochTest(44_150_400, 7)  // 7th epoch
+	runEpochTest(50_457_600, 8)  // 8th epoch
+	runEpochTest(56_764_800, 9)  // 9th epoch
+	runEpochTest(63_072_000, 10) // 10th epoch
 
 	// ensure no new mints after block 63_072_002
 	for i := 0; i < 10; i++ {
