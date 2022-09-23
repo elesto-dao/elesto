@@ -53,103 +53,124 @@ func (s *ModuleTestSuite) TestInflationAmount() {
 	err := s.keeper.MintCoins(s.ctx, sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, 200_000_000_000_000)))
 	s.Assert().NoError(err)
 
-	advanceHeight := func(h int64) int64 {
+	runDistributionTest := func(h int64, distribution types.InflationDistribution) {
 		ctx = ctx.WithBlockHeight(h).WithBlockTime(ctx.BlockTime().Add(blockTime))
-		beforeBalance := s.app.BankKeeper.GetBalance(ctx, feeCollector, sdk.DefaultBondDenom)
+		//oldDevTeamBalance := s.app.BankKeeper.GetBalance(ctx, sdk.AccAddress(params.GetTeamAddress()), params.GetMintDenom())
+		oldCommunityPoolBalance := s.app.DistrKeeper.GetFeePoolCommunityCoins(ctx)
+		oldFeeCollectorBalance := s.app.BankKeeper.GetBalance(ctx, feeCollector, params.GetMintDenom())
+
 		mint.BeginBlocker(ctx, s.keeper)
-		afterBalance := s.app.BankKeeper.GetBalance(ctx, feeCollector, sdk.DefaultBondDenom)
-		mintedAmt := afterBalance.Sub(beforeBalance)
+
+		// assert dev team rewards
+		//addr := params.GetTeamAddress()
+		//newDevTeamBalance := s.app.BankKeeper.GetBalance(ctx, sdk.AccAddress(addr), params.GetMintDenom())
+		//devTeamReward := newDevTeamBalance.Sub(oldDevTeamBalance)
+
+		//s.Assert().False(devTeamReward.IsNegative())
+		//s.Assert().EqualValues(distribution.TeamRewards, devTeamReward.Amount.Int64(), "Dev Team rewards not matching expected values")
+
+		// assert community pool
+		newCommunityPoolBalance := s.app.DistrKeeper.GetFeePoolCommunityCoins(ctx)
+		communityReward := newCommunityPoolBalance.Sub(oldCommunityPoolBalance)
+
+		s.Assert().False(communityReward.IsAnyNegative())
+		s.Assert().EqualValues(distribution.CommunityTax, communityReward.AmountOf(params.GetMintDenom()).TruncateInt64(), "CommunityTax not matching expected values")
+
+		// assert staking rewards
+		newFeeCollectorBalance := s.app.BankKeeper.GetBalance(ctx, feeCollector, params.GetMintDenom())
+		mintedAmt := newFeeCollectorBalance.Sub(oldFeeCollectorBalance)
 		s.Assert().False(mintedAmt.IsNegative())
-		return mintedAmt.Amount.Int64()
+		s.Assert().EqualValues(distribution.StakingRewards, mintedAmt.Amount.Int64(), "Staking rewards not matching expected values")
+
+		// assert they add upto block inflation
 	}
 
 	// start from block 0
 
-	// advance for the first blocks
-	s.Assert().EqualValues(advanceHeight(0), 0)
-	s.Assert().EqualValues(advanceHeight(1), types.BlockInflationDistribution[0].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(2), types.BlockInflationDistribution[0].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(3), types.BlockInflationDistribution[0].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(4), types.BlockInflationDistribution[0].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(5), types.BlockInflationDistribution[0].BlockInflation)
+	// advance for the first few blocks
+	runDistributionTest(0, types.InflationDistribution{})
+	runDistributionTest(1, types.BlockInflationDistribution[0])
+	runDistributionTest(2, types.BlockInflationDistribution[0])
+	runDistributionTest(3, types.BlockInflationDistribution[0])
+	runDistributionTest(4, types.BlockInflationDistribution[0])
+	runDistributionTest(5, types.BlockInflationDistribution[0])
 
 	// check the supply
 	s.Assert().EqualValues(s.keeper.GetSupply(ctx, params.MintDenom).Amount.Int64(), 200_000_158_548_960)
 
 	// go to the end of the first epoch
-	s.Assert().EqualValues(advanceHeight(6_307_198), types.BlockInflationDistribution[0].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(6_307_199), types.BlockInflationDistribution[0].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(6_307_200), types.BlockInflationDistribution[1].BlockInflation) // new epoch
-	s.Assert().EqualValues(advanceHeight(6_307_201), types.BlockInflationDistribution[1].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(6_307_202), types.BlockInflationDistribution[1].BlockInflation)
+	runDistributionTest(6_307_198, types.BlockInflationDistribution[0])
+	runDistributionTest(6_307_199, types.BlockInflationDistribution[0])
+	runDistributionTest(6_307_200, types.BlockInflationDistribution[1]) // new epoch
+	runDistributionTest(6_307_201, types.BlockInflationDistribution[1])
+	runDistributionTest(6_307_202, types.BlockInflationDistribution[1])
 
 	// 2nd epoch
-	s.Assert().EqualValues(advanceHeight(12_614_398), types.BlockInflationDistribution[1].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(12_614_399), types.BlockInflationDistribution[1].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(12_614_400), types.BlockInflationDistribution[2].BlockInflation) // new epoch
-	s.Assert().EqualValues(advanceHeight(12_614_401), types.BlockInflationDistribution[2].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(12_614_402), types.BlockInflationDistribution[2].BlockInflation)
+	runDistributionTest(12_614_398, types.BlockInflationDistribution[1])
+	runDistributionTest(12_614_399, types.BlockInflationDistribution[1])
+	runDistributionTest(12_614_400, types.BlockInflationDistribution[2]) // new epoch
+	runDistributionTest(12_614_401, types.BlockInflationDistribution[2])
+	runDistributionTest(12_614_402, types.BlockInflationDistribution[2])
 
 	// 3rd epoch
-	s.Assert().EqualValues(advanceHeight(18_921_598), types.BlockInflationDistribution[2].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(18_921_599), types.BlockInflationDistribution[2].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(18_921_600), types.BlockInflationDistribution[3].BlockInflation) // new epoch
-	s.Assert().EqualValues(advanceHeight(18_921_601), types.BlockInflationDistribution[3].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(18_921_602), types.BlockInflationDistribution[3].BlockInflation)
+	runDistributionTest(18_921_598, types.BlockInflationDistribution[2])
+	runDistributionTest(18_921_599, types.BlockInflationDistribution[2])
+	runDistributionTest(18_921_600, types.BlockInflationDistribution[3]) // new epoch
+	runDistributionTest(18_921_601, types.BlockInflationDistribution[3])
+	runDistributionTest(18_921_602, types.BlockInflationDistribution[3])
 
 	// 4th epoch
-	s.Assert().EqualValues(advanceHeight(25_228_798), types.BlockInflationDistribution[3].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(25_228_799), types.BlockInflationDistribution[3].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(25_228_800), types.BlockInflationDistribution[4].BlockInflation) // new epoch
-	s.Assert().EqualValues(advanceHeight(25_228_801), types.BlockInflationDistribution[4].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(25_228_802), types.BlockInflationDistribution[4].BlockInflation)
+	runDistributionTest(25_228_798, types.BlockInflationDistribution[3])
+	runDistributionTest(25_228_799, types.BlockInflationDistribution[3])
+	runDistributionTest(25_228_800, types.BlockInflationDistribution[4]) // new epoch
+	runDistributionTest(25_228_801, types.BlockInflationDistribution[4])
+	runDistributionTest(25_228_802, types.BlockInflationDistribution[4])
 
 	// 5th epoch
-	s.Assert().EqualValues(advanceHeight(31_535_998), types.BlockInflationDistribution[4].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(31_535_999), types.BlockInflationDistribution[4].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(31_536_000), types.BlockInflationDistribution[5].BlockInflation) // new epoch
-	s.Assert().EqualValues(advanceHeight(31_536_001), types.BlockInflationDistribution[5].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(31_536_002), types.BlockInflationDistribution[5].BlockInflation)
+	runDistributionTest(31_535_998, types.BlockInflationDistribution[4])
+	runDistributionTest(31_535_999, types.BlockInflationDistribution[4])
+	runDistributionTest(31_536_000, types.BlockInflationDistribution[5]) // new epoch
+	runDistributionTest(31_536_001, types.BlockInflationDistribution[5])
+	runDistributionTest(31_536_002, types.BlockInflationDistribution[5])
 
 	// 6th epoch
-	s.Assert().EqualValues(advanceHeight(37_843_198), types.BlockInflationDistribution[5].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(37_843_199), types.BlockInflationDistribution[5].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(37_843_200), types.BlockInflationDistribution[6].BlockInflation) // new epoch
-	s.Assert().EqualValues(advanceHeight(37_843_201), types.BlockInflationDistribution[6].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(37_843_202), types.BlockInflationDistribution[6].BlockInflation)
+	runDistributionTest(37_843_198, types.BlockInflationDistribution[5])
+	runDistributionTest(37_843_199, types.BlockInflationDistribution[5])
+	runDistributionTest(37_843_200, types.BlockInflationDistribution[6]) // new epoch
+	runDistributionTest(37_843_201, types.BlockInflationDistribution[6])
+	runDistributionTest(37_843_202, types.BlockInflationDistribution[6])
 
 	// 7th epoch
-	s.Assert().EqualValues(advanceHeight(44_150_398), types.BlockInflationDistribution[6].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(44_150_399), types.BlockInflationDistribution[6].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(44_150_400), types.BlockInflationDistribution[7].BlockInflation) // new epoch
-	s.Assert().EqualValues(advanceHeight(44_150_401), types.BlockInflationDistribution[7].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(44_150_402), types.BlockInflationDistribution[7].BlockInflation)
+	runDistributionTest(44_150_398, types.BlockInflationDistribution[6])
+	runDistributionTest(44_150_399, types.BlockInflationDistribution[6])
+	runDistributionTest(44_150_400, types.BlockInflationDistribution[7]) // new epoch
+	runDistributionTest(44_150_401, types.BlockInflationDistribution[7])
+	runDistributionTest(44_150_402, types.BlockInflationDistribution[7])
 
 	// 8th epoch
-	s.Assert().EqualValues(advanceHeight(50_457_598), types.BlockInflationDistribution[7].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(50_457_599), types.BlockInflationDistribution[7].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(50_457_600), types.BlockInflationDistribution[8].BlockInflation) // new epoch
-	s.Assert().EqualValues(advanceHeight(50_457_601), types.BlockInflationDistribution[8].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(50_457_602), types.BlockInflationDistribution[8].BlockInflation)
+	runDistributionTest(50_457_598, types.BlockInflationDistribution[7])
+	runDistributionTest(50_457_599, types.BlockInflationDistribution[7])
+	runDistributionTest(50_457_600, types.BlockInflationDistribution[8]) // new epoch
+	runDistributionTest(50_457_601, types.BlockInflationDistribution[8])
+	runDistributionTest(50_457_602, types.BlockInflationDistribution[8])
 
 	// 9th epoch
-	s.Assert().EqualValues(advanceHeight(56_764_798), types.BlockInflationDistribution[8].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(56_764_799), types.BlockInflationDistribution[8].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(56_764_800), types.BlockInflationDistribution[9].BlockInflation) // new epoch
-	s.Assert().EqualValues(advanceHeight(56_764_801), types.BlockInflationDistribution[9].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(56_764_802), types.BlockInflationDistribution[9].BlockInflation)
+	runDistributionTest(56_764_798, types.BlockInflationDistribution[8])
+	runDistributionTest(56_764_799, types.BlockInflationDistribution[8])
+	runDistributionTest(56_764_800, types.BlockInflationDistribution[9]) // new epoch
+	runDistributionTest(56_764_801, types.BlockInflationDistribution[9])
+	runDistributionTest(56_764_802, types.BlockInflationDistribution[9])
 
 	// 10th epoch
-	s.Assert().EqualValues(advanceHeight(63_071_998), types.BlockInflationDistribution[9].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(63_071_999), types.BlockInflationDistribution[9].BlockInflation)
-	s.Assert().EqualValues(advanceHeight(63_072_000), 0) // new epoch
-	s.Assert().EqualValues(advanceHeight(63_072_001), 0)
-	s.Assert().EqualValues(advanceHeight(63_072_002), 0)
+	runDistributionTest(63_071_998, types.BlockInflationDistribution[9])
+	runDistributionTest(63_071_999, types.BlockInflationDistribution[9])
+	runDistributionTest(63_072_000, types.InflationDistribution{}) // new epoch
+	runDistributionTest(63_072_001, types.InflationDistribution{})
+	runDistributionTest(63_072_002, types.InflationDistribution{})
 
 	for i := 0; i < 10; i++ {
 		// get a random height after 63072000
 		randomBlockOutsideEpoch := 63_072_000 + rand.Int63()
-		s.Assert().EqualValues(advanceHeight(randomBlockOutsideEpoch), 0)
+		runDistributionTest(randomBlockOutsideEpoch, types.InflationDistribution{})
 	}
-
 }
