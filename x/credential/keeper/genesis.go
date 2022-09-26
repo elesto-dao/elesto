@@ -9,7 +9,6 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k Keeper, data *credential.GenesisState) {
-	//TODO: validate data in genesis
 	for i := range data.CredentialDefinitions {
 		k.SetCredentialDefinition(ctx, &data.CredentialDefinitions[i])
 	}

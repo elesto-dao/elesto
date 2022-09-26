@@ -543,7 +543,6 @@ func TestWrappedCredential_Validate(t *testing.T) {
 				wc.Proof = NewProof(
 					pubKey.Type(),
 					date.Format(time.RFC3339),
-					// TODO: define proof purposes
 					did.AssertionMethod,
 					issuerDID.NewVerificationMethodID(ki.GetAddress().String()),
 					base64.StdEncoding.EncodeToString(signature),
@@ -580,7 +579,6 @@ func TestWrappedCredential_Validate(t *testing.T) {
 				wc.Proof = NewProof(
 					pubKey.Type(),
 					date.Format(time.RFC3339),
-					// TODO: define proof purposes
 					did.AssertionMethod,
 					issuerDID.NewVerificationMethodID(ki.GetAddress().String()),
 					base64.StdEncoding.EncodeToString([]byte("invalid signature")),
