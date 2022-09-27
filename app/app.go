@@ -97,6 +97,7 @@ import (
 
 	"github.com/elesto-dao/elesto/v2/docs"
 	"github.com/elesto-dao/elesto/v2/x/credential"
+	credentialclient "github.com/elesto-dao/elesto/v2/x/credential/client"
 	credentialModuleKeeper "github.com/elesto-dao/elesto/v2/x/credential/keeper"
 	credentialmodule "github.com/elesto-dao/elesto/v2/x/credential/module"
 	"github.com/elesto-dao/elesto/v2/x/did"
@@ -127,6 +128,7 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 		upgradeclient.CancelProposalHandler,
 		ibcclientclient.UpdateClientProposalHandler,
 		ibcclientclient.UpgradeProposalHandler,
+		credentialclient.ProposalHandler,
 		// this line is used by starport scaffolding # stargate/app/govProposalHandler
 	)
 
@@ -416,7 +418,8 @@ func New(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
+		AddRoute(credential.RouterKey, credentialmodule.NewPublicCredentialProposalHandler(app.CredentialsKeeper))
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(

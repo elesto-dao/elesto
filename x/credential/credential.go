@@ -8,6 +8,7 @@ import (
 	"time"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/noandrea/rl2020"
 
 	"github.com/elesto-dao/elesto/v2/x/did"
@@ -233,4 +234,24 @@ func (m CredentialStatus) Coordinates() (string, int) {
 // TypeDef returns the credential status ID and type for correctness check
 func (m CredentialStatus) TypeDef() (string, string) {
 	return m.Id, m.Type
+}
+
+func NewProposePublicCredentialID(Title, Description, CredentialDefinitionID string) *ProposePublicCredentialID {
+	return &ProposePublicCredentialID{
+		Title:                  Title,
+		Description:            Description,
+		CredentialDefinitionID: CredentialDefinitionID,
+	}
+}
+
+func (m *ProposePublicCredentialID) ProposalRoute() string {
+	return RouterKey
+}
+
+func (m *ProposePublicCredentialID) ProposalType() string {
+	return "ProposePublicCredentialID"
+}
+
+func (m *ProposePublicCredentialID) ValidateBasic() error {
+	return govtypes.ValidateAbstract(m)
 }
