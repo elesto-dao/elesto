@@ -43,31 +43,33 @@ func (suite *ModuleTestSuite) SetupTest() {
 
 func (s *ModuleTestSuite) TestInflationAmount() {
 
+	ctx := s.ctx.WithBlockHeight(0)
+
 	params := s.app.MintKeeper.GetParams(s.ctx)
-
-	ctx := s.ctx.WithBlockHeight(0).WithBlockTime(time.Date(2022, 06, 27, 21, 00, 00, 0, time.UTC))
-	blockTime := 5 * time.Second
 	feeCollector := s.app.AccountKeeper.GetModuleAddress(authtypes.FeeCollectorName)
-	teamAddress := params.GetTeamAddress()
-
-	// mint the initial
-	err := s.keeper.MintCoins(s.ctx, sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, 200_000_000_000_000)))
+	teamAddress, err := sdk.AccAddressFromBech32(params.GetTeamAddress())
 	s.Assert().NoError(err)
 
+	// mint the initial supply
+	err = s.keeper.MintCoins(s.ctx, sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, 200_000_000_000_000)))
+	s.Assert().NoError(err)
+
+	//
 	runDistributionTest := func(height int64, distribution types.InflationDistribution) {
-		ctx = ctx.WithBlockHeight(height).WithBlockTime(ctx.BlockTime().Add(blockTime))
-		oldDevTeamBalance := s.app.BankKeeper.GetBalance(ctx, sdk.AccAddress(params.GetTeamAddress()), params.GetMintDenom())
+		ctx = ctx.WithBlockHeight(height)
+		oldDevTeamBalance := s.app.BankKeeper.GetBalance(ctx, teamAddress, params.GetMintDenom())
 		oldCommunityPoolBalance := s.app.DistrKeeper.GetFeePoolCommunityCoins(ctx)
 		oldFeeCollectorBalance := s.app.BankKeeper.GetBalance(ctx, feeCollector, params.GetMintDenom())
 
+		// perform the minting and inflation distribution
 		mint.BeginBlocker(ctx, s.keeper)
 
 		// assert dev team rewards
-		newDevTeamBalance := s.app.BankKeeper.GetBalance(ctx, sdk.AccAddress(teamAddress), params.GetMintDenom())
+		newDevTeamBalance := s.app.BankKeeper.GetBalance(ctx, teamAddress, params.GetMintDenom())
 		devTeamReward := newDevTeamBalance.Sub(oldDevTeamBalance)
 
 		s.Assert().False(devTeamReward.IsNegative())
-		//s.Assert().EqualValues(distribution.TeamRewards, devTeamReward.Amount.Int64(), "Dev Team rewards not matching expected values")
+		s.Assert().EqualValues(distribution.TeamRewards, devTeamReward.Amount.Int64(), "Dev Team rewards not matching expected values")
 
 		// assert community pool
 		newCommunityPoolBalance := s.app.DistrKeeper.GetFeePoolCommunityCoins(ctx)
@@ -82,8 +84,9 @@ func (s *ModuleTestSuite) TestInflationAmount() {
 		s.Assert().False(mintedAmt.IsNegative())
 		s.Assert().EqualValues(distribution.StakingRewards, mintedAmt.Amount.Int64(), "Staking rewards not matching expected values")
 
-		// assert they add upto block inflation
-		s.Assert().EqualValues(distribution.BlockInflation, distribution.TeamRewards+communityReward.AmountOf(params.GetMintDenom()).TruncateInt64()+mintedAmt.Amount.Int64())
+		// assert they add upto total block inflation
+		s.Assert().EqualValues(distribution.BlockInflation,
+			devTeamReward.Amount.Int64()+communityReward.AmountOf(params.GetMintDenom()).TruncateInt64()+mintedAmt.Amount.Int64())
 	}
 
 	runEpochTest := func(height int64, epoch int64) {
