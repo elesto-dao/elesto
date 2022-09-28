@@ -8,9 +8,7 @@ type InflationDistribution struct {
 }
 
 var (
-	// BlockInflationDistribution are the amounts to be minted and distributed for each block
-	// in an epoch.
-	// The format of the BlockInflationDistribution is <Epoch Number>: <BlockInflation, TeamRewards, CommunityTax, StakingRewards>
+	// BlockInflationDistribution are the amounts to be minted and distributed for each block in an epoch.
 	BlockInflationDistribution = map[int64]InflationDistribution{
 		0: {BlockInflation: 31_709_792, TeamRewards: 3_170_979, CommunityTax: 3_170_979, StakingRewards: 25_367_834},
 		1: {BlockInflation: 31_709_792, TeamRewards: 3_170_979, CommunityTax: 3_170_979, StakingRewards: 25_367_834},

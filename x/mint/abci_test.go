@@ -42,7 +42,6 @@ func (suite *ModuleTestSuite) SetupTest() {
 }
 
 func (s *ModuleTestSuite) TestInflationAmount() {
-
 	ctx := s.ctx.WithBlockHeight(0)
 
 	params := s.app.MintKeeper.GetParams(s.ctx)
@@ -54,7 +53,7 @@ func (s *ModuleTestSuite) TestInflationAmount() {
 	err = s.keeper.MintCoins(s.ctx, sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, 200_000_000_000_000)))
 	s.Assert().NoError(err)
 
-	//
+	// checks if the distribution matches the requirements for given height
 	runDistributionTest := func(height int64, distribution types.InflationDistribution) {
 		ctx = ctx.WithBlockHeight(height)
 		oldDevTeamBalance := s.app.BankKeeper.GetBalance(ctx, teamAddress, params.GetMintDenom())
@@ -67,14 +66,12 @@ func (s *ModuleTestSuite) TestInflationAmount() {
 		// assert dev team rewards
 		newDevTeamBalance := s.app.BankKeeper.GetBalance(ctx, teamAddress, params.GetMintDenom())
 		devTeamReward := newDevTeamBalance.Sub(oldDevTeamBalance)
-
 		s.Assert().False(devTeamReward.IsNegative())
 		s.Assert().EqualValues(distribution.TeamRewards, devTeamReward.Amount.Int64(), "Dev Team rewards not matching expected values")
 
 		// assert community pool
 		newCommunityPoolBalance := s.app.DistrKeeper.GetFeePoolCommunityCoins(ctx)
 		communityReward := newCommunityPoolBalance.Sub(oldCommunityPoolBalance)
-
 		s.Assert().False(communityReward.IsAnyNegative())
 		s.Assert().EqualValues(distribution.CommunityTax, communityReward.AmountOf(params.GetMintDenom()).TruncateInt64(), "CommunityTax not matching expected values")
 
@@ -89,6 +86,7 @@ func (s *ModuleTestSuite) TestInflationAmount() {
 			devTeamReward.Amount.Int64()+communityReward.AmountOf(params.GetMintDenom()).TruncateInt64()+mintedAmt.Amount.Int64())
 	}
 
+	// check distribution as height approaches and is at epoch and after the epoch
 	runEpochTest := func(height int64, epoch int64) {
 		runDistributionTest(height-2, types.BlockInflationDistribution[epoch-1]) // 2 blocks to epoch
 		runDistributionTest(height-1, types.BlockInflationDistribution[epoch-1]) // 1 block to epoch

@@ -73,17 +73,21 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 	return k.bankKeeper.MintCoins(ctx, types.ModuleName, newCoins)
 }
 
-// AddInflationToFeeCollector implements an alias call to the underlying supply keeper's
-// AddInflationToFeeCollector to be used in BeginBlocker.
+// AddInflationToFeeCollector implements an alias call to send the given amount to the fee collector
+// AddInflationToFeeCollector is to be used in BeginBlocker to distribute inflation as staking rewards.
 func (k Keeper) AddInflationToFeeCollector(ctx sdk.Context, fees sdk.Coins) error {
 	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, fees)
 }
 
+// AddInflationToCommunityTax sends the given amount of tokens to fund the community pool
+// AddInflationToCommunityTax is to be used in BeginBlocker to distribute inflation as community tax
 func (k Keeper) AddInflationToCommunityTax(ctx sdk.Context, amount sdk.Coins) error {
 	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
 	return k.distrKeeper.FundCommunityPool(ctx, amount, moduleAddr)
 }
 
+// SendTeamRewards sends the given amount of tokens to the developer team address which is set in the params
+// SendTeamRewards is to be used in BeginBlocker to distribute inflation to team
 func (k Keeper) SendTeamRewards(ctx sdk.Context, amount sdk.Coins) error {
 	teamAddrParam := k.GetParams(ctx).TeamAddress
 	teamAddr, err := sdk.AccAddressFromBech32(teamAddrParam)
