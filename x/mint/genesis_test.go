@@ -4,12 +4,12 @@ import (
 	"testing"
 	"time"
 
-	chain "github.com/elesto-dao/elesto/v2/app"
+	chain "github.com/elesto-dao/elesto/v3/app"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/elesto-dao/elesto/v2/x/mint"
-	"github.com/elesto-dao/elesto/v2/x/mint/types"
+	"github.com/elesto-dao/elesto/v3/x/mint"
+	"github.com/elesto-dao/elesto/v3/x/mint/types"
 )
 
 func (s *ModuleTestSuite) TestDefaultInitGenesis() {

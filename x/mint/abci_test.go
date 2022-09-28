@@ -10,13 +10,13 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	chain "github.com/elesto-dao/elesto/v2/app"
+	chain "github.com/elesto-dao/elesto/v3/app"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/elesto-dao/elesto/v2/x/mint"
-	"github.com/elesto-dao/elesto/v2/x/mint/keeper"
-	"github.com/elesto-dao/elesto/v2/x/mint/types"
+	"github.com/elesto-dao/elesto/v3/x/mint"
+	"github.com/elesto-dao/elesto/v3/x/mint/keeper"
+	"github.com/elesto-dao/elesto/v3/x/mint/types"
 )
 
 type ModuleTestSuite struct {
