@@ -19,7 +19,7 @@ func (k Keeper) SetAllowedPublicCredential(ctx sdk.Context, id string) {
 	store.Set(append(credential.PublicCredentialAllowKey, []byte(id)...), []byte(id))
 }
 
-func (k Keeper) IsPublicCredentialIdAllowed(ctx sdk.Context, id string) bool {
+func (k Keeper) IsPublicCredentialIDAllowed(ctx sdk.Context, id string) bool {
 	return k.Exists(ctx, credential.PublicCredentialAllowKey, []byte(id))
 }
 

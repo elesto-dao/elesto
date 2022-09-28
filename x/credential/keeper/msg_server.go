@@ -133,7 +133,7 @@ func (k msgServer) IssuePublicVerifiableCredential(
 		return nil, err
 	}
 
-	if allowed := k.IsPublicCredentialIdAllowed(ctx, msg.CredentialDefinitionID); !allowed {
+	if allowed := k.IsPublicCredentialIDAllowed(ctx, msg.CredentialDefinitionID); !allowed {
 		err = sdkerrors.Wrapf(credential.ErrCredentialDefinitionNotPublic, "credential definition %s is not allowed", msg.CredentialDefinitionID)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err

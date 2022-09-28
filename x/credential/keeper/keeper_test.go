@@ -11,20 +11,21 @@ import (
 	cryptocdc "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-	server "github.com/cosmos/cosmos-sdk/server"
+	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/did"
-	didkeeper "github.com/elesto-dao/elesto/v2/x/did/keeper"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+
+	"github.com/elesto-dao/elesto/v2/x/credential"
+	"github.com/elesto-dao/elesto/v2/x/did"
+	didkeeper "github.com/elesto-dao/elesto/v2/x/did/keeper"
 )
 
 // Keeper test suit enables the keeper package to be tested

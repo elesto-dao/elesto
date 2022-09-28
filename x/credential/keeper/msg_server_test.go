@@ -646,6 +646,7 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			req := tc.reqFn()
+			suite.keeper.SetAllowedPublicCredential(suite.ctx, req.CredentialDefinitionID)
 			_, err := server.IssuePublicVerifiableCredential(sdk.WrapSDKContext(suite.ctx), &req)
 			if tc.wantErr == nil {
 				suite.Require().NoError(err)

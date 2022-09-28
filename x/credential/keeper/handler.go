@@ -1,4 +1,4 @@
-package module
+package keeper
 
 import (
 	"fmt"
@@ -8,10 +8,9 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/credential/keeper"
 )
 
-func NewPublicCredentialProposalHandler(k keeper.Keeper) govtypes.Handler {
+func NewPublicCredentialProposalHandler(k Keeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
 		case *credential.ProposePublicCredentialID:
@@ -23,12 +22,12 @@ func NewPublicCredentialProposalHandler(k keeper.Keeper) govtypes.Handler {
 	}
 }
 
-func handlePublicProposalChange(ctx sdk.Context, k keeper.Keeper, proposal *credential.ProposePublicCredentialID) error {
+func handlePublicProposalChange(ctx sdk.Context, k Keeper, proposal *credential.ProposePublicCredentialID) error {
 	if _, found := k.GetCredentialDefinition(ctx, proposal.CredentialDefinitionID); !found {
 		return fmt.Errorf("proposal with %s id not found", proposal.CredentialDefinitionID)
 	}
 
-	if k.IsPublicCredentialIdAllowed(ctx, proposal.CredentialDefinitionID) {
+	if k.IsPublicCredentialIDAllowed(ctx, proposal.CredentialDefinitionID) {
 		return fmt.Errorf("credential definition with %s id already public", proposal.CredentialDefinitionID)
 	}
 

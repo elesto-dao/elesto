@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/elesto-dao/elesto/v2/x/credential"
@@ -8,9 +10,14 @@ import (
 
 func InitGenesis(ctx sdk.Context, k Keeper, genState *credential.GenesisState) {
 	for _, id := range genState.AllowedCredentialIds {
-		found := k.Exists(ctx, credential.PublicCredentialAllowKey, []byte(id))
+		_, found := k.GetCredentialDefinition(ctx, id)
 		if !found {
-			panic("credential id not found")
+			panic(fmt.Sprintf("credential id %s not found", id))
+		}
+
+		allowed := k.IsPublicCredentialIDAllowed(ctx, id)
+		if allowed {
+			panic(fmt.Sprintf("credential id %s already allowed", id))
 		}
 
 		k.SetAllowedPublicCredential(ctx, id)
@@ -20,11 +27,11 @@ func InitGenesis(ctx sdk.Context, k Keeper, genState *credential.GenesisState) {
 func ExportGenesis(ctx sdk.Context, k Keeper) *credential.GenesisState {
 	var genState credential.GenesisState
 
-	allowedCds := k.GetAll(ctx, credential.PublicCredentialAllowKey)
-	defer allowedCds.Close()
+	allowedCdIterator := k.GetAll(ctx, credential.PublicCredentialAllowKey)
+	defer allowedCdIterator.Close()
 
-	for ; allowedCds.Valid(); allowedCds.Next() {
-		id := string(allowedCds.Value())
+	for ; allowedCdIterator.Valid(); allowedCdIterator.Next() {
+		id := string(allowedCdIterator.Value())
 		genState.AllowedCredentialIds = append(genState.AllowedCredentialIds, id)
 	}
 
