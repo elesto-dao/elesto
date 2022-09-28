@@ -88,7 +88,7 @@ func (k Keeper) SendTeamRewards(ctx sdk.Context, amount sdk.Coins) error {
 	teamAddrParam := k.GetParams(ctx).TeamAddress
 	teamAddr, err := sdk.AccAddressFromBech32(teamAddrParam)
 	if err != nil {
-		return nil
+		return err
 	}
 	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, teamAddr, amount)
 }
