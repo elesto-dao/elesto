@@ -222,7 +222,6 @@ func NewMakeCredentialFromSchemaCmd() *cobra.Command {
 	return cmd
 }
 
-//
 func queryPublicCredential(qc credential.QueryClient, credentialID string) (wc *credential.WrappedCredential, err error) {
 	// query the public credential
 	result, err := qc.PublicCredential(

@@ -5,8 +5,6 @@ import ( // this line is used by starport scaffolding # 1
 	"encoding/json"
 	"math/rand"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -18,6 +16,7 @@ import ( // this line is used by starport scaffolding # 1
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/elesto-dao/elesto/v2/x/credential"
 	"github.com/elesto-dao/elesto/v2/x/credential/client/cli"
 	"github.com/elesto-dao/elesto/v2/x/credential/keeper"
 )
@@ -150,8 +149,8 @@ func (AppModule) InitGenesis(
 }
 
 // ExportGenesis returns the capability module's exported genesis state as raw JSON bytes.
-func (AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	return nil
+func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
+	return cdc.MustMarshalJSON(keeper.ExportGenesis(ctx, am.keeper))
 }
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the capability module.
