@@ -14,6 +14,13 @@ import (
 	"github.com/elesto-dao/elesto/v2/x/did"
 )
 
+const ProposePublicCredentialIDType = "ProposePublicCredentialID"
+
+func init() {
+	govtypes.RegisterProposalType(ProposePublicCredentialIDType)
+	govtypes.RegisterProposalTypeCodec(&ProposePublicCredentialID{}, "credential/ProposePublicCredential")
+}
+
 // NewCredentialDefinitionFromFile create a credential definition by reading the data from a file
 func NewCredentialDefinitionFromFile(id string, publisherDID did.DID,
 	name, description string,
@@ -249,7 +256,7 @@ func (m *ProposePublicCredentialID) ProposalRoute() string {
 }
 
 func (m *ProposePublicCredentialID) ProposalType() string {
-	return "ProposePublicCredentialID"
+	return ProposePublicCredentialIDType
 }
 
 func (m *ProposePublicCredentialID) ValidateBasic() error {

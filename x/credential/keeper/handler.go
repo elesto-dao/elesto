@@ -27,7 +27,7 @@ func handlePublicProposalChange(ctx sdk.Context, k Keeper, proposal *credential.
 		return fmt.Errorf("proposal with %s id not found", proposal.CredentialDefinitionID)
 	}
 
-	if k.IsPublicCredentialIDAllowed(ctx, proposal.CredentialDefinitionID) {
+	if k.IsPublicCredentialDefinitionAllowed(ctx, proposal.CredentialDefinitionID) {
 		return fmt.Errorf("credential definition with %s id already public", proposal.CredentialDefinitionID)
 	}
 

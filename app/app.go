@@ -418,9 +418,7 @@ func New(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(credential.RouterKey, credentialModuleKeeper.NewPublicCredentialProposalHandler(app.CredentialsKeeper))
-
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec, keys[ibctransfertypes.StoreKey], app.GetSubspace(ibctransfertypes.ModuleName),
@@ -438,11 +436,6 @@ func New(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	app.GovKeeper = govkeeper.NewKeeper(
-		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		app.StakingKeeper, govRouter,
-	)
-
 	app.DidKeeper = *didmodulekeeper.NewKeeper(
 		appCodec,
 		keys[did.StoreKey],
@@ -458,6 +451,12 @@ func New(
 		app.AccountKeeper,
 	)
 	credentialModule := credentialmodule.NewAppModule(appCodec, app.CredentialsKeeper, app.AccountKeeper, app.BankKeeper, app.DidKeeper)
+	govRouter.AddRoute(credential.RouterKey, credentialModuleKeeper.NewPublicCredentialProposalHandler(app.CredentialsKeeper))
+
+	app.GovKeeper = govkeeper.NewKeeper(
+		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
+		app.StakingKeeper, govRouter,
+	)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 

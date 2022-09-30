@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/elesto-dao/elesto/v2/x/credential"
@@ -10,16 +8,15 @@ import (
 
 func InitGenesis(ctx sdk.Context, k Keeper, genState *credential.GenesisState) {
 	for _, id := range genState.AllowedCredentialIds {
-		_, found := k.GetCredentialDefinition(ctx, id)
-		if !found {
-			panic(fmt.Sprintf("credential id %s not found", id))
-		}
-
-		allowed := k.IsPublicCredentialIDAllowed(ctx, id)
-		if allowed {
-			panic(fmt.Sprintf("credential id %s already allowed", id))
-		}
-
+		//_, found := k.GetCredentialDefinition(ctx, id)
+		//if !found {
+		//	panic(fmt.Sprintf("credential id %s not found", id))
+		//}
+		//
+		//allowed := k.IsPublicCredentialIDAllowed(ctx, id)
+		//if allowed {
+		//	panic(fmt.Sprintf("credential id %s already allowed", id))
+		//}
 		k.SetAllowedPublicCredential(ctx, id)
 	}
 }

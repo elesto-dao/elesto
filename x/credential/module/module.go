@@ -61,7 +61,9 @@ func (a AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
 }
 
 // DefaultGenesis returns the capability module's default genesis state.
-func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage { return nil }
+func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
+	return cdc.MustMarshalJSON(credential.DefaultGenesisState())
+}
 
 // ValidateGenesis performs genesis state validation for the capability module.
 func (AppModuleBasic) ValidateGenesis(
@@ -140,12 +142,16 @@ func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 // InitGenesis performs the capability module's genesis initialization It returns
 // no validator updates.
-func (AppModule) InitGenesis(
+func (am AppModule) InitGenesis(
 	ctx sdk.Context,
 	cdc codec.JSONCodec,
 	gs json.RawMessage,
 ) []abci.ValidatorUpdate {
-	return nil
+	var genState credential.GenesisState
+	cdc.MustUnmarshalJSON(gs, &genState)
+	keeper.InitGenesis(ctx, am.keeper, &genState)
+
+	return []abci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the capability module's exported genesis state as raw JSON bytes.
