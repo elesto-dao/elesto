@@ -1,4 +1,4 @@
-package keeper_test
+package keeper
 
 import (
 	"context"
@@ -288,7 +288,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredential() {
 			func() (*credential.QueryPublicCredentialRequest, *credential.QueryPublicCredentialResponse) {
 				return &credential.QueryPublicCredentialRequest{Id: "https://does.not.exists"}, &credential.QueryPublicCredentialResponse{Credential: nil}
 			},
-			errors.New("rpc error: code = NotFound desc = credential definition not found"),
+			errors.New("rpc error: code = NotFound desc = public verifiable credential not found"),
 		},
 	}
 	for _, tc := range testCases {

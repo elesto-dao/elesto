@@ -17,10 +17,10 @@ import ( // this line is used by starport scaffolding # 1
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/elesto-dao/elesto/v2/x/did"
-	"github.com/elesto-dao/elesto/v2/x/did/client/cli"
-	"github.com/elesto-dao/elesto/v2/x/did/keeper"
-	"github.com/elesto-dao/elesto/v2/x/did/simulation"
+	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v3/x/did/client/cli"
+	"github.com/elesto-dao/elesto/v3/x/did/keeper"
+	"github.com/elesto-dao/elesto/v3/x/did/simulation"
 )
 
 var (
@@ -200,15 +200,14 @@ func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
 	sdr[did.StoreKey] = simulation.NewDecodeStore(am.cdc)
 }
 
-// WeightedOperations returns the all the gov module operations with their respective weights.
-func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
-	//return simulation.WeightedOperations(
-	//	simState,
-	//	am.keeper,
-	//	am.bk,
-	//	am.ak,
-	//)
-	return nil
+// WeightedOperations returns the all the did module operations with their respective weights.
+func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
+	return simulation.WeightedOperations(
+		simState,
+		am.keeper,
+		am.bk,
+		am.ak,
+	)
 }
 
 // ----------------------------------------------------------------------------

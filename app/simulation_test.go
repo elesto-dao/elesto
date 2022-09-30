@@ -17,31 +17,28 @@ import (
 	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/elesto-dao/elesto/v2/app"
+	"github.com/elesto-dao/elesto/v3/app"
 )
 
 // Various prefixes for accounts and public keys
 var (
-	AccountAddressPrefix = "elesto"
-
-	AccountPubKeyPrefix    = AccountAddressPrefix + "pub"
-	ValidatorAddressPrefix = AccountAddressPrefix + "valoper"
-	ValidatorPubKeyPrefix  = AccountAddressPrefix + "valoperpub"
-	ConsNodeAddressPrefix  = AccountAddressPrefix + "valcons"
-	ConsNodePubKeyPrefix   = AccountAddressPrefix + "valconspub"
+	AccountPubKeyPrefix    = app.AccountAddressPrefix + "pub"
+	ValidatorAddressPrefix = app.AccountAddressPrefix + "valoper"
+	ValidatorPubKeyPrefix  = app.AccountAddressPrefix + "valoperpub"
+	ConsNodeAddressPrefix  = app.AccountAddressPrefix + "valcons"
+	ConsNodePubKeyPrefix   = app.AccountAddressPrefix + "valconspub"
 )
 
 // SetConfig initialize the configuration instance for the sdk
 func SetConfig() {
 	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount(AccountAddressPrefix, AccountPubKeyPrefix)
+	config.SetBech32PrefixForAccount(app.AccountAddressPrefix, AccountPubKeyPrefix)
 	config.SetBech32PrefixForValidator(ValidatorAddressPrefix, ValidatorPubKeyPrefix)
 	config.SetBech32PrefixForConsensusNode(ConsNodeAddressPrefix, ConsNodePubKeyPrefix)
 	config.Seal()
@@ -59,7 +56,7 @@ func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
 }
 
 type SimApp interface {
-	cosmoscmd.App
+	*app.App
 	GetBaseApp() *baseapp.BaseApp
 	AppCodec() codec.Codec
 	SimulationManager() *module.SimulationManager
@@ -106,7 +103,7 @@ func TestFullAppSimulation(t *testing.T) {
 		require.NoError(t, err)
 	})
 
-	encoding := cosmoscmd.MakeEncodingConfig(app.ModuleBasics)
+	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
 	app := app.New(
 		logger,
@@ -121,8 +118,7 @@ func TestFullAppSimulation(t *testing.T) {
 		fauxMerkleModeOpt,
 	)
 
-	simApp, ok := app.(SimApp)
-	require.True(t, ok, "can't use simapp")
+	simApp := app
 
 	// Run randomized simulations
 	_, simParams, simErr := simulation.SimulateFromSeed(
@@ -169,7 +165,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		}
 	}()
 
-	encoding := cosmoscmd.MakeEncodingConfig(app.ModuleBasics)
+	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
 	app := app.New(
 		logger,
@@ -184,8 +180,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		fauxMerkleModeOpt,
 	)
 
-	simApp, ok := app.(SimApp)
-	require.True(b, ok, "can't use simapp")
+	simApp := app
 
 	// Run randomized simulations
 	_, simParams, simErr := simulation.SimulateFromSeed(
@@ -227,7 +222,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	encoding := cosmoscmd.MakeEncodingConfig(app.ModuleBasics)
+	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
 	app1 := app.New(
 		logger,
@@ -242,8 +237,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		fauxMerkleModeOpt,
 	)
 
-	simApp1, ok := app1.(SimApp)
-	require.True(t, ok, "can't use simapp")
+	simApp1 := app1
 
 	// Run randomized simulations
 	stopEarly, simParams, simErr := simulation.SimulateFromSeed(
@@ -300,8 +294,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		fauxMerkleModeOpt,
 	)
 
-	simApp2, ok := newApp.(SimApp)
-	require.True(t, ok, "can't use simapp")
+	simApp2 := newApp
 
 	var genesisState simapp.GenesisState
 	err = json.Unmarshal(exported.AppState, &genesisState)
@@ -359,7 +352,7 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := dbm.NewMemDB()
-			encoding := cosmoscmd.MakeEncodingConfig(app.ModuleBasics)
+			encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
 			app := app.New(
 				logger,
@@ -373,8 +366,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				simapp.EmptyAppOptions{},
 				fauxMerkleModeOpt,
 			)
-			simApp, ok := app.(SimApp)
-			require.True(t, ok, "can't use simapp")
+			simApp := app
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",

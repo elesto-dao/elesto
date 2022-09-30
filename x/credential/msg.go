@@ -3,7 +3,7 @@ package credential
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 // --------------------------
@@ -92,12 +92,12 @@ var _ sdk.Msg = &MsgIssuePublicVerifiableCredentialRequest{}
 // NewMsgIssuePublicVerifiableCredentialRequest creates a new MsgIssuePublicVerifiableCredentialRequest instance
 func NewMsgIssuePublicVerifiableCredentialRequest(
 	credential *PublicVerifiableCredential,
-	definitionDID did.DID,
+	definitionID string,
 	signerAccount sdk.AccAddress,
 ) *MsgIssuePublicVerifiableCredentialRequest {
 	return &MsgIssuePublicVerifiableCredentialRequest{
 		Credential:             credential,
-		CredentialDefinitionID: definitionDID.String(),
+		CredentialDefinitionID: definitionID,
 		Signer:                 signerAccount.String(),
 	}
 }

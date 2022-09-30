@@ -25,16 +25,22 @@ then
     echo "y" | elestod keys add alice
 
     echo "Adding genesis account"
-    elestod add-genesis-account $(elestod keys show validator -a) 100000000stake
+    elestod add-genesis-account $(elestod keys show validator -a) 40000000000000stake
     # this is to have the accounts on chain
-    elestod add-genesis-account $(elestod keys show emti -a) 20000000stake
-    elestod add-genesis-account $(elestod keys show arti -a) 20000000stake
-    elestod add-genesis-account $(elestod keys show bob -a) 20000000stake
-    elestod add-genesis-account $(elestod keys show alice -a) 20000000stake
+    elestod add-genesis-account $(elestod keys show emti -a) 40000000000000stake
+    elestod add-genesis-account $(elestod keys show arti -a) 40000000000000stake
+    elestod add-genesis-account $(elestod keys show bob -a) 20000000000000stake
+    elestod add-genesis-account $(elestod keys show alice -a) 20000000000000stake
     ## add the regulator
-    elestod add-genesis-account $(elestod keys show regulator -a) 20000000stake
-    elestod gentx validator 70000000stake --chain-id elesto
+    elestod add-genesis-account $(elestod keys show regulator -a) 40000000000000stake
+    elestod gentx validator 30000000000000stake --chain-id elesto
     elestod collect-gentxs
+
+    # the community tax in the distribution must be disabled, since the community tax is
+    # already distributed by the mint module
+    echo "$( jq '.app_state.distribution.params.community_tax = "0.1"' ~/.elesto/config/genesis.json )" > ~/.elesto/config/genesis.json
+
+    echo
 fi
 
 

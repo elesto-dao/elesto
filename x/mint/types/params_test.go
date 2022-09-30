@@ -8,8 +8,8 @@ import (
 
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/elesto-dao/elesto/v2/app"
-	"github.com/elesto-dao/elesto/v2/x/mint/types"
+	"github.com/elesto-dao/elesto/v3/app"
+	"github.com/elesto-dao/elesto/v3/x/mint/types"
 )
 
 func TestParams(t *testing.T) {
@@ -18,7 +18,7 @@ func TestParams(t *testing.T) {
 
 	defaultParams := types.DefaultParams()
 
-	paramsStr := `mint_denom:"stake" blocks_per_year:6308000 max_supply:1000000000000000 team_address:"elesto1ms2wrq8k04cug7ea6ekf60nfke6a8vu8pwm684" team_reward:"0.1" `
+	paramsStr := `mint_denom:"stake" team_address:"elesto1ms2wrq8k04cug7ea6ekf60nfke6a8vu8pwm684" `
 	require.Equal(t, paramsStr, defaultParams.String())
 }
 
@@ -50,41 +50,6 @@ func TestParamsValidate(t *testing.T) {
 				params.MintDenom = "a"
 			},
 			"invalid denom: a",
-		},
-		{
-			"max supply is 0",
-			func(params *types.Params) {
-				params.MaxSupply = 0
-			},
-			"max supply must be greater than zero, got 0",
-		},
-		{
-			"blocks per year are zero",
-			func(params *types.Params) {
-				params.BlocksPerYear = 0
-			},
-			"blocks per year must be positive, got 0",
-		},
-		{
-			"team reward is not a valid number",
-			func(params *types.Params) {
-				params.TeamReward = "not valid"
-			},
-			"failed to set decimal string: not valid000000000000000000",
-		},
-		{
-			"team reward is less than 0",
-			func(params *types.Params) {
-				params.TeamReward = "-1"
-			},
-			"team reward must be a value between 0 and 1, got: -1",
-		},
-		{
-			"team reward is greater than 1",
-			func(params *types.Params) {
-				params.TeamReward = "1.1"
-			},
-			"team reward must be a value between 0 and 1, got: 1.1",
 		},
 		{
 			"team address has non-elesto prefix",

@@ -7,8 +7,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 var _ credential.QueryServer = Keeper{}
@@ -66,7 +66,7 @@ func (k Keeper) PublicCredential(
 	ctx := sdk.UnwrapSDKContext(c)
 	pc, found := k.GetPublicCredential(ctx, req.Id)
 	if !found {
-		return nil, status.Error(codes.NotFound, "credential definition not found")
+		return nil, status.Error(codes.NotFound, "public verifiable credential not found")
 	}
 	return &credential.QueryPublicCredentialResponse{Credential: &pc}, nil
 

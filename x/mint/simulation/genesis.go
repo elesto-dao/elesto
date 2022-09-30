@@ -8,7 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/elesto-dao/elesto/v2/x/mint/types"
+	"github.com/elesto-dao/elesto/v3/x/mint/types"
 )
 
 // RandomizedGenState generates a random GenesisState for mint

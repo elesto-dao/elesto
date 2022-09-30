@@ -1,0 +1,13 @@
+---
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: elesto
+nodes:
+  - role: control-plane
+    extraMounts:
+      - hostPath: /Users/glebiller/GolandProjects/elesto/data
+        containerPath: /mnt/data
+    extraPortMappings:
+      - containerPort: 26657
+        hostPort: 26657
+        listenAddress: "127.0.0.1"

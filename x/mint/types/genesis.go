@@ -13,6 +13,7 @@ func NewGenesisState(params Params) *GenesisState {
 
 // DefaultGenesisState creates a default GenesisState object
 func DefaultGenesisState() *GenesisState {
+	// default genesis state has empty bootstrap date
 	return NewGenesisState(DefaultParams())
 }
 
@@ -22,8 +23,6 @@ func ValidateGenesis(data GenesisState) error {
 	if err := data.Params.Validate(); err != nil {
 		return fmt.Errorf("mint genesis validation failed, %w", err)
 	}
-
-	// TODO(gsora): how do we validate CurrentInflation?
 
 	return nil
 }

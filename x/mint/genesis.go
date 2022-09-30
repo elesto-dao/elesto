@@ -3,8 +3,8 @@ package mint
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/elesto-dao/elesto/v2/x/mint/keeper"
-	"github.com/elesto-dao/elesto/v2/x/mint/types"
+	"github.com/elesto-dao/elesto/v3/x/mint/keeper"
+	"github.com/elesto-dao/elesto/v3/x/mint/types"
 )
 
 // InitGenesis new mint genesis
@@ -12,7 +12,6 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, ak types.AccountKeeper, 
 	if err := types.ValidateGenesis(*data); err != nil {
 		panic(err)
 	}
-
 	keeper.SetParams(ctx, data.Params)
 	ak.GetModuleAccount(ctx, types.ModuleName)
 }

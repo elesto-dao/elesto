@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	didmod "github.com/elesto-dao/elesto/v2/x/did"
+	didmod "github.com/elesto-dao/elesto/v3/x/did"
 )
 
 func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {
@@ -23,7 +23,7 @@ func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {
 		{
 			"Pass: can create a an did",
 			func() {
-				req = *didmod.NewMsgCreateDidDocument("did:cosmos:elesto:subject", nil, nil, "subject")
+				req = *didmod.NewMsgCreateDidDocument("did:cosmos:elesto:00000000-0000-0000-0000-000000000000", nil, nil, "subject")
 				errExp = nil
 			},
 		},
@@ -37,7 +37,7 @@ func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {
 		{
 			"FAIL: did already exists",
 			func() {
-				did := "did:cosmos:elesto:subject"
+				did := "did:cosmos:elesto:00000000-0000-0000-0000-000000000000"
 				didDoc, _ := didmod.NewDidDocument(did)
 
 				suite.keeper.SetDidDocument(suite.ctx, []byte(didDoc.Id), didDoc)
@@ -48,7 +48,7 @@ func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {
 		{
 			"FAIL: did is of type key (1)",
 			func() {
-				did := "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+				did := "did:cosmos:key:00000000-0000-0000-0000-000000000000"
 				req = *didmod.NewMsgCreateDidDocument(did, nil, nil, "subject")
 				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format cannot be created %s", did)
 			},
@@ -56,9 +56,17 @@ func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {
 		{
 			"FAIL: did is of type key (2)",
 			func() {
-				did := "did:cosmos:key:juno1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+				did := "did:cosmos:key:76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 				req = *didmod.NewMsgCreateDidDocument(did, nil, nil, "subject")
 				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did documents having id with key format cannot be created %s", did)
+			},
+		},
+		{
+			"FAIL: did is not UUID",
+			func() {
+				did := "did:cosmos:elesto:juno1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+				req = *didmod.NewMsgCreateDidDocument(did, nil, nil, "subject")
+				errExp = sdkerrors.Wrapf(didmod.ErrInvalidInput, "did:cosmos:elesto:juno1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8 is not a valid UUID format")
 			},
 		},
 	}
@@ -164,7 +172,7 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateDidDocument() {
 		{
 			"FAIL: did is of type key (1)",
 			func() {
-				did := "did:cosmos:key:cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+				did := "did:cosmos:key:00000000-0000-0000-0000-000000000000"
 				didDoc, _ := didmod.NewDidDocument(did)
 				controllers := []string{
 					"did:cosmos:cash:controller-1",
@@ -178,7 +186,7 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateDidDocument() {
 		{
 			"FAIL: did is of type key (2)",
 			func() {
-				did := "did:cosmos:key:juno1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
+				did := "did:cosmos:key:00000000-0000-0000-0000-000000000000"
 				didDoc, _ := didmod.NewDidDocument(did)
 				controllers := []string{
 					"did:cosmos:cash:controller-1",

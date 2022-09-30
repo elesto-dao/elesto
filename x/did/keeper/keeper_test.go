@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/did"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/suite"
 
@@ -39,7 +39,9 @@ func (suite *KeeperTestSuite) SetupTest() {
 	ms.MountStoreWithDB(memKeyDidDocument, sdk.StoreTypeIAVL, db)
 	_ = ms.LoadLatestVersion()
 
-	ctx := sdk.NewContext(ms, tmproto.Header{ChainID: "foochainid"}, true, server.ZeroLogWrapper{log.Logger})
+	ctx := sdk.NewContext(ms, tmproto.Header{ChainID: "foochainid"}, true,
+		server.ZeroLogWrapper{Logger: log.Logger},
+	)
 
 	interfaceRegistry := ct.NewInterfaceRegistry()
 	marshaler := codec.NewProtoCodec(interfaceRegistry)

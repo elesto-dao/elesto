@@ -11,26 +11,26 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
-	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/elesto-dao/elesto/v2/x/did"
-	"github.com/elesto-dao/elesto/v2/x/did/client/cli"
+	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v3/x/did/client/cli"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/elesto-dao/elesto/v2/app"
 	dbm "github.com/tendermint/tm-db"
+
+	"github.com/elesto-dao/elesto/v3/app"
 )
 
 // NewAppConstructor returns a new simapp AppConstructor
-func NewAppConstructor(encodingCfg cosmoscmd.EncodingConfig) network.AppConstructor {
+func NewAppConstructor(encodingCfg app.EncodingConfig) network.AppConstructor {
 	return func(val network.Validator) servertypes.Application {
 		return app.New(
 			val.Ctx.Logger,
@@ -59,7 +59,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	app.Setup(false)
 	cfg.GenesisState = app.NewDefaultGenesisState(cfg.Codec)
 	did.RegisterInterfaces(cfg.InterfaceRegistry)
-	cfg.AppConstructor = NewAppConstructor(cosmoscmd.MakeEncodingConfig(app.ModuleBasics))
+	cfg.AppConstructor = NewAppConstructor(app.MakeEncodingConfig(app.ModuleBasics))
 	cfg.NumValidators = 2
 	s.cfg = cfg
 	s.network = network.New(s.T(), cfg)
@@ -109,7 +109,7 @@ func addNewDidDoc(s *IntegrationTestSuite, identifier string, val *network.Valid
 }
 
 func (s *IntegrationTestSuite) TestGetCmdQueryDidDocument() {
-	identifier := "123456789abcdefghijkb"
+	identifier := "44dfc971-b3a0-48ee-a6d3-e758c5c86a06"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -159,7 +159,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDidDocument() {
 }
 
 func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
-	identifier := "123456789abcdefghijkc"
+	identifier := "76f3a6c4-e048-4009-bb01-e0668a91ad2"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -218,7 +218,7 @@ func (s *IntegrationTestSuite) TestNewCreateDidDocumentCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewAddControllerCmd() {
-	identifier1 := "123456789abcdefghijkd"
+	identifier1 := "76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 	identifier2 := "elesto1kslgpxklq75aj96cz3qwsczr95vdtrd3axw8ft"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
@@ -279,7 +279,7 @@ func (s *IntegrationTestSuite) TestNewAddControllerCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewDeleteControllerCmd() {
-	identifier1 := "123456789abcdefghijkd"
+	identifier1 := "76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 	identifier2 := "elesto1kslgpxklq75aj96cz3qwsczr95vdtrd3axw8ft"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
@@ -366,7 +366,7 @@ func (s *IntegrationTestSuite) TestNewDeleteControllerCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
-	identifier := "123456789abcdefghijke"
+	identifier := "76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -430,13 +430,13 @@ func (s *IntegrationTestSuite) TestNewAddVerificationCmd() {
 			}
 
 			verificationmethod := verificationmethods[1]
-			s.Require().Equal("F02126107837346bdbea51a56e230df6a3a4c2f687dcae04e36c4aacfa697299eac", verificationmethod.GetPublicKeyMultibase())
+			s.Require().Equal("F02126107837346BDBEA51A56E230DF6A3A4C2F687DCAE04E36C4AACFA697299EAC", verificationmethod.GetPublicKeyMultibase())
 		})
 	}
 }
 
 func (s *IntegrationTestSuite) TestNewSetVerificationRelationshipsCmd() {
-	identifier := "123456789abcdefghijkf"
+	identifier := "76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -510,7 +510,7 @@ func (s *IntegrationTestSuite) TestNewSetVerificationRelationshipsCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewRevokeVerificationCmd() {
-	identifier := "123456789abcdefghijkg"
+	identifier := "76f3a6c4-e048-4009-bb01-e0668a91ad21"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -582,7 +582,7 @@ func (s *IntegrationTestSuite) TestNewRevokeVerificationCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewAddServiceCmd() {
-	identifier := "123456789abcdefghijkh"
+	identifier := "76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
@@ -647,7 +647,7 @@ func (s *IntegrationTestSuite) TestNewAddServiceCmd() {
 }
 
 func (s *IntegrationTestSuite) TestNewDeleteServiceCmd() {
-	identifier := "123456789abcdefghijki"
+	identifier := "76f3a6c4-e048-4009-bb01-e0668a91ad2f"
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 

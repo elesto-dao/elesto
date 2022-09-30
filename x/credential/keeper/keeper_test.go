@@ -1,4 +1,4 @@
-package keeper_test
+package keeper
 
 import (
 	"fmt"
@@ -18,15 +18,13 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/did"
+	didkeeper "github.com/elesto-dao/elesto/v3/x/did/keeper"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
-
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/credential/keeper"
-	"github.com/elesto-dao/elesto/v2/x/did"
-	didkeeper "github.com/elesto-dao/elesto/v2/x/did/keeper"
 )
 
 // Keeper test suit enables the keeper package to be tested
@@ -62,7 +60,9 @@ func (suite *KeeperTestSuite) SetupTest() {
 	ms.MountStoreWithDB(keyAcc, sdk.StoreTypeIAVL, db)
 	_ = ms.LoadLatestVersion()
 
-	ctx := sdk.NewContext(ms, tmproto.Header{ChainID: "foochainid"}, true, server.ZeroLogWrapper{log.Logger})
+	ctx := sdk.NewContext(ms, tmproto.Header{ChainID: "foochainid"}, true,
+		server.ZeroLogWrapper{Logger: log.Logger},
+	)
 
 	interfaceRegistry := ct.NewInterfaceRegistry()
 	authtypes.RegisterInterfaces(interfaceRegistry)

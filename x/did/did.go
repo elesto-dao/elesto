@@ -138,7 +138,12 @@ func (did DID) String() string {
 
 // NewVerificationMethodID compose a verification method id from an account address
 func (did DID) NewVerificationMethodID(vmID string) string {
-	return fmt.Sprint(did, "#", vmID)
+	return fmt.Sprint(did, "#", strings.TrimSpace(vmID))
+}
+
+// NewServiceID compose a new service id URI from the did and the provided id
+func (did DID) NewServiceID(serviceID string) string {
+	return fmt.Sprint(did, "#", strings.TrimSpace(serviceID))
 }
 
 // IsValidDID validate the input string according to the
@@ -182,20 +187,46 @@ func IsValidDIDDocument(didDoc *DidDocument) bool {
 		}
 	}
 
+	//check that in the relationships there are only listed vm ids
+	// list all the vmIds from relationships
+	relVMIDs := map[string]struct{}{}
+	for _, rK := range supportedRelationships {
+		for _, vmID := range *didDoc.getRelationships(rK) {
+			relVMIDs[vmID] = struct{}{}
+		}
+	}
+	// verify all the vm
 	for _, element := range didDoc.VerificationMethod {
 		vm, _ := element.VerificationMaterial.(Validable)
 		if vErr := vm.Validate(); vErr != nil {
 			return false
 		}
+		// remove the vmId for the list of vmIds from relationships
+		delete(relVMIDs, element.Id)
 	}
-
-	for _, c := range didDoc.Context {
-		if c == contextDIDBase {
-			return true
+	// if there are items left in the list of vmIds from relationships
+	// then there are invalid relationships vmIds
+	if len(relVMIDs) > 0 {
+		return false
+	}
+	// validate all services
+	for _, s := range didDoc.Service {
+		if err := ValidateService(s); err != nil {
+			return false
 		}
 	}
-
-	return false
+	// check that there is at least the did base context
+	hasBaseContext := false
+	for _, c := range didDoc.Context {
+		if c == contextDIDBase {
+			hasBaseContext = true
+		}
+		if !IsValidRFC3986Uri(c) {
+			return false
+		}
+	}
+	// last check about the presence of the base context
+	return hasBaseContext
 }
 
 // IsValidDIDKeyFormat verify that a did is compliant with the did:cosmos:key format
@@ -602,7 +633,7 @@ func (didDoc DidDocument) HasPublicKey(pubkey cryptotypes.PubKey) bool {
 				return true
 			}
 		case *VerificationMethod_PublicKeyMultibase:
-			if key.PublicKeyMultibase == fmt.Sprint("F", hex.EncodeToString(pubkey.Bytes())) {
+			if strings.EqualFold(key.PublicKeyMultibase, fmt.Sprint("F", hex.EncodeToString(pubkey.Bytes()))) {
 				return true
 			}
 

@@ -19,8 +19,8 @@ import (
 	"github.com/noandrea/rl2020"
 	"github.com/spf13/cobra"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 func NewQueryCredentialStatusCmd() *cobra.Command {
@@ -116,18 +116,18 @@ func NewMakeCredentialFromSchemaCmd() *cobra.Command {
 			}
 
 			var (
-				qc            = credential.NewQueryClient(clientCtx)
-				schema        CredentialSchema
-				wc            *credential.WrappedCredential          // wrapped credential
-				rlcs          []*credential.WrappedCredential        // the revocation list credentials
-				vc            *credential.PublicVerifiableCredential // verifiable credential
-				definitionDID = did.NewChainDID(clientCtx.ChainID, args[0])
+				qc           = credential.NewQueryClient(clientCtx)
+				schema       CredentialSchema
+				wc           *credential.WrappedCredential          // wrapped credential
+				rlcs         []*credential.WrappedCredential        // the revocation list credentials
+				vc           *credential.PublicVerifiableCredential // verifiable credential
+				definitionID = args[0]
 			)
 
 			result, err := qc.CredentialDefinition(
 				context.Background(),
 				&credential.QueryCredentialDefinitionRequest{
-					Id: definitionDID.String(),
+					Id: definitionID,
 				},
 			)
 			if err != nil {
@@ -149,7 +149,7 @@ func NewMakeCredentialFromSchemaCmd() *cobra.Command {
 			vc = credential.NewPublicVerifiableCredential(cID,
 				credential.WithIssuanceDate(time.Now()),
 				credential.WithType(fmt.Sprint(schema.Title, "Credential")),
-				credential.WithContext(fmt.Sprintf("https://resolver.cc/context/%s", definitionDID)),
+				credential.WithContext(fmt.Sprintf("https://resolver.cc/context/%s", definitionID)),
 				credential.WithIssuerDID(cIssuer),
 			)
 
@@ -251,6 +251,7 @@ func (rs revocationStatus) GetBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
+
 	return bs
 }
 
@@ -328,7 +329,7 @@ func revocationListCredentials(qc credential.QueryClient, issuerDID string) (pwc
 			fmt.Printf("warning, cannot process credential %v: %v, for further inspection run the 'public-credential' command with the '--native' flag", pvc.Id, err)
 			continue
 		}
-		if pwc.HasType(rl2020.TypeRevocationList2020) {
+		if pwc.HasType(rl2020.TypeRevocationList2020Credential) {
 			pwcs = append(pwcs, pwc)
 		}
 	}

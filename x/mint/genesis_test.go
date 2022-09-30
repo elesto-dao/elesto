@@ -2,24 +2,24 @@ package mint_test
 
 import (
 	"testing"
+	"time"
 
-	chain "github.com/elesto-dao/elesto/v2/app"
+	chain "github.com/elesto-dao/elesto/v3/app"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/elesto-dao/elesto/v2/x/mint"
-	"github.com/elesto-dao/elesto/v2/x/mint/types"
+	"github.com/elesto-dao/elesto/v3/x/mint"
+	"github.com/elesto-dao/elesto/v3/x/mint/types"
 )
 
-func TestInitGenesis(t *testing.T) {
-	app := chain.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+func (s *ModuleTestSuite) TestDefaultInitGenesis() {
+	genState := *types.DefaultGenesisState()
 
-	// default gent state case
-	genState := types.DefaultGenesisState()
-	mint.InitGenesis(ctx, app.MintKeeper, app.AccountKeeper, genState)
-	got := mint.ExportGenesis(ctx, app.MintKeeper)
-	require.Equal(t, *genState, *got)
+	mint.InitGenesis(s.ctx, s.app.MintKeeper, s.app.AccountKeeper, &genState)
+	// assign some values to the bootstrap date
+
+	got := *mint.ExportGenesis(s.ctx, s.app.MintKeeper)
+	s.Require().Equal(genState.Params, got.Params)
 }
 
 func TestInitInvalidGenesis(t *testing.T) {
@@ -37,7 +37,7 @@ func TestInitInvalidGenesis(t *testing.T) {
 
 func TestImportExportGenesis(t *testing.T) {
 	app := chain.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{}).WithBlockHeight(12).WithBlockTime(time.Now())
 
 	genState := mint.ExportGenesis(ctx, app.MintKeeper)
 	bz := app.AppCodec().MustMarshalJSON(genState)

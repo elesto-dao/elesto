@@ -16,7 +16,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -89,7 +88,6 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 	"github.com/spf13/cast"
-	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	"github.com/tendermint/starport/starport/pkg/openapiconsole"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -97,16 +95,16 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/elesto-dao/elesto/v2/docs"
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	credentialModuleKeeper "github.com/elesto-dao/elesto/v2/x/credential/keeper"
-	credentialmodule "github.com/elesto-dao/elesto/v2/x/credential/module"
-	"github.com/elesto-dao/elesto/v2/x/did"
-	didmodulekeeper "github.com/elesto-dao/elesto/v2/x/did/keeper"
-	didmodule "github.com/elesto-dao/elesto/v2/x/did/module"
-	"github.com/elesto-dao/elesto/v2/x/mint"
-	mintkeeper "github.com/elesto-dao/elesto/v2/x/mint/keeper"
-	minttypes "github.com/elesto-dao/elesto/v2/x/mint/types"
+	"github.com/elesto-dao/elesto/v3/docs"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	credentialModuleKeeper "github.com/elesto-dao/elesto/v3/x/credential/keeper"
+	credentialmodule "github.com/elesto-dao/elesto/v3/x/credential/module"
+	"github.com/elesto-dao/elesto/v3/x/did"
+	didmodulekeeper "github.com/elesto-dao/elesto/v3/x/did/keeper"
+	didmodule "github.com/elesto-dao/elesto/v3/x/did/module"
+	"github.com/elesto-dao/elesto/v3/x/mint"
+	mintkeeper "github.com/elesto-dao/elesto/v3/x/mint/keeper"
+	minttypes "github.com/elesto-dao/elesto/v3/x/mint/types"
 )
 
 // Global vars that define account prefix and name of chain
@@ -180,12 +178,6 @@ var (
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 		icatypes.ModuleName: nil,
 	}
-)
-
-var (
-	_ cosmoscmd.App           = (*App)(nil)
-	_ servertypes.Application = (*App)(nil)
-	_ simapp.App              = (*App)(nil)
 )
 
 func init() {
@@ -264,10 +256,10 @@ func New(
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
 	invCheckPeriod uint,
-	encodingConfig cosmoscmd.EncodingConfig,
+	encodingConfig EncodingConfig,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
-) cosmoscmd.App {
+) *App {
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -367,7 +359,6 @@ func New(
 		app.GetSubspace(minttypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.DistrKeeper,
 		authtypes.FeeCollectorName,
 	)
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
@@ -520,7 +511,7 @@ func New(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
-		minttypes.ModuleName,
+		minttypes.ModuleName, // mint module must happen before distribution
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
@@ -617,6 +608,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper),
 		app.transferModule,
+		NewICAHostSimModule(icaModule, appCodec),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()

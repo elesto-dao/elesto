@@ -5,7 +5,6 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -20,22 +19,38 @@ func (*emptyAppOption) Get(i string) interface{} {
 	return nil
 }
 
+// Various prefixes for accounts and public keys
+var (
+	AccountPubKeyPrefix    = AccountAddressPrefix + "pub"
+	ValidatorAddressPrefix = AccountAddressPrefix + "valoper"
+	ValidatorPubKeyPrefix  = AccountAddressPrefix + "valoperpub"
+	ConsNodeAddressPrefix  = AccountAddressPrefix + "valcons"
+	ConsNodePubKeyPrefix   = AccountAddressPrefix + "valconspub"
+)
+
+// SetConfig initialize the configuration instance for the sdk
+func SetConfig() {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount(AccountAddressPrefix, AccountPubKeyPrefix)
+	config.SetBech32PrefixForValidator(ValidatorAddressPrefix, ValidatorPubKeyPrefix)
+	config.SetBech32PrefixForConsensusNode(ConsNodeAddressPrefix, ConsNodePubKeyPrefix)
+	config.Seal()
+}
+
 func setup(withGenesis bool, invCheckPeriod uint) (*App, GenesisState) {
 	if config := sdk.GetConfig(); config.GetBech32AccountAddrPrefix() != AccountAddressPrefix {
-		cosmoscmd.SetPrefixes(AccountAddressPrefix)
+		SetConfig()
 	}
 
 	db := dbm.NewMemDB()
-	encCdc := cosmoscmd.MakeEncodingConfig(ModuleBasics)
+	encCdc := MakeEncodingConfig(ModuleBasics)
 	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encCdc, &emptyAppOption{})
 
-	cosmosApp := app.(*App)
-
 	if withGenesis {
-		return cosmosApp, NewDefaultGenesisState(encCdc.Marshaler)
+		return app, NewDefaultGenesisState(encCdc.Marshaler)
 	}
 
-	return cosmosApp, GenesisState{}
+	return app, GenesisState{}
 }
 
 // Setup initializes a new App. A Nop logger is set in App.

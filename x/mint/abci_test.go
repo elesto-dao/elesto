@@ -1,18 +1,21 @@
 package mint_test
 
 import (
-	"math"
+	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	chain "github.com/elesto-dao/elesto/v2/app"
 
-	"github.com/elesto-dao/elesto/v2/x/mint"
-	"github.com/elesto-dao/elesto/v2/x/mint/keeper"
-	"github.com/elesto-dao/elesto/v2/x/mint/types"
+	chain "github.com/elesto-dao/elesto/v3/app"
+
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
+	"github.com/elesto-dao/elesto/v3/x/mint"
+	"github.com/elesto-dao/elesto/v3/x/mint/keeper"
 )
 
 type ModuleTestSuite struct {
@@ -28,163 +31,124 @@ func TestModuleTestSuite(t *testing.T) {
 }
 
 func (suite *ModuleTestSuite) SetupTest() {
+
 	app := chain.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{}).WithBlockTime(time.Now())
 
 	suite.app = app
 	suite.ctx = ctx
 	suite.keeper = suite.app.MintKeeper
 }
 
-func (s *ModuleTestSuite) TestInflationRate() {
-	// This test simulates data taken from here:
-	// https://docs.google.com/spreadsheets/d/1sXwR-cYHS98in1aMzBabF7FNjqikbA3btnPMlFqgQ50/edit#gid=0
-
-	type estimatedSupply struct {
-		amount    int64
-		tolerance int64
-	}
-
-	const defaultTolerance = int64(4) // https://xkcd.com/221/
-
-	// Here we define the expected supply amount for each year.
-	// Amounts here are defined in *tokens*, not microtokens.
-	// We assume `defaultTolerance` amount of tokens as tolerance value between what's computed by the
-	// chain and what's expected from the simulation Google Sheet linked at the beginning of this test.
-	// Rationale on how the default tolerance has been determined is explained in the link above.
-	// Year 10 is a special case, because we want to produce a maximum amount of 1 billion tokens by then.
-	expectedEstimatedSupply := map[int]estimatedSupply{
-		0: {amount: 400000000, tolerance: defaultTolerance},
-		1: {amount: 600000000, tolerance: defaultTolerance},
-		2: {amount: 750000000, tolerance: defaultTolerance},
-		3: {amount: 843750000, tolerance: defaultTolerance},
-		4: {amount: 896484375, tolerance: defaultTolerance},
-		5: {amount: 924499512, tolerance: defaultTolerance},
-		6: {amount: 942989502, tolerance: defaultTolerance},
-		7: {amount: 961849292, tolerance: defaultTolerance},
-		8: {amount: 981086278, tolerance: defaultTolerance},
-		9: {amount: 1000000000, tolerance: 0},
-	}
-
-	blocksPerYear := 6_307_200
-
-	// We run the simulation for at least two times the amount of supply years to
-	// make sure past year 10, no more tokens are minted.
-	simulationYears := len(expectedEstimatedSupply) * 2
-
-	initialSupply := 200_000_000_000_000
+func (s *ModuleTestSuite) TestInflationAmount() {
 
 	params := s.app.MintKeeper.GetParams(s.ctx)
 
-	ctx := s.ctx.WithBlockHeight(int64(0))
+	ctx := s.ctx.WithBlockHeight(0).WithBlockTime(time.Date(2022, 06, 27, 21, 00, 00, 0, time.UTC))
+	blockTime := 5 * time.Second
+	feeCollector := s.app.AccountKeeper.GetModuleAddress(authtypes.FeeCollectorName)
 
-	err := s.keeper.MintCoins(ctx, sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, int64(initialSupply))))
-	s.Require().NoError(err)
-	s.Require().EqualValues(s.keeper.GetSupply(
-		s.ctx.WithBlockHeight(1),
-		params.MintDenom,
-	).Amount.Int64(), int64(initialSupply))
+	// mint the initial
+	err := s.keeper.MintCoins(s.ctx, sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, 200_000_000_000_000)))
+	s.Assert().NoError(err)
 
-	s.T().Log("circulating supply at block 0:", s.keeper.GetSupply(ctx, params.MintDenom).String())
-
-	lastCommunityFundAmount := sdk.DecCoins{}
-	lastDevFundAmount := sdk.NewCoin(params.MintDenom, sdk.ZeroInt())
-
-	for year := 0; year <= simulationYears; year++ {
-		// Adding 1 here because we're running the simulation on the first day of the following year.
-		blockHeight := (year * blocksPerYear) + 1
-
-		s.T().Log("simulating year", year, "block height", blockHeight)
-
-		ctx := s.ctx.WithBlockHeight(int64(blockHeight))
-
+	advanceHeight := func(h int64) int64 {
+		ctx = ctx.WithBlockHeight(h).WithBlockTime(ctx.BlockTime().Add(blockTime))
+		beforeBalance := s.app.BankKeeper.GetBalance(ctx, feeCollector, sdk.DefaultBondDenom)
 		mint.BeginBlocker(ctx, s.keeper)
-
-		communityFundAmount := s.app.DistrKeeper.GetFeePoolCommunityCoins(s.ctx)
-		floatCommunityAmount, err := communityFundAmount.AmountOf(params.MintDenom).Float64()
-		s.NoError(err)
-
-		lastFloatCommunityAmount, err := lastCommunityFundAmount.AmountOf(params.MintDenom).Float64()
-		s.NoError(err)
-
-		taddr, err := sdk.AccAddressFromBech32(s.app.MintKeeper.GetParams(s.ctx).TeamAddress)
-		s.NoError(err)
-
-		teamBalance := s.app.BankKeeper.GetBalance(s.ctx, taddr, params.MintDenom)
-
-		s.T().Log("community pool amount", lastCommunityFundAmount.String())
-		s.T().Log("developer fund amount", lastDevFundAmount.String())
-
-		if year < 10 {
-			s.Greater(
-				floatCommunityAmount,
-				lastFloatCommunityAmount,
-			)
-
-			s.Greater(
-				teamBalance.Amount.Int64(),
-				lastDevFundAmount.Amount.Int64(),
-			)
-		} else {
-			s.EqualValues(
-				floatCommunityAmount,
-				lastFloatCommunityAmount,
-			)
-
-			s.EqualValues(
-				teamBalance.Amount.Int64(),
-				lastDevFundAmount.Amount.Int64(),
-			)
-		}
-
-		lastCommunityFundAmount = communityFundAmount
-		lastDevFundAmount = teamBalance
-
-		// Since running this simulation for each block would make this test take too much time,
-		// we mint the total amount of tokens minted in one year, minus 1 block since the `mint.BeginBlocker()`
-		// call already mints once for us.
-		blockInflationAmount := mint.BlockInflationAmount[year]
-		mintAmount := sdk.NewInt(int64(blockInflationAmount) * int64(blocksPerYear-1))
-		mintedCoin := sdk.NewCoin(params.MintDenom, mintAmount)
-		mintedCoins := sdk.NewCoins(mintedCoin)
-		s.Require().NoError(s.keeper.MintCoins(ctx, mintedCoins))
-		supply := s.keeper.GetSupply(ctx, params.MintDenom)
-		s.T().Log("inflation for year", year, ":", "supply", supply)
-
-		supplyInTokens := supply.Amount.Quo(sdk.NewInt(1000000)).ToDec().RoundInt64()
-
-		estimatedYear := year
-		if year > 9 {
-			estimatedYear = 9 // past year 10, we expect always the same supply
-		}
-
-		yearExpectedSupply, found := expectedEstimatedSupply[estimatedYear]
-		s.Require().True(found, "did not found expected supply for year %v", year)
-
-		// Calculate the absolute difference between supply actually generated and supply expected
-		// in the table above.
-		difference := math.Abs(float64(supplyInTokens - yearExpectedSupply.amount))
-		s.T().Log("difference:", difference, "tolerance:", yearExpectedSupply.tolerance, "expected:", yearExpectedSupply.amount, "got:", supplyInTokens)
-
-		// Since we're dealing with absolute value, we can bypass checking negative amounts.
-		if difference > float64(yearExpectedSupply.tolerance) {
-			s.Require().Fail(
-				"too big difference between expected and obtained supply",
-				"difference between expected supply %d and obtained supply %d is not within acceptable range: %f, original supply %v",
-				yearExpectedSupply.amount,
-				supplyInTokens,
-				difference,
-				supply.String(),
-			)
-		}
+		afterBalance := s.app.BankKeeper.GetBalance(ctx, feeCollector, sdk.DefaultBondDenom)
+		mintedAmt := afterBalance.Sub(beforeBalance)
+		s.Assert().False(mintedAmt.IsNegative())
+		return mintedAmt.Amount.Int64()
 	}
 
-}
+	// start from block 0
 
-func (s *ModuleTestSuite) TestDefaultGenesis() {
-	genState := *types.DefaultGenesisState()
+	// advance for the first blocks
+	s.Assert().EqualValues(advanceHeight(0), 0)
+	s.Assert().EqualValues(advanceHeight(1), mint.BlockInflationAmount[0])
+	s.Assert().EqualValues(advanceHeight(2), mint.BlockInflationAmount[0])
+	s.Assert().EqualValues(advanceHeight(3), mint.BlockInflationAmount[0])
+	s.Assert().EqualValues(advanceHeight(4), mint.BlockInflationAmount[0])
+	s.Assert().EqualValues(advanceHeight(5), mint.BlockInflationAmount[0])
 
-	mint.InitGenesis(s.ctx, s.app.MintKeeper, s.app.AccountKeeper, &genState)
-	got := mint.ExportGenesis(s.ctx, s.app.MintKeeper)
-	s.Require().Equal(genState, *got)
+	// check the supply
+	s.Assert().EqualValues(s.keeper.GetSupply(ctx, params.MintDenom).Amount.Int64(), 200_000_158_548_960)
+
+	// go to the end of the first epoch
+	s.Assert().EqualValues(advanceHeight(6_307_198), mint.BlockInflationAmount[0])
+	s.Assert().EqualValues(advanceHeight(6_307_199), mint.BlockInflationAmount[0])
+	s.Assert().EqualValues(advanceHeight(6_307_200), mint.BlockInflationAmount[1]) // new epoch
+	s.Assert().EqualValues(advanceHeight(6_307_201), mint.BlockInflationAmount[1])
+	s.Assert().EqualValues(advanceHeight(6_307_202), mint.BlockInflationAmount[1])
+
+	// 2nd epoch
+	s.Assert().EqualValues(advanceHeight(12_614_398), mint.BlockInflationAmount[1])
+	s.Assert().EqualValues(advanceHeight(12_614_399), mint.BlockInflationAmount[1])
+	s.Assert().EqualValues(advanceHeight(12_614_400), mint.BlockInflationAmount[2]) // new epoch
+	s.Assert().EqualValues(advanceHeight(12_614_401), mint.BlockInflationAmount[2])
+	s.Assert().EqualValues(advanceHeight(12_614_402), mint.BlockInflationAmount[2])
+
+	// 3rd epoch
+	s.Assert().EqualValues(advanceHeight(18_921_598), mint.BlockInflationAmount[2])
+	s.Assert().EqualValues(advanceHeight(18_921_599), mint.BlockInflationAmount[2])
+	s.Assert().EqualValues(advanceHeight(18_921_600), mint.BlockInflationAmount[3]) // new epoch
+	s.Assert().EqualValues(advanceHeight(18_921_601), mint.BlockInflationAmount[3])
+	s.Assert().EqualValues(advanceHeight(18_921_602), mint.BlockInflationAmount[3])
+
+	// 4th epoch
+	s.Assert().EqualValues(advanceHeight(25_228_798), mint.BlockInflationAmount[3])
+	s.Assert().EqualValues(advanceHeight(25_228_799), mint.BlockInflationAmount[3])
+	s.Assert().EqualValues(advanceHeight(25_228_800), mint.BlockInflationAmount[4]) // new epoch
+	s.Assert().EqualValues(advanceHeight(25_228_801), mint.BlockInflationAmount[4])
+	s.Assert().EqualValues(advanceHeight(25_228_802), mint.BlockInflationAmount[4])
+
+	// 5th epoch
+	s.Assert().EqualValues(advanceHeight(31_535_998), mint.BlockInflationAmount[4])
+	s.Assert().EqualValues(advanceHeight(31_535_999), mint.BlockInflationAmount[4])
+	s.Assert().EqualValues(advanceHeight(31_536_000), mint.BlockInflationAmount[5]) // new epoch
+	s.Assert().EqualValues(advanceHeight(31_536_001), mint.BlockInflationAmount[5])
+	s.Assert().EqualValues(advanceHeight(31_536_002), mint.BlockInflationAmount[5])
+
+	// 6th epoch
+	s.Assert().EqualValues(advanceHeight(37_843_198), mint.BlockInflationAmount[5])
+	s.Assert().EqualValues(advanceHeight(37_843_199), mint.BlockInflationAmount[5])
+	s.Assert().EqualValues(advanceHeight(37_843_200), mint.BlockInflationAmount[6]) // new epoch
+	s.Assert().EqualValues(advanceHeight(37_843_201), mint.BlockInflationAmount[6])
+	s.Assert().EqualValues(advanceHeight(37_843_202), mint.BlockInflationAmount[6])
+
+	// 7th epoch
+	s.Assert().EqualValues(advanceHeight(44_150_398), mint.BlockInflationAmount[6])
+	s.Assert().EqualValues(advanceHeight(44_150_399), mint.BlockInflationAmount[6])
+	s.Assert().EqualValues(advanceHeight(44_150_400), mint.BlockInflationAmount[7]) // new epoch
+	s.Assert().EqualValues(advanceHeight(44_150_401), mint.BlockInflationAmount[7])
+	s.Assert().EqualValues(advanceHeight(44_150_402), mint.BlockInflationAmount[7])
+
+	// 8th epoch
+	s.Assert().EqualValues(advanceHeight(50_457_598), mint.BlockInflationAmount[7])
+	s.Assert().EqualValues(advanceHeight(50_457_599), mint.BlockInflationAmount[7])
+	s.Assert().EqualValues(advanceHeight(50_457_600), mint.BlockInflationAmount[8]) // new epoch
+	s.Assert().EqualValues(advanceHeight(50_457_601), mint.BlockInflationAmount[8])
+	s.Assert().EqualValues(advanceHeight(50_457_602), mint.BlockInflationAmount[8])
+
+	// 9th epoch
+	s.Assert().EqualValues(advanceHeight(56_764_798), mint.BlockInflationAmount[8])
+	s.Assert().EqualValues(advanceHeight(56_764_799), mint.BlockInflationAmount[8])
+	s.Assert().EqualValues(advanceHeight(56_764_800), mint.BlockInflationAmount[9]) // new epoch
+	s.Assert().EqualValues(advanceHeight(56_764_801), mint.BlockInflationAmount[9])
+	s.Assert().EqualValues(advanceHeight(56_764_802), mint.BlockInflationAmount[9])
+
+	// 10th epoch
+	s.Assert().EqualValues(advanceHeight(63_071_998), mint.BlockInflationAmount[9])
+	s.Assert().EqualValues(advanceHeight(63_071_999), mint.BlockInflationAmount[9])
+	s.Assert().EqualValues(advanceHeight(63_072_000), 0) // new epoch
+	s.Assert().EqualValues(advanceHeight(63_072_001), 0)
+	s.Assert().EqualValues(advanceHeight(63_072_002), 0)
+
+	for i := 0; i < 10; i++ {
+		// get a random height after 63072000
+		randomBlockOutsideEpoch := 63_072_000 + rand.Int63()
+		s.Assert().EqualValues(advanceHeight(randomBlockOutsideEpoch), 0)
+	}
+
 }

@@ -10,10 +10,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	"github.com/google/uuid"
 
-	"github.com/elesto-dao/elesto/v2/x/did"
-	"github.com/elesto-dao/elesto/v2/x/did/keeper"
+	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v3/x/did/keeper"
 )
+
+var ownersAndIds map[string][]string
 
 var (
 	TypeMsgCreateDidDocument            = sdk.MsgTypeURL(&did.MsgCreateDidDocument{})
@@ -51,6 +54,10 @@ const (
 
 	// this line is used by starport scaffolding # simapp/module/const
 )
+
+func init() {
+	ownersAndIds = make(map[string][]string)
+}
 
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func WeightedOperations(simState module.SimulationState, didKeeper keeper.Keeper, bk did.BankKeeper, ak did.AccountKeeper) []simtypes.WeightedOperation {
@@ -176,7 +183,8 @@ func SimulateMsgCreateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		didOwner, _ := simtypes.RandomAcc(r, accs)
 		ownerAddress := didOwner.Address.String()
-		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		id := genRandomUUID(r, ownerAddress)
+		didID := did.NewChainDID(ctx.ChainID(), id)
 		vmID := didID.NewVerificationMethodID(ownerAddress)
 		vmType := did.EcdsaSecp256k1VerificationKey2019
 		vm := did.NewVerification(
@@ -235,12 +243,15 @@ func SimulateMsgUpdateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		didOwner, _ := simtypes.RandomAcc(r, accs)
 		ownerAddress := didOwner.Address.String()
-		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		id := returnRandomUUID(r, ownerAddress)
+		didID := did.NewChainDID(ctx.ChainID(), id)
 
 		// build vm 1
 		vmKey, _ := simtypes.RandomAcc(r, accs)
 		keyAddress := vmKey.Address.String()
-		didvmkeyID := did.NewChainDID(ctx.ChainID(), keyAddress)
+
+		didvmID := returnRandomUUID(r, keyAddress)
+		didvmkeyID := did.NewChainDID(ctx.ChainID(), didvmID)
 		vmkeyID := didvmkeyID.NewVerificationMethodID(keyAddress)
 		vmkeyType := did.EcdsaSecp256k1VerificationKey2019
 		vm := did.NewVerification(
@@ -282,8 +293,7 @@ func SimulateMsgUpdateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 
 		// update the did document
 		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
-		err := didDoc.AddControllers(controllerDidID.String())
-		if err != nil {
+		if err := didDoc.AddControllers(controllerDidID.String()); err != nil {
 			return simtypes.NoOpMsg(
 				did.ModuleName,
 				TypeMsgUpdateDidDocument,
@@ -291,15 +301,19 @@ func SimulateMsgUpdateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 			), nil, err
 		}
 
-		err = didDoc.AddVerifications(vm, vm2)
-		if err != nil {
+		if err := didDoc.AddVerifications(vm, vm2); err != nil {
+			if errors.Is(err, did.ErrInvalidInput) {
+				return simtypes.NoOpMsg(did.ModuleName, TypeMsgUpdateDidDocument,
+					"duplicate verification methods",
+				), nil, nil
+			}
+
 			return simtypes.NoOpMsg(did.ModuleName, TypeMsgUpdateDidDocument,
 				"did not found, could not add vm",
 			), nil, err
 		}
 
-		err = didDoc.AddServices(service1, service2, service3)
-		if err != nil {
+		if err := didDoc.AddServices(service1, service2, service3); err != nil {
 			return simtypes.NoOpMsg(
 				did.ModuleName,
 				TypeMsgUpdateDidDocument,
@@ -353,9 +367,11 @@ func SimulateMsgAddVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Accou
 		vmKey, _ := simtypes.RandomAcc(r, accs)
 		keyAddress := vmKey.Address.String()
 
-		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		id := returnRandomUUID(r, ownerAddress)
+		didID := did.NewChainDID(ctx.ChainID(), id)
 
-		didvmkeyID := did.NewChainDID(ctx.ChainID(), keyAddress)
+		vmID := returnRandomUUID(r, keyAddress)
+		didvmkeyID := did.NewChainDID(ctx.ChainID(), vmID)
 		vmkeyID := didvmkeyID.NewVerificationMethodID(keyAddress)
 		vmkeyType := did.EcdsaSecp256k1VerificationKey2019
 
@@ -424,7 +440,8 @@ func SimulateMsgRevokeVerification(k keeper.Keeper, bk did.BankKeeper, ak did.Ac
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		didOwner, _ := simtypes.RandomAcc(r, accs)
 		ownerAddress := didOwner.Address.String()
-		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		id := returnRandomUUID(r, ownerAddress)
+		didID := did.NewChainDID(ctx.ChainID(), id)
 		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
 		vm := didDoc.VerificationMethod
 
@@ -479,7 +496,8 @@ func SimulateMsgSetVerificationRelationships(k keeper.Keeper, bk did.BankKeeper,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		didOwner, _ := simtypes.RandomAcc(r, accs)
 		ownerAddress := didOwner.Address.String()
-		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		id := returnRandomUUID(r, ownerAddress)
+		didID := did.NewChainDID(ctx.ChainID(), id)
 		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
 		vm := didDoc.VerificationMethod
 
@@ -534,7 +552,8 @@ func SimulateMsgAddService(k keeper.Keeper, bk did.BankKeeper, ak did.AccountKee
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		didOwner, _ := simtypes.RandomAcc(r, accs)
 		ownerAddress := didOwner.Address.String()
-		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		id := returnRandomUUID(r, ownerAddress)
+		didID := did.NewChainDID(ctx.ChainID(), id)
 		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
 
 		serviceID := "service:emtiagent" + fmt.Sprint(len(didDoc.Service))
@@ -585,7 +604,9 @@ func SimulateMsgDeleteService(k keeper.Keeper, bk did.BankKeeper, ak did.Account
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		didOwner, _ := simtypes.RandomAcc(r, accs)
 		ownerAddress := didOwner.Address.String()
-		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		id := returnRandomUUID(r, ownerAddress)
+		didID := did.NewChainDID(ctx.ChainID(), id)
+
 		didDoc, found := k.GetDidDocument(ctx, []byte(didID))
 		service := didDoc.Service
 
@@ -645,7 +666,8 @@ func SimulateMsgAddController(k keeper.Keeper, bk did.BankKeeper, ak did.Account
 		didController, _ := simtypes.RandomAcc(r, accs)
 		controllerAddress := didController.Address.String()
 
-		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		id := returnRandomUUID(r, ownerAddress)
+		didID := did.NewChainDID(ctx.ChainID(), id)
 		controllerDidID := did.NewKeyDID(controllerAddress)
 		_, found := k.GetDidDocument(ctx, []byte(didID))
 
@@ -695,7 +717,8 @@ func SimulateMsgDeleteController(k keeper.Keeper, bk did.BankKeeper, ak did.Acco
 		didController, _ := simtypes.RandomAcc(r, accs)
 		controllerAddress := didController.Address.String()
 
-		didID := did.NewChainDID(ctx.ChainID(), ownerAddress)
+		id := returnRandomUUID(r, ownerAddress)
+		didID := did.NewChainDID(ctx.ChainID(), id)
 		controllerDidID := did.NewKeyDID(controllerAddress)
 
 		msg := did.NewMsgDeleteController(
@@ -745,4 +768,36 @@ func SimulateMsgDeleteController(k keeper.Keeper, bk did.BankKeeper, ak did.Acco
 
 		return opMsg, fOp, err
 	}
+}
+
+// stores owners and ids for msg create did
+func genRandomUUID(r *rand.Rand, acc string) string {
+	if _, found := ownersAndIds[acc]; !found {
+		id := uuid.New().String()
+		ownersAndIds[acc] = append(ownersAndIds[acc], id)
+		return id
+	}
+
+	idx := r.Intn(2 * len(ownersAndIds[acc]))
+	if idx >= len(ownersAndIds[acc]) {
+		id := uuid.New().String()
+		ownersAndIds[acc] = append(ownersAndIds[acc], id)
+		return id
+	}
+
+	return ownersAndIds[acc][idx]
+}
+
+// return random uuid or uuid from store based on acc
+func returnRandomUUID(r *rand.Rand, acc string) string {
+	if _, found := ownersAndIds[acc]; !found {
+		return uuid.New().String()
+	}
+
+	idx := r.Intn(2 * len(ownersAndIds[acc]))
+	if idx >= len(ownersAndIds[acc]) {
+		return uuid.New().String()
+	}
+
+	return ownersAndIds[acc][idx]
 }

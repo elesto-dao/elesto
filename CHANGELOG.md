@@ -2,9 +2,75 @@
 ## [Unreleased]
 
 
-<a name="v2.0.0-rc2"></a>
-## [v2.0.0-rc2] - 2022-06-21
+<a name="v3.0.0-rc2"></a>
+## [v3.0.0-rc2] - 2022-09-14
 ### Chore
+- rename module version to v3
+- remove link-aries command from did cli
+- updating the seeds
+- update changelog for v3.0.0-rc1
+- **cosmoscmd:** remove cosmoscmd from node
+- **update:** updgrade to v0.45.7 & fix tests
+
+### Docs
+- amend ADR [#8](https://github.com/elesto-dao/elesto/issues/8), introduce epoch concept
+
+### Feat
+- remove team rewards and community tax from mint
+- add stricter validation of did document
+- **did:** inhibiting the creation vanity DIDs ([#220](https://github.com/elesto-dao/elesto/issues/220))
+- **docs:** use template for code of conduct
+
+### Fix
+- rollback implementation to epoch base inflation
+- conflict between /credentials/{id} and /credentials/definitions
+- credential definition id should not be DID
+- **did:** simulation modifications
+- **docs:** remove CoC from contributing because now isolated in CoC file
+- **docs:** update ADR description
+
+
+<a name="v3.0.0-rc1"></a>
+## [v3.0.0-rc1] - 2022-08-22
+### Chore
+- update changelog for v3.0.0-rc1
+- prepare codebase for Oak audit
+- grammatical improvements
+- **credential:** goimport -local
+- **credential:** replace ioutils with os
+- **credential:** sort imports
+
+### Docs
+- add Mint and Inflation ADR
+- update docs about network upgrade
+- **ADR:** add verifiable credential ADR 006 ([#179](https://github.com/elesto-dao/elesto/issues/179))
+
+### Feat
+- add stale github action
+- use ghcr.io container image for kubernetes devnet
+- add github action release for containers
+- add k3d local devnet scripts
+- add dockerfile
+- **docs:** create mint module readme
+- **mint:** chain reset-resistant mint schedule ([#180](https://github.com/elesto-dao/elesto/issues/180))
+
+### Fix
+- expose tendermint rpc endpoint on 0.0.0.0 for liveness probe
+- link aries command generates invalid service ids ([#195](https://github.com/elesto-dao/elesto/issues/195))
+- linter error
+- **simulations:** allow simulations to pass even if Interchain Accounts ([#202](https://github.com/elesto-dao/elesto/issues/202))
+
+### Test
+- **credential:** add test for update-revocation-list
+- **credential:** add test for create-revocation-list
+- **credential:** add test for issue-public-credential
+- **credential:** add test for publish-credential-definition
+
+
+<a name="v2.0.0-rc2"></a>
+## [v2.0.0-rc2] - 2022-07-04
+### Chore
+- update changelog for v2.0.0-rc2
 - update changelog for v2.0.0-rc1
 - **makefile:** build only the node binary for the build target
 
@@ -132,7 +198,9 @@
 - increase test coverage
 
 
-[Unreleased]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc2...HEAD
+[Unreleased]: https://github.com/elesto-dao/elesto/compare/v3.0.0-rc2...HEAD
+[v3.0.0-rc2]: https://github.com/elesto-dao/elesto/compare/v3.0.0-rc1...v3.0.0-rc2
+[v3.0.0-rc1]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc2...v3.0.0-rc1
 [v2.0.0-rc2]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc1...v2.0.0-rc2
 [v2.0.0-rc1]: https://github.com/elesto-dao/elesto/compare/v1.0.0-rc2...v2.0.0-rc1
 [v1.0.0-rc2]: https://github.com/elesto-dao/elesto/compare/v1.0.0-rc1...v1.0.0-rc2

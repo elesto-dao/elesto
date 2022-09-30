@@ -1,0 +1,22 @@
+name: 'Handle stale issues and PRs'
+on:
+  schedule:
+  # daily 3am
+    - cron: '0 3 * * *'
+
+jobs:
+  stale:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/stale@v5
+        with:
+          repo-token: ${{ github.token }}
+          # assuming we don't want to close issues we just want to tag them as
+          # being stale, hence -1 cosing period for issues
+          days-before-issue-close: -1
+          days-before-issue-stale: 15
+          stale-issue-message: "This issue was marked as stale because there was no activity for 15 days"
+          days-before-pr-stale: 10 
+          stale-pr-message: "This PR was marked as stale because there was no activity for 10 days"
+          days-before-pr-close: 15
+          close-pr-message: "This PR was closed because there was no activity for 15 days"

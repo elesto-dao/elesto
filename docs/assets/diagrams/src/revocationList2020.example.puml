@@ -1,0 +1,17 @@
+@startjson
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/vc-revocation-list-2020/v1"
+  ],
+  "id": "https://regulator/credentials/status/001",
+  "type": ["VerifiableCredential", "RevocationList2020Credential"],
+  "issuer": "did:cosmos:elesto:example-credential-issuer",
+  "issuanceDate": "2020-04-05T14:27:40Z",
+  "credentialSubject": {
+    "id": "https://regulator/credentials/status/001#list",
+    "type": "RevocationList2020",
+    "encodedList": "H4sIAAAAAAAAA-3BMQEAAADCoPVPbQsvoAAAAAAAAAAAAAAAAP4GcwM92tQwAAA"
+  }
+}
+@endjson

@@ -6,9 +6,12 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/google/uuid"
 
-	didmod "github.com/elesto-dao/elesto/v2/x/did"
+	didmod "github.com/elesto-dao/elesto/v3/x/did"
 )
+
+const uuid4Length int = 36
 
 type msgServer struct {
 	Keeper
@@ -53,6 +56,12 @@ func (k msgServer) CreateDidDocument(
 	)
 	if err != nil {
 		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+
+	// check the last part of the DID is a valid UUID
+	if !isValidUUID(didmod.DID(msg.Id)) {
+		err := sdkerrors.Wrapf(didmod.ErrInvalidInput, "%s is not a valid UUID format", msg.Id)
 		return nil, err
 	}
 
@@ -294,4 +303,15 @@ func executeOnDidWithRelationships(
 	}
 	k.Logger(ctx).Info("request to update did document success", "did", updatedDidDoc.Id)
 	return
+}
+
+// checks if the provided DID has a UUID-conformant namespace-identifier
+func isValidUUID(did didmod.DID) bool {
+	if len(did) < uuid4Length {
+		return false
+	}
+	// gets the namespace identifier
+	namespaceID := did[len(did)-uuid4Length:]
+	_, err := uuid.Parse(string(namespaceID))
+	return err == nil
 }

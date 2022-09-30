@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 // SetDidDocument store a did document in the keeper, existing DID document with the
@@ -68,9 +68,7 @@ func (k Keeper) GetAllDidDocumentsWithCondition(
 
 	for ; iterator.Valid(); iterator.Next() {
 		didDoc, _ := k.UnmarshalDidDocument(iterator.Value())
-		didTyped := didDoc.(did.DidDocument)
-
-		if didSelector(&didTyped) {
+		if didTyped, ok := didDoc.(did.DidDocument); ok && didSelector(&didTyped) {
 			didDocs = append(didDocs, &didTyped)
 		}
 	}

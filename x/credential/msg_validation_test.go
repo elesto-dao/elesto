@@ -177,7 +177,7 @@ func TestMsgUpdateCredentialDefinitionRequest_ValidateBasic(t *testing.T) {
 			nil,
 		},
 		{
-			"FAIL: SupersededBy is not valid DID ",
+			"PASS: SupersededBy is not valid DID ",
 			fields{
 				Active:       true,
 				SupersededBy: "not a did",

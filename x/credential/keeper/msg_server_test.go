@@ -1,4 +1,4 @@
-package keeper_test
+package keeper
 
 import (
 	"context"
@@ -8,9 +8,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/credential/keeper"
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 const (

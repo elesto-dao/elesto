@@ -16,8 +16,8 @@ import (
 	"github.com/noandrea/rl2020"
 	"github.com/spf13/cobra"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -67,10 +67,9 @@ func NewIssuePublicCredentialCmd() *cobra.Command {
 			}
 
 			var (
-				cID, credentialFile = args[0], args[1]
-				definitionDID       = did.NewChainDID(clientCtx.ChainID, cID)
-				signer              = clientCtx.GetFromAddress()
-				pwc                 *credential.WrappedCredential
+				definitionID, credentialFile = args[0], args[1]
+				signer                       = clientCtx.GetFromAddress()
+				pwc                          *credential.WrappedCredential
 			)
 
 			// initialize the definition
@@ -104,7 +103,7 @@ func NewIssuePublicCredentialCmd() *cobra.Command {
 			// create the message
 			msg := credential.NewMsgIssuePublicVerifiableCredentialRequest(
 				pwc.PublicVerifiableCredential,
-				definitionDID,
+				definitionID,
 				signer,
 			)
 			// execute
@@ -142,12 +141,11 @@ func NewCreateRevocationListCmd() *cobra.Command {
 			}
 
 			var (
-				cID           = args[0]
-				signer        = clientCtx.GetFromAddress()
-				definitionDID = did.NewChainDID(clientCtx.ChainID, definitionID)
-				pwc           *credential.WrappedCredential
-				rl            rl2020.RevocationList2020
-				issuerDID     = did.NewChainDID(clientCtx.ChainID, signer.String())
+				cID       = args[0]
+				signer    = clientCtx.GetFromAddress()
+				pwc       *credential.WrappedCredential
+				rl        rl2020.RevocationList2020
+				issuerDID = did.NewChainDID(clientCtx.ChainID, signer.String())
 			)
 			// REVOCATION LIST CREATION
 			// create the revocation list
@@ -197,7 +195,7 @@ func NewCreateRevocationListCmd() *cobra.Command {
 			// publish the new credential
 			msg := credential.NewMsgIssuePublicVerifiableCredentialRequest(
 				pwc.PublicVerifiableCredential,
-				definitionDID,
+				definitionID,
 				signer,
 			)
 			// execute
@@ -207,7 +205,7 @@ func NewCreateRevocationListCmd() *cobra.Command {
 	// add flags
 	cmd.Flags().IntVar(&revocationListSize, "size", 16, "the size of the revocation list, in KB")
 	cmd.Flags().StringVar(&issuerDIDstr, "issuer", "", "the issuer DID. If not set the signer key will be used as issuer")
-	cmd.Flags().StringVar(&definitionID, "definition-id", "revocation-list-2020", "the RevocationList2020 definition ID")
+	cmd.Flags().StringVar(&definitionID, "definition-id", "https://w3id.org/vc-revocation-list-2020/v1", "the RevocationList2020 definition ID")
 	cmd.Flags().IntSliceVarP(&revocationIndexes, "revoke", "r", []int{}, "index of credentials to be revoked")
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
@@ -236,11 +234,10 @@ func NewUpdateRevocationListCmd() *cobra.Command {
 			}
 
 			var (
-				cID           = args[0]
-				signer        = clientCtx.GetFromAddress()
-				definitionDID = did.NewChainDID(clientCtx.ChainID, definitionID)
-				pwc           *credential.WrappedCredential
-				rl            rl2020.RevocationList2020
+				cID    = args[0]
+				signer = clientCtx.GetFromAddress()
+				pwc    *credential.WrappedCredential
+				rl     rl2020.RevocationList2020
 			)
 
 			// query the credential
@@ -281,7 +278,7 @@ func NewUpdateRevocationListCmd() *cobra.Command {
 			// publish the new credential
 			msg := credential.NewMsgIssuePublicVerifiableCredentialRequest(
 				pwc.PublicVerifiableCredential,
-				definitionDID,
+				definitionID,
 				signer,
 			)
 			// execute
