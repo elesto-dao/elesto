@@ -3,21 +3,21 @@ package keeper_test
 import (
 	"fmt"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/credential/keeper"
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/credential/keeper"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
-func (s *KeeperTestSuite) TestGenesis() {
+func (suite *KeeperTestSuite) TestGenesis() {
 	//default genesis on export
-	genState := keeper.ExportGenesis(s.ctx, s.keeper)
-	s.Require().Equal(genState, &credential.GenesisState{})
+	genState := keeper.ExportGenesis(suite.ctx, suite.keeper)
+	suite.Require().Equal(genState, &credential.GenesisState{})
 
 	// add credential definitions and pvcs in genesis state
 	for i := 0; i < 5; i++ {
 		cD := credential.CredentialDefinition{
 			Id:           fmt.Sprintf("did:cosmos:elesto:cd-%v", i),
-			PublisherId:  did.NewKeyDID(s.GetTestAccount().String()).String(),
+			PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
 			Schema:       []byte(dummyCredential),
 			Vocab:        []byte(dummyVocabOk),
 			Name:         "CredentialDef1",
@@ -30,7 +30,7 @@ func (s *KeeperTestSuite) TestGenesis() {
 		// load the signed credential
 		wc, err := credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json")
 		if err != nil {
-			s.Require().FailNowf("expected wrapped credential, got:", "%v", err)
+			suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
 		}
 
 		wc.PublicVerifiableCredential.Id = fmt.Sprintf("https://test.xyz/credential/%v", i)
@@ -39,23 +39,23 @@ func (s *KeeperTestSuite) TestGenesis() {
 	}
 
 	// init genesis
-	keeper.InitGenesis(s.ctx, s.keeper, genState)
+	keeper.InitGenesis(suite.ctx, suite.keeper, genState)
 
 	// check credentials and pvcs in keeper
 	for i := 0; i < 5; i++ {
-		cd, found := s.keeper.GetCredentialDefinition(s.ctx, fmt.Sprintf("did:cosmos:elesto:cd-%v", i))
-		s.Require().True(found)
-		s.Require().Equal(genState.CredentialDefinitions[i], cd)
+		cd, found := suite.keeper.GetCredentialDefinition(suite.ctx, fmt.Sprintf("did:cosmos:elesto:cd-%v", i))
+		suite.Require().True(found)
+		suite.Require().Equal(genState.CredentialDefinitions[i], cd)
 
-		pvc, found := s.keeper.GetPublicCredential(s.ctx, fmt.Sprintf("https://test.xyz/credential/%v", i))
-		s.Require().True(found)
-		s.Require().Equal(genState.PublicVerifiableCredentials[i], pvc)
+		pvc, found := suite.keeper.GetPublicCredential(suite.ctx, fmt.Sprintf("https://test.xyz/credential/%v", i))
+		suite.Require().True(found)
+		suite.Require().Equal(genState.PublicVerifiableCredentials[i], pvc)
 	}
 
 	// check export genesis
-	newGenState := keeper.ExportGenesis(s.ctx, s.keeper)
-	s.Require().Len(newGenState.PublicVerifiableCredentials, 5)
-	s.Require().Len(newGenState.CredentialDefinitions, 5)
-	s.Require().Equal(newGenState.CredentialDefinitions, genState.CredentialDefinitions)
-	s.Require().Equal(newGenState.PublicVerifiableCredentials, genState.PublicVerifiableCredentials)
+	newGenState := keeper.ExportGenesis(suite.ctx, suite.keeper)
+	suite.Require().Len(newGenState.PublicVerifiableCredentials, 5)
+	suite.Require().Len(newGenState.CredentialDefinitions, 5)
+	suite.Require().Equal(newGenState.CredentialDefinitions, genState.CredentialDefinitions)
+	suite.Require().Equal(newGenState.PublicVerifiableCredentials, genState.PublicVerifiableCredentials)
 }

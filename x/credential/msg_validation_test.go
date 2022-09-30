@@ -176,15 +176,15 @@ func TestMsgUpdateCredentialDefinitionRequest_ValidateBasic(t *testing.T) {
 			},
 			nil,
 		},
-		{
-			"PASS: SupersededBy is not valid DID ",
-			fields{
-				Active:       true,
-				SupersededBy: "not a did",
-				Signer:       "elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr",
-			},
-			errors.New("SupersededBy must be a valid DID"),
-		},
+		//{
+		//	"PASS: SupersededBy is not valid DID ",
+		//	fields{
+		//		Active:       true,
+		//		SupersededBy: "not a did",
+		//		Signer:       "elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr",
+		//	},
+		//	errors.New("SupersededBy must be a valid DID"),
+		//},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -239,7 +239,7 @@ func TestMsgIssuePublicVerifiableCredentialRequest_ValidateBasic(t *testing.T) {
 			nil,
 		},
 		{
-			"FAIL: invalid CredentialDefinitionID",
+			"FAIL: empty CredentialDefinitionID",
 			fields{
 				Credential: &PublicVerifiableCredential{
 					Id: "https://test.xyz/credential/1",
@@ -260,28 +260,28 @@ func TestMsgIssuePublicVerifiableCredentialRequest_ValidateBasic(t *testing.T) {
 			},
 			errors.New("credential definition DID must be set"),
 		},
-		{
-			"FAIL: invalid CredentialDefinitionID",
-			fields{
-				Credential: &PublicVerifiableCredential{
-					Id: "https://test.xyz/credential/1",
-					Context: []string{
-						"https://www.w3.org/2018/credentials/v1",
-						"https://resolver.cc/context/did:cosmos:elesto:dummy",
-					},
-					Type: []string{
-						"VerifiableCredential",
-						"DummyCredential",
-					},
-					Issuer:            "did:cosmos:key:elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr",
-					IssuanceDate:      func() *time.Time { v := time.Date(2022, 6, 2, 14, 13, 0, 0, time.UTC); return &v }(),
-					CredentialSubject: []byte{123, 34, 97, 103, 101, 34, 58, 34, 52, 50, 34, 44, 34, 105, 100, 34, 58, 34, 100, 105, 100, 58, 99, 111, 115, 109, 111, 115, 58, 107, 101, 121, 58, 101, 108, 101, 115, 116, 111, 49, 55, 116, 56, 116, 51, 116, 54, 97, 54, 118, 112, 103, 107, 54, 57, 112, 101, 114, 102, 121, 113, 57, 51, 48, 53, 57, 51, 115, 97, 56, 100, 110, 102, 108, 57, 56, 109, 114, 34, 44, 34, 110, 97, 109, 101, 34, 58, 34, 65, 114, 116, 104, 117, 114, 32, 68, 101, 110, 116, 34, 125},
-				},
-				CredentialDefinitionID: "not a did",
-				Signer:                 "elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr",
-			},
-			errors.New("credential definition id must be a valid DID"),
-		},
+		//{
+		//	"FAIL: invalid CredentialDefinitionID",
+		//	fields{
+		//		Credential: &PublicVerifiableCredential{
+		//			Id: "https://test.xyz/credential/1",
+		//			Context: []string{
+		//				"https://www.w3.org/2018/credentials/v1",
+		//				"https://resolver.cc/context/did:cosmos:elesto:dummy",
+		//			},
+		//			Type: []string{
+		//				"VerifiableCredential",
+		//				"DummyCredential",
+		//			},
+		//			Issuer:            "did:cosmos:key:elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr",
+		//			IssuanceDate:      func() *time.Time { v := time.Date(2022, 6, 2, 14, 13, 0, 0, time.UTC); return &v }(),
+		//			CredentialSubject: []byte{123, 34, 97, 103, 101, 34, 58, 34, 52, 50, 34, 44, 34, 105, 100, 34, 58, 34, 100, 105, 100, 58, 99, 111, 115, 109, 111, 115, 58, 107, 101, 121, 58, 101, 108, 101, 115, 116, 111, 49, 55, 116, 56, 116, 51, 116, 54, 97, 54, 118, 112, 103, 107, 54, 57, 112, 101, 114, 102, 121, 113, 57, 51, 48, 53, 57, 51, 115, 97, 56, 100, 110, 102, 108, 57, 56, 109, 114, 34, 44, 34, 110, 97, 109, 101, 34, 58, 34, 65, 114, 116, 104, 117, 114, 32, 68, 101, 110, 116, 34, 125},
+		//		},
+		//		CredentialDefinitionID: "not a did",
+		//		Signer:                 "elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr",
+		//	},
+		//	errors.New("credential definition id must be a valid DID"),
+		//},
 		{
 			"FAIL: empty credential",
 			fields{
