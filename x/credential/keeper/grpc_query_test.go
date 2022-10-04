@@ -383,3 +383,101 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentials() {
 		})
 	}
 }
+
+func (suite *KeeperTestSuite) TestKeeper_AllowedPublicCredentials() {
+	queryClient := suite.queryClient
+	server := NewMsgServerImpl(suite.keeper)
+
+	testCases := []struct {
+		msg     string
+		reqFn   func() (*credential.QueryAllowedPublicCredentialsRequest, *credential.QueryAllowedPublicCredentialsResponse)
+		wantErr error
+	}{
+		{
+			"PASS: no credentials",
+			func() (*credential.QueryAllowedPublicCredentialsRequest, *credential.QueryAllowedPublicCredentialsResponse) {
+				return &credential.QueryAllowedPublicCredentialsRequest{}, &credential.QueryAllowedPublicCredentialsResponse{Credentials: nil, Pagination: &query.PageResponse{}}
+			},
+			nil,
+		},
+		{
+			"PASS: no credentials in allow list",
+			func() (*credential.QueryAllowedPublicCredentialsRequest, *credential.QueryAllowedPublicCredentialsResponse) {
+				var (
+					id  = "001"
+					err error
+				)
+				//
+
+				// publish the definition
+				pcdr := credential.MsgPublishCredentialDefinitionRequest{
+					CredentialDefinition: &credential.CredentialDefinition{
+						Id:           "did:cosmos:elesto:ipcq-" + id,
+						PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
+						Schema:       []byte(dummySchemaOk),
+						Vocab:        []byte(dummyVocabOk),
+						Name:         "CredentialDef" + id,
+						Description:  "",
+						IsPublic:     true,
+						SupersededBy: "",
+						IsActive:     true,
+					},
+					Signer: suite.GetTestAccount().String(),
+				}
+
+				//create the credential definition
+				_, err = server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr)
+				suite.Require().NoError(err)
+
+				return &credential.QueryAllowedPublicCredentialsRequest{}, &credential.QueryAllowedPublicCredentialsResponse{Pagination: &query.PageResponse{Total: 0}}
+			},
+			nil,
+		},
+		{
+			"PASS: can get the credential",
+			func() (*credential.QueryAllowedPublicCredentialsRequest, *credential.QueryAllowedPublicCredentialsResponse) {
+				var (
+					id  = "002"
+					err error
+				)
+				//
+
+				// publish the definition
+				pcdr := credential.MsgPublishCredentialDefinitionRequest{
+					CredentialDefinition: &credential.CredentialDefinition{
+						Id:           "did:cosmos:elesto:ipcq-" + id,
+						PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
+						Schema:       []byte(dummySchemaOk),
+						Vocab:        []byte(dummyVocabOk),
+						Name:         "CredentialDef" + id,
+						Description:  "",
+						IsPublic:     true,
+						SupersededBy: "",
+						IsActive:     true,
+					},
+					Signer: suite.GetTestAccount().String(),
+				}
+				suite.keeper.AllowPublicCredential(suite.ctx, pcdr.CredentialDefinition.Id)
+				//create the credential definition
+				_, err = server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr)
+				suite.Require().NoError(err)
+
+				return &credential.QueryAllowedPublicCredentialsRequest{}, &credential.QueryAllowedPublicCredentialsResponse{Credentials: []*credential.CredentialDefinition{pcdr.CredentialDefinition}, Pagination: &query.PageResponse{Total: 1}}
+			},
+			nil,
+		},
+	}
+	for _, tc := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
+			req, expectedResp := tc.reqFn()
+			gotResp, err := queryClient.AllowedPublicCredentials(context.Background(), req)
+			if tc.wantErr == nil {
+				suite.Require().NoError(err)
+				suite.Require().Equal(expectedResp, gotResp)
+			} else {
+				suite.Require().Error(err)
+				suite.Require().Equal(tc.wantErr.Error(), err.Error())
+			}
+		})
+	}
+}

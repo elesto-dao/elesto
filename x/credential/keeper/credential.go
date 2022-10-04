@@ -113,3 +113,18 @@ func (k Keeper) GetPublicCredentialWithFilter(ctx sdk.Context, filter func(verif
 	}
 	return pvcs
 }
+
+func (k Keeper) GetAllowedCredentialDefinitions(ctx sdk.Context, req *query.PageRequest) (cds []*credential.CredentialDefinition, pageRes *query.PageResponse, err error) {
+	store := ctx.KVStore(k.storeKey)
+	cdStore := prefix.NewStore(store, credential.PublicCredentialAllowKey)
+	pageRes, err = query.Paginate(cdStore, req, func(key []byte, value []byte) error {
+		id := string(value)
+		cd, found := k.GetCredentialDefinition(ctx, id)
+		if !found {
+			panic("credential definition with allowed id not found")
+		}
+		cds = append(cds, &cd)
+		return nil
+	})
+	return
+}

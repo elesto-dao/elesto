@@ -110,3 +110,13 @@ func (k Keeper) PublicCredentials(
 	})
 	return &credential.QueryPublicCredentialsResponse{Credential: pvcs}, nil
 }
+
+func (k Keeper) AllowedPublicCredentials(
+	c context.Context,
+	req *credential.QueryAllowedPublicCredentialsRequest,
+) (*credential.QueryAllowedPublicCredentialsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	cds, pageRes, err := k.GetAllowedCredentialDefinitions(ctx, req.Pagination)
+
+	return &credential.QueryAllowedPublicCredentialsResponse{Credentials: cds, Pagination: pageRes}, err
+}
