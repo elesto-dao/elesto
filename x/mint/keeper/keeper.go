@@ -16,12 +16,13 @@ type Keeper struct {
 	paramSpace       paramtypes.Subspace
 	accountKeeper    types.AccountKeeper
 	bankKeeper       types.BankKeeper
+	distrKeeper      types.DistributionKeeper
 	feeCollectorName string
 }
 
 // NewKeeper creates a new mint Keeper instance
 func NewKeeper(
-	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace, ak types.AccountKeeper, bk types.BankKeeper, feeCollectorName string,
+	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace, ak types.AccountKeeper, bk types.BankKeeper, dk types.DistributionKeeper, feeCollectorName string,
 ) Keeper {
 	// ensure mint module account is set
 	if addr := ak.GetModuleAddress(types.ModuleName); addr == nil {
@@ -40,6 +41,7 @@ func NewKeeper(
 		paramSpace:       paramSpace,
 		bankKeeper:       bk,
 		accountKeeper:    ak,
+		distrKeeper:      dk,
 		feeCollectorName: feeCollectorName,
 	}
 }
@@ -71,10 +73,28 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 	return k.bankKeeper.MintCoins(ctx, types.ModuleName, newCoins)
 }
 
-// AddInflationToFeeCollector implements an alias call to the underlying supply keeper's
-// AddInflationToFeeCollector to be used in BeginBlocker.
+// AddInflationToFeeCollector implements an alias call to send the given amount to the fee collector
+// AddInflationToFeeCollector is to be used in BeginBlocker to distribute inflation as staking rewards.
 func (k Keeper) AddInflationToFeeCollector(ctx sdk.Context, fees sdk.Coins) error {
 	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, fees)
+}
+
+// AddInflationToCommunityTax sends the given amount of tokens to fund the community pool
+// AddInflationToCommunityTax is to be used in BeginBlocker to distribute inflation as community tax
+func (k Keeper) AddInflationToCommunityTax(ctx sdk.Context, amount sdk.Coins) error {
+	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
+	return k.distrKeeper.FundCommunityPool(ctx, amount, moduleAddr)
+}
+
+// SendTeamRewards sends the given amount of tokens to the developer team address which is set in the params
+// SendTeamRewards is to be used in BeginBlocker to distribute inflation to team
+func (k Keeper) SendTeamRewards(ctx sdk.Context, amount sdk.Coins) error {
+	teamAddrParam := k.GetParams(ctx).TeamAddress
+	teamAddr, err := sdk.AccAddressFromBech32(teamAddrParam)
+	if err != nil {
+		return err
+	}
+	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, teamAddr, amount)
 }
 
 // GetSupply returns the current supply on the chain for a denom

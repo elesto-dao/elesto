@@ -17,24 +17,6 @@ const (
 	BlocksPerEpoch int64 = 6_307_200
 )
 
-var (
-	// BlockInflationAmount are the amounts to be minted/distributed for each block
-	// in an epoch.
-	// The format of the BlockInflationAmount is <Epoch Number>: <BlockMintAmonuts>
-	BlockInflationAmount = map[int64]int64{
-		0: 31_709_792,
-		1: 31_709_792,
-		2: 23_782_344,
-		3: 14_863_965,
-		4: 8_360_980,
-		5: 4_441_771,
-		6: 2_931_569,
-		7: 2_990_200,
-		8: 3_050_004,
-		9: 2_998_751,
-	}
-)
-
 // BeginBlocker mints new tokens for the previous block.
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	if ctx.BlockHeight() < 1 {
@@ -52,21 +34,18 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	// fetch inflation from the inflationEpoch table
 	// if there is no such epoch, then no mint is taking places
-	blockInflationAmount, exists := BlockInflationAmount[inflationEpoch]
+	inflationDistribution, exists := types.BlockInflationDistribution[inflationEpoch]
 	if !exists {
 		return
 	}
 
 	// the coins to be minted are the block inflation - rewards
-	coinsToMint := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, blockInflationAmount))
+	coinsToMint := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, inflationDistribution.BlockInflation))
 	if err := k.MintCoins(ctx, coinsToMint); err != nil {
 		panic(err)
 	}
 
-	// send the minted coins to the fee collector account
-	if err := k.AddInflationToFeeCollector(ctx, coinsToMint); err != nil {
-		panic(fmt.Errorf("cannot distribute block inflation: %w", err))
-	}
+	distributeInflation(ctx, k, inflationDistribution, params)
 
 	// telemetry
 	if coinsToMint.AmountOf(params.MintDenom).IsInt64() {
@@ -77,5 +56,25 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		Amount: coinsToMint.AmountOf(params.MintDenom).String(),
 	}); err != nil {
 		panic(err)
+	}
+}
+
+func distributeInflation(ctx sdk.Context, k keeper.Keeper, inflationDistribution types.InflationDistribution, params types.Params) {
+	// distribute team rewards
+	teamRewards := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, inflationDistribution.TeamRewards))
+	if err := k.SendTeamRewards(ctx, teamRewards); err != nil {
+		panic(fmt.Errorf("cannot distribute block inflation to dev team address: %w", err))
+	}
+
+	// distribute community tax
+	communityTax := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, inflationDistribution.CommunityTax))
+	if err := k.AddInflationToCommunityTax(ctx, communityTax); err != nil {
+		panic(fmt.Errorf("cannot distribute block inflation to community pool: %w", err))
+	}
+
+	// distribute staking rewards - send the minted coins to the fee collector account
+	stakingRewards := sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, inflationDistribution.StakingRewards))
+	if err := k.AddInflationToFeeCollector(ctx, stakingRewards); err != nil {
+		panic(fmt.Errorf("cannot distribute block inflation to fee collector account: %w", err))
 	}
 }
