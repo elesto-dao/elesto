@@ -14,9 +14,14 @@ func (k Keeper) SetCredentialDefinition(ctx sdk.Context, def *credential.Credent
 	k.Set(ctx, []byte(def.Id), credential.CredentialDefinitionKey, def, k.cdc.MustMarshal)
 }
 
-func (k Keeper) SetAllowedPublicCredential(ctx sdk.Context, id string) {
+func (k Keeper) AllowPublicCredential(ctx sdk.Context, id string) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(append(credential.PublicCredentialAllowKey, []byte(id)...), []byte(id))
+}
+
+func (k Keeper) RemovePublicCredentialFromAllowedList(ctx sdk.Context, id string) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(append(credential.PublicCredentialAllowKey, []byte(id)...))
 }
 
 func (k Keeper) IsPublicCredentialDefinitionAllowed(ctx sdk.Context, id string) bool {

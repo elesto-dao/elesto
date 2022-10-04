@@ -17,7 +17,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, genState *credential.GenesisState) {
 		//if allowed {
 		//	panic(fmt.Sprintf("credential id %s already allowed", id))
 		//}
-		k.SetAllowedPublicCredential(ctx, id)
+		k.AllowPublicCredential(ctx, id)
 	}
 }
 

@@ -14,11 +14,16 @@ import (
 	"github.com/elesto-dao/elesto/v2/x/did"
 )
 
-const ProposePublicCredentialIDType = "ProposePublicCredentialID"
+const (
+	ProposePublicCredentialIDType       = "ProposePublicCredentialID"
+	ProposeRemovePublicCredentialIDType = "ProposeRemovePublicCredentialID"
+)
 
 func init() {
 	govtypes.RegisterProposalType(ProposePublicCredentialIDType)
+	govtypes.RegisterProposalType(ProposeRemovePublicCredentialIDType)
 	govtypes.RegisterProposalTypeCodec(&ProposePublicCredentialID{}, "credential/ProposePublicCredential")
+	govtypes.RegisterProposalTypeCodec(&ProposeRemovePublicCredentialID{}, "credential/ProposeRemovePublicCredential")
 }
 
 // NewCredentialDefinitionFromFile create a credential definition by reading the data from a file
@@ -260,5 +265,25 @@ func (m *ProposePublicCredentialID) ProposalType() string {
 }
 
 func (m *ProposePublicCredentialID) ValidateBasic() error {
+	return govtypes.ValidateAbstract(m)
+}
+
+func NewProposeRemovePublicCredentialID(Title, Description, CredentialDefinitionID string) *ProposeRemovePublicCredentialID {
+	return &ProposeRemovePublicCredentialID{
+		Title:                  Title,
+		Description:            Description,
+		CredentialDefinitionID: CredentialDefinitionID,
+	}
+}
+
+func (m *ProposeRemovePublicCredentialID) ProposalRoute() string {
+	return RouterKey
+}
+
+func (m *ProposeRemovePublicCredentialID) ProposalType() string {
+	return ProposeRemovePublicCredentialIDType
+}
+
+func (m *ProposeRemovePublicCredentialID) ValidateBasic() error {
 	return govtypes.ValidateAbstract(m)
 }

@@ -16,6 +16,9 @@ func NewPublicCredentialProposalHandler(k Keeper) govtypes.Handler {
 		case *credential.ProposePublicCredentialID:
 			return handlePublicProposalChange(ctx, k, c)
 
+		case *credential.ProposeRemovePublicCredentialID:
+			return handleRemovePublicProposalChange(ctx, k, c)
+
 		default:
 			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized credential proposal content type: %T", c)
 		}
@@ -31,6 +34,19 @@ func handlePublicProposalChange(ctx sdk.Context, k Keeper, proposal *credential.
 		return fmt.Errorf("credential definition with %s id already public", proposal.CredentialDefinitionID)
 	}
 
-	k.SetAllowedPublicCredential(ctx, proposal.CredentialDefinitionID)
+	k.AllowPublicCredential(ctx, proposal.CredentialDefinitionID)
+	return nil
+}
+
+func handleRemovePublicProposalChange(ctx sdk.Context, k Keeper, proposal *credential.ProposeRemovePublicCredentialID) error {
+	if _, found := k.GetCredentialDefinition(ctx, proposal.CredentialDefinitionID); !found {
+		return fmt.Errorf("proposal with %s id not found", proposal.CredentialDefinitionID)
+	}
+
+	if !k.IsPublicCredentialDefinitionAllowed(ctx, proposal.CredentialDefinitionID) {
+		return fmt.Errorf("credential definition with %s id is not public", proposal.CredentialDefinitionID)
+	}
+
+	k.RemovePublicCredentialFromAllowedList(ctx, proposal.CredentialDefinitionID)
 	return nil
 }

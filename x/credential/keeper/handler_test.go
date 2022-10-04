@@ -62,7 +62,7 @@ func (suite *KeeperTestSuite) Test_ProposalHandler() {
 					IsActive:     true,
 				}
 				suite.keeper.SetCredentialDefinition(suite.ctx, cd)
-				suite.keeper.SetAllowedPublicCredential(suite.ctx, cd.Id)
+				suite.keeper.AllowPublicCredential(suite.ctx, cd.Id)
 
 				return credential.NewProposePublicCredentialID("TEST", "TEST", cd.Id)
 			},

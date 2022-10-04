@@ -12,6 +12,7 @@ import ( // this line is used by starport scaffolding # 1
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	// this line is used by starport scaffolding # 2
 	cdc.RegisterConcrete(&ProposePublicCredentialID{}, "credential/propose-public-credential", nil)
+	cdc.RegisterConcrete(&ProposeRemovePublicCredentialID{}, "credential/propose-remove-public-credential", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -23,6 +24,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
 	registry.RegisterImplementations((*govtypes.Content)(nil),
 		&ProposePublicCredentialID{},
+		&ProposeRemovePublicCredentialID{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

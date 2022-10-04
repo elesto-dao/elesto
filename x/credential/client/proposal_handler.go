@@ -8,6 +8,12 @@ import (
 	"github.com/elesto-dao/elesto/v2/x/credential/client/cli"
 )
 
-var ProposalHandler = govclient.NewProposalHandler(cli.NewSubmitProposePublicCredentialID, func(context client.Context) rest.ProposalRESTHandler {
-	return rest.ProposalRESTHandler{}
-})
+var (
+	ProposeCredentialIDHandler = govclient.NewProposalHandler(cli.NewSubmitProposePublicCredentialID, func(context client.Context) rest.ProposalRESTHandler {
+		return rest.ProposalRESTHandler{}
+	})
+
+	ProposeRemoveCredentialIDHandler = govclient.NewProposalHandler(cli.NewSubmitRemoveProposePublicCredentialID, func(context client.Context) rest.ProposalRESTHandler {
+		return rest.ProposalRESTHandler{}
+	})
+)

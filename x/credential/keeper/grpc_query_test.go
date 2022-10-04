@@ -263,7 +263,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredential() {
 					},
 					Signer: suite.GetTestAccount().String(),
 				}
-				suite.keeper.SetAllowedPublicCredential(suite.ctx, pcdr.CredentialDefinition.Id)
+				suite.keeper.AllowPublicCredential(suite.ctx, pcdr.CredentialDefinition.Id)
 				//create the credential definition
 				_, err = server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr)
 				suite.Require().NoError(err)
@@ -348,7 +348,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentials() {
 					},
 					Signer: suite.GetTestAccount().String(),
 				}
-				suite.keeper.SetAllowedPublicCredential(suite.ctx, pcdr.CredentialDefinition.Id)
+				suite.keeper.AllowPublicCredential(suite.ctx, pcdr.CredentialDefinition.Id)
 				//create the credential definition
 				_, err = server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr)
 				suite.Require().NoError(err)

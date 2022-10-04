@@ -359,7 +359,7 @@ func NewSubmitProposePublicCredentialID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "propose-public-id [id]",
 		Args:  cobra.ExactArgs(1),
-		Short: "Submit a parameter change proposal",
+		Short: "Submit a proposal to make a credential id public",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -387,6 +387,56 @@ func NewSubmitProposePublicCredentialID() *cobra.Command {
 			}
 
 			content := credential.NewProposePublicCredentialID(title, description, args[0])
+			from := clientCtx.GetFromAddress()
+
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	cmd.Flags().String(govcli.FlagTitle, "", "title of proposal")
+	cmd.Flags().String(govcli.FlagDescription, "", "description of proposal")
+	cmd.Flags().String(govcli.FlagDeposit, "", "deposit of proposal")
+
+	return cmd
+}
+
+// NewSubmitRemoveProposePublicCredentialID returns a cli for proposing to make remove a credential id from public allow list
+func NewSubmitRemoveProposePublicCredentialID() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "propose-remove-public-id [id]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Submit a proposal to remove a public credential id",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			title, err := cmd.Flags().GetString(govcli.FlagTitle)
+			if err != nil {
+				return err
+			}
+
+			description, err := cmd.Flags().GetString(govcli.FlagDescription)
+			if err != nil {
+				return err
+			}
+
+			depositStr, err := cmd.Flags().GetString(govcli.FlagDeposit)
+			if err != nil {
+				return err
+			}
+
+			deposit, err := sdk.ParseCoinsNormalized(depositStr)
+			if err != nil {
+				return err
+			}
+
+			content := credential.NewProposeRemovePublicCredentialID(title, description, args[0])
 			from := clientCtx.GetFromAddress()
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
