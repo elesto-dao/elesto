@@ -191,7 +191,7 @@ func (wc *WrappedCredential) SetSubject(val interface{}) (err error) {
 func (wc WrappedCredential) Validate(
 	pk cryptotypes.PubKey,
 ) (err error) {
-	sig, err := base64.StdEncoding.DecodeString(wc.Proof.Signature)
+	sig, err := base64.StdEncoding.DecodeString(wc.Proof.ProofValue)
 	if err != nil {
 		return
 	}
@@ -223,7 +223,7 @@ func NewProof(
 		Created:            created,
 		ProofPurpose:       proofPurpose,
 		VerificationMethod: verificationMethod,
-		Signature:          signature,
+		ProofValue:         signature,
 	}
 }
 
