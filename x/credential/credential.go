@@ -265,6 +265,10 @@ func (m *ProposePublicCredentialID) ProposalType() string {
 }
 
 func (m *ProposePublicCredentialID) ValidateBasic() error {
+	if m.CredentialDefinitionID == "" {
+		return fmt.Errorf("empty credential definition id")
+	}
+
 	return govtypes.ValidateAbstract(m)
 }
 
@@ -285,5 +289,9 @@ func (m *ProposeRemovePublicCredentialID) ProposalType() string {
 }
 
 func (m *ProposeRemovePublicCredentialID) ValidateBasic() error {
+	if m.CredentialDefinitionID == "" {
+		return fmt.Errorf("empty credential definition id")
+	}
+
 	return govtypes.ValidateAbstract(m)
 }

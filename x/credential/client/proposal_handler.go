@@ -1,19 +1,13 @@
 package client
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	"github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 
 	"github.com/elesto-dao/elesto/v2/x/credential/client/cli"
+	"github.com/elesto-dao/elesto/v2/x/credential/client/rest"
 )
 
 var (
-	ProposeCredentialIDHandler = govclient.NewProposalHandler(cli.NewSubmitProposePublicCredentialID, func(context client.Context) rest.ProposalRESTHandler {
-		return rest.ProposalRESTHandler{}
-	})
-
-	ProposeRemoveCredentialIDHandler = govclient.NewProposalHandler(cli.NewSubmitRemoveProposePublicCredentialID, func(context client.Context) rest.ProposalRESTHandler {
-		return rest.ProposalRESTHandler{}
-	})
+	ProposeCredentialIDHandler       = govclient.NewProposalHandler(cli.NewSubmitProposePublicCredentialID, rest.ProposePublicCredentialRESTHandler)
+	ProposeRemoveCredentialIDHandler = govclient.NewProposalHandler(cli.NewSubmitRemoveProposePublicCredentialID, rest.ProposeRemovePublicCredentialRESTHandler)
 )
