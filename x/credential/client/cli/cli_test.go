@@ -109,7 +109,6 @@ func sampleCredDefGenState(ids []string, allowedIds []string) *credential.Genesi
 			Vocab:        []byte(testVocab),
 			Name:         fmt.Sprintf("test-name-%v", id),
 			Description:  fmt.Sprintf("test-desc-%v", id),
-			IsPublic:     true,
 			SupersededBy: "",
 			IsActive:     true,
 		}
