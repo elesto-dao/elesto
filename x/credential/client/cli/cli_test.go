@@ -10,31 +10,26 @@ import (
 	"testing"
 	"time"
 
-	govcli "github.com/cosmos/cosmos-sdk/x/gov/client/cli"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/noandrea/rl2020"
-	"github.com/spf13/cobra"
-
-	"github.com/cosmos/cosmos-sdk/client"
-
-	"github.com/google/uuid"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
-	"github.com/gogo/protobuf/proto"
-	"github.com/stretchr/testify/suite"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	govcli "github.com/cosmos/cosmos-sdk/x/gov/client/cli"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/gogo/protobuf/proto"
+	"github.com/google/uuid"
+	"github.com/noandrea/rl2020"
+	"github.com/spf13/cobra"
+	"github.com/stretchr/testify/suite"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
 	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/elesto-dao/elesto/v2/app"
 	"github.com/elesto-dao/elesto/v2/x/credential"
@@ -91,7 +86,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	govGenState.DepositParams.MinDeposit = sdk.NewCoins(sdk.NewCoin(cfg.BondDenom, sdk.NewInt(10)))
 	govGenState.VotingParams.VotingPeriod = 2 * time.Second
-	genState.AllowedCredentialIds = []string{"https://w3id.org/vc-revocation-list-2020/v1", "https://w3id.org/vc-revocation-list-2020/bespoke", "test-11234", "http://example.id/credential/x"}
+	genState.AllowedCredentialIds = []string{"https://w3id.org/vc-revocation-list-2020/v1", "https://w3id.org/vc-revocation-list-2020/proposal", "https://w3id.org/vc-revocation-list-2020/bespoke", "test-11234", "http://example.id/credential/x"}
 
 	cfg.GenesisState[credential.ModuleName] = cfg.Codec.MustMarshalJSON(&genState)
 	cfg.GenesisState[govtypes.ModuleName] = cfg.Codec.MustMarshalJSON(&govGenState)
@@ -185,6 +180,21 @@ func createRevocationList(s *IntegrationTestSuite, rlID, issuerDidID, credDefID 
 	response := &sdk.TxResponse{}
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response), out.String())
 	s.Require().Equal(response.Code, expectedCode)
+}
+
+func queryAllowedCredentials(s *IntegrationTestSuite, val *network.Validator) credential.QueryAllowedPublicCredentialsResponse {
+	clientCtx := val.ClientCtx
+	args := []string{
+		fmt.Sprintf("--%s=1", flags.FlagPage),
+		fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+	}
+
+	cmd := cli.NewQueryAllowedCredentialDefinitionsCmd()
+	out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
+	s.Require().NoError(err)
+	response := &credential.QueryAllowedPublicCredentialsResponse{}
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response), out.String())
+	return *response
 }
 
 func (s *IntegrationTestSuite) TestGetCmdQueryCredentialDefinition() {
@@ -842,7 +852,7 @@ func (s *IntegrationTestSuite) TestNewSubmitProposePublicCredentialID() {
 		},
 		{
 			"INVALID: cred def id does not exist",
-			"yes",
+			"",
 			&sdk.TxResponse{},
 			[]string{
 				"submit-proposal",
@@ -869,7 +879,6 @@ func (s *IntegrationTestSuite) TestNewSubmitProposePublicCredentialID() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			cmd := govcli.NewTxCmd([]*cobra.Command{cli.NewSubmitProposePublicCredentialID()})
-			govcli.NewCmdVote()
 
 			proposalOut, err := clitestutil.ExecTestCLICmd(tc.ctx, cmd, tc.args)
 			s.Require().NoError(err)
@@ -899,13 +908,158 @@ func (s *IntegrationTestSuite) TestNewSubmitProposePublicCredentialID() {
 				s.Require().NotContains(out.String(), "failed to execute")
 				s.Require().NoError(err)
 
-				// try to publish list accrding to allow list
 				if tc.voteOption == "yes" {
+					// query id from allowed list
+					res := queryAllowedCredentials(s, val)
+					found := false
+					for _, def := range res.Credentials {
+						if def.Id == credDefID {
+							found = true
+							break
+						}
+					}
+					s.Require().True(found)
+
+					// try to publish list according to allow list
 					createRevocationList(s, rlID, didID, credDefID, val, 0)
 				} else {
 					createRevocationList(s, rlID, didID, credDefID, val, 2104)
 				}
 
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestNewSubmitProposeRemovePublicCredentialID() {
+	val := s.network.Validators[0]
+	didID := uuid.New().String()
+
+	createDidDocument(s, didID, val)
+
+	credDefID := "https://w3id.org/vc-revocation-list-2020/proposal"
+	publishCredentialDefinition(s,
+		credDefID,
+		"RevocationList2020Def",
+		"testdata/schema.json",
+		"testdata/vocab.json",
+		true,
+		val,
+	)
+	rlID := "https://elesto.id/rl2020-ProposalTest"
+
+	// credential def allowed to be published
+	createRevocationList(s, rlID, didID, credDefID, val, 0)
+
+	testCases := []struct {
+		name       string
+		voteOption string
+		respType   proto.Message
+		args       []string
+		ctx        client.Context
+		expectErr  bool
+		errorCode  uint32
+	}{
+		{
+			"PASS: Propose cred def id to be removed from allowed list",
+			"yes",
+			&sdk.TxResponse{},
+			[]string{
+				"submit-proposal",
+				"propose-remove-public-id",
+				credDefID,
+				fmt.Sprintf("--title=%s", "test proposal"),
+				fmt.Sprintf("--description=%s", "test description"),
+				fmt.Sprintf("--deposit=%s", sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			val.ClientCtx,
+			false,
+			0,
+		},
+		{
+			"INVALID: cred def id does not exist",
+			"",
+			&sdk.TxResponse{},
+			[]string{
+				"submit-proposal",
+				"propose-remove-public-id",
+				"invalid-test-id",
+				fmt.Sprintf("--title=%s", "test proposal"),
+				fmt.Sprintf("--description=%s", "test description"),
+				fmt.Sprintf("--deposit=%s", sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf(
+					"--%s=%s",
+					flags.FlagFees,
+					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+				),
+			},
+			val.ClientCtx,
+			true,
+			5,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := govcli.NewTxCmd([]*cobra.Command{cli.NewSubmitRemoveProposePublicCredentialID()})
+
+			proposalOut, err := clitestutil.ExecTestCLICmd(tc.ctx, cmd, tc.args)
+			s.Require().NoError(err)
+
+			if tc.expectErr {
+				s.T().Log(proposalOut.String())
+				s.Require().Contains(proposalOut.String(), "failed to execute")
+				res := &sdk.TxResponse{}
+				err := tc.ctx.Codec.UnmarshalJSON(proposalOut.Bytes(), res)
+				s.Require().NoError(err)
+				s.Require().Equal(res.Code, tc.errorCode)
+			} else {
+				s.Require().NotContains(proposalOut.String(), "failed to execute")
+
+				// vote for the proposal
+				out, err := clitestutil.ExecTestCLICmd(tc.ctx, govcli.NewCmdVote(), []string{
+					"1",
+					tc.voteOption,
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+					fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+					fmt.Sprintf(
+						"--%s=%s",
+						flags.FlagFees,
+						sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
+					),
+				})
+				s.Require().NotContains(out.String(), "failed to execute")
+				s.Require().NoError(err)
+
+				if tc.voteOption == "yes" {
+					res := queryAllowedCredentials(s, val)
+					found := false
+					for _, def := range res.Credentials {
+						if def.Id == credDefID {
+							found = true
+							break
+						}
+					}
+					s.Require().False(found)
+
+					// cannot publish the credential as removed from allowed
+					createRevocationList(s, rlID+"-1", didID, credDefID, val, 2104)
+				} else {
+					// other id exists
+					createRevocationList(s, rlID+"-1", didID, credDefID, val, 0)
+				}
 			}
 		})
 	}

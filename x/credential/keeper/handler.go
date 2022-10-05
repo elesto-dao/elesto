@@ -31,7 +31,7 @@ func handlePublicProposalChange(ctx sdk.Context, k Keeper, proposal *credential.
 	}
 
 	if k.IsPublicCredentialDefinitionAllowed(ctx, proposal.CredentialDefinitionID) {
-		return fmt.Errorf("credential definition with %s id already public", proposal.CredentialDefinitionID)
+		return fmt.Errorf("credential definition with id %s is already public", proposal.CredentialDefinitionID)
 	}
 
 	k.AllowPublicCredential(ctx, proposal.CredentialDefinitionID)
@@ -44,7 +44,7 @@ func handleRemovePublicProposalChange(ctx sdk.Context, k Keeper, proposal *crede
 	}
 
 	if !k.IsPublicCredentialDefinitionAllowed(ctx, proposal.CredentialDefinitionID) {
-		return fmt.Errorf("credential definition with %s id is not public", proposal.CredentialDefinitionID)
+		return fmt.Errorf("credential definition with id %s is not public", proposal.CredentialDefinitionID)
 	}
 
 	k.RemovePublicCredentialFromAllowedList(ctx, proposal.CredentialDefinitionID)
