@@ -14,10 +14,6 @@ var (
 	dummySchemaOk string
 	//go:embed keeper/testdata/dummy.vocab.json
 	dummyVocabOk string
-	//go:embed keeper/testdata/dummy.credential.json
-	dummyCredential string
-	//go:embed keeper/testdata/dummy.credential.signed.json
-	dummyCredentialSigned string
 )
 
 func TestMsgPublishCredentialDefinitionRequest_ValidateBasic(t *testing.T) {
@@ -40,7 +36,6 @@ func TestMsgPublishCredentialDefinitionRequest_ValidateBasic(t *testing.T) {
 					Vocab:        []byte(dummyVocabOk),
 					Name:         "CredentialDef00001",
 					Description:  "",
-					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				},
@@ -66,7 +61,6 @@ func TestMsgPublishCredentialDefinitionRequest_ValidateBasic(t *testing.T) {
 					Vocab:        []byte(dummyVocabOk),
 					Name:         "CredentialDef00001",
 					Description:  "",
-					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				},
@@ -84,7 +78,6 @@ func TestMsgPublishCredentialDefinitionRequest_ValidateBasic(t *testing.T) {
 					Vocab:        []byte(dummyVocabOk),
 					Name:         "",
 					Description:  "",
-					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				},
@@ -102,7 +95,6 @@ func TestMsgPublishCredentialDefinitionRequest_ValidateBasic(t *testing.T) {
 					Vocab:        []byte(dummyVocabOk),
 					Name:         "CredentialDef00001",
 					Description:  "",
-					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				},
@@ -120,7 +112,6 @@ func TestMsgPublishCredentialDefinitionRequest_ValidateBasic(t *testing.T) {
 					Vocab:        []byte(dummyVocabOk),
 					Name:         "CredentialDef00001",
 					Description:  "",
-					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				},
