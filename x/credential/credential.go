@@ -37,7 +37,6 @@ func NewCredentialDefinitionFromFile(id string, publisherDID did.DID,
 		PublisherId: publisherDID.String(),
 		Name:        name,
 		Description: description,
-		IsPublic:    isPublic,
 		IsActive:    isActive,
 	}
 
