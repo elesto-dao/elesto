@@ -275,7 +275,7 @@ func SimulateMsgUpdateDidDocument(k keeper.Keeper, bk did.BankKeeper, ak did.Acc
 			did.NewVerificationMethod(
 				vmID2,
 				didID,
-				did.NewBlockchainAccountID(ctx.ChainID(), accAddress2.String()),
+				did.NewBlockchainAccountID("elesto", accAddress2.String()),
 				vmType2,
 			),
 			[]string{did.KeyAgreement, did.AssertionMethod, did.Authentication},

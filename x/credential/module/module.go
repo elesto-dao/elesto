@@ -140,17 +140,21 @@ func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 // InitGenesis performs the capability module's genesis initialization It returns
 // no validator updates.
-func (AppModule) InitGenesis(
+func (am AppModule) InitGenesis(
 	ctx sdk.Context,
 	cdc codec.JSONCodec,
 	gs json.RawMessage,
 ) []abci.ValidatorUpdate {
-	return nil
+	var genState credential.GenesisState
+	cdc.MustUnmarshalJSON(gs, &genState)
+	keeper.InitGenesis(ctx, am.keeper, &genState)
+
+	return []abci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the capability module's exported genesis state as raw JSON bytes.
-func (AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	return nil
+func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
+	return cdc.MustMarshalJSON(keeper.ExportGenesis(ctx, am.keeper))
 }
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the capability module.

@@ -1,4 +1,4 @@
-package keeper
+package keeper_test
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/credential/keeper"
 	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
@@ -30,7 +31,7 @@ var (
 
 func (suite *KeeperTestSuite) TestHandleMsgPublishCredentialDefinition() {
 
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 
 	testCases := []struct {
 		name    string
@@ -120,6 +121,8 @@ func (suite *KeeperTestSuite) TestHandleMsgPublishCredentialDefinition() {
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			req := tc.reqFn()
+			req.ValidateBasic()
+
 			_, err := server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &req)
 			if tc.wantErr == nil {
 				suite.Require().NoError(err)
@@ -133,7 +136,7 @@ func (suite *KeeperTestSuite) TestHandleMsgPublishCredentialDefinition() {
 
 func (suite *KeeperTestSuite) TestHandleMsgUpdateCredentialDefinition() {
 
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 	query := suite.queryClient
 
 	testCases := []struct {
@@ -290,7 +293,7 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateCredentialDefinition() {
 
 func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 
 	testCases := []struct {
 		name    string
