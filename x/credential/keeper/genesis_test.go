@@ -22,7 +22,6 @@ func (suite *KeeperTestSuite) TestGenesis() {
 			Vocab:        []byte(dummyVocabOk),
 			Name:         "CredentialDef1",
 			Description:  "",
-			IsPublic:     true,
 			SupersededBy: "",
 			IsActive:     true,
 		}
@@ -90,7 +89,6 @@ func (s *KeeperTestSuite) Test_Genesis_AllowedCredentials() {
 						Vocab:        vocabOkCompact,
 						Name:         "Credential Definition",
 						Description:  "This is a sample credential",
-						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					}
@@ -118,7 +116,6 @@ func (s *KeeperTestSuite) Test_Genesis_AllowedCredentials() {
 					Vocab:        vocabOkCompact,
 					Name:         "Credential Definition",
 					Description:  "This is a sample credential",
-					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				}
