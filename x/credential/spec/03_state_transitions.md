@@ -3,20 +3,19 @@
 
 ### PublishCredentialDefinition
 
-TODO
-
 Example: 
 
-<!-- 
-
-elestod tx credential publish-credetnial-definition \
+```
+elestod tx credential publish-credential-definition \
  
- --from regulator --node https://elesto.app.beta.starport.cloud:443 --chain-id cosmoscash-testnet
--->
+ --from regulator --node https://elesto.app.beta.starport.cloud:443 --chain-id cosmoscash-testnet \
+ 
+ example-definition-id example-credential schema.json vocab.json
+```
 
 ```javascript
 /* gRPC message */
-PublishCredentialDefinition(
+IssuePublishCredentialDefinition(
     MsgPublishCredentialDefinition(
         
     )
@@ -24,38 +23,39 @@ PublishCredentialDefinition(
 
 /* Resolved Credential Definition */
 {
+    
 }
 
 ```
 
 ##### Implementation Source
 
-- server: https://github.com/elesto-dao/elesto/blob/v1.0.0/x/credential/keeper/msg_server.go#L27
-- client: https://github.com/elesto-dao/elesto/blob/v1.0.0/x/credential/client/cli/tx.go#L43
+- server: [msg_server.go](../keeper/msg_server.go)
+- client: [tx.go](../client/cli/tx.go)
 
+### 
 
 ### IssuePublicVerifiableCredential
 
-TODO
-
 Example:
 
-<!-- 
-
-elestod tx credential publish-credetnial-definition \
+```
+elestod tx credential issue-public-credential \
  
- --from regulator --node https://elesto.app.beta.starport.cloud:443 --chain-id cosmoscash-testnet
--->
+ --from regulator --node https://elesto.app.beta.starport.cloud:443 --chain-id cosmoscash-testnet \
+    example-definition-id credential.json
+
+```
 
 ```javascript
 /* gRPC message */
-PublishCredentialDefinition(
-    MsgPublishCredentialDefinition(
+IssuePublicVerifiableCredential(
+    MsgIssuePublicVerifiableCredential(
         
     )
 )
 
-/* Resolved Credential Definition */
+/* Issued PVC */ 
 {
 }
 
@@ -63,5 +63,27 @@ PublishCredentialDefinition(
 
 ##### Implementation Source
 
-- server: https://github.com/elesto-dao/elesto/blob/v1.0.0/x/credential/keeper/msg_server.go#L27
-- client: https://github.com/elesto-dao/elesto/blob/v1.0.0/x/credential/client/cli/tx.go#L43
+- server: [msg_server.go](../keeper/msg_server.go)
+- client: [tx.go](../client/cli/tx.go)
+
+### UpdateCredentialDefinition
+
+```javascript
+/* gRPC message */
+UpdateCredentialDefinition(
+    MsgUpdateCredentialDefinition(
+        
+    )
+)
+
+/* Resolved Credential Definition */ 
+{
+}
+
+```
+##### Implementation Source
+
+- server: [msg_server.go](../keeper/msg_server.go)
+- client: [tx.go](../client/cli/tx.go)
+
+

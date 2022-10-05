@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/credential"
 )
 
 // UnmarshalFn is a generic function to unmarshal bytes
@@ -40,8 +40,8 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 // Set sets a value in the db with a prefixed key
 func (k Keeper) Set(ctx sdk.Context,
-	key []byte,
 	prefix []byte,
+	key []byte,
 	i codec.ProtoMarshaler,
 	marshal MarshalFn,
 ) {
@@ -52,8 +52,8 @@ func (k Keeper) Set(ctx sdk.Context,
 // Get gets an item from the store by bytes
 func (k Keeper) Get(
 	ctx sdk.Context,
-	key []byte,
 	prefix []byte,
+	key []byte,
 	unmarshal UnmarshalFn,
 ) (i interface{}, found bool) {
 	store := ctx.KVStore(k.storeKey)

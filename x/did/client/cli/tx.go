@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 // GetTxCmd returns the transaction commands for this module

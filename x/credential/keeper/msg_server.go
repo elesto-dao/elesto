@@ -8,8 +8,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/xeipuuv/gojsonschema"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 type msgServer struct {
@@ -24,6 +24,7 @@ func NewMsgServerImpl(keeper Keeper) credential.MsgServer {
 
 var _ credential.MsgServer = msgServer{}
 
+// PublishCredentialDefinition credential for publishing new credential definition
 func (k msgServer) PublishCredentialDefinition(
 	goCtx context.Context,
 	msg *credential.MsgPublishCredentialDefinitionRequest,
@@ -65,6 +66,7 @@ func (k msgServer) PublishCredentialDefinition(
 	return &credential.MsgPublishCredentialDefinitionResponse{}, nil
 }
 
+// UpdateCredentialDefinition updates an existing credential definition
 func (k msgServer) UpdateCredentialDefinition(
 	goCtx context.Context,
 	msg *credential.MsgUpdateCredentialDefinitionRequest,
@@ -95,7 +97,7 @@ func (k msgServer) UpdateCredentialDefinition(
 	// update the SupersededBy field
 	cd.SupersededBy = msg.SupersededBy
 
-	// update he data
+	// update the data
 	k.SetCredentialDefinition(ctx, &cd)
 
 	// emit the event
@@ -105,6 +107,7 @@ func (k msgServer) UpdateCredentialDefinition(
 	return &credential.MsgUpdateCredentialDefinitionResponse{}, nil
 }
 
+// IssuePublicVerifiableCredential issues a new public verifiable credential
 func (k msgServer) IssuePublicVerifiableCredential(
 	goCtx context.Context,
 	msg *credential.MsgIssuePublicVerifiableCredentialRequest,

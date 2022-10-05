@@ -1,4 +1,4 @@
-package keeper
+package keeper_test
 
 import (
 	"fmt"
@@ -23,9 +23,10 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/did"
-	didkeeper "github.com/elesto-dao/elesto/v2/x/did/keeper"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/credential/keeper"
+	"github.com/elesto-dao/elesto/v3/x/did"
+	didkeeper "github.com/elesto-dao/elesto/v3/x/did/keeper"
 )
 
 // Keeper test suit enables the keeper package to be tested
@@ -33,7 +34,7 @@ type KeeperTestSuite struct {
 	suite.Suite
 
 	ctx         sdk.Context
-	keeper      Keeper
+	keeper      keeper.Keeper
 	queryClient credential.QueryClient
 	keyring     keyring.Keyring
 }
@@ -97,7 +98,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		memKeyDidDocument,
 	)
 
-	credentialKeeper := NewKeeper(
+	credentialKeeper := keeper.NewKeeper(
 		marshaler,
 		keyCreden,
 		memKeyCreden,

@@ -1,4 +1,4 @@
-package keeper
+package keeper_test
 
 import (
 	"context"
@@ -8,13 +8,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/credential/keeper"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 func (suite *KeeperTestSuite) TestKeeper_CredentialDefinition() {
 	queryClient := suite.queryClient
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 
 	testCases := []struct {
 		msg     string
@@ -79,7 +80,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinition() {
 
 func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitionsByPublisher() {
 	queryClient := suite.queryClient
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 
 	testCases := []struct {
 		msg     string
@@ -131,6 +132,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitionsByPublisher() {
 						Definitions: []*credential.CredentialDefinition{
 							pcdr.CredentialDefinition,
 						},
+						Pagination: &query.PageResponse{Total: 2},
 					}
 			},
 			nil,
@@ -138,7 +140,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitionsByPublisher() {
 		{
 			"FAIL: credential definition not found",
 			func() (*credential.QueryCredentialDefinitionsByPublisherRequest, *credential.QueryCredentialDefinitionsByPublisherResponse) {
-				return &credential.QueryCredentialDefinitionsByPublisherRequest{Did: "did:cosmos:elesto:cd-not-found"}, &credential.QueryCredentialDefinitionsByPublisherResponse{Definitions: nil}
+				return &credential.QueryCredentialDefinitionsByPublisherRequest{Did: "did:cosmos:elesto:cd-not-found"}, &credential.QueryCredentialDefinitionsByPublisherResponse{Definitions: nil, Pagination: &query.PageResponse{Total: 2}}
 			},
 			nil,
 		},
@@ -167,7 +169,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitionsByPublisher() {
 
 func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitions() {
 	queryClient := suite.queryClient
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 
 	testCases := []struct {
 		msg     string
@@ -231,7 +233,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitions() {
 
 func (suite *KeeperTestSuite) TestKeeper_PublicCredential() {
 	queryClient := suite.queryClient
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 
 	testCases := []struct {
 		msg     string
@@ -308,7 +310,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredential() {
 
 func (suite *KeeperTestSuite) TestKeeper_PublicCredentials() {
 	queryClient := suite.queryClient
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 	_ = server
 
 	testCases := []struct {
@@ -364,7 +366,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentials() {
 				})
 				suite.Require().NoError(err)
 
-				return &credential.QueryPublicCredentialsRequest{}, &credential.QueryPublicCredentialsResponse{Credential: []*credential.PublicVerifiableCredential{wc.PublicVerifiableCredential}}
+				return &credential.QueryPublicCredentialsRequest{}, &credential.QueryPublicCredentialsResponse{Credential: []*credential.PublicVerifiableCredential{wc.PublicVerifiableCredential}, Pagination: &query.PageResponse{Total: 1}}
 			},
 			nil,
 		},
@@ -373,6 +375,158 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentials() {
 		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
 			req, expectedResp := tc.reqFn()
 			gotResp, err := queryClient.PublicCredentials(context.Background(), req)
+			if tc.wantErr == nil {
+				suite.Require().NoError(err)
+				suite.Require().Equal(expectedResp, gotResp)
+			} else {
+				suite.Require().Error(err)
+				suite.Require().Equal(tc.wantErr.Error(), err.Error())
+			}
+		})
+	}
+}
+
+func (suite *KeeperTestSuite) TestKeeper_PublicCredentialsByHolder() {
+	queryClient := suite.queryClient
+	server := keeper.NewMsgServerImpl(suite.keeper)
+	_ = server
+
+	testCases := []struct {
+		msg     string
+		reqFn   func() (*credential.QueryPublicCredentialsByHolderRequest, *credential.QueryPublicCredentialsByHolderResponse)
+		wantErr error
+	}{
+		{
+			"PASS: no credentials",
+			func() (*credential.QueryPublicCredentialsByHolderRequest, *credential.QueryPublicCredentialsByHolderResponse) {
+				return &credential.QueryPublicCredentialsByHolderRequest{Did: did.NewKeyDID(suite.GetTestAccount().String()).String()}, &credential.QueryPublicCredentialsByHolderResponse{Credential: nil, Pagination: &query.PageResponse{}}
+			},
+			nil,
+		},
+		{
+			"PASS: can get the credential",
+			func() (*credential.QueryPublicCredentialsByHolderRequest, *credential.QueryPublicCredentialsByHolderResponse) {
+				var (
+					id  = "001"
+					wc  *credential.WrappedCredential
+					err error
+				)
+
+				// publish the definition
+				pcdr := credential.MsgPublishCredentialDefinitionRequest{
+					CredentialDefinition: &credential.CredentialDefinition{
+						Id:           "did:cosmos:elesto:ipcq-" + id,
+						PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
+						Schema:       []byte(dummySchemaOk),
+						Vocab:        []byte(dummyVocabOk),
+						Name:         "CredentialDef" + id,
+						Description:  "",
+						IsPublic:     true,
+						SupersededBy: "",
+						IsActive:     true,
+					},
+					Signer: suite.GetTestAccount().String(),
+				}
+				//create the credential definition
+				_, err = server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr)
+				suite.Require().NoError(err)
+				// load the signed credential
+				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json"); err != nil {
+					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
+				}
+				// publish the credential
+				_, err = server.IssuePublicVerifiableCredential(sdk.WrapSDKContext(suite.ctx), &credential.MsgIssuePublicVerifiableCredentialRequest{
+					CredentialDefinitionID: "did:cosmos:elesto:ipcq-" + id,
+					Credential:             wc.PublicVerifiableCredential,
+					Signer:                 suite.GetTestAccount().String(),
+				})
+				suite.Require().NoError(err)
+
+				return &credential.QueryPublicCredentialsByHolderRequest{Did: did.NewKeyDID(suite.GetTestAccount().String()).String()}, &credential.QueryPublicCredentialsByHolderResponse{Credential: []*credential.PublicVerifiableCredential{wc.PublicVerifiableCredential}, Pagination: &query.PageResponse{Total: 1}}
+			},
+			nil,
+		},
+	}
+	for _, tc := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
+			req, expectedResp := tc.reqFn()
+			gotResp, err := queryClient.PublicCredentialsByHolder(context.Background(), req)
+			if tc.wantErr == nil {
+				suite.Require().NoError(err)
+				suite.Require().Equal(expectedResp, gotResp)
+			} else {
+				suite.Require().Error(err)
+				suite.Require().Equal(tc.wantErr.Error(), err.Error())
+			}
+		})
+	}
+}
+
+func (suite *KeeperTestSuite) TestKeeper_PublicCredentialsByIssuer() {
+	queryClient := suite.queryClient
+	server := keeper.NewMsgServerImpl(suite.keeper)
+	_ = server
+
+	testCases := []struct {
+		msg     string
+		reqFn   func() (*credential.QueryPublicCredentialsByIssuerRequest, *credential.QueryPublicCredentialsByIssuerResponse)
+		wantErr error
+	}{
+		{
+			"PASS: no credentials",
+			func() (*credential.QueryPublicCredentialsByIssuerRequest, *credential.QueryPublicCredentialsByIssuerResponse) {
+				return &credential.QueryPublicCredentialsByIssuerRequest{Did: did.NewKeyDID(suite.GetTestAccount().String()).String()}, &credential.QueryPublicCredentialsByIssuerResponse{Credential: nil, Pagination: &query.PageResponse{}}
+			},
+			nil,
+		},
+		{
+			"PASS: can get the credential",
+			func() (*credential.QueryPublicCredentialsByIssuerRequest, *credential.QueryPublicCredentialsByIssuerResponse) {
+				var (
+					id  = "001"
+					wc  *credential.WrappedCredential
+					err error
+				)
+
+				// publish the definition
+				pcdr := credential.MsgPublishCredentialDefinitionRequest{
+					CredentialDefinition: &credential.CredentialDefinition{
+						Id:           "did:cosmos:elesto:ipcq-" + id,
+						PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
+						Schema:       []byte(dummySchemaOk),
+						Vocab:        []byte(dummyVocabOk),
+						Name:         "CredentialDef" + id,
+						Description:  "",
+						IsPublic:     true,
+						SupersededBy: "",
+						IsActive:     true,
+					},
+					Signer: suite.GetTestAccount().String(),
+				}
+				//create the credential definition
+				_, err = server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr)
+				suite.Require().NoError(err)
+				// load the signed credential
+				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json"); err != nil {
+					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
+				}
+				// publish the credential
+				_, err = server.IssuePublicVerifiableCredential(sdk.WrapSDKContext(suite.ctx), &credential.MsgIssuePublicVerifiableCredentialRequest{
+					CredentialDefinitionID: "did:cosmos:elesto:ipcq-" + id,
+					Credential:             wc.PublicVerifiableCredential,
+					Signer:                 suite.GetTestAccount().String(),
+				})
+				suite.Require().NoError(err)
+
+				return &credential.QueryPublicCredentialsByIssuerRequest{Did: did.NewKeyDID(suite.GetTestAccount().String()).String()}, &credential.QueryPublicCredentialsByIssuerResponse{Credential: []*credential.PublicVerifiableCredential{wc.PublicVerifiableCredential}, Pagination: &query.PageResponse{Total: 1}}
+			},
+			nil,
+		},
+	}
+	for _, tc := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
+			req, expectedResp := tc.reqFn()
+			gotResp, err := queryClient.PublicCredentialsByIssuer(context.Background(), req)
 			if tc.wantErr == nil {
 				suite.Require().NoError(err)
 				suite.Require().Equal(expectedResp, gotResp)

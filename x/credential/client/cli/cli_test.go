@@ -31,11 +31,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/elesto-dao/elesto/v2/app"
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/credential/client/cli"
-	"github.com/elesto-dao/elesto/v2/x/did"
-	didcli "github.com/elesto-dao/elesto/v2/x/did/client/cli"
+	"github.com/elesto-dao/elesto/v3/app"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/credential/client/cli"
+	"github.com/elesto-dao/elesto/v3/x/did"
+	didcli "github.com/elesto-dao/elesto/v3/x/did/client/cli"
 )
 
 var (

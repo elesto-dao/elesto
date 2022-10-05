@@ -18,8 +18,8 @@ import (
 	"github.com/noandrea/rl2020"
 	"github.com/spf13/cobra"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 // GetTxCmd returns the transaction commands for this module

@@ -11,7 +11,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/noandrea/rl2020"
 
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 const (
@@ -55,6 +55,7 @@ func NewCredentialDefinitionFromFile(id string, publisherDID did.DID,
 	return def, nil
 }
 
+// NewPublicVerifiableCredential creates a new Public Verifiable Credential
 func NewPublicVerifiableCredential(id string, opts ...PublicVerifiableCredentialOption) *PublicVerifiableCredential {
 	pvc := &PublicVerifiableCredential{
 		Context: []string{"https://www.w3.org/2018/credentials/v1"},

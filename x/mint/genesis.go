@@ -3,8 +3,8 @@ package mint
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/elesto-dao/elesto/v2/x/mint/keeper"
-	"github.com/elesto-dao/elesto/v2/x/mint/types"
+	"github.com/elesto-dao/elesto/v3/x/mint/keeper"
+	"github.com/elesto-dao/elesto/v3/x/mint/types"
 )
 
 // InitGenesis new mint genesis

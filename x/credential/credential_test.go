@@ -4,17 +4,18 @@ import (
 	_ "embed"
 	"encoding/base64"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/crypto/hd"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-	"github.com/cosmos/cosmos-sdk/crypto/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"os"
 	"testing"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/crypto/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/stretchr/testify/assert"
 
-	"github.com/elesto-dao/elesto/v2/x/did"
+	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
 var (
@@ -542,7 +543,6 @@ func TestWrappedCredential_Validate(t *testing.T) {
 				wc.Proof = NewProof(
 					pubKey.Type(),
 					date.Format(time.RFC3339),
-					// TODO: define proof purposes
 					did.AssertionMethod,
 					issuerDID.NewVerificationMethodID(ki.GetAddress().String()),
 					base64.StdEncoding.EncodeToString(signature),
@@ -551,6 +551,42 @@ func TestWrappedCredential_Validate(t *testing.T) {
 				return wc, ki.GetPubKey()
 			},
 			assert.NoError,
+		},
+		{
+			"FAIL: invalid signature",
+			func() (*WrappedCredential, types.PubKey) {
+				// create the public key
+				kr := keyring.NewInMemory()
+				ki, err := kr.NewAccount(
+					"test1",
+					"coil animal waste sound canvas weekend struggle skirt donor boil around bounce grant right silent year subway boost banana unlock powder riot spawn nerve",
+					keyring.DefaultBIP39Passphrase, sdk.FullFundraiserPath, hd.Secp256k1,
+				)
+				assert.NoError(t, err)
+				// get the issuer
+				issuerDID := did.NewChainDID("test", ki.GetAddress().String())
+				// create the credential
+				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("https://example.credential/01", WithType("SpecialCredential"), WithIssuerDID(issuerDID)))
+				wc.SetSubject(map[string]any{"id": "https://something.something"})
+				// sign the credential
+				data, err := wc.GetBytes()
+				assert.NoError(t, err)
+				_, pubKey, err := kr.SignByAddress(ki.GetAddress(), data)
+				assert.NoError(t, err)
+
+				// attach the proof
+				date := time.Date(2022, 02, 24, 0, 0, 0, 0, time.UTC)
+				wc.Proof = NewProof(
+					pubKey.Type(),
+					date.Format(time.RFC3339),
+					did.AssertionMethod,
+					issuerDID.NewVerificationMethodID(ki.GetAddress().String()),
+					base64.StdEncoding.EncodeToString([]byte("invalid signature")),
+				)
+				assert.NoError(t, err)
+				return wc, ki.GetPubKey()
+			},
+			assert.Error,
 		},
 	}
 	for _, tt := range tests {
