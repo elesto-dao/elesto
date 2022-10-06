@@ -57,7 +57,7 @@ func newProposePublicCredential(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg)
+		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg) //nolint:all
 	}
 }
 
@@ -105,6 +105,6 @@ func newRemoveProposePublicCredential(clientCtx client.Context) http.HandlerFunc
 			return
 		}
 
-		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg)
+		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg) //nolint:all
 	}
 }
