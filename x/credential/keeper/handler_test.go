@@ -1,11 +1,12 @@
-package keeper
+package keeper_test
 
 import (
 	"fmt"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	"github.com/elesto-dao/elesto/v2/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v3/x/credential/keeper"
 )
 
 var (
@@ -72,7 +73,7 @@ func (suite *KeeperTestSuite) Test_HandlePublicProposalChange() {
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			req := tc.reqFn()
-			err := NewPublicCredentialProposalHandler(suite.keeper)(suite.ctx, req)
+			err := keeper.NewPublicCredentialProposalHandler(suite.keeper)(suite.ctx, req)
 			if tc.wantErr == nil {
 				suite.Require().NoError(err)
 			} else {
@@ -142,7 +143,7 @@ func (suite *KeeperTestSuite) Test_HandleRemovePublicProposalChange() {
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			req := tc.reqFn()
-			err := NewPublicCredentialProposalHandler(suite.keeper)(suite.ctx, req)
+			err := keeper.NewPublicCredentialProposalHandler(suite.keeper)(suite.ctx, req)
 			if tc.wantErr == nil {
 				suite.Require().NoError(err)
 			} else {

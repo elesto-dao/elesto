@@ -321,7 +321,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentials() {
 		{
 			"PASS: no credentials",
 			func() (*credential.QueryPublicCredentialsRequest, *credential.QueryPublicCredentialsResponse) {
-				return &credential.QueryPublicCredentialsRequest{}, &credential.QueryPublicCredentialsResponse{Credential: nil}
+				return &credential.QueryPublicCredentialsRequest{}, &credential.QueryPublicCredentialsResponse{Credential: nil, Pagination: &query.PageResponse{Total: 0}}
 			},
 			nil,
 		},
@@ -430,6 +430,10 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentialsByHolder() {
 				//create the credential definition
 				_, err = server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr)
 				suite.Require().NoError(err)
+
+				// allowing the credential definition id for publishing
+				suite.keeper.AllowPublicCredential(suite.ctx, pcdr.CredentialDefinition.Id)
+
 				// load the signed credential
 				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json"); err != nil {
 					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
@@ -506,6 +510,10 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentialsByIssuer() {
 				//create the credential definition
 				_, err = server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr)
 				suite.Require().NoError(err)
+
+				// allowing the credential definition id for publishing
+				suite.keeper.AllowPublicCredential(suite.ctx, pcdr.CredentialDefinition.Id)
+				
 				// load the signed credential
 				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json"); err != nil {
 					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
@@ -540,7 +548,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentialsByIssuer() {
 
 func (suite *KeeperTestSuite) TestKeeper_AllowedPublicCredentials() {
 	queryClient := suite.queryClient
-	server := NewMsgServerImpl(suite.keeper)
+	server := keeper.NewMsgServerImpl(suite.keeper)
 
 	testCases := []struct {
 		msg     string

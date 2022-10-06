@@ -188,11 +188,18 @@ func NewQueryPublicCredentialsByIssuerCmd() *cobra.Command {
 				pwcs        []*credential.WrappedCredential
 				pwcsJSON    []byte
 			)
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			// query credentials
 			if result, err = queryClient.PublicCredentialsByIssuer(
 				context.Background(),
 				&credential.QueryPublicCredentialsByIssuerRequest{
-					Did: args[0],
+					Did:        args[0],
+					Pagination: pageReq,
 				},
 			); err != nil {
 				return err
@@ -219,6 +226,8 @@ func NewQueryPublicCredentialsByIssuerCmd() *cobra.Command {
 	}
 	cmd.Flags().BoolVar(&printNative, "native", false, "if set the credential will be printed in the raw format, that is how it is stored on chain")
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, command)
+
 	return cmd
 }
 

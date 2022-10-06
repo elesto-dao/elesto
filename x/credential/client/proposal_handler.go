@@ -3,8 +3,8 @@ package client
 import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 
-	"github.com/elesto-dao/elesto/v2/x/credential/client/cli"
-	"github.com/elesto-dao/elesto/v2/x/credential/client/rest"
+	"github.com/elesto-dao/elesto/v3/x/credential/client/cli"
+	"github.com/elesto-dao/elesto/v3/x/credential/client/rest"
 )
 
 var (

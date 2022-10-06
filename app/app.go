@@ -97,6 +97,7 @@ import (
 
 	"github.com/elesto-dao/elesto/v3/docs"
 	"github.com/elesto-dao/elesto/v3/x/credential"
+	credentialclient "github.com/elesto-dao/elesto/v3/x/credential/client"
 	credentialModuleKeeper "github.com/elesto-dao/elesto/v3/x/credential/keeper"
 	credentialmodule "github.com/elesto-dao/elesto/v3/x/credential/module"
 	"github.com/elesto-dao/elesto/v3/x/did"

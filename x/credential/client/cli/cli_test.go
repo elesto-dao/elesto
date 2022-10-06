@@ -76,19 +76,18 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg.GenesisState = app.NewDefaultGenesisState(cfg.Codec)
 	credential.RegisterInterfaces(cfg.InterfaceRegistry)
 
-	var genState credential.GenesisState
-	err := cfg.Codec.UnmarshalJSON(cfg.GenesisState[credential.ModuleName], &genState)
-	s.Require().NoError(err)
-
 	var govGenState govtypes.GenesisState
-	err = cfg.Codec.UnmarshalJSON(cfg.GenesisState[govtypes.ModuleName], &govGenState)
+	err := cfg.Codec.UnmarshalJSON(cfg.GenesisState[govtypes.ModuleName], &govGenState)
 	s.Require().NoError(err)
 
 	govGenState.DepositParams.MinDeposit = sdk.NewCoins(sdk.NewCoin(cfg.BondDenom, sdk.NewInt(10)))
 	govGenState.VotingParams.VotingPeriod = 2 * time.Second
-	genState.AllowedCredentialIds = []string{"https://w3id.org/vc-revocation-list-2020/v1", "https://w3id.org/vc-revocation-list-2020/proposal", "https://w3id.org/vc-revocation-list-2020/bespoke", "test-11234", "http://example.id/credential/x"}
 
-	cfg.GenesisState[credential.ModuleName] = cfg.Codec.MustMarshalJSON(&genState)
+	allowedIds := []string{"https://w3id.org/vc-revocation-list-2020/v1", "https://w3id.org/vc-revocation-list-2020/proposal", "https://w3id.org/vc-revocation-list-2020/bespoke", "https://example.id/credential/x"}
+	// for governance tests allowed ids does not include v1/test
+	sampleIds := append(allowedIds, "https://w3id.org/vc-revocation-list-2020/v1/test")
+
+	cfg.GenesisState[credential.ModuleName] = cfg.Codec.MustMarshalJSON(sampleCredDefGenState(sampleIds, allowedIds))
 	cfg.GenesisState[govtypes.ModuleName] = cfg.Codec.MustMarshalJSON(&govGenState)
 
 	cfg.AppConstructor = NewAppConstructor(app.MakeEncodingConfig(app.ModuleBasics))
@@ -98,6 +97,27 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
+}
+
+func sampleCredDefGenState(ids []string, allowedIds []string) *credential.GenesisState {
+	var genState credential.GenesisState
+	for _, id := range ids {
+		cred := credential.CredentialDefinition{
+			Id:           id,
+			PublisherId:  fmt.Sprintf("test-publisher-%v", id),
+			Schema:       []byte(testSchema),
+			Vocab:        []byte(testVocab),
+			Name:         fmt.Sprintf("test-name-%v", id),
+			Description:  fmt.Sprintf("test-desc-%v", id),
+			IsPublic:     true,
+			SupersededBy: "",
+			IsActive:     true,
+		}
+		genState.CredentialDefinitions = append(genState.CredentialDefinitions, cred)
+	}
+	genState.AllowedCredentialIds = allowedIds
+
+	return &genState
 }
 
 // TearDownSuite performs cleanup logic after all the tests, i.e. once after the
@@ -114,7 +134,7 @@ func name(others ...string) string {
 	return fmt.Sprintln(f.Name(), others)
 }
 
-func publishCredentialDefinition(s *IntegrationTestSuite, identifier, name, schemaFile, vocabFile string, isPublic bool, val *network.Validator) {
+func publishCredentialDefinition(s *IntegrationTestSuite, identifier, name, schemaFile, vocabFile string, isPublic bool, val *network.Validator, code uint32) {
 
 	clientCtx := val.ClientCtx
 	args := []string{
@@ -135,6 +155,7 @@ func publishCredentialDefinition(s *IntegrationTestSuite, identifier, name, sche
 	s.Require().NoError(err)
 	response := &sdk.TxResponse{}
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), response), out.String())
+	s.Require().Equal(code, response.Code)
 }
 
 func createDidDocument(s *IntegrationTestSuite, identifier string, val *network.Validator) {
@@ -227,7 +248,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryCredentialDefinition() {
 					schemaFile = "testdata/schema.json"
 					vocabFile  = "testdata/vocab.json"
 				)
-				publishCredentialDefinition(s, identifier, label, schemaFile, vocabFile, false, val)
+				publishCredentialDefinition(s, identifier, label, schemaFile, vocabFile, false, val, 0)
 			},
 			"test-11234",
 		},
@@ -278,14 +299,15 @@ func TestGetTxCmd(t *testing.T) {
 
 func TestGetQueryCmd(t *testing.T) {
 	expectedCommands := map[string]struct{}{
-		"credential-definition":        {},
-		"credential-definitions":       {},
-		"public-credential":            {},
-		"public-credentials":           {},
-		"credential-status":            {},
-		"prepare-credential":           {},
-		"public-credential-status":     {},
-		"public-credentials-by-issuer": {},
+		"credential-definition":          {},
+		"credential-definitions":         {},
+		"public-credential":              {},
+		"public-credentials":             {},
+		"credential-status":              {},
+		"prepare-credential":             {},
+		"public-credential-status":       {},
+		"public-credentials-by-issuer":   {},
+		"allowed-credential-definitions": {},
 	}
 
 	t.Run("PASS: Verify command are there ", func(t *testing.T) {
@@ -426,18 +448,9 @@ func (s *IntegrationTestSuite) TestNewPublishCredentialDefinitionCmd() {
 
 func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
 	val := s.network.Validators[0]
-	credDefID := "http://example.id/credential/x"
-	testCredFile := fmt.Sprintf("testdata/credential-%s.json", s.cfg.ChainID)
+	credDefID := "https://example.id/credential/x"
+	testCredFile := fmt.Sprintf("%s/credential-%s.json", s.T().TempDir(), s.cfg.ChainID)
 
-	// it is shared by all test cases
-	publishCredentialDefinition(s,
-		credDefID,
-		"testDefName",
-		"testdata/schema.json",
-		"testdata/vocab.json",
-		true,
-		val,
-	)
 	issuerDidID := uuid.New().String()
 	createDidDocument(s, issuerDidID, val)
 
@@ -529,7 +542,6 @@ func (s *IntegrationTestSuite) TestNewIssuePublicCredentialCmd() {
 			}
 		})
 	}
-
 }
 
 func (s *IntegrationTestSuite) TestNewCreateRevocationListCmd() {
@@ -544,7 +556,6 @@ func (s *IntegrationTestSuite) TestNewCreateRevocationListCmd() {
 		expectErr codes.Code
 		respType  proto.Message
 		args      []string
-		fixture   func()
 		ctx       client.Context
 	}{
 		{
@@ -562,17 +573,6 @@ func (s *IntegrationTestSuite) TestNewCreateRevocationListCmd() {
 					flags.FlagFees,
 					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
 				),
-			},
-			func() {
-				// default definition
-				publishCredentialDefinition(s,
-					"https://w3id.org/vc-revocation-list-2020/v1",
-					"RevocationList2020",
-					"testdata/schema.json",
-					"testdata/vocab.json",
-					true,
-					val,
-				)
 			},
 			val.ClientCtx,
 		},
@@ -595,17 +595,6 @@ func (s *IntegrationTestSuite) TestNewCreateRevocationListCmd() {
 					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
 				),
 			},
-			func() {
-				// custom definition
-				publishCredentialDefinition(s,
-					"https://w3id.org/vc-revocation-list-2020/bespoke",
-					"RevocationList2020CustomDef",
-					"testdata/schema.json",
-					"testdata/vocab.json",
-					true,
-					val,
-				)
-			},
 			val.ClientCtx,
 		},
 		{
@@ -624,15 +613,12 @@ func (s *IntegrationTestSuite) TestNewCreateRevocationListCmd() {
 					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String(),
 				),
 			},
-			func() {
-			},
 			val.ClientCtx,
 		},
 	}
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			tc.fixture()
 			cmd := cli.NewCreateRevocationListCmd()
 			out, err := clitestutil.ExecTestCLICmd(tc.ctx, cmd, tc.args)
 			if tc.expectErr != codes.OK {
@@ -669,14 +655,7 @@ func (s *IntegrationTestSuite) TestNewUpdateRevocationListCmd() {
 	didID := uuid.New().String()
 	createDidDocument(s, didID, val)
 	credDefID := "https://w3id.org/vc-revocation-list-2020/v1"
-	publishCredentialDefinition(s,
-		credDefID,
-		"RevocationList2020Def",
-		"testdata/schema.json",
-		"testdata/vocab.json",
-		true,
-		val,
-	)
+
 	rlID := "https://elesto.id/rl2020-test"
 	createRevocationList(s, rlID, didID, credDefID, val, 0)
 
@@ -804,15 +783,7 @@ func (s *IntegrationTestSuite) TestNewSubmitProposePublicCredentialID() {
 	createDidDocument(s, didID, val)
 
 	credDefID := "https://w3id.org/vc-revocation-list-2020/v1/test"
-	publishCredentialDefinition(s,
-		credDefID,
-		"RevocationList2020Def",
-		"testdata/schema.json",
-		"testdata/vocab.json",
-		true,
-		val,
-	)
-	rlID := "https://elesto.id/rl2020-ProposalTest"
+	rlID := "https://elesto.id/rl2020-ProposalPublicTest"
 
 	// credential def not in allow list
 	createRevocationList(s, rlID, didID, credDefID, val, 2104)
@@ -934,19 +905,9 @@ func (s *IntegrationTestSuite) TestNewSubmitProposePublicCredentialID() {
 func (s *IntegrationTestSuite) TestNewSubmitProposeRemovePublicCredentialID() {
 	val := s.network.Validators[0]
 	didID := uuid.New().String()
-
 	createDidDocument(s, didID, val)
-
 	credDefID := "https://w3id.org/vc-revocation-list-2020/proposal"
-	publishCredentialDefinition(s,
-		credDefID,
-		"RevocationList2020Def",
-		"testdata/schema.json",
-		"testdata/vocab.json",
-		true,
-		val,
-	)
-	rlID := "https://elesto.id/rl2020-ProposalTest"
+	rlID := "https://elesto.id/rl2020-ProposalRemoveFromPublicTest"
 
 	// credential def allowed to be published
 	createRevocationList(s, rlID, didID, credDefID, val, 0)
@@ -1018,18 +979,18 @@ func (s *IntegrationTestSuite) TestNewSubmitProposeRemovePublicCredentialID() {
 			s.Require().NoError(err)
 
 			if tc.expectErr {
-				s.T().Log(proposalOut.String())
 				s.Require().Contains(proposalOut.String(), "failed to execute")
 				res := &sdk.TxResponse{}
 				err := tc.ctx.Codec.UnmarshalJSON(proposalOut.Bytes(), res)
 				s.Require().NoError(err)
 				s.Require().Equal(res.Code, tc.errorCode)
 			} else {
+				s.T().Log(proposalOut.String())
 				s.Require().NotContains(proposalOut.String(), "failed to execute")
 
 				// vote for the proposal
 				out, err := clitestutil.ExecTestCLICmd(tc.ctx, govcli.NewCmdVote(), []string{
-					"1",
+					"2",
 					tc.voteOption,
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
