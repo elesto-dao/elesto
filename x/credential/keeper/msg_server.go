@@ -244,6 +244,10 @@ Outer:
 	if err != nil || pk == nil {
 		return fmt.Errorf("issuer public key not found %w", err)
 	}
-	// check the proof type
-	return wc.Validate(pk)
+	//
+	if err = wc.Validate(pk); err != nil {
+		return err
+
+	}
+	return nil
 }

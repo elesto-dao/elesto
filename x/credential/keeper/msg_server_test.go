@@ -605,48 +605,6 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 			nil,
 			fmt.Errorf("schema: did:cosmos:elesto:cd-17, errors: [(root): @context is required (root): type is required (root): issuer is required (root): issuanceDate is required credentialSubject: id is required]: the credential doesn't match the definition schema"),
 		},
-		{
-			"PASS: issue public credential (CosmosADR0036 signature type)",
-			func() credential.MsgIssuePublicVerifiableCredentialRequest {
-
-				var (
-					wc  *credential.WrappedCredential
-					err error
-				)
-				//
-
-				// publish the definition
-				pcdr := credential.MsgPublishCredentialDefinitionRequest{
-					CredentialDefinition: &credential.CredentialDefinition{
-						Id:           "did:cosmos:elesto:cd-18",
-						PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
-						Schema:       []byte(dummySchemaOk),
-						Vocab:        []byte(dummyVocabOk),
-						Name:         "CredentialDef18",
-						Description:  "",
-						SupersededBy: "",
-						IsActive:     true,
-					},
-					Signer: suite.GetTestAccount().String(),
-				}
-				//create the credential definition
-				_, err = server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr)
-				suite.Require().NoError(err, "expected definition to be created")
-
-				// load the signed credential
-				wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.cosmosadr036.json")
-				suite.Require().NoError(err, "expected wrapped credential")
-
-				// return the message
-				return credential.MsgIssuePublicVerifiableCredentialRequest{
-					CredentialDefinitionID: "did:cosmos:elesto:cd-18",
-					Credential:             wc.PublicVerifiableCredential,
-					Signer:                 suite.GetTestAccount().String(),
-				}
-			},
-			nil,
-			nil,
-		},
 	}
 
 	for _, tc := range testCases {
