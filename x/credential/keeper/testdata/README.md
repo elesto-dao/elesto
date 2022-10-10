@@ -2,18 +2,18 @@
 
 These are test data used in tests 
 
-To setup the test account, launch the chain with the `make start-dev` command then import the test key:
+To set up the test account, launch the chain with the `make start-dev` command then import the test key:
 
 ```sh
 elestod keys add test -i
 ```
 
-and when asked use the following mnemonic (and empty pwd):
+and when asked use the following mnemonic (and empty password):
 ```
 coil animal waste sound canvas weekend struggle skirt donor boil around bounce grant right silent year subway boost banana unlock powder riot spawn nerve
 ```
 
-The account address associated to the imported mnemonic will be `elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr` 
+The account address associated with the imported mnemonic will be `elesto17t8t3t6a6vpgk69perfyq930593sa8dnfl98mr` 
 
 
 Once the account has been imported, transfer some tokens from the `validator` account to the `test` account 
@@ -57,6 +57,7 @@ A credential based on the schema has been already generated:
 
 - `dummy.credential.json`
 - `dummy.credential.signed.json`
+- `dummy.credential.signed.cosmosadr036.json`
 
 but in case you want to refresh it, run the command:
 
