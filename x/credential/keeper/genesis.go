@@ -8,13 +8,26 @@ import (
 	"github.com/elesto-dao/elesto/v3/x/credential"
 )
 
-func InitGenesis(ctx sdk.Context, k Keeper, data *credential.GenesisState) {
-	for i := range data.CredentialDefinitions {
-		k.SetCredentialDefinition(ctx, &data.CredentialDefinitions[i])
+func InitGenesis(ctx sdk.Context, k Keeper, genState *credential.GenesisState) {
+	for i := range genState.CredentialDefinitions {
+		k.SetCredentialDefinition(ctx, &genState.CredentialDefinitions[i])
 	}
 
-	for i := range data.PublicVerifiableCredentials {
-		k.SetPublicCredential(ctx, &data.PublicVerifiableCredentials[i])
+	for i := range genState.PublicVerifiableCredentials {
+		k.SetPublicCredential(ctx, &genState.PublicVerifiableCredentials[i])
+	}
+
+	for _, id := range genState.AllowedCredentialIds {
+		_, found := k.GetCredentialDefinition(ctx, id)
+		if !found {
+			panic(fmt.Sprintf("credential id %s not found", id))
+		}
+
+		allowed := k.IsPublicCredentialDefinitionAllowed(ctx, id)
+		if allowed {
+			panic(fmt.Sprintf("credential id %s already allowed", id))
+		}
+		k.AllowPublicCredential(ctx, id)
 	}
 }
 
@@ -44,6 +57,14 @@ func ExportGenesis(ctx sdk.Context, k Keeper) *credential.GenesisState {
 		}
 
 		genState.PublicVerifiableCredentials = append(genState.PublicVerifiableCredentials, pvc)
+	}
+
+	allowedCdIterator := k.GetAll(ctx, credential.PublicCredentialAllowKey)
+	defer allowedCdIterator.Close()
+
+	for ; allowedCdIterator.Valid(); allowedCdIterator.Next() {
+		id := string(allowedCdIterator.Value())
+		genState.AllowedCredentialIds = append(genState.AllowedCredentialIds, id)
 	}
 
 	return &genState

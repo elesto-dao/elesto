@@ -13,11 +13,6 @@ import (
 	"github.com/elesto-dao/elesto/v3/x/did"
 )
 
-const (
-//signerAccount = "foochainid1sl48sj2jjed7enrv3lzzplr9wc2f5js5khugy3"
-// signerAccount = "cosmos1sl48sj2jjed7enrv3lzzplr9wc2f5js5tzjph8"
-)
-
 var (
 	//go:embed testdata/dummy.schema.json
 	dummySchemaOk string
@@ -649,6 +644,7 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			req := tc.reqFn()
+			suite.keeper.AllowPublicCredential(suite.ctx, req.CredentialDefinitionID)
 			_, err := server.IssuePublicVerifiableCredential(sdk.WrapSDKContext(suite.ctx), &req)
 			if tc.wantErr == nil {
 				suite.Require().NoError(err)

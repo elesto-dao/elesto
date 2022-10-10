@@ -5,6 +5,8 @@ var (
 	CredentialDefinitionKey = []byte{0x71}
 	// PublicCredentialKey prefix for each key of a PublicCredential
 	PublicCredentialKey = []byte{0x72}
+	// PublicCredentialAllowed prefix
+	PublicCredentialAllowKey = []byte{0x73}
 )
 
 const (

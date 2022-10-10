@@ -213,6 +213,102 @@ func (m *QueryPublicCredentialsResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
+type QueryAllowedPublicCredentialsRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllowedPublicCredentialsRequest) Reset()         { *m = QueryAllowedPublicCredentialsRequest{} }
+func (m *QueryAllowedPublicCredentialsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllowedPublicCredentialsRequest) ProtoMessage()    {}
+func (*QueryAllowedPublicCredentialsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fac323b79b6e0b88, []int{4}
+}
+func (m *QueryAllowedPublicCredentialsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllowedPublicCredentialsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllowedPublicCredentialsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllowedPublicCredentialsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllowedPublicCredentialsRequest.Merge(m, src)
+}
+func (m *QueryAllowedPublicCredentialsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllowedPublicCredentialsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllowedPublicCredentialsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllowedPublicCredentialsRequest proto.InternalMessageInfo
+
+func (m *QueryAllowedPublicCredentialsRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryAllowedPublicCredentialsResponse struct {
+	Credentials []*CredentialDefinition `protobuf:"bytes,1,rep,name=credentials,proto3" json:"credentials,omitempty"`
+	Pagination  *query.PageResponse     `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllowedPublicCredentialsResponse) Reset()         { *m = QueryAllowedPublicCredentialsResponse{} }
+func (m *QueryAllowedPublicCredentialsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllowedPublicCredentialsResponse) ProtoMessage()    {}
+func (*QueryAllowedPublicCredentialsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fac323b79b6e0b88, []int{5}
+}
+func (m *QueryAllowedPublicCredentialsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllowedPublicCredentialsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllowedPublicCredentialsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllowedPublicCredentialsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllowedPublicCredentialsResponse.Merge(m, src)
+}
+func (m *QueryAllowedPublicCredentialsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllowedPublicCredentialsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllowedPublicCredentialsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllowedPublicCredentialsResponse proto.InternalMessageInfo
+
+func (m *QueryAllowedPublicCredentialsResponse) GetCredentials() []*CredentialDefinition {
+	if m != nil {
+		return m.Credentials
+	}
+	return nil
+}
+
+func (m *QueryAllowedPublicCredentialsResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 type QueryPublicCredentialsByHolderRequest struct {
 	Did        string             `protobuf:"bytes,1,opt,name=did,proto3" json:"did,omitempty"`
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -222,7 +318,7 @@ func (m *QueryPublicCredentialsByHolderRequest) Reset()         { *m = QueryPubl
 func (m *QueryPublicCredentialsByHolderRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryPublicCredentialsByHolderRequest) ProtoMessage()    {}
 func (*QueryPublicCredentialsByHolderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fac323b79b6e0b88, []int{4}
+	return fileDescriptor_fac323b79b6e0b88, []int{6}
 }
 func (m *QueryPublicCredentialsByHolderRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -276,7 +372,7 @@ func (m *QueryPublicCredentialsByHolderResponse) Reset() {
 func (m *QueryPublicCredentialsByHolderResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryPublicCredentialsByHolderResponse) ProtoMessage()    {}
 func (*QueryPublicCredentialsByHolderResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fac323b79b6e0b88, []int{5}
+	return fileDescriptor_fac323b79b6e0b88, []int{7}
 }
 func (m *QueryPublicCredentialsByHolderResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -328,7 +424,7 @@ func (m *QueryPublicCredentialsByIssuerRequest) Reset()         { *m = QueryPubl
 func (m *QueryPublicCredentialsByIssuerRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryPublicCredentialsByIssuerRequest) ProtoMessage()    {}
 func (*QueryPublicCredentialsByIssuerRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fac323b79b6e0b88, []int{6}
+	return fileDescriptor_fac323b79b6e0b88, []int{8}
 }
 func (m *QueryPublicCredentialsByIssuerRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -382,7 +478,7 @@ func (m *QueryPublicCredentialsByIssuerResponse) Reset() {
 func (m *QueryPublicCredentialsByIssuerResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryPublicCredentialsByIssuerResponse) ProtoMessage()    {}
 func (*QueryPublicCredentialsByIssuerResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fac323b79b6e0b88, []int{7}
+	return fileDescriptor_fac323b79b6e0b88, []int{9}
 }
 func (m *QueryPublicCredentialsByIssuerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -433,7 +529,7 @@ func (m *QueryCredentialDefinitionRequest) Reset()         { *m = QueryCredentia
 func (m *QueryCredentialDefinitionRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryCredentialDefinitionRequest) ProtoMessage()    {}
 func (*QueryCredentialDefinitionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fac323b79b6e0b88, []int{8}
+	return fileDescriptor_fac323b79b6e0b88, []int{10}
 }
 func (m *QueryCredentialDefinitionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -477,7 +573,7 @@ func (m *QueryCredentialDefinitionResponse) Reset()         { *m = QueryCredenti
 func (m *QueryCredentialDefinitionResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryCredentialDefinitionResponse) ProtoMessage()    {}
 func (*QueryCredentialDefinitionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fac323b79b6e0b88, []int{9}
+	return fileDescriptor_fac323b79b6e0b88, []int{11}
 }
 func (m *QueryCredentialDefinitionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -521,7 +617,7 @@ func (m *QueryCredentialDefinitionsRequest) Reset()         { *m = QueryCredenti
 func (m *QueryCredentialDefinitionsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryCredentialDefinitionsRequest) ProtoMessage()    {}
 func (*QueryCredentialDefinitionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fac323b79b6e0b88, []int{10}
+	return fileDescriptor_fac323b79b6e0b88, []int{12}
 }
 func (m *QueryCredentialDefinitionsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -566,7 +662,7 @@ func (m *QueryCredentialDefinitionsResponse) Reset()         { *m = QueryCredent
 func (m *QueryCredentialDefinitionsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryCredentialDefinitionsResponse) ProtoMessage()    {}
 func (*QueryCredentialDefinitionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fac323b79b6e0b88, []int{11}
+	return fileDescriptor_fac323b79b6e0b88, []int{13}
 }
 func (m *QueryCredentialDefinitionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -622,7 +718,7 @@ func (m *QueryCredentialDefinitionsByPublisherRequest) String() string {
 }
 func (*QueryCredentialDefinitionsByPublisherRequest) ProtoMessage() {}
 func (*QueryCredentialDefinitionsByPublisherRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fac323b79b6e0b88, []int{12}
+	return fileDescriptor_fac323b79b6e0b88, []int{14}
 }
 func (m *QueryCredentialDefinitionsByPublisherRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -678,7 +774,7 @@ func (m *QueryCredentialDefinitionsByPublisherResponse) String() string {
 }
 func (*QueryCredentialDefinitionsByPublisherResponse) ProtoMessage() {}
 func (*QueryCredentialDefinitionsByPublisherResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fac323b79b6e0b88, []int{13}
+	return fileDescriptor_fac323b79b6e0b88, []int{15}
 }
 func (m *QueryCredentialDefinitionsByPublisherResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -726,6 +822,8 @@ func init() {
 	proto.RegisterType((*QueryPublicCredentialResponse)(nil), "elestodao.elesto.credential.v1.QueryPublicCredentialResponse")
 	proto.RegisterType((*QueryPublicCredentialsRequest)(nil), "elestodao.elesto.credential.v1.QueryPublicCredentialsRequest")
 	proto.RegisterType((*QueryPublicCredentialsResponse)(nil), "elestodao.elesto.credential.v1.QueryPublicCredentialsResponse")
+	proto.RegisterType((*QueryAllowedPublicCredentialsRequest)(nil), "elestodao.elesto.credential.v1.QueryAllowedPublicCredentialsRequest")
+	proto.RegisterType((*QueryAllowedPublicCredentialsResponse)(nil), "elestodao.elesto.credential.v1.QueryAllowedPublicCredentialsResponse")
 	proto.RegisterType((*QueryPublicCredentialsByHolderRequest)(nil), "elestodao.elesto.credential.v1.QueryPublicCredentialsByHolderRequest")
 	proto.RegisterType((*QueryPublicCredentialsByHolderResponse)(nil), "elestodao.elesto.credential.v1.QueryPublicCredentialsByHolderResponse")
 	proto.RegisterType((*QueryPublicCredentialsByIssuerRequest)(nil), "elestodao.elesto.credential.v1.QueryPublicCredentialsByIssuerRequest")
@@ -741,52 +839,56 @@ func init() {
 func init() { proto.RegisterFile("credential/v1/query.proto", fileDescriptor_fac323b79b6e0b88) }
 
 var fileDescriptor_fac323b79b6e0b88 = []byte{
-	// 713 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x97, 0x41, 0x4f, 0x13, 0x41,
-	0x14, 0xc7, 0x99, 0x12, 0x4d, 0x7c, 0x24, 0x06, 0x47, 0x49, 0x60, 0xc5, 0x4d, 0x5d, 0x03, 0x12,
-	0x85, 0x19, 0x0b, 0xc6, 0x83, 0x11, 0x23, 0x55, 0x51, 0x13, 0x4d, 0x90, 0x18, 0x0e, 0xdc, 0xb6,
-	0xdd, 0xa1, 0x4c, 0x2c, 0x3b, 0xa5, 0xb3, 0x6d, 0x24, 0xc4, 0x83, 0x9e, 0x3c, 0x9a, 0xf8, 0x29,
-	0x3c, 0x19, 0x3f, 0x84, 0x86, 0x8b, 0x09, 0x89, 0x1e, 0x3c, 0x1a, 0xf0, 0x3b, 0x78, 0x35, 0x9d,
-	0x99, 0xa5, 0x5b, 0xe8, 0xee, 0x92, 0xa5, 0x6a, 0xf0, 0xd6, 0xb0, 0xf3, 0xfe, 0xef, 0xff, 0xfb,
-	0x4f, 0xf7, 0x3d, 0x0a, 0x23, 0xe5, 0x3a, 0xf3, 0x98, 0x1f, 0x70, 0xb7, 0x4a, 0x9b, 0x05, 0xba,
-	0xde, 0x60, 0xf5, 0x0d, 0x52, 0xab, 0x8b, 0x40, 0x60, 0x9b, 0x55, 0x99, 0x0c, 0x84, 0xe7, 0x0a,
-	0xa2, 0x3f, 0x91, 0xf6, 0x59, 0xd2, 0x2c, 0x58, 0xa3, 0x15, 0x21, 0x2a, 0x55, 0x46, 0xdd, 0x1a,
-	0xa7, 0xae, 0xef, 0x8b, 0xc0, 0x0d, 0xb8, 0xf0, 0xa5, 0xae, 0xb6, 0xae, 0x94, 0x85, 0x5c, 0x13,
-	0x92, 0x96, 0x5c, 0xc9, 0xb4, 0x2c, 0x6d, 0x16, 0x4a, 0x2c, 0x70, 0x0b, 0xb4, 0xe6, 0x56, 0xb8,
-	0xaf, 0x0e, 0x9b, 0xb3, 0x76, 0xa7, 0x89, 0x48, 0x1b, 0xf5, 0xdc, 0x21, 0x30, 0xfa, 0xb4, 0xa5,
-	0xb0, 0xd0, 0x28, 0x55, 0x79, 0xf9, 0xee, 0xde, 0xe3, 0x45, 0xb6, 0xde, 0x60, 0x32, 0xc0, 0xa7,
-	0x21, 0xc7, 0xbd, 0x61, 0x94, 0x47, 0x13, 0xa7, 0x16, 0x73, 0xdc, 0x73, 0x36, 0xe1, 0x42, 0xcc,
-	0x79, 0x59, 0x13, 0xbe, 0x64, 0x78, 0x19, 0xa0, 0xdd, 0x44, 0x15, 0x0e, 0x4c, 0xdf, 0x24, 0xc9,
-	0xbc, 0x44, 0xab, 0x2d, 0xb1, 0x3a, 0x5f, 0xe1, 0x6e, 0xa9, 0xca, 0x22, 0xba, 0x11, 0x35, 0xa7,
-	0x12, 0xd3, 0x5c, 0x86, 0x6e, 0xe7, 0x01, 0xda, 0x09, 0x98, 0xe6, 0xe3, 0x44, 0xc7, 0x45, 0x5a,
-	0x71, 0x11, 0x7d, 0x0b, 0x26, 0x2e, 0xb2, 0xe0, 0x56, 0x98, 0xa9, 0x5d, 0x8c, 0x54, 0x3a, 0x9f,
-	0x10, 0xd8, 0x71, 0x9d, 0x62, 0x38, 0xfb, 0x7b, 0xc7, 0x89, 0x1f, 0x74, 0x60, 0xe4, 0x14, 0xc6,
-	0xe5, 0x54, 0x0c, 0x6d, 0xac, 0x83, 0xe3, 0x15, 0x82, 0xb1, 0xee, 0x1c, 0xc5, 0x8d, 0x87, 0xa2,
-	0xea, 0xb1, 0x7a, 0x98, 0xdc, 0x20, 0xf4, 0x7b, 0x7b, 0x17, 0xdd, 0xfa, 0xb8, 0x2f, 0xcb, 0x5c,
-	0xe6, 0x2c, 0xbf, 0x20, 0x18, 0x4f, 0xf3, 0xf0, 0xbf, 0x64, 0xfa, 0x48, 0xca, 0xc6, 0xbf, 0xce,
-	0x34, 0xf4, 0x70, 0x9c, 0x32, 0x9d, 0x86, 0xbc, 0xc2, 0x69, 0xf7, 0xb9, 0xc7, 0x56, 0xb8, 0xcf,
-	0x5b, 0x0f, 0xe3, 0x26, 0xd1, 0x06, 0x5c, 0x4c, 0xa8, 0x31, 0xf4, 0xcf, 0x00, 0xbc, 0xbd, 0xbf,
-	0x9a, 0x81, 0x70, 0x3d, 0x8d, 0xbe, 0xab, 0x62, 0x44, 0xc7, 0x79, 0x9e, 0xd0, 0xfa, 0x4f, 0xcc,
-	0x22, 0x27, 0xa9, 0x9b, 0x21, 0x5d, 0x82, 0x81, 0xb6, 0x43, 0x69, 0x2e, 0x3a, 0x1b, 0x6a, 0x54,
-	0xa8, 0x77, 0x77, 0xfc, 0x06, 0xc1, 0x64, 0x3c, 0x47, 0x51, 0x7f, 0x95, 0xe5, 0xea, 0xdf, 0x78,
-	0x7d, 0xb6, 0x11, 0x4c, 0x1d, 0xd2, 0xca, 0x31, 0x49, 0x77, 0xfa, 0xfd, 0x00, 0x9c, 0x50, 0x48,
-	0xf8, 0x03, 0x82, 0x33, 0x07, 0xc6, 0x02, 0x9e, 0x4d, 0xf3, 0x9a, 0xb8, 0x58, 0xad, 0xdb, 0x59,
-	0xcb, 0xb5, 0x55, 0xe7, 0xfc, 0xeb, 0xaf, 0x3f, 0xdf, 0xe5, 0x86, 0xf0, 0x59, 0xaa, 0xab, 0x23,
-	0xff, 0x88, 0x48, 0xfc, 0x11, 0xc1, 0xe0, 0xfe, 0x52, 0x7c, 0x2b, 0x53, 0xc7, 0xd0, 0xef, 0x6c,
-	0xc6, 0x6a, 0x63, 0x37, 0xaf, 0xec, 0x5a, 0x78, 0xb8, 0x8b, 0x5d, 0xba, 0xc9, 0xbd, 0x97, 0xf8,
-	0x1b, 0x82, 0x91, 0xd8, 0x85, 0x86, 0xef, 0x67, 0x8b, 0x6b, 0xdf, 0x52, 0xb6, 0xe6, 0x8f, 0x2a,
-	0x63, 0x70, 0x26, 0x14, 0x8e, 0x83, 0xf3, 0xdd, 0x70, 0x56, 0xd5, 0x59, 0xba, 0xe9, 0x25, 0x60,
-	0xe9, 0x9d, 0x92, 0x1d, 0xab, 0x63, 0x2f, 0x66, 0xc7, 0xea, 0x5c, 0x6d, 0xc9, 0x58, 0x5c, 0x9d,
-	0x35, 0x58, 0x9f, 0x11, 0x0c, 0x75, 0x7d, 0xd7, 0xf1, 0xdc, 0xa1, 0xbc, 0x24, 0x0d, 0x7a, 0xab,
-	0x78, 0x14, 0x09, 0x83, 0x32, 0xae, 0x50, 0xf2, 0xd8, 0x3e, 0x88, 0x42, 0xa3, 0xf3, 0x62, 0x0b,
-	0xc1, 0xb9, 0x6e, 0x4a, 0xf8, 0x4e, 0x66, 0x13, 0x21, 0xc6, 0xdc, 0x11, 0x14, 0x0c, 0xc5, 0x55,
-	0x45, 0x31, 0x86, 0x2f, 0x25, 0x53, 0xe8, 0x37, 0xe8, 0x17, 0x82, 0x7c, 0xda, 0xfc, 0xc5, 0x8f,
-	0xb3, 0x67, 0x7b, 0x70, 0xa3, 0x58, 0x4f, 0x7a, 0xa4, 0x66, 0x70, 0x6f, 0x28, 0xdc, 0x6b, 0x98,
-	0xa4, 0xe0, 0xd6, 0xc2, 0x4a, 0xfd, 0x6d, 0x2c, 0xce, 0x6f, 0xed, 0xd8, 0x68, 0x7b, 0xc7, 0x46,
-	0x3f, 0x76, 0x6c, 0xf4, 0x76, 0xd7, 0xee, 0xdb, 0xde, 0xb5, 0xfb, 0xbe, 0xef, 0xda, 0x7d, 0xcb,
-	0x93, 0x15, 0x1e, 0xac, 0x36, 0x4a, 0xa4, 0x2c, 0xd6, 0x8c, 0xe6, 0x94, 0xe7, 0x8a, 0x50, 0xbe,
-	0x39, 0x43, 0x5f, 0x44, 0x7a, 0x94, 0x4e, 0xaa, 0x9f, 0x70, 0x33, 0xbf, 0x03, 0x00, 0x00, 0xff,
-	0xff, 0x7c, 0xba, 0x3b, 0xa0, 0x69, 0x0e, 0x00, 0x00,
+	// 779 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x97, 0x41, 0x4f, 0xd4, 0x4e,
+	0x18, 0xc6, 0x99, 0x25, 0xff, 0x7f, 0xe2, 0x8b, 0x31, 0x38, 0x4a, 0x02, 0x05, 0x9a, 0xb5, 0x08,
+	0x12, 0x85, 0xd6, 0x05, 0xe3, 0xc1, 0x88, 0x91, 0x15, 0x50, 0x13, 0x4d, 0x70, 0x63, 0x38, 0x70,
+	0xeb, 0x6e, 0x87, 0x65, 0x62, 0xe9, 0x2c, 0xdb, 0xee, 0x2a, 0x21, 0x1e, 0xf4, 0xe4, 0xd1, 0xc4,
+	0x0f, 0x62, 0xfc, 0x10, 0x1a, 0x0e, 0x9a, 0x90, 0xe8, 0xc1, 0xa3, 0x01, 0xbf, 0x83, 0x1e, 0xcd,
+	0xce, 0x4c, 0x69, 0x97, 0xdd, 0xb6, 0xa4, 0xbb, 0x68, 0xf6, 0xd6, 0x6c, 0xe7, 0x7d, 0xde, 0xe7,
+	0xf7, 0xb4, 0x33, 0x6f, 0x17, 0x46, 0x4a, 0x55, 0x62, 0x11, 0xc7, 0xa3, 0xa6, 0x6d, 0xd4, 0x73,
+	0xc6, 0x76, 0x8d, 0x54, 0x77, 0xf4, 0x4a, 0x95, 0x79, 0x0c, 0xab, 0xc4, 0x26, 0xae, 0xc7, 0x2c,
+	0x93, 0xe9, 0xe2, 0x4a, 0x0f, 0xd6, 0xea, 0xf5, 0x9c, 0x32, 0x56, 0x66, 0xac, 0x6c, 0x13, 0xc3,
+	0xac, 0x50, 0xc3, 0x74, 0x1c, 0xe6, 0x99, 0x1e, 0x65, 0x8e, 0x2b, 0xaa, 0x95, 0xab, 0x25, 0xe6,
+	0x6e, 0x31, 0xd7, 0x28, 0x9a, 0x2e, 0x11, 0xb2, 0x46, 0x3d, 0x57, 0x24, 0x9e, 0x99, 0x33, 0x2a,
+	0x66, 0x99, 0x3a, 0x7c, 0xb1, 0x5c, 0xab, 0x36, 0x9b, 0x08, 0xb5, 0xe1, 0xf7, 0x35, 0x1d, 0xc6,
+	0x9e, 0x34, 0x14, 0x56, 0x6b, 0x45, 0x9b, 0x96, 0xee, 0x1d, 0xdd, 0x2e, 0x90, 0xed, 0x1a, 0x71,
+	0x3d, 0x7c, 0x0e, 0x32, 0xd4, 0x1a, 0x46, 0x59, 0x34, 0x7d, 0xa6, 0x90, 0xa1, 0x96, 0xb6, 0x0b,
+	0xe3, 0x11, 0xeb, 0xdd, 0x0a, 0x73, 0x5c, 0x82, 0xd7, 0x01, 0x82, 0x26, 0xbc, 0x70, 0x60, 0xee,
+	0x96, 0x1e, 0xcf, 0xab, 0x0b, 0xb5, 0x35, 0x52, 0xa5, 0x1b, 0xd4, 0x2c, 0xda, 0x24, 0xa4, 0x1b,
+	0x52, 0xd3, 0xca, 0x11, 0xcd, 0x5d, 0xdf, 0xed, 0x0a, 0x40, 0x90, 0x80, 0x6c, 0x3e, 0xa5, 0x8b,
+	0xb8, 0xf4, 0x46, 0x5c, 0xba, 0x78, 0x0a, 0x32, 0x2e, 0x7d, 0xd5, 0x2c, 0x13, 0x59, 0x5b, 0x08,
+	0x55, 0x6a, 0x1f, 0x11, 0xa8, 0x51, 0x9d, 0x22, 0x38, 0xfb, 0xbb, 0xc7, 0x89, 0xef, 0x37, 0x61,
+	0x64, 0x38, 0xc6, 0x95, 0x44, 0x0c, 0x61, 0xac, 0x89, 0xc3, 0x81, 0xcb, 0x1c, 0x63, 0xd1, 0xb6,
+	0xd9, 0x73, 0x62, 0x9d, 0x7a, 0x6e, 0x7b, 0x08, 0x26, 0x13, 0x1a, 0xca, 0xf8, 0xd6, 0x60, 0x20,
+	0x00, 0x76, 0x65, 0x7e, 0x37, 0x92, 0xf2, 0x0b, 0x94, 0x96, 0xc8, 0x06, 0x75, 0x68, 0xa3, 0x69,
+	0x21, 0x2c, 0xd4, 0xbd, 0xe8, 0x5e, 0xf9, 0x28, 0x2d, 0x0c, 0xf9, 0x9d, 0x07, 0xcc, 0xb6, 0x48,
+	0xd5, 0x0f, 0x6f, 0x10, 0xfa, 0xad, 0xa3, 0x3d, 0xd2, 0xb8, 0x3c, 0x16, 0x67, 0x26, 0x75, 0x9c,
+	0x5f, 0x10, 0x4c, 0x25, 0x79, 0xe8, 0xa5, 0xd7, 0x31, 0x2e, 0xd3, 0x87, 0xae, 0x5b, 0xfb, 0xd7,
+	0x99, 0xfa, 0x1e, 0x7a, 0x29, 0xd3, 0x39, 0xc8, 0x72, 0x9c, 0xb6, 0x5b, 0x23, 0xe2, 0x10, 0xdf,
+	0x81, 0x4b, 0x31, 0x35, 0x92, 0xfe, 0x29, 0x80, 0x75, 0xf4, 0xab, 0x3c, 0x13, 0xd2, 0x6d, 0xd0,
+	0x90, 0x8e, 0xf6, 0x2c, 0xa6, 0xf5, 0x69, 0x1c, 0xe3, 0x5a, 0x5c, 0xb7, 0xe0, 0x2c, 0x0a, 0x1c,
+	0x76, 0x78, 0x16, 0x85, 0x84, 0xba, 0xf7, 0x8c, 0xdf, 0x20, 0x98, 0x89, 0xe6, 0xc8, 0x8b, 0x57,
+	0xd9, 0xdd, 0xfc, 0x1b, 0xdb, 0x67, 0x1f, 0xc1, 0xec, 0x09, 0xad, 0xf4, 0x48, 0xba, 0x73, 0xbf,
+	0xcf, 0xc2, 0x7f, 0x1c, 0x09, 0xbf, 0x47, 0x70, 0xbe, 0xe5, 0x58, 0xc0, 0x0b, 0x49, 0x5e, 0x63,
+	0xbf, 0x49, 0x94, 0x3b, 0x69, 0xcb, 0x85, 0x55, 0x6d, 0xf4, 0xf5, 0xd7, 0x9f, 0xef, 0x32, 0x43,
+	0xf8, 0x82, 0x21, 0xaa, 0x8d, 0xf0, 0xb8, 0xfb, 0x8c, 0x60, 0x38, 0x6a, 0xd6, 0xe2, 0xa5, 0x13,
+	0x75, 0x4e, 0xf8, 0x36, 0x50, 0x96, 0x3b, 0x54, 0x91, 0x18, 0x13, 0x1c, 0x63, 0x1c, 0x8f, 0xb6,
+	0xc1, 0x30, 0x4c, 0x51, 0x8d, 0x3f, 0x20, 0x18, 0x3c, 0x2e, 0x81, 0x6f, 0xa7, 0x0a, 0xd0, 0xb7,
+	0xbf, 0x90, 0xb2, 0x5a, 0xda, 0xce, 0x72, 0xdb, 0x0a, 0x1e, 0x6e, 0x67, 0x7b, 0x97, 0x5a, 0x2f,
+	0xf1, 0x37, 0x04, 0x23, 0x91, 0xf3, 0x19, 0x2f, 0xa7, 0x7b, 0xfa, 0xc7, 0xbe, 0x31, 0x94, 0x95,
+	0x4e, 0x65, 0x24, 0xce, 0x34, 0xc7, 0xd1, 0x70, 0xb6, 0x1d, 0xce, 0x26, 0x5f, 0x6b, 0xec, 0x5a,
+	0x31, 0x58, 0x62, 0x44, 0xa6, 0xc7, 0x6a, 0x1a, 0xf3, 0xe9, 0xb1, 0x9a, 0x27, 0x75, 0x3c, 0x16,
+	0xe5, 0x6b, 0x25, 0xd6, 0x27, 0x04, 0x43, 0x6d, 0x8f, 0x2e, 0xbc, 0x78, 0x22, 0x2f, 0x71, 0x73,
+	0x4b, 0xc9, 0x77, 0x22, 0x21, 0x51, 0xa6, 0x38, 0x4a, 0x16, 0xab, 0xad, 0x28, 0x46, 0xf8, 0xf8,
+	0xdb, 0x43, 0x70, 0xb1, 0x9d, 0x12, 0xbe, 0x9b, 0xda, 0x84, 0x8f, 0xb1, 0xd8, 0x81, 0x82, 0xa4,
+	0xb8, 0xc6, 0x29, 0x26, 0xf1, 0x44, 0x3c, 0x85, 0xd8, 0x41, 0xbf, 0x10, 0x64, 0x93, 0xc6, 0x09,
+	0x7e, 0x94, 0x3e, 0xdb, 0xd6, 0x01, 0xa9, 0x3c, 0xee, 0x92, 0x9a, 0xc4, 0xbd, 0xc9, 0x71, 0xaf,
+	0x63, 0x3d, 0x01, 0xb7, 0xe2, 0x57, 0x8a, 0xb7, 0x31, 0xbf, 0xb2, 0x77, 0xa0, 0xa2, 0xfd, 0x03,
+	0x15, 0xfd, 0x38, 0x50, 0xd1, 0xdb, 0x43, 0xb5, 0x6f, 0xff, 0x50, 0xed, 0xfb, 0x7e, 0xa8, 0xf6,
+	0xad, 0xcf, 0x94, 0xa9, 0xb7, 0x59, 0x2b, 0xea, 0x25, 0xb6, 0x25, 0x35, 0x67, 0x2d, 0x93, 0xf9,
+	0xf2, 0xf5, 0x79, 0xe3, 0x45, 0xa8, 0x47, 0xf1, 0x7f, 0xfe, 0x67, 0x7e, 0xfe, 0x4f, 0x00, 0x00,
+	0x00, 0xff, 0xff, 0x7a, 0x58, 0xa4, 0x01, 0x73, 0x10, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -804,6 +906,7 @@ type QueryClient interface {
 	// TODO: to remove in favour of a third party service that indexes the credential
 	// PublicCredentials
 	PublicCredentials(ctx context.Context, in *QueryPublicCredentialsRequest, opts ...grpc.CallOption) (*QueryPublicCredentialsResponse, error)
+	AllowedPublicCredentials(ctx context.Context, in *QueryAllowedPublicCredentialsRequest, opts ...grpc.CallOption) (*QueryAllowedPublicCredentialsResponse, error)
 	// PublicCredentials
 	PublicCredential(ctx context.Context, in *QueryPublicCredentialRequest, opts ...grpc.CallOption) (*QueryPublicCredentialResponse, error)
 	PublicCredentialsByHolder(ctx context.Context, in *QueryPublicCredentialsByHolderRequest, opts ...grpc.CallOption) (*QueryPublicCredentialsByHolderResponse, error)
@@ -827,6 +930,15 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 func (c *queryClient) PublicCredentials(ctx context.Context, in *QueryPublicCredentialsRequest, opts ...grpc.CallOption) (*QueryPublicCredentialsResponse, error) {
 	out := new(QueryPublicCredentialsResponse)
 	err := c.cc.Invoke(ctx, "/elestodao.elesto.credential.v1.Query/PublicCredentials", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AllowedPublicCredentials(ctx context.Context, in *QueryAllowedPublicCredentialsRequest, opts ...grpc.CallOption) (*QueryAllowedPublicCredentialsResponse, error) {
+	out := new(QueryAllowedPublicCredentialsResponse)
+	err := c.cc.Invoke(ctx, "/elestodao.elesto.credential.v1.Query/AllowedPublicCredentials", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -892,6 +1004,7 @@ type QueryServer interface {
 	// TODO: to remove in favour of a third party service that indexes the credential
 	// PublicCredentials
 	PublicCredentials(context.Context, *QueryPublicCredentialsRequest) (*QueryPublicCredentialsResponse, error)
+	AllowedPublicCredentials(context.Context, *QueryAllowedPublicCredentialsRequest) (*QueryAllowedPublicCredentialsResponse, error)
 	// PublicCredentials
 	PublicCredential(context.Context, *QueryPublicCredentialRequest) (*QueryPublicCredentialResponse, error)
 	PublicCredentialsByHolder(context.Context, *QueryPublicCredentialsByHolderRequest) (*QueryPublicCredentialsByHolderResponse, error)
@@ -910,6 +1023,9 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) PublicCredentials(ctx context.Context, req *QueryPublicCredentialsRequest) (*QueryPublicCredentialsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublicCredentials not implemented")
+}
+func (*UnimplementedQueryServer) AllowedPublicCredentials(ctx context.Context, req *QueryAllowedPublicCredentialsRequest) (*QueryAllowedPublicCredentialsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllowedPublicCredentials not implemented")
 }
 func (*UnimplementedQueryServer) PublicCredential(ctx context.Context, req *QueryPublicCredentialRequest) (*QueryPublicCredentialResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublicCredential not implemented")
@@ -948,6 +1064,24 @@ func _Query_PublicCredentials_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).PublicCredentials(ctx, req.(*QueryPublicCredentialsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AllowedPublicCredentials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllowedPublicCredentialsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AllowedPublicCredentials(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/elestodao.elesto.credential.v1.Query/AllowedPublicCredentials",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AllowedPublicCredentials(ctx, req.(*QueryAllowedPublicCredentialsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1067,6 +1201,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PublicCredentials",
 			Handler:    _Query_PublicCredentials_Handler,
+		},
+		{
+			MethodName: "AllowedPublicCredentials",
+			Handler:    _Query_AllowedPublicCredentials_Handler,
 		},
 		{
 			MethodName: "PublicCredential",
@@ -1233,6 +1371,90 @@ func (m *QueryPublicCredentialsResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 		for iNdEx := len(m.Credential) - 1; iNdEx >= 0; iNdEx-- {
 			{
 				size, err := m.Credential[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllowedPublicCredentialsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllowedPublicCredentialsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllowedPublicCredentialsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllowedPublicCredentialsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllowedPublicCredentialsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllowedPublicCredentialsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Credentials) > 0 {
+		for iNdEx := len(m.Credentials) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Credentials[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -1737,6 +1959,38 @@ func (m *QueryPublicCredentialsResponse) Size() (n int) {
 	return n
 }
 
+func (m *QueryAllowedPublicCredentialsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryAllowedPublicCredentialsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Credentials) > 0 {
+		for _, e := range m.Credentials {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
 func (m *QueryPublicCredentialsByHolderRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -2223,6 +2477,212 @@ func (m *QueryPublicCredentialsResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.Credential = append(m.Credential, &PublicVerifiableCredential{})
 			if err := m.Credential[len(m.Credential)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllowedPublicCredentialsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllowedPublicCredentialsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllowedPublicCredentialsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllowedPublicCredentialsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllowedPublicCredentialsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllowedPublicCredentialsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Credentials", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Credentials = append(m.Credentials, &CredentialDefinition{})
+			if err := m.Credentials[len(m.Credentials)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

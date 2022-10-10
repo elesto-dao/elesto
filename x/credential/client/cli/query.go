@@ -34,6 +34,7 @@ func GetQueryCmd(_ string) *cobra.Command {
 		NewQueryCredentialStatusCmd(),
 		NewQueryPublicCredentialStatusCmd(),
 		NewMakeCredentialFromSchemaCmd(),
+		NewQueryAllowedCredentialDefinitionsCmd(),
 	)
 
 	return cmd
@@ -187,11 +188,18 @@ func NewQueryPublicCredentialsByIssuerCmd() *cobra.Command {
 				pwcs        []*credential.WrappedCredential
 				pwcsJSON    []byte
 			)
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			// query credentials
 			if result, err = queryClient.PublicCredentialsByIssuer(
 				context.Background(),
 				&credential.QueryPublicCredentialsByIssuerRequest{
-					Did: args[0],
+					Did:        args[0],
+					Pagination: pageReq,
 				},
 			); err != nil {
 				return err
@@ -218,5 +226,50 @@ func NewQueryPublicCredentialsByIssuerCmd() *cobra.Command {
 	}
 	cmd.Flags().BoolVar(&printNative, "native", false, "if set the credential will be printed in the raw format, that is how it is stored on chain")
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, command)
+
+	return cmd
+}
+
+func NewQueryAllowedCredentialDefinitionsCmd() *cobra.Command {
+
+	var (
+		command = "allowed-credential-definitions"
+	)
+
+	cmd := &cobra.Command{
+		Use:     use(command),
+		Short:   "query all allowed credential definitions",
+		Example: exQuery(command, "allowed-credential-definitions"),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := credential.NewQueryClient(clientCtx)
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			params := &credential.QueryAllowedPublicCredentialsRequest{
+				Pagination: pageReq,
+			}
+
+			result, err := queryClient.AllowedPublicCredentials(
+				context.Background(),
+				params,
+			)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(result)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, command)
+	flags.AddQueryFlagsToCmd(cmd)
+
 	return cmd
 }

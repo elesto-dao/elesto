@@ -70,3 +70,13 @@ func (k Keeper) GetAll(
 	store := ctx.KVStore(k.storeKey)
 	return sdk.KVStorePrefixIterator(store, prefix)
 }
+
+func (k Keeper) Exists(
+	ctx sdk.Context,
+	prefix []byte,
+	key []byte,
+) bool {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(append(prefix, key...))
+	return bz != nil
+}

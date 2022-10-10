@@ -8,10 +8,23 @@ import (
 	"time"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/noandrea/rl2020"
 
 	"github.com/elesto-dao/elesto/v3/x/did"
 )
+
+const (
+	ProposePublicCredentialIDType       = "ProposePublicCredentialID"
+	ProposeRemovePublicCredentialIDType = "ProposeRemovePublicCredentialID"
+)
+
+func init() {
+	govtypes.RegisterProposalType(ProposePublicCredentialIDType)
+	govtypes.RegisterProposalType(ProposeRemovePublicCredentialIDType)
+	govtypes.RegisterProposalTypeCodec(&ProposePublicCredentialID{}, "credential/ProposePublicCredential")
+	govtypes.RegisterProposalTypeCodec(&ProposeRemovePublicCredentialID{}, "credential/ProposeRemovePublicCredential")
+}
 
 // NewCredentialDefinitionFromFile create a credential definition by reading the data from a file
 func NewCredentialDefinitionFromFile(id string, publisherDID did.DID,
@@ -234,4 +247,52 @@ func (m CredentialStatus) Coordinates() (string, int) {
 // TypeDef returns the credential status ID and type for correctness check
 func (m CredentialStatus) TypeDef() (string, string) {
 	return m.Id, m.Type
+}
+
+func NewProposePublicCredentialID(Title, Description, CredentialDefinitionID string) *ProposePublicCredentialID {
+	return &ProposePublicCredentialID{
+		Title:                  Title,
+		Description:            Description,
+		CredentialDefinitionID: CredentialDefinitionID,
+	}
+}
+
+func (m *ProposePublicCredentialID) ProposalRoute() string {
+	return RouterKey
+}
+
+func (m *ProposePublicCredentialID) ProposalType() string {
+	return ProposePublicCredentialIDType
+}
+
+func (m *ProposePublicCredentialID) ValidateBasic() error {
+	if m.CredentialDefinitionID == "" {
+		return fmt.Errorf("empty credential definition id")
+	}
+
+	return govtypes.ValidateAbstract(m)
+}
+
+func NewProposeRemovePublicCredentialID(Title, Description, CredentialDefinitionID string) *ProposeRemovePublicCredentialID {
+	return &ProposeRemovePublicCredentialID{
+		Title:                  Title,
+		Description:            Description,
+		CredentialDefinitionID: CredentialDefinitionID,
+	}
+}
+
+func (m *ProposeRemovePublicCredentialID) ProposalRoute() string {
+	return RouterKey
+}
+
+func (m *ProposeRemovePublicCredentialID) ProposalType() string {
+	return ProposeRemovePublicCredentialIDType
+}
+
+func (m *ProposeRemovePublicCredentialID) ValidateBasic() error {
+	if m.CredentialDefinitionID == "" {
+		return fmt.Errorf("empty credential definition id")
+	}
+
+	return govtypes.ValidateAbstract(m)
 }

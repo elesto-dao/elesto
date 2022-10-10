@@ -14,6 +14,20 @@ func (k Keeper) SetCredentialDefinition(ctx sdk.Context, def *credential.Credent
 	k.Set(ctx, credential.CredentialDefinitionKey, []byte(def.Id), def, k.cdc.MustMarshal)
 }
 
+func (k Keeper) AllowPublicCredential(ctx sdk.Context, id string) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(append(credential.PublicCredentialAllowKey, []byte(id)...), []byte(id))
+}
+
+func (k Keeper) RemovePublicCredentialFromAllowedList(ctx sdk.Context, id string) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(append(credential.PublicCredentialAllowKey, []byte(id)...))
+}
+
+func (k Keeper) IsPublicCredentialDefinitionAllowed(ctx sdk.Context, id string) bool {
+	return k.Exists(ctx, credential.PublicCredentialAllowKey, []byte(id))
+}
+
 // GetCredentialDefinition retrieve a credential definition by its key.
 // The boolean return will be false if the credential definition is not found
 func (k Keeper) GetCredentialDefinition(ctx sdk.Context, key string) (credential.CredentialDefinition, bool) {
@@ -92,6 +106,23 @@ func (k Keeper) GetPublicCredentialWithFilter(ctx sdk.Context, pagination *query
 		k.cdc.MustUnmarshal(value, &pvc)
 		if filter(&pvc) {
 			pvcs = append(pvcs, &pvc)
+		}
+		return nil
+	})
+	return
+}
+
+func (k Keeper) GetAllowedCredentialDefinitions(ctx sdk.Context, req *query.PageRequest) (cds []*credential.CredentialDefinition, pageRes *query.PageResponse, err error) {
+	store := ctx.KVStore(k.storeKey)
+	cdStore := prefix.NewStore(store, credential.PublicCredentialAllowKey)
+	pageRes, err = query.Paginate(cdStore, req, func(key []byte, value []byte) error {
+		id := string(value)
+		cd, found := k.GetCredentialDefinition(ctx, id)
+		//if !found {
+		//	panic("credential definition with allowed id not found")
+		//}
+		if found {
+			cds = append(cds, &cd)
 		}
 		return nil
 	})

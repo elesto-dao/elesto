@@ -12,6 +12,7 @@ var (
 	ErrCredentialDefinitionFound     = sdkerrors.Register(ModuleName, 2100, "credential definition found")
 	ErrCredentialDefinitionNotFound  = sdkerrors.Register(ModuleName, 2101, "credential definition not found")
 	ErrCredentialDefinitionCorrupted = sdkerrors.Register(ModuleName, 2109, "credential definition corrupted")
+	ErrCredentialDefinitionNotPublic = sdkerrors.Register(ModuleName, 2104, "credential definition is not public")
 
 	ErrVerifiableCredentialNotFound = sdkerrors.Register(ModuleName, 2102, "vc not found")
 	ErrVerifiableCredentialFound    = sdkerrors.Register(ModuleName, 2103, "vc found")
