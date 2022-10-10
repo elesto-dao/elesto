@@ -20,6 +20,8 @@ var (
 	dummyVocabOk string
 	//go:embed testdata/dummy.credential.json
 	dummyCredential string
+	//go:embed testdata/dummy.credential.signed.json
+	dummyCredentialSigned string
 )
 
 func (suite *KeeperTestSuite) TestHandleMsgPublishCredentialDefinition() {
@@ -42,6 +44,7 @@ func (suite *KeeperTestSuite) TestHandleMsgPublishCredentialDefinition() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef1",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -62,6 +65,7 @@ func (suite *KeeperTestSuite) TestHandleMsgPublishCredentialDefinition() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef2",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -87,6 +91,7 @@ func (suite *KeeperTestSuite) TestHandleMsgPublishCredentialDefinition() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef3",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -130,10 +135,9 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateCredentialDefinition() {
 	query := suite.queryClient
 
 	testCases := []struct {
-		name         string
-		reqFn        func() (*credential.MsgUpdateCredentialDefinitionRequest, *credential.CredentialDefinition)
-		wantBasicErr error
-		wantErr      error
+		name    string
+		reqFn   func() (*credential.MsgUpdateCredentialDefinitionRequest, *credential.CredentialDefinition)
+		wantErr error
 	}{
 		{
 			"PASS: can update definition active",
@@ -145,6 +149,7 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateCredentialDefinition() {
 					Vocab:        []byte(dummyVocabOk),
 					Name:         "CredentialDef10",
 					Description:  "",
+					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				}
@@ -170,7 +175,6 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateCredentialDefinition() {
 				return mucdr, cd
 			},
 			nil,
-			nil,
 		},
 		{
 			"PASS: can update definition active/superseded by",
@@ -182,6 +186,7 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateCredentialDefinition() {
 					Vocab:        []byte(dummyVocabOk),
 					Name:         "CredentialDef10",
 					Description:  "",
+					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				}
@@ -208,7 +213,6 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateCredentialDefinition() {
 				return mucdr, cd
 			},
 			nil,
-			nil,
 		},
 		{
 			"FAIL: SupersededBy definition not found",
@@ -220,6 +224,7 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateCredentialDefinition() {
 					Vocab:        []byte(dummyVocabOk),
 					Name:         "CredentialDef10",
 					Description:  "",
+					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				}
@@ -245,7 +250,6 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateCredentialDefinition() {
 
 				return mucdr, cd
 			},
-			nil,
 			errors.New("credential definition did:cosmos:elesto:cd-update-non-existing not found: credential definition not found"),
 		},
 		{
@@ -261,24 +265,14 @@ func (suite *KeeperTestSuite) TestHandleMsgUpdateCredentialDefinition() {
 				// expected credential definition
 				return mucdr, nil
 			},
-			nil,
 			errors.New("credential definition did:cosmos:elesto:cd-update-non-existing does not exists: credential definition not found"),
 		},
 	}
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			req, expectedCD := tc.reqFn()
+			_, err := server.UpdateCredentialDefinition(sdk.WrapSDKContext(suite.ctx), req)
 
-			err := req.ValidateBasic()
-			if tc.wantBasicErr == nil {
-				suite.Require().NoError(err)
-			} else {
-				suite.Require().Error(err)
-				suite.Require().Equal(tc.wantBasicErr.Error(), err.Error())
-				return
-			}
-
-			_, err = server.UpdateCredentialDefinition(sdk.WrapSDKContext(suite.ctx), req)
 			if tc.wantErr == nil {
 				suite.Require().NoError(err)
 				r, qErr := query.CredentialDefinition(context.Background(), &credential.QueryCredentialDefinitionRequest{Id: expectedCD.Id})
@@ -297,10 +291,9 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 	server := keeper.NewMsgServerImpl(suite.keeper)
 
 	testCases := []struct {
-		name         string
-		reqFn        func() credential.MsgIssuePublicVerifiableCredentialRequest
-		wantBasicErr error
-		wantErr      error
+		name    string
+		reqFn   func() credential.MsgIssuePublicVerifiableCredentialRequest
+		wantErr error
 	}{
 		{
 			"PASS: issue public credential",
@@ -321,6 +314,7 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef10",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -343,7 +337,6 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 				}
 			},
 			nil,
-			nil,
 		},
 		{
 			"PASS: tx signer != credential issuer",
@@ -364,6 +357,7 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef10",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -386,7 +380,6 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 				}
 			},
 			nil,
-			nil,
 		},
 		{
 			"FAIL: credential definition not found",
@@ -407,8 +400,50 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 					Signer:                 suite.GetRandomAccount().String(),
 				}
 			},
-			nil,
 			fmt.Errorf("credential definition did:cosmos:elesto:cd-non-existing not found: credential definition not found"),
+		},
+		{
+			"FAIL: credential definition is not public",
+			func() credential.MsgIssuePublicVerifiableCredentialRequest {
+
+				var (
+					wc  *credential.WrappedCredential
+					err error
+				)
+				//
+
+				// publish the definition
+				pcdr := credential.MsgPublishCredentialDefinitionRequest{
+					CredentialDefinition: &credential.CredentialDefinition{
+						Id:           "did:cosmos:elesto:cd-12",
+						PublisherId:  did.NewKeyDID(suite.GetTestAccount().String()).String(),
+						Schema:       []byte(dummySchemaOk),
+						Vocab:        []byte(dummyVocabOk),
+						Name:         "CredentialDef12",
+						Description:  "",
+						IsPublic:     false,
+						SupersededBy: "",
+						IsActive:     true,
+					},
+					Signer: suite.GetTestAccount().String(),
+				}
+				//create the credential definition
+				if _, err := server.PublishCredentialDefinition(sdk.WrapSDKContext(suite.ctx), &pcdr); err != nil {
+					suite.Require().FailNowf("expected definition to be created, got:", "%v", err)
+				}
+
+				// load the signed credential
+				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json"); err != nil {
+					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
+				}
+				// return the message
+				return credential.MsgIssuePublicVerifiableCredentialRequest{
+					CredentialDefinitionID: "did:cosmos:elesto:cd-12",
+					Credential:             wc.PublicVerifiableCredential,
+					Signer:                 suite.GetTestAccount().String(),
+				}
+			},
+			fmt.Errorf("the credential definition did:cosmos:elesto:cd-12 is defined as non-public: credential cannot be issued on-chain"),
 		},
 		{
 			"FAIL: credential definition is not active",
@@ -429,6 +464,7 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef13",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     false,
 					},
@@ -450,7 +486,6 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 					Signer:                 suite.GetTestAccount().String(),
 				}
 			},
-			nil,
 			fmt.Errorf("the credential definition did:cosmos:elesto:cd-13 issuance is suspended: credential cannot be issued on-chain"),
 		},
 		{
@@ -472,6 +507,7 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef14",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -493,7 +529,6 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 					Signer:                 suite.GetTestAccount().String(),
 				}
 			},
-			nil,
 			fmt.Errorf("signature cannot be verified: credential proof validation error"),
 		},
 		{
@@ -515,6 +550,7 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef15",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -536,7 +572,6 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 					Signer:                 suite.GetTestAccount().String(),
 				}
 			},
-			nil,
 			fmt.Errorf("missing credential proof: credential proof validation error"),
 		},
 		{
@@ -552,6 +587,7 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef16",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -569,8 +605,7 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 					Signer:                 suite.GetTestAccount().String(),
 				}
 			},
-			fmt.Errorf("credential must be set"),
-			nil,
+			fmt.Errorf("credential not set: input is invalid"),
 		},
 		{
 			"FAIL: credential invalid",
@@ -585,6 +620,7 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef17",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -602,26 +638,14 @@ func (suite *KeeperTestSuite) TestHandleMsgIssuePublicCredential() {
 					Signer:                 suite.GetTestAccount().String(),
 				}
 			},
-			nil,
 			fmt.Errorf("schema: did:cosmos:elesto:cd-17, errors: [(root): @context is required (root): type is required (root): issuer is required (root): issuanceDate is required credentialSubject: id is required]: the credential doesn't match the definition schema"),
 		},
 	}
-
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			req := tc.reqFn()
-
-			err := req.ValidateBasic()
-			if tc.wantBasicErr == nil {
-				suite.Require().NoError(err)
-			} else {
-				suite.Require().Error(err)
-				suite.Require().Equal(tc.wantBasicErr.Error(), err.Error())
-				return
-			}
-
 			suite.keeper.AllowPublicCredential(suite.ctx, req.CredentialDefinitionID)
-			_, err = server.IssuePublicVerifiableCredential(sdk.WrapSDKContext(suite.ctx), &req)
+			_, err := server.IssuePublicVerifiableCredential(sdk.WrapSDKContext(suite.ctx), &req)
 			if tc.wantErr == nil {
 				suite.Require().NoError(err)
 			} else {

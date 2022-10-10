@@ -34,6 +34,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinition() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef001",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -98,6 +99,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitionsByPublisher() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef001",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -116,6 +118,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitionsByPublisher() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef002",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -192,6 +195,7 @@ func (suite *KeeperTestSuite) TestKeeper_CredentialDefinitions() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef001",
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -255,6 +259,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredential() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef" + id,
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -339,6 +344,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentials() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef" + id,
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -415,6 +421,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentialsByHolder() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef" + id,
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -494,6 +501,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentialsByIssuer() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef" + id,
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -505,7 +513,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentialsByIssuer() {
 
 				// allowing the credential definition id for publishing
 				suite.keeper.AllowPublicCredential(suite.ctx, pcdr.CredentialDefinition.Id)
-
+				
 				// load the signed credential
 				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json"); err != nil {
 					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
@@ -572,6 +580,7 @@ func (suite *KeeperTestSuite) TestKeeper_AllowedPublicCredentials() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef" + id,
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
@@ -604,6 +613,7 @@ func (suite *KeeperTestSuite) TestKeeper_AllowedPublicCredentials() {
 						Vocab:        []byte(dummyVocabOk),
 						Name:         "CredentialDef" + id,
 						Description:  "",
+						IsPublic:     true,
 						SupersededBy: "",
 						IsActive:     true,
 					},
