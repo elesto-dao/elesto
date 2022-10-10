@@ -496,9 +496,6 @@ func TestWrappedCredential_GetBytes(t *testing.T) {
 }
 
 func TestWrappedCredential_Validate(t *testing.T) {
-	type args struct {
-		pk types.PubKey
-	}
 	tests := []struct {
 		name      string
 		fixtureFn func() (*WrappedCredential, types.PubKey)
@@ -519,6 +516,7 @@ func TestWrappedCredential_Validate(t *testing.T) {
 				issuerDID := did.NewChainDID("test", ki.GetAddress().String())
 				// create the credential
 				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("https://example.credential/01", WithType("SpecialCredential"), WithIssuerDID(issuerDID)))
+				assert.NoError(t, err)
 				wc.SetSubject(map[string]any{"id": "https://something.something"})
 				// sign the credential
 				data, err := wc.GetBytes()
@@ -555,6 +553,7 @@ func TestWrappedCredential_Validate(t *testing.T) {
 				issuerDID := did.NewChainDID("test", ki.GetAddress().String())
 				// create the credential
 				wc, err := NewWrappedCredential(NewPublicVerifiableCredential("https://example.credential/01", WithType("SpecialCredential"), WithIssuerDID(issuerDID)))
+				assert.NoError(t, err)
 				wc.SetSubject(map[string]any{"id": "https://something.something"})
 				// sign the credential
 				data, err := wc.GetBytes()
