@@ -513,7 +513,7 @@ func (suite *KeeperTestSuite) TestKeeper_PublicCredentialsByIssuer() {
 
 				// allowing the credential definition id for publishing
 				suite.keeper.AllowPublicCredential(suite.ctx, pcdr.CredentialDefinition.Id)
-				
+
 				// load the signed credential
 				if wc, err = credential.NewWrappedPublicCredentialFromFile("testdata/dummy.credential.signed.json"); err != nil {
 					suite.Require().FailNowf("expected wrapped credential, got:", "%v", err)
@@ -554,6 +554,7 @@ func (suite *KeeperTestSuite) TestKeeper_AllowedPublicCredentials() {
 		msg     string
 		reqFn   func() (*credential.QueryAllowedPublicCredentialsRequest, *credential.QueryAllowedPublicCredentialsResponse)
 		wantErr error
+		panic   bool
 	}{
 		{
 			"PASS: no credentials",
@@ -561,6 +562,7 @@ func (suite *KeeperTestSuite) TestKeeper_AllowedPublicCredentials() {
 				return &credential.QueryAllowedPublicCredentialsRequest{}, &credential.QueryAllowedPublicCredentialsResponse{Credentials: nil, Pagination: &query.PageResponse{}}
 			},
 			nil,
+			false,
 		},
 		{
 			"PASS: no credentials in allow list",
@@ -569,7 +571,6 @@ func (suite *KeeperTestSuite) TestKeeper_AllowedPublicCredentials() {
 					id  = "001"
 					err error
 				)
-				//
 
 				// publish the definition
 				pcdr := credential.MsgPublishCredentialDefinitionRequest{
@@ -594,6 +595,7 @@ func (suite *KeeperTestSuite) TestKeeper_AllowedPublicCredentials() {
 				return &credential.QueryAllowedPublicCredentialsRequest{}, &credential.QueryAllowedPublicCredentialsResponse{Pagination: &query.PageResponse{Total: 0}}
 			},
 			nil,
+			false,
 		},
 		{
 			"PASS: can get the credential",
@@ -602,7 +604,6 @@ func (suite *KeeperTestSuite) TestKeeper_AllowedPublicCredentials() {
 					id  = "002"
 					err error
 				)
-				//
 
 				// publish the definition
 				pcdr := credential.MsgPublishCredentialDefinitionRequest{
@@ -627,18 +628,37 @@ func (suite *KeeperTestSuite) TestKeeper_AllowedPublicCredentials() {
 				return &credential.QueryAllowedPublicCredentialsRequest{}, &credential.QueryAllowedPublicCredentialsResponse{Credentials: []*credential.CredentialDefinition{pcdr.CredentialDefinition}, Pagination: &query.PageResponse{Total: 1}}
 			},
 			nil,
+			false,
+		},
+		{
+			"PANIC: id allowed but credential not found",
+			func() (*credential.QueryAllowedPublicCredentialsRequest, *credential.QueryAllowedPublicCredentialsResponse) {
+				var (
+					id = "did:cosmos:elesto:ipcq-003"
+				)
+				suite.keeper.AllowPublicCredential(suite.ctx, id)
+
+				return &credential.QueryAllowedPublicCredentialsRequest{}, nil
+			},
+			nil,
+			true,
 		},
 	}
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
 			req, expectedResp := tc.reqFn()
-			gotResp, err := queryClient.AllowedPublicCredentials(context.Background(), req)
-			if tc.wantErr == nil {
-				suite.Require().NoError(err)
-				suite.Require().Equal(expectedResp, gotResp)
+			if tc.panic {
+				suite.Require().Panics(func() { queryClient.AllowedPublicCredentials(context.Background(), req) })
 			} else {
-				suite.Require().Error(err)
-				suite.Require().Equal(tc.wantErr.Error(), err.Error())
+				gotResp, err := queryClient.AllowedPublicCredentials(context.Background(), req)
+
+				if tc.wantErr == nil {
+					suite.Require().NoError(err)
+					suite.Require().Equal(expectedResp, gotResp)
+				} else {
+					suite.Require().Error(err)
+					suite.Require().Equal(tc.wantErr.Error(), err.Error())
+				}
 			}
 		})
 	}

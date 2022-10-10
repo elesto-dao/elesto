@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -118,12 +120,11 @@ func (k Keeper) GetAllowedCredentialDefinitions(ctx sdk.Context, req *query.Page
 	pageRes, err = query.Paginate(cdStore, req, func(key []byte, value []byte) error {
 		id := string(value)
 		cd, found := k.GetCredentialDefinition(ctx, id)
-		//if !found {
-		//	panic("credential definition with allowed id not found")
-		//}
-		if found {
-			cds = append(cds, &cd)
+		if !found {
+			panic(fmt.Sprintf("credential definition with allowed id %s not found", id))
 		}
+		cds = append(cds, &cd)
+
 		return nil
 	})
 	return
