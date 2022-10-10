@@ -114,7 +114,7 @@ func sampleCredDefGenState(ids []string, allowedIds []string) *credential.Genesi
 		}
 		genState.CredentialDefinitions = append(genState.CredentialDefinitions, cred)
 	}
-	genState.AllowedCredentialIds = allowedIds
+	genState.PublicCredentialDefinitionsIDs = allowedIds
 
 	return &genState
 }
