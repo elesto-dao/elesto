@@ -5,7 +5,7 @@ import "fmt"
 // NewGenesisState creates a new GenesisState object
 func NewGenesisState(allowedIds ...string) *GenesisState {
 	return &GenesisState{
-		AllowedCredentialIds: allowedIds,
+		PublicCredentialDefinitionsIDs: allowedIds,
 	}
 }
 
@@ -15,7 +15,7 @@ func DefaultGenesisState() *GenesisState {
 
 func (gs *GenesisState) ValidateGenesis() error {
 	exists := map[string]bool{}
-	for _, id := range gs.AllowedCredentialIds {
+	for _, id := range gs.PublicCredentialDefinitionsIDs {
 		if id == "" {
 			return fmt.Errorf("invalid id")
 		}

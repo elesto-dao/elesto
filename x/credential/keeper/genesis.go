@@ -13,11 +13,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, genState *credential.GenesisState) {
 		k.SetCredentialDefinition(ctx, &genState.CredentialDefinitions[i])
 	}
 
-	for i := range genState.PublicVerifiableCredentials {
-		k.SetPublicCredential(ctx, &genState.PublicVerifiableCredentials[i])
-	}
-
-	for _, id := range genState.AllowedCredentialIds {
+	for _, id := range genState.PublicCredentialDefinitionsIDs {
 		_, found := k.GetCredentialDefinition(ctx, id)
 		if !found {
 			panic(fmt.Sprintf("credential id %s not found", id))
@@ -46,25 +42,12 @@ func ExportGenesis(ctx sdk.Context, k Keeper) *credential.GenesisState {
 		genState.CredentialDefinitions = append(genState.CredentialDefinitions, cd)
 	}
 
-	pvcIterator := k.GetAll(ctx, credential.PublicCredentialKey)
-	defer pvcIterator.Close()
-
-	for ; pvcIterator.Valid(); pvcIterator.Next() {
-		var pvc credential.PublicVerifiableCredential
-		ok := k.Unmarshal(pvcIterator.Value(), &pvc)
-		if !ok {
-			panic(fmt.Errorf("cannot unmarshal %s", pvcIterator.Value()))
-		}
-
-		genState.PublicVerifiableCredentials = append(genState.PublicVerifiableCredentials, pvc)
-	}
-
 	allowedCdIterator := k.GetAll(ctx, credential.PublicCredentialAllowKey)
 	defer allowedCdIterator.Close()
 
 	for ; allowedCdIterator.Valid(); allowedCdIterator.Next() {
 		id := string(allowedCdIterator.Value())
-		genState.AllowedCredentialIds = append(genState.AllowedCredentialIds, id)
+		genState.PublicCredentialDefinitionsIDs = append(genState.PublicCredentialDefinitionsIDs, id)
 	}
 
 	return &genState
