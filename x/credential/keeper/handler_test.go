@@ -30,7 +30,6 @@ func (suite *KeeperTestSuite) Test_HandlePublicProposalChange() {
 					Vocab:        vocabOkCompact,
 					Name:         "Credential Definition 1",
 					Description:  "This is a sample credential",
-					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				}
@@ -58,7 +57,6 @@ func (suite *KeeperTestSuite) Test_HandlePublicProposalChange() {
 					Vocab:        vocabOkCompact,
 					Name:         "Credential Definition 3",
 					Description:  "This is a sample credential",
-					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				}
@@ -100,7 +98,6 @@ func (suite *KeeperTestSuite) Test_HandleRemovePublicProposalChange() {
 					Vocab:        vocabOkCompact,
 					Name:         "Credential Definition 1",
 					Description:  "This is a sample credential",
-					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				}
@@ -129,7 +126,6 @@ func (suite *KeeperTestSuite) Test_HandleRemovePublicProposalChange() {
 					Vocab:        vocabOkCompact,
 					Name:         "Credential Definition 3",
 					Description:  "This is a sample credential",
-					IsPublic:     true,
 					SupersededBy: "",
 					IsActive:     true,
 				}

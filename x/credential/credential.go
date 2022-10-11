@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -17,6 +18,9 @@ import (
 const (
 	ProposePublicCredentialIDType       = "ProposePublicCredentialID"
 	ProposeRemovePublicCredentialIDType = "ProposeRemovePublicCredentialID"
+	// ProofTypeCosmosADR036 is a proof whose value is computed by signing a credential with kepler following ADR036.
+	// An example would be credential signed with kepler
+	ProofTypeCosmosADR036 = "CosmosADR036EcdsaSecp256k1Signature"
 )
 
 func init() {
@@ -37,7 +41,6 @@ func NewCredentialDefinitionFromFile(id string, publisherDID did.DID,
 		PublisherId: publisherDID.String(),
 		Name:        name,
 		Description: description,
-		IsPublic:    isPublic,
 		IsActive:    isActive,
 	}
 
@@ -191,22 +194,62 @@ func (wc *WrappedCredential) SetSubject(val interface{}) (err error) {
 func (wc WrappedCredential) Validate(
 	pk cryptotypes.PubKey,
 ) (err error) {
-	sig, err := base64.StdEncoding.DecodeString(wc.Proof.Signature)
+	sig, err := base64.StdEncoding.DecodeString(wc.Proof.ProofValue)
 	if err != nil {
 		return
 	}
 	// create a copy to reset the proof
 	wcCopy := wc.Copy()
 	wcCopy.Proof = nil
-	// TODO: this is an expensive operation, could lead to DDOS
-	// TODO: we can hash this and make this less expensive
 	wcData, err := wcCopy.GetBytes()
 	if err != nil {
 		return
 	}
+
+	if wc.Proof.Type == ProofTypeCosmosADR036 {
+		//NOTE: we rely completely on the proof to get the account address
+		sp := strings.Split(wc.Proof.VerificationMethod, "#")
+		if len(sp) != 2 {
+			err = fmt.Errorf("cannot retrieve account address from proof verification method")
+			return
+		}
+		if wcData, err = toCosmosADR036Message(sp[1], wcData); err != nil {
+			return
+		}
+	}
+
 	if !pk.VerifySignature(wcData, sig) {
 		err = fmt.Errorf("signature cannot be verified")
 	}
+	return
+}
+
+func toCosmosADR036Message(cosmosAddress string, vc []byte) (tx []byte, err error) {
+	base := `{
+		"chain_id": "",
+		"account_number": "0",
+		"sequence": "0",
+		"fee": {
+		  "gas": "0",
+		  "amount": []
+		},
+		"msgs": [
+		  {
+			"type": "sign/MsgSignData",
+			"value": {
+			  "signer": "%s",
+			  "data": "%s"
+			}
+		  }
+		],
+		"memo": ""
+	  }`
+
+	var c interface{}
+	if err = json.Unmarshal([]byte(fmt.Sprintf(base, cosmosAddress, base64.StdEncoding.EncodeToString(vc))), &c); err != nil {
+		return
+	}
+	tx, err = json.Marshal(c)
 	return
 }
 
@@ -223,7 +266,7 @@ func NewProof(
 		Created:            created,
 		ProofPurpose:       proofPurpose,
 		VerificationMethod: verificationMethod,
-		Signature:          signature,
+		ProofValue:         signature,
 	}
 }
 

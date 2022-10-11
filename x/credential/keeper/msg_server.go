@@ -114,12 +114,6 @@ func (k msgServer) IssuePublicVerifiableCredential(
 ) (*credential.MsgIssuePublicVerifiableCredentialResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if msg.Credential == nil {
-		err := sdkerrors.Wrapf(did.ErrInvalidInput, "credential not set")
-		k.Logger(ctx).Error(err.Error())
-		return nil, err
-	}
-
 	k.Logger(ctx).Info("request to issue a PublicCredential", "credential", msg.Credential.Id)
 
 	var (
@@ -135,16 +129,9 @@ func (k msgServer) IssuePublicVerifiableCredential(
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
-
+	// check that the credential is a public credential
 	if allowed := k.IsPublicCredentialDefinitionAllowed(ctx, msg.CredentialDefinitionID); !allowed {
 		err = sdkerrors.Wrapf(credential.ErrCredentialDefinitionNotPublic, "credential definition %s is not allowed", msg.CredentialDefinitionID)
-		k.Logger(ctx).Error(err.Error())
-		return nil, err
-	}
-
-	// verify that can be published
-	if !cd.IsPublic {
-		err = sdkerrors.Wrapf(credential.ErrCredentialNotIssuable, "the credential definition %s is defined as non-public", msg.CredentialDefinitionID)
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
@@ -257,10 +244,6 @@ Outer:
 	if err != nil || pk == nil {
 		return fmt.Errorf("issuer public key not found %w", err)
 	}
-	//
-	if err = wc.Validate(pk); err != nil {
-		return err
-
-	}
-	return nil
+	// check the proof type
+	return wc.Validate(pk)
 }
