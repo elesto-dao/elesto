@@ -6,7 +6,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/elesto-dao/elesto/v3/x/mint/types"
+	"github.com/elesto-dao/elesto/v4/x/mint/types"
 )
 
 // Keeper of the mint store

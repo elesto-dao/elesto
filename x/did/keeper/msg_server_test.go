@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	didmod "github.com/elesto-dao/elesto/v3/x/did"
+	didmod "github.com/elesto-dao/elesto/v4/x/did"
 )
 
 func (suite *KeeperTestSuite) TestHandleMsgCreateDidDocument() {

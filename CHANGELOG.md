@@ -2,9 +2,38 @@
 ## [Unreleased]
 
 
+<a name="v4.0.0-rc1"></a>
+## [v4.0.0-rc1] - 2022-10-11
+### Chore
+- rename module for version v4
+- upgrade cosmos-sdk and tendermint to latest patch version
+- update changelog for v3.0.0-rc2
+- rename module version to v3
+
+### Docs
+- add verification diagram for pvc
+- amend ADR [#8](https://github.com/elesto-dao/elesto/issues/8), introduce epoch concept
+
+### Feat
+- remove public credentials listing in genesis
+- add support for CosmosADR036 based proofs ([#274](https://github.com/elesto-dao/elesto/issues/274))
+- remove IsPublic field from credential definition
+- add fixed inflation distribution ([#259](https://github.com/elesto-dao/elesto/issues/259))
+- remove team rewards and community tax from mint
+- **credential:** add support allowed list for credential definitions ([#265](https://github.com/elesto-dao/elesto/issues/265))
+
+### Fix
+- use pascal case for fields names in credential proof
+- fields names in Proof are not compliant to standard
+- rollback implementation to epoch base inflation
+- **credential:** audit changes credential ([#250](https://github.com/elesto-dao/elesto/issues/250)) ([#269](https://github.com/elesto-dao/elesto/issues/269))
+- **docs:** minor edits for about
+
+
 <a name="v3.0.0-rc2"></a>
 ## [v3.0.0-rc2] - 2022-09-14
 ### Chore
+- update changelog for v3.0.0-rc2
 - rename module version to v3
 - remove link-aries command from did cli
 - updating the seeds
@@ -198,7 +227,8 @@
 - increase test coverage
 
 
-[Unreleased]: https://github.com/elesto-dao/elesto/compare/v3.0.0-rc2...HEAD
+[Unreleased]: https://github.com/elesto-dao/elesto/compare/v4.0.0-rc1...HEAD
+[v4.0.0-rc1]: https://github.com/elesto-dao/elesto/compare/v3.0.0-rc2...v4.0.0-rc1
 [v3.0.0-rc2]: https://github.com/elesto-dao/elesto/compare/v3.0.0-rc1...v3.0.0-rc2
 [v3.0.0-rc1]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc2...v3.0.0-rc1
 [v2.0.0-rc2]: https://github.com/elesto-dao/elesto/compare/v2.0.0-rc1...v2.0.0-rc2

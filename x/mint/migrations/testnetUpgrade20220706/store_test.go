@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/elesto-dao/elesto/v3/app"
-	"github.com/elesto-dao/elesto/v3/x/mint/migrations/testnetUpgrade20220706"
-	mintTypes "github.com/elesto-dao/elesto/v3/x/mint/types"
+	"github.com/elesto-dao/elesto/v4/app"
+	"github.com/elesto-dao/elesto/v4/x/mint/migrations/testnetUpgrade20220706"
+	mintTypes "github.com/elesto-dao/elesto/v4/x/mint/types"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )

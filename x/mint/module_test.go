@@ -9,8 +9,8 @@ import (
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	chain "github.com/elesto-dao/elesto/v3/app"
-	"github.com/elesto-dao/elesto/v3/x/mint/types"
+	chain "github.com/elesto-dao/elesto/v4/app"
+	"github.com/elesto-dao/elesto/v4/x/mint/types"
 )
 
 func TestItCreatesModuleAccountOnInitBlock(t *testing.T) {

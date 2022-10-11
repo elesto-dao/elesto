@@ -8,8 +8,8 @@ import (
 
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/elesto-dao/elesto/v3/app"
-	"github.com/elesto-dao/elesto/v3/x/mint/types"
+	"github.com/elesto-dao/elesto/v4/app"
+	"github.com/elesto-dao/elesto/v4/x/mint/types"
 )
 
 func TestParams(t *testing.T) {

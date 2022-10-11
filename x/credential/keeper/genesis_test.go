@@ -3,9 +3,9 @@ package keeper_test
 import (
 	"fmt"
 
-	"github.com/elesto-dao/elesto/v3/x/credential"
-	"github.com/elesto-dao/elesto/v3/x/credential/keeper"
-	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v4/x/credential"
+	"github.com/elesto-dao/elesto/v4/x/credential/keeper"
+	"github.com/elesto-dao/elesto/v4/x/did"
 )
 
 func (suite *KeeperTestSuite) TestGenesis() {
