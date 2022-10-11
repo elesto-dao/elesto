@@ -3,7 +3,7 @@ package credential
 import (
 	"errors"
 
-	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v4/x/did"
 )
 
 func (m MsgPublishCredentialDefinitionRequest) ValidateBasic() error {

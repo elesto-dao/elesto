@@ -12,7 +12,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/noandrea/rl2020"
 
-	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v4/x/did"
 )
 
 const (

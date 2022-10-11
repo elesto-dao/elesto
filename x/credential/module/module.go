@@ -16,9 +16,9 @@ import ( // this line is used by starport scaffolding # 1
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/elesto-dao/elesto/v3/x/credential"
-	"github.com/elesto-dao/elesto/v3/x/credential/client/cli"
-	"github.com/elesto-dao/elesto/v3/x/credential/keeper"
+	"github.com/elesto-dao/elesto/v4/x/credential"
+	"github.com/elesto-dao/elesto/v4/x/credential/client/cli"
+	"github.com/elesto-dao/elesto/v4/x/credential/keeper"
 )
 
 var (

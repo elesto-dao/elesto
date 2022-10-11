@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v4/x/did"
 )
 
 // SetDidDocument store a did document in the keeper, existing DID document with the

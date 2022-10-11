@@ -7,8 +7,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/elesto-dao/elesto/v3/x/credential"
-	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v4/x/credential"
+	"github.com/elesto-dao/elesto/v4/x/did"
 )
 
 var _ credential.QueryServer = Keeper{}

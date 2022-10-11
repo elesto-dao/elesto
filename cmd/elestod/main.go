@@ -6,8 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
-	elestoapp "github.com/elesto-dao/elesto/v3/app"
-	"github.com/elesto-dao/elesto/v3/cmd/elestod/cmd"
+	elestoapp "github.com/elesto-dao/elesto/v4/app"
+	"github.com/elesto-dao/elesto/v4/cmd/elestod/cmd"
 )
 
 func main() {

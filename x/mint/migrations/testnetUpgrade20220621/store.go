@@ -3,7 +3,7 @@ package testnetUpgrade20220621
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/elesto-dao/elesto/v3/x/mint/types"
+	"github.com/elesto-dao/elesto/v4/x/mint/types"
 )
 
 type ParamsKeeper interface {

@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v4/x/did"
 )
 
 // InitGenesis initializes the genesis state for the did module

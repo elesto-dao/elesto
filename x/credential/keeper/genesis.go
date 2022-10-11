@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/elesto-dao/elesto/v3/x/credential"
+	"github.com/elesto-dao/elesto/v4/x/credential"
 )
 
 func InitGenesis(ctx sdk.Context, k Keeper, genState *credential.GenesisState) {

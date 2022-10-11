@@ -13,8 +13,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/google/uuid"
 
-	"github.com/elesto-dao/elesto/v3/x/did"
-	"github.com/elesto-dao/elesto/v3/x/did/keeper"
+	"github.com/elesto-dao/elesto/v4/x/did"
+	"github.com/elesto-dao/elesto/v4/x/did/keeper"
 )
 
 var ownersAndIds map[string][]string

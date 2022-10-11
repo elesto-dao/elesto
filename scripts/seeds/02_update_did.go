@@ -15,8 +15,8 @@ import (
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"google.golang.org/grpc"
 
-	"github.com/elesto-dao/elesto/v3/app"
-	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v4/app"
+	"github.com/elesto-dao/elesto/v4/x/did"
 )
 
 // Test data for the sees to run
