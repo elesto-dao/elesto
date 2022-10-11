@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"strconv"
 	"testing"
 	"time"
 
@@ -133,12 +132,11 @@ func name(others ...string) string {
 	return fmt.Sprintln(f.Name(), others)
 }
 
-func publishCredentialDefinition(s *IntegrationTestSuite, identifier, name, schemaFile, vocabFile string, isPublic bool, val *network.Validator, code uint32) {
+func publishCredentialDefinition(s *IntegrationTestSuite, identifier, name, schemaFile, vocabFile string, val *network.Validator, code uint32) {
 
 	clientCtx := val.ClientCtx
 	args := []string{
 		identifier, name, schemaFile, vocabFile,
-		fmt.Sprintf("--%s=%s", "public", strconv.FormatBool(isPublic)),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
@@ -247,7 +245,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryCredentialDefinition() {
 					schemaFile = "testdata/schema.json"
 					vocabFile  = "testdata/vocab.json"
 				)
-				publishCredentialDefinition(s, identifier, label, schemaFile, vocabFile, false, val, 0)
+				publishCredentialDefinition(s, identifier, label, schemaFile, vocabFile, val, 0)
 			},
 			"test-11234",
 		},
@@ -351,7 +349,7 @@ func (s *IntegrationTestSuite) TestNewPublishCredentialDefinitionCmd() {
 			val1.ClientCtx,
 		},
 		{
-			"PASS: update creddef name, visibility and active status",
+			"PASS: update creddef name, and active status",
 			codes.OK,
 			&sdk.TxResponse{},
 			[]string{
@@ -359,7 +357,6 @@ func (s *IntegrationTestSuite) TestNewPublishCredentialDefinitionCmd() {
 				"ValidDefName2",
 				"testdata/schema.json",
 				"testdata/vocab.json",
-				"--public=true",
 				"--inactive=true",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val1.Address.String()),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),

@@ -29,7 +29,6 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 		publisherDID did.DID
 		name         string
 		description  string
-		isPublic     bool
 		isActive     bool
 		schemaFile   string
 		vocabFile    string
@@ -47,7 +46,6 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 				did.DID("did:cosmos:elesto:publisher"),
 				"Credential Definition 1",
 				"This is a sample credential",
-				true,
 				true,
 				"keeper/testdata/schema.json",
 				"keeper/testdata/vocab.json",
@@ -72,7 +70,6 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 				"Credential Definition 1",
 				"This is a sample credential",
 				true,
-				true,
 				"keeper/testdata/schema.invalid.json",
 				"keeper/testdata/vocab.json",
 			},
@@ -94,7 +91,6 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 				did.DID("did:cosmos:elesto:publisher"),
 				"Credential Definition 1",
 				"This is a sample credential",
-				true,
 				true,
 				"keeper/testdata/schema.json",
 				"keeper/testdata/vocab.invalid.json",
@@ -118,7 +114,6 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 				"Credential Definition 1",
 				"This is a sample credential",
 				true,
-				true,
 				"keeper/testdata/non-exising.json",
 				"keeper/testdata/vocab.json",
 			},
@@ -138,7 +133,7 @@ func TestNewCredentialDefinitionFromFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w, _ := os.Getwd()
 			t.Logf("cwd is %s", w)
-			got, err := NewCredentialDefinitionFromFile(tt.args.cdID, tt.args.publisherDID, tt.args.name, tt.args.description, tt.args.isPublic, tt.args.isActive, tt.args.schemaFile, tt.args.vocabFile)
+			got, err := NewCredentialDefinitionFromFile(tt.args.cdID, tt.args.publisherDID, tt.args.name, tt.args.description, tt.args.isActive, tt.args.schemaFile, tt.args.vocabFile)
 			if tt.wantErr == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.want, got)

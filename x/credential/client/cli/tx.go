@@ -300,7 +300,6 @@ func NewPublishCredentialDefinitionCmd() *cobra.Command {
 
 	var (
 		command        = "publish-credential-definition"
-		isPublic       bool
 		inactive       bool
 		publisherID    string
 		descr          string
@@ -329,7 +328,7 @@ func NewPublishCredentialDefinitionCmd() *cobra.Command {
 			}
 
 			// initialize the definition
-			def, err := credential.NewCredentialDefinitionFromFile(cdID, publisherDID, name, descr, isPublic, !inactive, schemaFile, vocabFIle)
+			def, err := credential.NewCredentialDefinitionFromFile(cdID, publisherDID, name, descr, !inactive, schemaFile, vocabFIle)
 			if err != nil {
 				println("error building credential definition", err)
 				return err
@@ -346,7 +345,6 @@ func NewPublishCredentialDefinitionCmd() *cobra.Command {
 	// add flags to set did relationships
 	cmd.Flags().StringVar(&descr, "description", "", "a human-readable description about the credential usage")
 	cmd.Flags().StringVarP(&publisherID, "publisher", "p", "", "the publisher DID. If not set, the DID key of the signer account will be used instead")
-	cmd.Flags().BoolVar(&isPublic, "public", false, "if is set, the credential is a public one and can be issued on chain")
 	cmd.Flags().BoolVar(&inactive, "inactive", false, "if is set, the credential definition will be flagged as inactive, client may refuse to issue credentials based on an inactive definition")
 	cmd.Flags().IntVar(&expirationDays, "expiration", 365, "number of days that the definition can be ")
 	// add flags to set did relationships
