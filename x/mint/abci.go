@@ -11,12 +11,6 @@ import (
 	"github.com/elesto-dao/elesto/v4/x/mint/types"
 )
 
-const (
-	// BlocksPerEpoch number of blocks in an Epoch, an epoch is
-	// roughly an year assuming a block production rate of 1 block every 5s
-	BlocksPerEpoch int64 = 6_307_200
-)
-
 // BeginBlocker mints new tokens for the previous block.
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	if ctx.BlockHeight() < 1 {
@@ -30,7 +24,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	params := k.GetParams(ctx)
 
 	// get the current inflation epoch
-	inflationEpoch := ctx.BlockHeight() / BlocksPerEpoch
+	inflationEpoch := ctx.BlockHeight() / types.BlocksPerEpoch
 
 	// fetch inflation from the inflationEpoch table
 	// if there is no such epoch, then no mint is taking places
