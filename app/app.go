@@ -610,6 +610,7 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
+		credentialmodule.NewAppModule(appCodec, app.CredentialsKeeper, app.AccountKeeper, app.BankKeeper, app.DidKeeper),
 		didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper),
 		app.transferModule,
 		NewICAHostSimModule(icaModule, appCodec),
