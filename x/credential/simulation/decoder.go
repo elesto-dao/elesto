@@ -16,10 +16,10 @@ func NewDecodeStore(cdc codec.Codec) func(kvA, kvB kv.Pair) string {
 	return func(kvA, kvB kv.Pair) string {
 		switch {
 		case bytes.Equal(kvA.Key[:1], credential.CredentialDefinitionKey):
-			var didA, didB credential.CredentialDefinition
-			cdc.MustUnmarshal(kvA.Value, &didA)
-			cdc.MustUnmarshal(kvB.Value, &didB)
-			return fmt.Sprintf("%v\n%v", didA, didB)
+			var credA, credB credential.CredentialDefinition
+			cdc.MustUnmarshal(kvA.Value, &credA)
+			cdc.MustUnmarshal(kvB.Value, &credB)
+			return fmt.Sprintf("%v\n%v", credA.String(), credB.String())
 		default:
 			panic(fmt.Sprintf("invalid credential definition key %X", kvA.Key))
 		}
