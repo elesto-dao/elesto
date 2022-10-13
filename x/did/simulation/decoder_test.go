@@ -9,8 +9,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/types/kv"
 
-	"github.com/elesto-dao/elesto/v3/x/did"
-	"github.com/elesto-dao/elesto/v3/x/did/simulation"
+	"github.com/elesto-dao/elesto/v4/x/did"
+	"github.com/elesto-dao/elesto/v4/x/did/simulation"
 )
 
 func TestDecodeStore(t *testing.T) {

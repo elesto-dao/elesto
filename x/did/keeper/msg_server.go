@@ -8,7 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/google/uuid"
 
-	didmod "github.com/elesto-dao/elesto/v3/x/did"
+	didmod "github.com/elesto-dao/elesto/v4/x/did"
 )
 
 const uuid4Length int = 36

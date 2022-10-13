@@ -1,4 +1,4 @@
-module github.com/elesto-dao/elesto/v3
+module github.com/elesto-dao/elesto/v4
 
 go 1.18
 

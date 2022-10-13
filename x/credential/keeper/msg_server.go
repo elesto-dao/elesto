@@ -8,8 +8,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/xeipuuv/gojsonschema"
 
-	"github.com/elesto-dao/elesto/v3/x/credential"
-	"github.com/elesto-dao/elesto/v3/x/did"
+	"github.com/elesto-dao/elesto/v4/x/credential"
+	"github.com/elesto-dao/elesto/v4/x/did"
 )
 
 type msgServer struct {

@@ -3,7 +3,7 @@ package testnetUpgrade20220706
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	mintTypes "github.com/elesto-dao/elesto/v3/x/mint/types"
+	mintTypes "github.com/elesto-dao/elesto/v4/x/mint/types"
 )
 
 type ExpectedKeeper interface {

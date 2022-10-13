@@ -23,7 +23,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/elesto-dao/elesto/v3/app"
+	"github.com/elesto-dao/elesto/v4/app"
 )
 
 // Various prefixes for accounts and public keys

@@ -1,7 +1,7 @@
 syntax = "proto3";
 package elestodao.elesto.mint.v1;
 
-option go_package = "github.com/elesto-dao/elesto/v3/x/mint/types";
+option go_package = "github.com/elesto-dao/elesto/v4/x/mint/types";
 
 import "gogoproto/gogo.proto";
 

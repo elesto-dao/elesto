@@ -23,10 +23,10 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/elesto-dao/elesto/v3/x/credential"
-	"github.com/elesto-dao/elesto/v3/x/credential/keeper"
-	"github.com/elesto-dao/elesto/v3/x/did"
-	didkeeper "github.com/elesto-dao/elesto/v3/x/did/keeper"
+	"github.com/elesto-dao/elesto/v4/x/credential"
+	"github.com/elesto-dao/elesto/v4/x/credential/keeper"
+	"github.com/elesto-dao/elesto/v4/x/did"
+	didkeeper "github.com/elesto-dao/elesto/v4/x/did/keeper"
 )
 
 // Keeper test suit enables the keeper package to be tested

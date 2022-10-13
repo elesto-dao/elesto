@@ -31,11 +31,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/elesto-dao/elesto/v3/app"
-	"github.com/elesto-dao/elesto/v3/x/credential"
-	"github.com/elesto-dao/elesto/v3/x/credential/client/cli"
-	"github.com/elesto-dao/elesto/v3/x/did"
-	didcli "github.com/elesto-dao/elesto/v3/x/did/client/cli"
+	"github.com/elesto-dao/elesto/v4/app"
+	"github.com/elesto-dao/elesto/v4/x/credential"
+	"github.com/elesto-dao/elesto/v4/x/credential/client/cli"
+	"github.com/elesto-dao/elesto/v4/x/did"
+	didcli "github.com/elesto-dao/elesto/v4/x/did/client/cli"
 )
 
 var (
@@ -114,7 +114,7 @@ func sampleCredDefGenState(ids []string, allowedIds []string) *credential.Genesi
 		}
 		genState.CredentialDefinitions = append(genState.CredentialDefinitions, cred)
 	}
-	genState.AllowedCredentialIds = allowedIds
+	genState.PublicCredentialDefinitionsIDs = allowedIds
 
 	return &genState
 }

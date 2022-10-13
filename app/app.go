@@ -95,17 +95,17 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/elesto-dao/elesto/v3/docs"
-	"github.com/elesto-dao/elesto/v3/x/credential"
-	credentialclient "github.com/elesto-dao/elesto/v3/x/credential/client"
-	credentialModuleKeeper "github.com/elesto-dao/elesto/v3/x/credential/keeper"
-	credentialmodule "github.com/elesto-dao/elesto/v3/x/credential/module"
-	"github.com/elesto-dao/elesto/v3/x/did"
-	didmodulekeeper "github.com/elesto-dao/elesto/v3/x/did/keeper"
-	didmodule "github.com/elesto-dao/elesto/v3/x/did/module"
-	"github.com/elesto-dao/elesto/v3/x/mint"
-	mintkeeper "github.com/elesto-dao/elesto/v3/x/mint/keeper"
-	minttypes "github.com/elesto-dao/elesto/v3/x/mint/types"
+	"github.com/elesto-dao/elesto/v4/docs"
+	"github.com/elesto-dao/elesto/v4/x/credential"
+	credentialclient "github.com/elesto-dao/elesto/v4/x/credential/client"
+	credentialModuleKeeper "github.com/elesto-dao/elesto/v4/x/credential/keeper"
+	credentialmodule "github.com/elesto-dao/elesto/v4/x/credential/module"
+	"github.com/elesto-dao/elesto/v4/x/did"
+	didmodulekeeper "github.com/elesto-dao/elesto/v4/x/did/keeper"
+	didmodule "github.com/elesto-dao/elesto/v4/x/did/module"
+	"github.com/elesto-dao/elesto/v4/x/mint"
+	mintkeeper "github.com/elesto-dao/elesto/v4/x/mint/keeper"
+	minttypes "github.com/elesto-dao/elesto/v4/x/mint/types"
 )
 
 // Global vars that define account prefix and name of chain
