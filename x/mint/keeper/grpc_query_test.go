@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -42,6 +43,32 @@ func (suite *MintTestSuite) TestGRPCParams() {
 	params, err := queryClient.Params(context.Background(), &types.QueryParamsRequest{})
 	suite.Require().NoError(err)
 	suite.Require().Equal(params.Params, app.MintKeeper.GetParams(ctx))
+}
+
+func (suite *MintTestSuite) TestGRPCInflation() {
+	_, _, queryClient := suite.app, suite.ctx, suite.queryClient
+
+	inflation, err := queryClient.Inflation(context.Background(), &types.QueryInflationRequest{
+		Height: 1,
+	})
+	suite.Require().NoError(err)
+	suite.Require().EqualValues(1, inflation.Epoch)
+	suite.Require().EqualValues("1.00", fmt.Sprintf("%.2f", inflation.Inflation))
+
+	inflation, err = queryClient.Inflation(context.Background(), &types.QueryInflationRequest{
+		Height: 6307200,
+	})
+	suite.Require().NoError(err)
+	suite.Require().EqualValues(2, inflation.Epoch)
+	suite.Require().EqualValues("0.50", fmt.Sprintf("%.2f", inflation.Inflation))
+
+	inflation, err = queryClient.Inflation(context.Background(), &types.QueryInflationRequest{
+		Height: 75686400,
+	})
+	suite.Require().NoError(err)
+	suite.Require().EqualValues(13, inflation.Epoch)
+	suite.Require().EqualValues("0.00", fmt.Sprintf("%.2f", inflation.Inflation))
+
 }
 
 func TestMintTestSuite(t *testing.T) {
