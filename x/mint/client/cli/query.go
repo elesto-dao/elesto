@@ -70,13 +70,13 @@ func GetCmdQueryInflation() *cobra.Command {
 			}
 			queryClient := types.NewQueryClient(clientCtx)
 
-			height, err := strconv.ParseUint(args[0], 10, 64)
+			height, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
 			inflationReq := &types.QueryInflationRequest{
-				Height: uint32(height),
+				Height: height,
 			}
 			res, err := queryClient.Inflation(cmd.Context(), inflationReq)
 			if err != nil {

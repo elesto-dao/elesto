@@ -36,5 +36,5 @@ message QueryInflationRequest {
 // QueryInflationResponse
 message QueryInflationResponse {
   int64 epoch = 1;
-  float64 inflation = 2;
+  double inflation = 2;
 }
