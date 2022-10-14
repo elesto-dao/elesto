@@ -46,6 +46,10 @@ func GetInflation(height int64) sdk.Dec {
 	return inflation
 }
 
+func GetEpoch(height int64) int64 {
+	return height / BlocksPerEpoch
+}
+
 func GetInflationRate(height int64) sdk.Dec {
 	inflation := GetInflation(height)
 	// round it to precision = 2

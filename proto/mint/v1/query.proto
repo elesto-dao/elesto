@@ -30,11 +30,11 @@ message QueryParamsResponse {
 
 // QueryInflationRequest
 message QueryInflationRequest {
-  uint32 height = 1;
+  int64 height = 1;
 }
 
 // QueryInflationResponse
 message QueryInflationResponse {
-  uint32 epoch = 1;
-  float inflation = 2;
+  int64 epoch = 1;
+  float64 inflation = 2;
 }
