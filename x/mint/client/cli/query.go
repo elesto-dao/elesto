@@ -22,6 +22,7 @@ func GetQueryCmd() *cobra.Command {
 
 	mintingQueryCmd.AddCommand(
 		GetCmdQueryParams(),
+		GetCmdQueryInflation(),
 	)
 
 	return mintingQueryCmd
