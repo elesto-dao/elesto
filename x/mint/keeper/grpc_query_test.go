@@ -2,7 +2,6 @@ package keeper_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -53,21 +52,21 @@ func (suite *MintTestSuite) TestGRPCInflation() {
 	})
 	suite.Require().NoError(err)
 	suite.Require().EqualValues(1, inflation.Epoch)
-	suite.Require().EqualValues("1.00", fmt.Sprintf("%.2f", inflation.Inflation))
+	suite.Require().EqualValues(100, inflation.InflationRate)
 
 	inflation, err = queryClient.Inflation(context.Background(), &types.QueryInflationRequest{
 		Height: 6307200,
 	})
 	suite.Require().NoError(err)
 	suite.Require().EqualValues(2, inflation.Epoch)
-	suite.Require().EqualValues("0.50", fmt.Sprintf("%.2f", inflation.Inflation))
+	suite.Require().EqualValues(50, inflation.InflationRate)
 
 	inflation, err = queryClient.Inflation(context.Background(), &types.QueryInflationRequest{
 		Height: 75686400,
 	})
 	suite.Require().NoError(err)
 	suite.Require().EqualValues(13, inflation.Epoch)
-	suite.Require().EqualValues("0.00", fmt.Sprintf("%.2f", inflation.Inflation))
+	suite.Require().EqualValues(0, inflation.InflationRate)
 
 }
 
