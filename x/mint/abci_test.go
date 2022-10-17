@@ -50,7 +50,7 @@ func (s *ModuleTestSuite) TestInflationAmount() {
 	s.Assert().NoError(err)
 
 	// mint the initial supply
-	err = s.keeper.MintCoins(s.ctx, sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, 200_000_000_000_000)))
+	err = s.keeper.MintCoins(s.ctx, sdk.NewCoins(sdk.NewInt64Coin(params.MintDenom, types.InitialSupply)))
 	s.Assert().NoError(err)
 
 	// checks if the distribution matches the requirements for given height
