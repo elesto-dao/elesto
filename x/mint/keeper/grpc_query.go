@@ -18,10 +18,11 @@ func (k Keeper) Params(c context.Context, _ *types.QueryParamsRequest) (*types.Q
 	return &types.QueryParamsResponse{Params: params}, nil
 }
 
+// Inflation returns the epoch and inflation rate given height
 func (k Keeper) Inflation(_ context.Context, req *types.QueryInflationRequest) (*types.QueryInflationResponse, error) {
-	inflation, err := types.GetInflation(req.GetHeight()).Float64()
+	inflation, err := types.GetInflationRate(req.GetHeight()).Float64()
 	return &types.QueryInflationResponse{
-		Epoch:     types.GetEpoch(req.GetHeight()),
-		Inflation: inflation,
+		Epoch:         types.GetEpoch(req.GetHeight()) + 1,
+		InflationRate: inflation,
 	}, err
 }

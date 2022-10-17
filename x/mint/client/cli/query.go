@@ -57,7 +57,7 @@ func GetCmdQueryParams() *cobra.Command {
 	return cmd
 }
 
-// GetCmdQueryInflation implements a command to return
+// GetCmdQueryInflation implements a command to return the epoch and the inflation rate at given height
 func GetCmdQueryInflation() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "inflation [height]",
