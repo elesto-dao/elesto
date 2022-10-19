@@ -13,6 +13,10 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/mint/v1/params";
   }
+  // Inflation returns the epoch and inflation rate at the given height
+  rpc Inflation(QueryInflationRequest) returns (QueryInflationResponse) {
+    option (google.api.http).get = "/mint/v1/inflation";
+  }
 }
 
 // QueryParamsRequest is the request type for the Query/Params RPC method.
@@ -22,4 +26,15 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params defines the parameters of the module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryInflationRequest is the request type for the Query/Inflation RPC method.
+message QueryInflationRequest {
+  int64 height = 1;
+}
+
+// QueryInflationResponse is the response type for the Query/Inflation RPC method.
+message QueryInflationResponse {
+  int64 epoch = 1;
+  double inflation_rate = 2;
 }

@@ -35,7 +35,7 @@ var (
 
 // GetInflation returns the inflation rate (between 0-1) for a block height
 func GetInflation(height int64) sdk.Dec {
-	currentEpoch := height / BlocksPerEpoch
+	currentEpoch := GetEpoch(height)
 	startSupply := sdk.NewDec(InitialSupply)
 	for i := int64(0); i < currentEpoch; i++ {
 		startSupply = startSupply.Add(sdk.NewDec(BlocksPerEpoch * BlockInflationDistribution[i].BlockInflation))
@@ -46,6 +46,12 @@ func GetInflation(height int64) sdk.Dec {
 	return inflation
 }
 
+// GetEpoch returns the epoch of the given height belongs to
+func GetEpoch(height int64) int64 {
+	return (height / BlocksPerEpoch)
+}
+
+// GetInflationRate returns the inflation rate rounded to precision = 2
 func GetInflationRate(height int64) sdk.Dec {
 	inflation := GetInflation(height)
 	// round it to precision = 2
