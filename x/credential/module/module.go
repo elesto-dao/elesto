@@ -19,6 +19,7 @@ import ( // this line is used by starport scaffolding # 1
 	"github.com/elesto-dao/elesto/v4/x/credential"
 	"github.com/elesto-dao/elesto/v4/x/credential/client/cli"
 	"github.com/elesto-dao/elesto/v4/x/credential/keeper"
+	"github.com/elesto-dao/elesto/v4/x/credential/simulation"
 )
 
 var (
@@ -192,18 +193,18 @@ func (AppModule) RandomizedParams(*rand.Rand) []simtypes.ParamChange {
 
 // RegisterStoreDecoder registers a decoder for credentials module's types
 func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	//sdr[credentials.StoreKey] = simulation.NewDecodeStore(am.cdc)
+	sdr[credential.StoreKey] = simulation.NewDecodeStore(am.cdc)
 }
 
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	//return simulation.WeightedOperations(
-	//	simState,
-	//	am.keeper,
-	//	am.bk,
-	//	am.ak,
-	//)
-	return []simtypes.WeightedOperation{}
+	return simulation.WeightedOperations(
+		simState,
+		am.keeper,
+		am.didKeeper,
+		am.bk,
+		am.ak,
+	)
 }
 
 // ----------------------------------------------------------------------------
