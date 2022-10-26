@@ -1,0 +1,1710 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.1">
+    
+    
+      
+        <title>ADR 008: Inflation - Elesto Documentation Portal</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.69437709.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#000000">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Asap:300,300i,400,400i,700,700i%7CShare+Tech+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Asap";--md-code-font:"Share Tech Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="black" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-008-inflation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Elesto Documentation Portal" class="md-header__button md-logo" aria-label="Elesto Documentation Portal" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Elesto Documentation Portal
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR 008: Inflation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/elesto-dao/elesto" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Elesto Documentation Portal" class="md-nav__button md-logo" aria-label="Elesto Documentation Portal" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Elesto Documentation Portal
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/elesto-dao/elesto" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Elesto
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ABOUT/" class="md-nav__link">
+        About Documentation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Explanation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Explanation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Explanation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        About Explanation Documentation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../presentations/" class="md-nav__link">
+        Presentations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          ADR
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="ADR" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          ADR
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        About Architecture Decision Records (ADRs)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROCESS/" class="md-nav__link">
+        ADR Creation Process
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-002-did/" class="md-nav__link">
+        ADR 002: DID
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-002-docs-structure/" class="md-nav__link">
+        ADR 002: Documentation Structure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-003-did/" class="md-nav__link">
+        ADR 003: DID
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-004-light-client-resolver/" class="md-nav__link">
+        ADR 004: Light Client resolver
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-005-ibc-enabled-dids/" class="md-nav__link">
+        IBC-enabled DIDs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-006-public-verifiable-credential/" class="md-nav__link">
+        ADR 006: Verifiable Credentials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-007-revocation-lists/" class="md-nav__link">
+        ADR 007: Revocation Lists
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          ADR 008: Inflation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        ADR 008: Inflation
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#changelog" class="md-nav__link">
+    Changelog
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    Status
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#abstract" class="md-nav__link">
+    Abstract
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    Context
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision" class="md-nav__link">
+    Decision
+  </a>
+  
+    <nav class="md-nav" aria-label="Decision">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-epoch-n" class="md-nav__link">
+    1. Epoch n.
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-current-epoch-inflation" class="md-nav__link">
+    2. Current epoch inflation %
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-epoch-inflation-supply-amount" class="md-nav__link">
+    3. Epoch inflation supply amount
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-total-supply-estimate-eoy" class="md-nav__link">
+    4. Total supply estimate (EOY)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-block-inflation-amount" class="md-nav__link">
+    5. Block inflation amount
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-total-supply-actual-amount-eoy" class="md-nav__link">
+    6. Total supply actual amount (EOY)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#privacy-considerations" class="md-nav__link">
+    Privacy Considerations
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    Security Considerations
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    Consequences
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backward-compatibility" class="md-nav__link">
+    Backward Compatibility
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    Positive
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    Negative
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#neutral" class="md-nav__link">
+    Neutral
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-discussions" class="md-nav__link">
+    Further Discussions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-cases-optional" class="md-nav__link">
+    Test Cases [optional]
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-template/" class="md-nav__link">
+        ADR Template
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4">
+          Articles
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Articles" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_4">
+          <span class="md-nav__icon md-icon"></span>
+          Articles
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../articles/" class="md-nav__link">
+        About Articles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_2" type="checkbox" id="__nav_3_4_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4_2">
+          Regulation paper
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Regulation paper" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          Regulation paper
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_2_1" type="checkbox" id="__nav_3_4_2_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4_2_1">
+          Rpts
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Rpts" data-md-level="4">
+        <label class="md-nav__title" for="__nav_3_4_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          Rpts
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../articles/regulation-paper/rpts/CosmosCashRegs/" class="md-nav__link">
+        Elesto
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_5">
+          Topics
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Topics" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_5">
+          <span class="md-nav__icon md-icon"></span>
+          Topics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/Compare%20USDC%20vs%20USDT%20vs%20CASH-ISSUER/" class="md-nav__link">
+        USDC vs USDT vs Cosmos Cash Issuer
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          How To
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="How To" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          How To
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../How-To/" class="md-nav__link">
+        How-to guides
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../How-To/chain_001_faucet/" class="md-nav__link">
+        Get Testnet Tokens (Faucet)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../How-To/chain_002_key_management/" class="md-nav__link">
+        Manage Keys
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../How-To/chain_003_network_upgrade/" class="md-nav__link">
+        Network upgrade
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../How-To/general_001_swagger/" class="md-nav__link">
+        Swagger
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Networks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Networks" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Networks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Networks/node/" class="md-nav__link">
+        Install an Elesto Node
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Networks/testnet/" class="md-nav__link">
+        Joining Testnet
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Reference/" class="md-nav__link">
+        Reference Documentation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Reference/GLOSSARY/" class="md-nav__link">
+        GLOSSARY
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Reference/MODULES/" class="md-nav__link">
+        Elesto Modules
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_4" type="checkbox" id="__nav_6_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6_4">
+          Architecture
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Architecture" data-md-level="2">
+        <label class="md-nav__title" for="__nav_6_4">
+          <span class="md-nav__icon md-icon"></span>
+          Architecture
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Reference/architecture/" class="md-nav__link">
+        Architecture
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Reference/architecture/CONTRIBUTING/" class="md-nav__link">
+        CONTRIBUTING
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Tutorials/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#changelog" class="md-nav__link">
+    Changelog
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    Status
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#abstract" class="md-nav__link">
+    Abstract
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    Context
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision" class="md-nav__link">
+    Decision
+  </a>
+  
+    <nav class="md-nav" aria-label="Decision">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-epoch-n" class="md-nav__link">
+    1. Epoch n.
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-current-epoch-inflation" class="md-nav__link">
+    2. Current epoch inflation %
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-epoch-inflation-supply-amount" class="md-nav__link">
+    3. Epoch inflation supply amount
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-total-supply-estimate-eoy" class="md-nav__link">
+    4. Total supply estimate (EOY)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-block-inflation-amount" class="md-nav__link">
+    5. Block inflation amount
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-total-supply-actual-amount-eoy" class="md-nav__link">
+    6. Total supply actual amount (EOY)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#privacy-considerations" class="md-nav__link">
+    Privacy Considerations
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    Security Considerations
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    Consequences
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backward-compatibility" class="md-nav__link">
+    Backward Compatibility
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    Positive
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    Negative
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#neutral" class="md-nav__link">
+    Neutral
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-discussions" class="md-nav__link">
+    Further Discussions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-cases-optional" class="md-nav__link">
+    Test Cases [optional]
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/elesto-dao/elesto/edit/master/docs/Explanation/ADR/adr-008-inflation.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+<h1 id="adr-008-inflation">ADR 008: Inflation</h1>
+<h2 id="changelog">Changelog</h2>
+<ul>
+<li>2022-08-20: Initial draft</li>
+<li>2022-08-30: Draft 2 (inflation rewards allocation, minor grammar edits)</li>
+<li>2022-09-06: Draft 3 - replace years with epochs</li>
+</ul>
+<h2 id="status">Status</h2>
+<p>DRAFT</p>
+<h2 id="abstract">Abstract</h2>
+<p>Inflation is the process by which a currency like the dollar or euro loses value over time, causing the price of goods to rise. Elesto, like other cryptocurrencies, is designed to experience predictable and low rates of inflation. This document details the inflation model for the Elesto chain.</p>
+<h2 id="context">Context</h2>
+<p>-</p>
+<h2 id="decision">Decision</h2>
+<p>Elesto inflation is inspired by Bitcoin inflation model. The Bitcoin supply is limited and known, and the creation of new bitcoin will taper off over time in a predictable way. (There will only ever be 21 million bitcoin, and every four years the amount of bitcoin that is mined is reduced by half.) </p>
+<p>The Elesto initial supply is to be <strong>200,000,000</strong> (two hundred million) tokens and will reach its maximum value at <strong>1,000,000,000</strong> (one billion) in a period of <strong>10 epochs</strong> (roughly 10 years).</p>
+<p>The rewards per block are further split into three categories: 10% to the community pool, 10% to the development team, and 80% to the staking rewards.</p>
+<p>We introduce the concept of epoch: an epoch is <strong>6,307,200</strong> blocks. The number of blocks of an eopch is calculated as the number of blocks in a calendar year assuming a block rate of 1 block every 5 seconds.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The actual token configuration uses the <code>u</code> (micro) unit to express decimal, therefore the actual value for supply must be multplied for <code>10^6</code></p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Epoch n.  [1]</th>
+<th>Current epoch inflation [2]</th>
+<th>Epoch inflation supply amount [3]</th>
+<th>Total supply estimate (EOY) [4]</th>
+<th>Block inflation amount [5]</th>
+<th><strong>Total supply actual amount (EOY)</strong> [6]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1</td>
+<td><strong>200,000,000</strong>,000,000</td>
+<td><strong>400,000,000</strong>,000,000</td>
+<td><strong>31</strong>,709,792</td>
+<td><strong>400,000,000</strong>,102,400</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0.5</td>
+<td><strong>200,000,000</strong>,000,000</td>
+<td><strong>600,000,000</strong>,000,000</td>
+<td><strong>31</strong>,709,792</td>
+<td><strong>600,000,000</strong>,102,400</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0.25</td>
+<td><strong>150,000,000</strong>,000,000</td>
+<td><strong>750,000,000</strong>,000,000</td>
+<td><strong>23</strong>,782,344</td>
+<td><strong>750,000,000</strong>,076,800</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0.125</td>
+<td><strong>93,750,000</strong>,000,000</td>
+<td><strong>843,750,000</strong>,000,000</td>
+<td><strong>14</strong>,863,965</td>
+<td><strong>843,750,000</strong>,048,000</td>
+</tr>
+<tr>
+<td>5</td>
+<td>0.0625</td>
+<td><strong>52,734,375</strong>,000,000</td>
+<td><strong>896,484,375</strong>,000,000</td>
+<td><strong>8</strong>,360,980</td>
+<td><strong>896,484,373</strong>,056,000</td>
+</tr>
+<tr>
+<td>6</td>
+<td>0.03125</td>
+<td><strong>28,015,136</strong>,718,750</td>
+<td><strong>924,499,511</strong>,718,750</td>
+<td><strong>4</strong>,441,771</td>
+<td><strong>924,499,513</strong>,051,200</td>
+</tr>
+<tr>
+<td>7</td>
+<td>0.0200</td>
+<td><strong>18,489,990</strong>,234,375</td>
+<td><strong>942,989,501</strong>,953,125</td>
+<td><strong>2</strong>,931,569</td>
+<td><strong>942,989,503</strong>,715,550</td>
+</tr>
+<tr>
+<td>8</td>
+<td>0.0200</td>
+<td><strong>18,859,790</strong>,039,063</td>
+<td><strong>961,849,291</strong>,992,188</td>
+<td><strong>2</strong>,990,200</td>
+<td><strong>961,849,291</strong>,393,125</td>
+</tr>
+<tr>
+<td>9</td>
+<td>0.0200</td>
+<td><strong>19,236,985</strong>,839,844</td>
+<td><strong>981,086,277</strong>,832,031</td>
+<td><strong>3</strong>,050,004</td>
+<td><strong>981,086,277</strong>,220,988</td>
+</tr>
+<tr>
+<td>10</td>
+<td>0.019278348</td>
+<td><strong>18,913,722</strong>,682,071</td>
+<td><strong>1,000,000,000</strong>,514,100</td>
+<td><strong>2</strong>,998,751</td>
+<td><strong>1,000,000,000</strong>,139,230</td>
+</tr>
+</tbody>
+</table>
+<p>where the columns are:</p>
+<h4 id="1-epoch-n">1. Epoch n.</h4>
+<p>The epoch from the chain starts, 1 is during the first epoch, 2 the second epoch, and so on. </p>
+<h4 id="2-current-epoch-inflation">2. Current epoch inflation %</h4>
+<p>The current epoch inflation is a percentage over the current supply that should be minted for the next epoch. The percentage is between 0-1. The last epoch percentage (0.019278348) is an adjustment over 0.2 to reach the desired value of 1 billion. </p>
+<h4 id="3-epoch-inflation-supply-amount">3. Epoch inflation supply amount</h4>
+<p>The epoch supply inflation is the theoretical amount that will be minted by the end of the current epoch. It is calculated with the formula:</p>
+<div class="highlight"><pre><span></span><code>Epoch supply inflation amount = FLOOR(Current epoch inflation [2] * Total supply at beginning of the epoch)
+</code></pre></div>
+<p>For the first epoch, the total supply at beginning of the epoch is the initial supply of two hundred million (200,000,000).</p>
+<h4 id="4-total-supply-estimate-eoy">4. Total supply estimate (EOY)</h4>
+<p>The total supply estimate is the total supply at the end of the current epoch. It is the cumulated sum of each epoch supply.</p>
+<h4 id="5-block-inflation-amount">5. Block inflation amount</h4>
+<p>The block inflation is the amount to be minted on each block to reach the expected <strong>Epoch inflation supply</strong>. It is calcualted with the formula: </p>
+<div class="highlight"><pre><span></span><code>Block inflation amount = ROUND(Epoch inflation supply amount [3] / Blocks per epoch)
+</code></pre></div>
+<h4 id="6-total-supply-actual-amount-eoy">6. Total supply actual amount (EOY)</h4>
+<p>Due to rounding errors, the "Total supply estimate (EOY) [4]" is slightly different from the "Total supply actual amount (EOY) [6]." This column is the actual supply that will be obeserved on chain and is calcualted using the formula:</p>
+<div class="highlight"><pre><span></span><code>Total supply actual amount = Block inflation amount [5] * Blocks per epoch
+</code></pre></div>
+<p>The value for block inflation per epoch is hard coded in the node code in the mint module <a href="../../x/mint/abci.go#L21">ABCI</a>. </p>
+<details class="example">
+<summary>Visualizing the inflation curve</summary>
+<p>To visualize the distribution paste the following data to <a href="https://vega.github.io/editor/#/">Vega</a></p>
+<div class="highlight"><pre><span></span><code>{
+  &quot;$schema&quot;: &quot;https://vega.github.io/schema/vega-lite/v5.json&quot;,
+  &quot;description&quot;: &quot;Supply change over time.&quot;,
+  &quot;data&quot;: {&quot;values&quot;: [
+      {&quot;epoch&quot;: &quot;1&quot;, &quot;block&quot;: 6307200, &quot;supply&quot;: 200000000},
+      {&quot;epoch&quot;: &quot;2&quot;, &quot;block&quot;: 12614400, &quot;supply&quot;: 600000000},
+      {&quot;epoch&quot;: &quot;3&quot;, &quot;block&quot;: 18921600, &quot;supply&quot;: 750000000},
+      {&quot;epoch&quot;: &quot;4&quot;, &quot;block&quot;: 25228800, &quot;supply&quot;: 843750000},
+      {&quot;epoch&quot;: &quot;5&quot;, &quot;block&quot;: 31536000, &quot;supply&quot;: 896484373},
+      {&quot;epoch&quot;: &quot;6&quot;, &quot;block&quot;: 37843200, &quot;supply&quot;: 924499513},
+      {&quot;epoch&quot;: &quot;7&quot;, &quot;block&quot;: 44150400, &quot;supply&quot;: 942989503},
+      {&quot;epoch&quot;: &quot;8&quot;, &quot;block&quot;: 50457600, &quot;supply&quot;: 961849291},
+      {&quot;epoch&quot;: &quot;9&quot;, &quot;block&quot;: 56764800, &quot;supply&quot;: 981086277},
+      {&quot;epoch&quot;: &quot;10&quot;, &quot;block&quot;: 63072000, &quot;supply&quot;: 1000000000},
+      {&quot;epoch&quot;: &quot;11&quot;, &quot;block&quot;: 63072000, &quot;supply&quot;: 1000000000}
+
+    ]
+  },
+  &quot;width&quot;: 800,
+  &quot;height&quot;: 600,
+  &quot;mark&quot;: {
+    &quot;type&quot;: &quot;line&quot;
+  },
+  &quot;encoding&quot;: {
+    &quot;z&quot;: {&quot;field&quot;: &quot;block&quot;, &quot;type&quot;: &quot;quantitative&quot;},
+    &quot;x&quot;: {&quot;field&quot;: &quot;epoch&quot;, &quot;type&quot;: &quot;quantitative&quot;},
+    &quot;y&quot;: {&quot;field&quot;: &quot;supply&quot;, &quot;type&quot;: &quot;quantitative&quot;}
+  }
+}
+</code></pre></div>
+</details>
+<h2 id="privacy-considerations">Privacy Considerations</h2>
+<p>N/A</p>
+<h2 id="security-considerations">Security Considerations</h2>
+<p>N/A</p>
+<h2 id="consequences">Consequences</h2>
+<p>By leveraging the public verifiable credentials, the Elesto node offers native support for revocation lists. Revocation lists are stored as credentials in the node state, within the credential module keeper. </p>
+<h3 id="backward-compatibility">Backward Compatibility</h3>
+<p>N/A</p>
+<h3 id="positive">Positive</h3>
+<p>N/A</p>
+<h3 id="negative">Negative</h3>
+<p>N/A</p>
+<h3 id="neutral">Neutral</h3>
+<p>N/A</p>
+<h2 id="further-discussions">Further Discussions</h2>
+<p>While an ADR is in the DRAFT or PROPOSED stage, this section summarizes issues to be solved in future iterations. The issues summarized here can reference comments from a pull request discussion.</p>
+<p>Later, this section can optionally list ideas or improvements the author or reviewers found during the analysis of this ADR.</p>
+<h2 id="test-cases-optional">Test Cases [optional]</h2>
+<p>N/A</p>
+<h2 id="references">References</h2>
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+<a href="https://bitcoin.org/bitcoin.pdf">Bitcoin Whitepaper</a>
+=======
+<a href="https://bitcoin.org/bitcoin.pdf">Bitcoin Whitepaper</a></p>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>66c85d2 (docs: amend ADR #8, introduce epoch concept)</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+
+
+
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../adr-007-revocation-lists/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ADR 007: Revocation Lists" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              ADR 007: Revocation Lists
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../adr-template/" class="md-footer__link md-footer__link--next" aria-label="Next: ADR Template" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              ADR Template
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.sections", "navigation.instant", "navigation.tracking", "search.suggest", "search.highlight", "search.share"], "search": "../../../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.9c69f0bc.min.js"></script>
+      
+    
+  </body>
+</html>

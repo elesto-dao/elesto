@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="577px" preserveAspectRatio="none" style="width:1150px;height:577px;background:#FFFFFF;" version="1.1" viewBox="0 0 1150 577" width="1150px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="199.7969" style="stroke:#181818;stroke-width:1.0;" width="10" x="450" y="272.2266"/><rect fill="#000000" height="32.1328" style="stroke:#181818;stroke-width:1.0;" width="10" x="455" y="304.3594"/><rect fill="#000000" height="32.1328" style="stroke:#181818;stroke-width:1.0;" width="10" x="455" y="368.625"/><rect fill="#FFFFFF" height="32.1328" style="stroke:#181818;stroke-width:1.0;" width="10" x="836" y="304.3594"/><rect fill="#FFFFFF" height="32.1328" style="stroke:#181818;stroke-width:1.0;" width="10" x="836" y="368.625"/><rect fill="none" height="246.0625" style="stroke:#000000;stroke-width:1.5;" width="1108" x="36" y="233.9609"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="103" x2="103" y1="81.2969" y2="497.0234"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="455" x2="455" y1="81.2969" y2="497.0234"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="840.5" x2="840.5" y1="81.2969" y2="497.0234"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="72" x="64" y="77.9951">Consumer</text><ellipse cx="103" cy="13.5" fill="#FFFFFF" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/><path d="M103,21.5 L103,48.5 M90,29.5 L116,29.5 M103,48.5 L90,63.5 M103,48.5 L116,63.5 " fill="none" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="72" x="64" y="509.0186">Consumer</text><ellipse cx="103" cy="520.8203" fill="#FFFFFF" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/><path d="M103,528.8203 L103,555.8203 M90,536.8203 L116,536.8203 M103,555.8203 L90,570.8203 M103,555.8203 L116,570.8203 " fill="none" style="stroke:#181818;stroke-width:0.5;"/><rect fill="#FFFFFF" height="30.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="156" x="377" y="50"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="142" x="384" y="69.9951">LightClientResolver</text><rect fill="#FFFFFF" height="30.2969" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="156" x="377" y="496.0234"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="142" x="384" y="516.0186">LightClientResolver</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61" x="807.5" y="77.9951">FullNode</text><path d="M823,29 C823,19 841,19 841,19 C841,19 859,19 859,29 L859,55 C859,65 841,65 841,65 C841,65 823,65 823,55 L823,29 " fill="#E2E2F0" style="stroke:#181818;stroke-width:1.5;"/><path d="M823,29 C823,39 841,39 841,39 C841,39 859,39 859,29 " fill="none" style="stroke:#181818;stroke-width:1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61" x="807.5" y="509.0186">FullNode</text><path d="M823,522.3203 C823,512.3203 841,512.3203 841,512.3203 C841,512.3203 859,512.3203 859,522.3203 L859,548.3203 C859,558.3203 841,558.3203 841,558.3203 C841,558.3203 823,558.3203 823,548.3203 L823,522.3203 " fill="#E2E2F0" style="stroke:#181818;stroke-width:1.5;"/><path d="M823,522.3203 C823,532.3203 841,532.3203 841,532.3203 C841,532.3203 859,532.3203 859,522.3203 " fill="none" style="stroke:#181818;stroke-width:1.5;"/><rect fill="#FFFFFF" height="199.7969" style="stroke:#181818;stroke-width:1.0;" width="10" x="450" y="272.2266"/><rect fill="#000000" height="32.1328" style="stroke:#181818;stroke-width:1.0;" width="10" x="455" y="304.3594"/><rect fill="#000000" height="32.1328" style="stroke:#181818;stroke-width:1.0;" width="10" x="455" y="368.625"/><rect fill="#FFFFFF" height="32.1328" style="stroke:#181818;stroke-width:1.0;" width="10" x="836" y="304.3594"/><rect fill="#FFFFFF" height="32.1328" style="stroke:#181818;stroke-width:1.0;" width="10" x="836" y="368.625"/><path d="M5,96.2969 L5,136.2969 L201,136.2969 L201,106.2969 L191,96.2969 L5,96.2969 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><path d="M191,96.2969 L191,106.2969 L201,106.2969 L191,96.2969 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="175" x="11" y="113.3638">Consumer of did document</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="84" x="11" y="128.4966">e.g SSI agent</text><path d="M334,146.5625 L334,186.5625 L575,186.5625 L575,156.5625 L565,146.5625 L334,146.5625 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><path d="M565,146.5625 L565,156.5625 L575,156.5625 L565,146.5625 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="156" x="340" y="163.6294">Rpc client to query node</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="220" x="340" y="178.7622">Light client to verify block headers</text><path d="M777,196.8281 L777,221.8281 L904,221.8281 L904,206.8281 L894,196.8281 L777,196.8281 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><path d="M894,196.8281 L894,206.8281 L904,206.8281 L894,196.8281 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="106" x="783" y="213.895">Elestod full node</text><path d="M36,233.9609 L254,233.9609 L254,241.0938 L244,251.0938 L36,251.0938 L36,233.9609 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="246.0625" style="stroke:#000000;stroke-width:1.5;" width="1108" x="36" y="233.9609"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="173" x="51" y="247.0278">Resolve DID Document</text><polygon fill="#181818" points="438,268.2266,448,272.2266,438,276.2266,442,272.2266" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="103" x2="444" y1="272.2266" y2="272.2266"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="328" x="110" y="267.1606">DID Docment Resolve Request `/1.0/identifier/:did`</text><polygon fill="#181818" points="824,300.3594,834,304.3594,824,308.3594,828,304.3594" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="465" x2="830" y1="304.3594" y2="304.3594"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="357" x="472" y="299.2935">GRPC request `QueryDidDocumentRequest{:did: did}`</text><path d="M851,285.2266 L851,310.2266 L1126,310.2266 L1126,295.2266 L1116,285.2266 L851,285.2266 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><path d="M1116,285.2266 L1116,295.2266 L1126,295.2266 L1116,285.2266 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="254" x="857" y="302.2935">Get DID document from node database</text><polygon fill="#181818" points="471,332.4922,461,336.4922,471,340.4922,467,336.4922" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="465" x2="840" y1="336.4922" y2="336.4922"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="307" x="477" y="331.4263">GRPC response `QueryDidDocumentResponse`</text><polygon fill="#181818" points="824,364.625,834,368.625,824,372.625,828,368.625" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="465" x2="830" y1="368.625" y2="368.625"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="209" x="472" y="363.5591">ABCI query `ABCIQueryRequest`</text><path d="M851,349.4922 L851,374.4922 L1139,374.4922 L1139,359.4922 L1129,349.4922 L851,349.4922 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><path d="M1129,349.4922 L1129,359.4922 L1139,359.4922 L1129,349.4922 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="267" x="857" y="366.5591">Get proofs from the tendermint database</text><polygon fill="#181818" points="471,396.7578,461,400.7578,471,404.7578,467,400.7578" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="465" x2="840" y1="400.7578" y2="400.7578"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="241" x="477" y="395.6919">ABCI response `ABCIQueryResponse`</text><line style="stroke:#181818;stroke-width:1.0;" x1="460" x2="502" y1="429.8906" y2="429.8906"/><line style="stroke:#181818;stroke-width:1.0;" x1="502" x2="502" y1="429.8906" y2="442.8906"/><line style="stroke:#181818;stroke-width:1.0;" x1="461" x2="502" y1="442.8906" y2="442.8906"/><polygon fill="#181818" points="471,438.8906,461,442.8906,471,446.8906,467,442.8906" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="76" x="467" y="424.8247">Verify proof</text><path d="M46,417.2578 L46,442.2578 L445,442.2578 L445,427.2578 L435,417.2578 L46,417.2578 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><path d="M435,417.2578 L435,427.2578 L445,427.2578 L435,417.2578 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="378" x="52" y="434.3247">Verify the proof in the ABCI query using light client protocol</text><polygon fill="#181818" points="114,468.0234,104,472.0234,114,476.0234,110,472.0234" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="108" x2="454" y1="472.0234" y2="472.0234"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="264" x="120" y="466.9575">Validated JSON Formatted DID Document</text><!--MD5=[0eabc5d2f3f7637d09b7b9fee8d946b5]
+@startuml
+actor Consumer #white
+participant LightClientResolver #white
+database FullNode
+
+note over Consumer
+  Consumer of did document
+  e.g SSI agent
+end note
+
+note over LightClientResolver
+  Rpc client to query node
+  Light client to verify block headers
+end note
+
+note over FullNode
+  Elestod full node
+end note
+
+group Resolve DID Document
+
+Consumer -> LightClientResolver: DID Docment Resolve Request `/1.0/identifier/:did`
+
+activate LightClientResolver
+
+  LightClientResolver -> FullNode: GRPC request `QueryDidDocumentRequest{:did: did}`
+
+  activate LightClientResolver #Black
+    note right
+    Get DID document from node database
+    end note
+    activate FullNode
+      FullNode -> LightClientResolver: GRPC response `QueryDidDocumentResponse`
+    deactivate FullNode
+  deactivate LightClientResolver
+
+  LightClientResolver -> FullNode: ABCI query `ABCIQueryRequest`
+  activate LightClientResolver #Black
+    activate FullNode
+      note right
+      Get proofs from the tendermint database
+      end note
+      FullNode -> LightClientResolver: ABCI response `ABCIQueryResponse`
+    deactivate FullNode
+  deactivate LightClientResolver
+
+  LightClientResolver -> LightClientResolver: Verify proof
+  note left
+  Verify the proof in the ABCI query using light client protocol
+  end note
+  Consumer <- LightClientResolver: Validated JSON Formatted DID Document
+deactivate LightClientResolver
+
+end
+@enduml
+
+PlantUML version 1.2022.13beta1(Unknown compile time)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>
