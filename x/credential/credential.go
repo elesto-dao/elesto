@@ -33,7 +33,7 @@ func init() {
 // NewCredentialDefinitionFromFile create a credential definition by reading the data from a file
 func NewCredentialDefinitionFromFile(id string, publisherDID did.DID,
 	name, description string,
-	isPublic, isActive bool,
+	isActive bool,
 	schemaFile, vocabFile string) (*CredentialDefinition, error) {
 
 	def := &CredentialDefinition{

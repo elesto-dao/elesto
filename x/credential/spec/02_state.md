@@ -30,9 +30,6 @@ type CredentialDefinition struct {
 	Name string
 	// the description of the credential, such as it's purpose
 	Description string 
-	// wherever the credential is intended for public use (on-chain) or not (off-chain)
-	// if the value is false then the module will forbid the issuance of the credential on chain
-	IsPublic bool
 	// did of the credential should not be used anymore in favour of something else
 	SupersededBy string `protobuf:"bytes,8,opt,name=supersededBy,proto3" json:"supersededBy,omitempty"`
 	// the credential can be de-activated
